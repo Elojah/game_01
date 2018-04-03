@@ -1,0 +1,11 @@
+include "token.fbs";
+include "actor.fbs";
+
+namespace Game;
+
+table ActorCreate {
+	auth:Token;
+	actors:[Actor];
+}
+
+root_type ActorCreate;

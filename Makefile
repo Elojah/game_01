@@ -1,19 +1,21 @@
-PACKAGE  = game
-DATE    ?= $(shell date +%FT%T%z)
-VERSION ?= $(shell git describe --tags --always --dirty --match=v* 2> /dev/null || \
+PACKAGE   = game
+DATE     ?= $(shell date +%FT%T%z)
+VERSION  ?= $(shell git describe --tags --always --dirty --match = v* 2> /dev/null || \
 			cat $(CURDIR)/.version 2> /dev/null || echo v0)
 
-GO      = go
-GODOC   = godoc
-GOFMT   = gofmt
-GOLINT   = gometalinter
+GO        = go
+GODOC     = godoc
+GOFMT     = gofmt
+GOLINT    = gometalinter
 
-API = api
-CLIENT = client
+API       = api
+CLIENT    = client
 
-V = 0
-Q = $(if $(filter 1,$V),,@)
-M = $(shell printf "\033[0;35m▶\033[0m")
+FBSDIR    = .
+
+V         = 0
+Q         = $(if $(filter 1,$V),,@)
+M         = $(shell printf "\033[0;35m▶\033[0m")
 
 .PHONY: all
 
@@ -40,7 +42,7 @@ client:
 .PHONY: dep
 dep:
 	$(info $(M) building vendor…) @
-	$Q dep ensure -vendor-only
+	$Q dep ensure -update
 
 # Check
 .PHONY: check
@@ -57,7 +59,6 @@ test:
 lint:
 	$(info $(M) running $(GOLINT)…) @
 	$Q GO_VENDOR=1 $(GOLINT) "--vendor" \
-					"--exclude=.pb.go" \
 					"--disable=gotype" \
 					"--disable=vetshadow" \
 					"--disable=gocyclo" \
@@ -81,9 +82,9 @@ fbs:
 	$(GOPATH)/src/github.com/google/flatbuffers/flatc\
 		--go\
 		--gen-onefile\
-		--go-namespace fbs\
-		-o ./dto/fbs\
-		./dto/fbs/*.fbs
+		--go-namespace game\
+		-o $(FBSDIR)\
+		$(FBSDIR)/*.fbs
 
 .PHONY: clean
 clean:

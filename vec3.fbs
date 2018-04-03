@@ -1,0 +1,7 @@
+namespace Game;
+
+struct Vec3 {
+	x:ulong;
+	y:ulong;
+	z:ulong;
+}

@@ -1,0 +1,11 @@
+include "token.fbs";
+include "vec3.fbs";
+
+namespace Game;
+
+table Actor {
+	token:Token;
+	hp:uint;
+	mp:uint;
+	position:Vec3;
+}

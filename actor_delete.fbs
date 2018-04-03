@@ -1,0 +1,12 @@
+include "token.fbs";
+include "actor.fbs";
+include "actor_update.fbs";
+
+namespace Game;
+
+table ActorDelete {
+	auth:Token;
+	subset:ActorSubset;
+}
+
+root_type ActorDelete;

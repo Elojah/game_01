@@ -1,0 +1,24 @@
+include "token.fbs";
+include "actor.fbs";
+
+namespace Game;
+
+table ActorSubset {
+	tokens:[Token];
+}
+
+table ActorPatch {
+	addhp:uint;
+	subhp:uint;
+	addmp:uint;
+	submp:uint;
+	position:Vec3;
+}
+
+table ActorUpdate {
+	auth:Token;
+	subset:ActorSubset;
+	patch:ActorPatch;
+}
+
+root_type ActorUpdate;
