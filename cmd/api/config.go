@@ -4,15 +4,13 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/elojah/scylla"
 	"github.com/elojah/services"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Version   string        `json:"version"`
-	Resources []string      `json:"resources"`
-	Scylla    scylla.Config `json:"scylla"`
+	Version   string   `json:"version"`
+	Resources []string `json:"resources"`
 }
 
 // Equal returns is both configs are equal.
@@ -28,7 +26,7 @@ func (c Config) Equal(rhs Config) bool {
 	if c.Version != rhs.Version {
 		return false
 	}
-	return c.Scylla.Equal(rhs.Scylla)
+	return true
 }
 
 // Dial set the config from a config namespace.
@@ -57,13 +55,6 @@ func (c *Config) Dial(fileconf interface{}) error {
 		if c.Resources[i], ok = cResources[i].(string); !ok {
 			return errors.New("key resources invalid. must be string array")
 		}
-	}
-	cScylla, ok := fconf["scylla"]
-	if !ok {
-		return errors.New("missing key scylla")
-	}
-	if err := c.Scylla.Dial(cScylla); err != nil {
-		return err
 	}
 	return nil
 }

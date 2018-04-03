@@ -1,0 +1,8 @@
+version: "3"
+services:
+
+  # ScyllaDB
+  scylla:
+    image: scylladb/scylla
+    ports:
+      - 9042:9042
