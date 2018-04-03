@@ -6,27 +6,27 @@ import (
 	flatbuffers "github.com/google/flatbuffers/go"
 )
 
-type ActorDelete struct {
+type ActorList struct {
 	_tab flatbuffers.Table
 }
 
-func GetRootAsActorDelete(buf []byte, offset flatbuffers.UOffsetT) *ActorDelete {
+func GetRootAsActorList(buf []byte, offset flatbuffers.UOffsetT) *ActorList {
 	n := flatbuffers.GetUOffsetT(buf[offset:])
-	x := &ActorDelete{}
+	x := &ActorList{}
 	x.Init(buf, n+offset)
 	return x
 }
 
-func (rcv *ActorDelete) Init(buf []byte, i flatbuffers.UOffsetT) {
+func (rcv *ActorList) Init(buf []byte, i flatbuffers.UOffsetT) {
 	rcv._tab.Bytes = buf
 	rcv._tab.Pos = i
 }
 
-func (rcv *ActorDelete) Table() flatbuffers.Table {
+func (rcv *ActorList) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *ActorDelete) Auth() []byte {
+func (rcv *ActorList) Auth() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
 		return rcv._tab.ByteVector(o + rcv._tab.Pos)
@@ -34,7 +34,7 @@ func (rcv *ActorDelete) Auth() []byte {
 	return nil
 }
 
-func (rcv *ActorDelete) Subset(obj *ActorSubset) *ActorSubset {
+func (rcv *ActorList) Subset(obj *ActorSubset) *ActorSubset {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
 		x := rcv._tab.Indirect(o + rcv._tab.Pos)
@@ -47,15 +47,15 @@ func (rcv *ActorDelete) Subset(obj *ActorSubset) *ActorSubset {
 	return nil
 }
 
-func ActorDeleteStart(builder *flatbuffers.Builder) {
+func ActorListStart(builder *flatbuffers.Builder) {
 	builder.StartObject(2)
 }
-func ActorDeleteAddAuth(builder *flatbuffers.Builder, auth flatbuffers.UOffsetT) {
+func ActorListAddAuth(builder *flatbuffers.Builder, auth flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(auth), 0)
 }
-func ActorDeleteAddSubset(builder *flatbuffers.Builder, subset flatbuffers.UOffsetT) {
+func ActorListAddSubset(builder *flatbuffers.Builder, subset flatbuffers.UOffsetT) {
 	builder.PrependUOffsetTSlot(1, flatbuffers.UOffsetT(subset), 0)
 }
-func ActorDeleteEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
+func ActorListEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()
 }

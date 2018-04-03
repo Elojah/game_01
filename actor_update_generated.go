@@ -26,16 +26,13 @@ func (rcv *ActorSubset) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *ActorSubset) Tokens(obj *Token, j int) bool {
+func (rcv *ActorSubset) Tokens(j int) []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		x := rcv._tab.Vector(o)
-		x += flatbuffers.UOffsetT(j) * 4
-		x = rcv._tab.Indirect(x)
-		obj.Init(rcv._tab.Bytes, x)
-		return true
+		a := rcv._tab.Vector(o)
+		return rcv._tab.ByteVector(a + flatbuffers.UOffsetT(j*4))
 	}
-	return false
+	return nil
 }
 
 func (rcv *ActorSubset) TokensLength() int {
@@ -58,6 +55,31 @@ func ActorSubsetStartTokensVector(builder *flatbuffers.Builder, numElems int) fl
 func ActorSubsetEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()
 }
+type NullUint struct {
+	_tab flatbuffers.Struct
+}
+
+func (rcv *NullUint) Init(buf []byte, i flatbuffers.UOffsetT) {
+	rcv._tab.Bytes = buf
+	rcv._tab.Pos = i
+}
+
+func (rcv *NullUint) Table() flatbuffers.Table {
+	return rcv._tab.Table
+}
+
+func (rcv *NullUint) Uint() uint32 {
+	return rcv._tab.GetUint32(rcv._tab.Pos + flatbuffers.UOffsetT(0))
+}
+func (rcv *NullUint) MutateUint(n uint32) bool {
+	return rcv._tab.MutateUint32(rcv._tab.Pos+flatbuffers.UOffsetT(0), n)
+}
+
+func CreateNullUint(builder *flatbuffers.Builder, uint uint32) flatbuffers.UOffsetT {
+	builder.Prep(4, 4)
+	builder.PrependUint32(uint)
+	return builder.Offset()
+}
 type ActorPatch struct {
 	_tab flatbuffers.Table
 }
@@ -78,52 +100,56 @@ func (rcv *ActorPatch) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *ActorPatch) Addhp() uint32 {
+func (rcv *ActorPatch) Addhp(obj *NullUint) *NullUint {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		return rcv._tab.GetUint32(o + rcv._tab.Pos)
+		x := o + rcv._tab.Pos
+		if obj == nil {
+			obj = new(NullUint)
+		}
+		obj.Init(rcv._tab.Bytes, x)
+		return obj
 	}
-	return 0
+	return nil
 }
 
-func (rcv *ActorPatch) MutateAddhp(n uint32) bool {
-	return rcv._tab.MutateUint32Slot(4, n)
-}
-
-func (rcv *ActorPatch) Subhp() uint32 {
+func (rcv *ActorPatch) Subhp(obj *NullUint) *NullUint {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(6))
 	if o != 0 {
-		return rcv._tab.GetUint32(o + rcv._tab.Pos)
+		x := o + rcv._tab.Pos
+		if obj == nil {
+			obj = new(NullUint)
+		}
+		obj.Init(rcv._tab.Bytes, x)
+		return obj
 	}
-	return 0
+	return nil
 }
 
-func (rcv *ActorPatch) MutateSubhp(n uint32) bool {
-	return rcv._tab.MutateUint32Slot(6, n)
-}
-
-func (rcv *ActorPatch) Addmp() uint32 {
+func (rcv *ActorPatch) Addmp(obj *NullUint) *NullUint {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(8))
 	if o != 0 {
-		return rcv._tab.GetUint32(o + rcv._tab.Pos)
+		x := o + rcv._tab.Pos
+		if obj == nil {
+			obj = new(NullUint)
+		}
+		obj.Init(rcv._tab.Bytes, x)
+		return obj
 	}
-	return 0
+	return nil
 }
 
-func (rcv *ActorPatch) MutateAddmp(n uint32) bool {
-	return rcv._tab.MutateUint32Slot(8, n)
-}
-
-func (rcv *ActorPatch) Submp() uint32 {
+func (rcv *ActorPatch) Submp(obj *NullUint) *NullUint {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(10))
 	if o != 0 {
-		return rcv._tab.GetUint32(o + rcv._tab.Pos)
+		x := o + rcv._tab.Pos
+		if obj == nil {
+			obj = new(NullUint)
+		}
+		obj.Init(rcv._tab.Bytes, x)
+		return obj
 	}
-	return 0
-}
-
-func (rcv *ActorPatch) MutateSubmp(n uint32) bool {
-	return rcv._tab.MutateUint32Slot(10, n)
+	return nil
 }
 
 func (rcv *ActorPatch) Position(obj *Vec3) *Vec3 {
@@ -142,17 +168,17 @@ func (rcv *ActorPatch) Position(obj *Vec3) *Vec3 {
 func ActorPatchStart(builder *flatbuffers.Builder) {
 	builder.StartObject(5)
 }
-func ActorPatchAddAddhp(builder *flatbuffers.Builder, addhp uint32) {
-	builder.PrependUint32Slot(0, addhp, 0)
+func ActorPatchAddAddhp(builder *flatbuffers.Builder, addhp flatbuffers.UOffsetT) {
+	builder.PrependStructSlot(0, flatbuffers.UOffsetT(addhp), 0)
 }
-func ActorPatchAddSubhp(builder *flatbuffers.Builder, subhp uint32) {
-	builder.PrependUint32Slot(1, subhp, 0)
+func ActorPatchAddSubhp(builder *flatbuffers.Builder, subhp flatbuffers.UOffsetT) {
+	builder.PrependStructSlot(1, flatbuffers.UOffsetT(subhp), 0)
 }
-func ActorPatchAddAddmp(builder *flatbuffers.Builder, addmp uint32) {
-	builder.PrependUint32Slot(2, addmp, 0)
+func ActorPatchAddAddmp(builder *flatbuffers.Builder, addmp flatbuffers.UOffsetT) {
+	builder.PrependStructSlot(2, flatbuffers.UOffsetT(addmp), 0)
 }
-func ActorPatchAddSubmp(builder *flatbuffers.Builder, submp uint32) {
-	builder.PrependUint32Slot(3, submp, 0)
+func ActorPatchAddSubmp(builder *flatbuffers.Builder, submp flatbuffers.UOffsetT) {
+	builder.PrependStructSlot(3, flatbuffers.UOffsetT(submp), 0)
 }
 func ActorPatchAddPosition(builder *flatbuffers.Builder, position flatbuffers.UOffsetT) {
 	builder.PrependStructSlot(4, flatbuffers.UOffsetT(position), 0)
@@ -180,15 +206,10 @@ func (rcv *ActorUpdate) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *ActorUpdate) Auth(obj *Token) *Token {
+func (rcv *ActorUpdate) Auth() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		x := rcv._tab.Indirect(o + rcv._tab.Pos)
-		if obj == nil {
-			obj = new(Token)
-		}
-		obj.Init(rcv._tab.Bytes, x)
-		return obj
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
 	}
 	return nil
 }

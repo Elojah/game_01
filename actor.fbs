@@ -1,11 +1,16 @@
-include "token.fbs";
 include "vec3.fbs";
 
 namespace Game;
 
 table Actor {
-	token:Token;
+	token:string;
 	hp:uint;
 	mp:uint;
 	position:Vec3;
 }
+
+table Actors {
+	val:[Actor];
+}
+
+root_type Actors;

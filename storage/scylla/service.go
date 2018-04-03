@@ -1,4 +1,4 @@
-package scyllax
+package scylla
 
 import (
 	"github.com/elojah/scylla"

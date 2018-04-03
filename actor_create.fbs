@@ -1,10 +1,11 @@
-include "token.fbs";
 include "actor.fbs";
+
+file_identifier "ACCR";
 
 namespace Game;
 
 table ActorCreate {
-	auth:Token;
+	auth:string;
 	actors:[Actor];
 }
 

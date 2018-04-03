@@ -26,15 +26,10 @@ func (rcv *Actor) Table() flatbuffers.Table {
 	return rcv._tab
 }
 
-func (rcv *Actor) Token(obj *Token) *Token {
+func (rcv *Actor) Token() []byte {
 	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
 	if o != 0 {
-		x := rcv._tab.Indirect(o + rcv._tab.Pos)
-		if obj == nil {
-			obj = new(Token)
-		}
-		obj.Init(rcv._tab.Bytes, x)
-		return obj
+		return rcv._tab.ByteVector(o + rcv._tab.Pos)
 	}
 	return nil
 }
@@ -92,5 +87,57 @@ func ActorAddPosition(builder *flatbuffers.Builder, position flatbuffers.UOffset
 	builder.PrependStructSlot(3, flatbuffers.UOffsetT(position), 0)
 }
 func ActorEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
+	return builder.EndObject()
+}
+type Actors struct {
+	_tab flatbuffers.Table
+}
+
+func GetRootAsActors(buf []byte, offset flatbuffers.UOffsetT) *Actors {
+	n := flatbuffers.GetUOffsetT(buf[offset:])
+	x := &Actors{}
+	x.Init(buf, n+offset)
+	return x
+}
+
+func (rcv *Actors) Init(buf []byte, i flatbuffers.UOffsetT) {
+	rcv._tab.Bytes = buf
+	rcv._tab.Pos = i
+}
+
+func (rcv *Actors) Table() flatbuffers.Table {
+	return rcv._tab
+}
+
+func (rcv *Actors) Val(obj *Actor, j int) bool {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
+	if o != 0 {
+		x := rcv._tab.Vector(o)
+		x += flatbuffers.UOffsetT(j) * 4
+		x = rcv._tab.Indirect(x)
+		obj.Init(rcv._tab.Bytes, x)
+		return true
+	}
+	return false
+}
+
+func (rcv *Actors) ValLength() int {
+	o := flatbuffers.UOffsetT(rcv._tab.Offset(4))
+	if o != 0 {
+		return rcv._tab.VectorLen(o)
+	}
+	return 0
+}
+
+func ActorsStart(builder *flatbuffers.Builder) {
+	builder.StartObject(1)
+}
+func ActorsAddVal(builder *flatbuffers.Builder, val flatbuffers.UOffsetT) {
+	builder.PrependUOffsetTSlot(0, flatbuffers.UOffsetT(val), 0)
+}
+func ActorsStartValVector(builder *flatbuffers.Builder, numElems int) flatbuffers.UOffsetT {
+	return builder.StartVector(4, numElems, 4)
+}
+func ActorsEnd(builder *flatbuffers.Builder) flatbuffers.UOffsetT {
 	return builder.EndObject()
 }

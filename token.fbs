@@ -1,5 +1,0 @@
-namespace Game;
-
-table Token {
-	uuid:[ubyte];
-}

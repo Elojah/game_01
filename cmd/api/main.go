@@ -7,6 +7,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	"github.com/elojah/game_01"
+	scyllax "github.com/elojah/game_01/storage/scylla"
 	"github.com/elojah/scylla"
 	"github.com/elojah/services"
 	"github.com/elojah/udp"
@@ -25,6 +27,7 @@ func run(prog string, filename string) {
 		Scylla: "scylla",
 	}, "scylla")
 	launchers = append(launchers, scl)
+	scx := scyllax.NewService(&sc)
 
 	server := udp.Server{}
 	serverl := server.NewLauncher(udp.Namespaces{
@@ -38,17 +41,17 @@ func run(prog string, filename string) {
 	}, "api")
 	launchers = append(launchers, cfgl)
 
-	// handler := NewHandler()
-	// handler.Entry = logger
-	// handler.Services = game.NewServices()
-	// handler.Config = &cfg
+	mux := NewMux()
+	mux.Entry = logger
+	mux.Services = game.NewServices()
+	mux.Services.ActorService = scx
+	mux.Config = &cfg
 
 	if err := launchers.Up(filename); err != nil {
 		logger.WithField("filename", filename).Fatal(err.Error())
 		return
 	}
 
-	// handler.Route()
 	logger.Info("api up")
 }
 

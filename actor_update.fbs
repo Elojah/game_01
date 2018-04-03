@@ -1,22 +1,27 @@
-include "token.fbs";
 include "actor.fbs";
+
+file_identifier "ACUP";
 
 namespace Game;
 
 table ActorSubset {
-	tokens:[Token];
+	tokens:[string];
+}
+
+struct NullUint {
+	uint:uint;
 }
 
 table ActorPatch {
-	addhp:uint;
-	subhp:uint;
-	addmp:uint;
-	submp:uint;
+	addhp:NullUint;
+	subhp:NullUint;
+	addmp:NullUint;
+	submp:NullUint;
 	position:Vec3;
 }
 
 table ActorUpdate {
-	auth:Token;
+	auth:string;
 	subset:ActorSubset;
 	patch:ActorPatch;
 }
