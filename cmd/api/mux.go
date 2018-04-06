@@ -5,9 +5,8 @@ import (
 	"net"
 	"sync"
 
+	"github.com/cloudflare/golz4"
 	"github.com/sirupsen/logrus"
-
-	"github.com/elojah/game_01"
 )
 
 // Handler is handle function responsible to process incoming data.
@@ -20,8 +19,6 @@ type Mux struct {
 
 	net.Conn
 	sync.Map
-
-	game.Services
 }
 
 // NewMux returns a new clear Mux.
@@ -52,6 +49,24 @@ func (m *Mux) Read() error {
 			m.Logger.WithField("error", err).Error("failed to read")
 			return err
 		}
-		m.Logger.WithField("data", string(raw)).Info("received packet")
+		go func(raw []byte) {
+			m.Logger.WithFields(logrus.Fields{
+				"type":   "packet",
+				"status": "received",
+				"data":   string(raw),
+			}).Info("")
+
+			fbs := make([]byte, 1024)
+			if err := lz4.Uncompress(raw, fbs); err != nil {
+				m.Logger.WithFields(logrus.Fields{
+					"type":   "packet",
+					"format": "lz4",
+					"status": "received",
+					"error":  err,
+				}).Info("")
+				m.Logger.WithField("error", err).WithField("format", "lz4").Info("packet")
+				return
+			}
+		}(raw)
 	}
 }

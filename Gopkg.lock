@@ -3,6 +3,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/cloudflare/golz4"
+  packages = ["."]
+  revision = "ef862a3cdc58a6f1fee4e3af3d44fbe279194cde"
+
+[[projects]]
+  branch = "master"
   name = "github.com/elojah/scylla"
   packages = ["."]
   revision = "6c1aab5ff245be190d7f70d60df4ff351c85d9cb"
@@ -67,7 +73,7 @@
     "unix",
     "windows"
   ]
-  revision = "1d206c9fa8975fb4cf00df1dc8bf3283dc24ba0e"
+  revision = "3b87a42e500a6dc65dae1a55d0b641295971163e"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
@@ -78,6 +84,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b62e699fff04bfd64a153746f71c272b34576d55c2ac69a1c14ae831855726bc"
+  inputs-digest = "5d6e7eb85692a6b536046994ababe93261f50e43dd9655e882b4cd6e404e178d"
   solver-name = "gps-cdcl"
   solver-version = 1

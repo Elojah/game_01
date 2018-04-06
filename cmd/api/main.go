@@ -7,7 +7,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/elojah/game_01"
+	// "github.com/elojah/game_01"
 	scyllax "github.com/elojah/game_01/storage/scylla"
 	"github.com/elojah/scylla"
 	"github.com/elojah/services"
@@ -43,9 +43,11 @@ func run(prog string, filename string) {
 
 	mux := NewMux()
 	mux.Entry = logger
-	mux.Services = game.NewServices()
-	mux.Services.ActorService = scx
 	mux.Config = &cfg
+
+	_ = scx
+	// mux.Services = game.NewServices()
+	// mux.Services.ActorService = scx
 
 	if err := launchers.Up(filename); err != nil {
 		logger.WithField("filename", filename).Fatal(err.Error())
