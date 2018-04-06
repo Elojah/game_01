@@ -9,6 +9,7 @@ import (
 	"github.com/elojah/game_01"
 )
 
+// CreateActor is scylla implementation to create Actor.
 func (s *Service) CreateActor(actors ...game.Actor) error {
 	if len(actors) == 0 {
 		return nil
@@ -19,6 +20,7 @@ func (s *Service) CreateActor(actors ...game.Actor) error {
 	return query.Exec()
 }
 
+// UpdateActor is scylla implementation to update Actor.
 func (s *Service) UpdateActor(subset game.ActorSubset, patch game.ActorPatch) error {
 	sSubset := actorSubset{subset}
 	sPatch := actorPatch{patch}
@@ -28,6 +30,7 @@ func (s *Service) UpdateActor(subset game.ActorSubset, patch game.ActorPatch) er
 	return query.Exec()
 }
 
+// DeleteActor is scylla implementation to delete Actor.
 func (s *Service) DeleteActor(subset game.ActorSubset) error {
 	sSubset := actorSubset{subset}
 	where, args := sSubset.where()
@@ -35,6 +38,7 @@ func (s *Service) DeleteActor(subset game.ActorSubset) error {
 	return query.Exec()
 }
 
+// ListActor is scylla implementation to list Actor.
 func (s *Service) ListActor(subset game.ActorSubset) ([]byte, error) {
 	sSubset := actorSubset{subset}
 	where, args := sSubset.where()

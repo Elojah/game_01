@@ -65,7 +65,7 @@ lint:
 					"--fast" \
 					"--json" \
 					"./..." \
-
+			| grep -v _generated.go
 .PHONY: fmt
 fmt:
 	$(info $(M) running $(GOFMT)…) @

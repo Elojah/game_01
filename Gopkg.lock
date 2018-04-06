@@ -39,8 +39,8 @@
 [[projects]]
   name = "github.com/google/flatbuffers"
   packages = ["go"]
-  revision = "34aea4361f829d3e4f1e4d50324e155ad4adec67"
-  version = "v1.8.0"
+  revision = "20a400e940634108bad812f571582eeffc728eac"
+  version = "v1.9.0"
 
 [[projects]]
   branch = "master"
@@ -67,7 +67,7 @@
     "unix",
     "windows"
   ]
-  revision = "378d26f46672a356c46195c28f61bdb4c0a781dd"
+  revision = "1d206c9fa8975fb4cf00df1dc8bf3283dc24ba0e"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
