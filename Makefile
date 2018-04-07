@@ -42,7 +42,7 @@ client:
 .PHONY: dep
 dep:
 	$(info $(M) building vendor…) @
-	$Q dep ensure -update
+	$Q dep ensure
 
 # Check
 .PHONY: check

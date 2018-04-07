@@ -24,7 +24,11 @@
 #   go-tests = true
 #   unused-packages = true
 
-
 [prune]
   go-tests = true
   unused-packages = true
+
+  [[prune.project]]
+    name = "github.com/cloudflare/golz4"
+    go-tests = false
+    unused-packages = false
