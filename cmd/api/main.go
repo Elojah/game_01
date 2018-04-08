@@ -14,6 +14,18 @@ import (
 	"github.com/elojah/udp"
 )
 
+func route(mux *udp.Mux, cfg Config) {
+	for _, r := range cfg.Resources {
+		if r == "actor" {
+			a := actor{}
+			mux.Add("ACCR", a.CreateActor)
+			mux.Add("ACUP", a.UpdateActor)
+			mux.Add("ACDE", a.DeleteActor)
+			mux.Add("ACLI", a.ListActor)
+		}
+	}
+}
+
 // run services.
 func run(prog string, filename string) {
 
@@ -32,8 +44,8 @@ func run(prog string, filename string) {
 	mux := udp.Mux{}
 	mux.Entry = logger
 	muxl := mux.NewLauncher(udp.Namespaces{
-		UDP: "mux",
-	}, "mux")
+		UDP: "server",
+	}, "server")
 	launchers = append(launchers, muxl)
 
 	cfg := Config{}
@@ -49,6 +61,7 @@ func run(prog string, filename string) {
 		return
 	}
 
+	route(&mux, cfg)
 	logger.Info("api up")
 }
 
