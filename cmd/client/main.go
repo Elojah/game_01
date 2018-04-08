@@ -4,25 +4,25 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
 	// "github.com/elojah/game_01"
-	scyllax "github.com/elojah/game_01/storage/scylla"
-	"github.com/elojah/scylla"
 	"github.com/elojah/services"
 	"github.com/elojah/udp"
 )
 
 func route(mux *udp.Mux, cfg Config) {
-	for _, r := range cfg.Resources {
-		if r == "actor" {
-			a := actor{}
-			mux.Add("ACCR", a.CreateActor)
-			mux.Add("ACUP", a.UpdateActor)
-			mux.Add("ACDE", a.DeleteActor)
-			mux.Add("ACLI", a.ListActor)
-		}
+	// for _,r_ := range cfg.Resources {
+	// 	// Add gamestate handling here
+	// }
+}
+
+func send(mux *udp.Mux, cfg Config) {
+	for {
+		mux.Write([]byte(`random packet`), "localhost:8080")
+		time.Sleep(time.Millisecond * time.Duration(cfg.TickRate))
 	}
 }
 
@@ -33,13 +33,6 @@ func run(prog string, filename string) {
 	logger = logger.WithField("app", filepath.Base(prog))
 
 	launchers := services.Launchers{}
-
-	sc := scylla.Service{}
-	scl := sc.NewLauncher(scylla.Namespaces{
-		Scylla: "scylla",
-	}, "scylla")
-	launchers = append(launchers, scl)
-	scx := scyllax.NewService(&sc)
 
 	mux := udp.Mux{}
 	mux.Entry = logger
@@ -54,8 +47,6 @@ func run(prog string, filename string) {
 	}, "api")
 	launchers = append(launchers, cfgl)
 
-	_ = scx
-
 	if err := launchers.Up(filename); err != nil {
 		logger.WithField("filename", filename).Fatal(err.Error())
 		return
@@ -63,7 +54,9 @@ func run(prog string, filename string) {
 
 	route(&mux, cfg)
 	logger.Info("api up")
-	go func() { _ = mux.Read() }()
+
+	logger.Info("start sending")
+	send(&mux, cfg)
 }
 
 func main() {
