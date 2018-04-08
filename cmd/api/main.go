@@ -29,11 +29,12 @@ func run(prog string, filename string) {
 	launchers = append(launchers, scl)
 	scx := scyllax.NewService(&sc)
 
-	server := udp.Server{}
-	serverl := server.NewLauncher(udp.Namespaces{
-		UDP: "server",
-	}, "server")
-	launchers = append(launchers, serverl)
+	mux := udp.Mux{}
+	mux.Entry = logger
+	muxl := mux.NewLauncher(udp.Namespaces{
+		UDP: "mux",
+	}, "mux")
+	launchers = append(launchers, muxl)
 
 	cfg := Config{}
 	cfgl := cfg.NewLauncher(Namespaces{
@@ -41,13 +42,7 @@ func run(prog string, filename string) {
 	}, "api")
 	launchers = append(launchers, cfgl)
 
-	mux := NewMux()
-	mux.Entry = logger
-	mux.Config = &cfg
-
 	_ = scx
-	// mux.Services = game.NewServices()
-	// mux.Services.ActorService = scx
 
 	if err := launchers.Up(filename); err != nil {
 		logger.WithField("filename", filename).Fatal(err.Error())

@@ -23,7 +23,7 @@
   branch = "master"
   name = "github.com/elojah/udp"
   packages = ["."]
-  revision = "cdfeb0738048f6fc53f44325adf3cbd339f99314"
+  revision = "010760195741f3591f760f0c652012f6737ab978"
 
 [[projects]]
   branch = "master"
@@ -84,6 +84,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5d6e7eb85692a6b536046994ababe93261f50e43dd9655e882b4cd6e404e178d"
+  inputs-digest = "b62e699fff04bfd64a153746f71c272b34576d55c2ac69a1c14ae831855726bc"
   solver-name = "gps-cdcl"
   solver-version = 1
