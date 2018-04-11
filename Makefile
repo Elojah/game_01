@@ -76,16 +76,6 @@ doc:
 	$(info $(M) running $(GODOC)…) @
 	$Q $(GODOC) ./...
 
-.PHONY: fbs
-fbs:
-	$(info $(M) generating models…)	@ ## Generate pb.go files
-	$(GOPATH)/src/github.com/google/flatbuffers/flatc\
-		--go\
-		--gen-onefile\
-		--go-namespace game\
-		-o $(FBSDIR)\
-		$(FBSDIR)/*.fbs
-
 .PHONY: clean
 clean:
 	$(info $(M) cleaning…)	@ ## Cleanup everything

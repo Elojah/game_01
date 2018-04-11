@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"time"
 
-	flatbuffers "github.com/google/flatbuffers/go"
 	"github.com/sirupsen/logrus"
 
 	"github.com/elojah/game_01"

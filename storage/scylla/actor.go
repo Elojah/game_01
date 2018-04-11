@@ -11,65 +11,22 @@ import (
 
 // CreateActor is scylla implementation to create Actor.
 func (s *Service) CreateActor(actors ...game.Actor) error {
-	if len(actors) == 0 {
-		return nil
-	}
-	sActors := actorsNew(append([]game.Actor{}, actors...))
-	values, args := sActors.values()
-	query := s.Service.Session.Query(sActors.insert()+values, args...)
-	return query.Exec()
+	return nil
 }
 
 // UpdateActor is scylla implementation to update Actor.
 func (s *Service) UpdateActor(subset game.ActorSubset, patch game.ActorPatch) error {
-	sSubset := actorSubset{subset}
-	sPatch := actorPatch{patch}
-	update, uArgs := sPatch.update()
-	where, wArgs := sSubset.where()
-	query := s.Service.Session.Query(update+where, append(uArgs, wArgs...)...)
-	return query.Exec()
+	return nil
 }
 
 // DeleteActor is scylla implementation to delete Actor.
 func (s *Service) DeleteActor(subset game.ActorSubset) error {
-	sSubset := actorSubset{subset}
-	where, args := sSubset.where()
-	query := s.Service.Session.Query(sSubset.delete()+where, args...)
-	return query.Exec()
+	return nil
 }
 
 // ListActor is scylla implementation to list Actor.
 func (s *Service) ListActor(subset game.ActorSubset) ([]byte, error) {
-	sSubset := actorSubset{subset}
-	where, args := sSubset.where()
-	query := s.Service.Session.
-		Query(sSubset.sel()+where, args...).
-		Consistency(gocql.One)
-	iter := query.Iter()
-	sMap, err := iter.SliceMap()
-	if err != nil {
-		return nil, err
-	}
-
-	b := flatbuffers.NewBuilder(0)
-	game.ActorsStart(b)
-	game.ActorsStartValVector(b, len(sMap))
-	for _, actor := range sMap {
-
-		game.ActorStart(b)
-		game.ActorAddToken(b, b.CreateString(actor["uuid"].(string)))
-		game.ActorAddHp(b, actor["hp"].(uint32))
-		game.ActorAddMp(b, actor["mp"].(uint32))
-		game.ActorAddPosition(b, game.CreateVec3(
-			b,
-			actor["x"].(uint64),
-			actor["y"].(uint64),
-			actor["z"].(uint64),
-		))
-		game.ActorsAddVal(b, game.ActorEnd(b))
-	}
-	game.ActorsEnd(b)
-	return b.FinishedBytes(), iter.Close()
+	return nil, nil
 }
 
 type actorsNew []game.Actor

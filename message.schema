@@ -1,14 +1,17 @@
-struct Create {
-	Name string
+struct Actor {
+	ID [16]byte
 }
 
-struct Update {
-	ID [16]byte
+struct ActorPatch {
+}
+
+struct ActorSubset {
 }
 
 struct Message {
 	Val union {
-		Create
-		Update
+		Actor
+		ActorPatch
+		ActorSubset
 	}
 }
