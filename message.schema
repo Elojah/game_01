@@ -1,0 +1,14 @@
+struct Create {
+	Name string
+}
+
+struct Update {
+	ID [16]byte
+}
+
+struct Message {
+	Val union {
+		Create
+		Update
+	}
+}

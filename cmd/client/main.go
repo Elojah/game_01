@@ -6,9 +6,10 @@ import (
 	"path/filepath"
 	"time"
 
+	flatbuffers "github.com/google/flatbuffers/go"
 	"github.com/sirupsen/logrus"
 
-	// "github.com/elojah/game_01"
+	"github.com/elojah/game_01"
 	"github.com/elojah/services"
 	"github.com/elojah/udp"
 )
@@ -20,8 +21,27 @@ func route(mux *udp.Mux, cfg Config) {
 }
 
 func send(mux *udp.Mux, cfg Config) {
+	b := flatbuffers.NewBuilder(0)
+	game.ActorStart(b)
+	game.ActorAddHp(b, 100)
+	game.ActorAddMp(b, 100)
+	actor := game.ActorEnd(b)
+	b.Finish(actor)
+
+	// b.Reset()
+	// b = flatbuffers.NewBuilder(0)
+	game.ActorCreateStartActorsVector(b, 1)
+	b.PrependUOffsetT(actor)
+	actors := b.EndVector(1)
+
+	game.ActorCreateStart(b)
+	game.ActorCreateAddActors(b, actors)
+	actorCreate := game.ActorCreateEnd(b)
+	b.Finish(actorCreate)
+
 	for {
-		mux.Write([]byte(`random packet`), "localhost:8080")
+		// mux.Write([]byte("A"), "127.0.0.1:3400")
+		mux.Send("test", b.Bytes[b.Head():], "127.0.0.1:3400")
 		time.Sleep(time.Millisecond * time.Duration(cfg.TickRate))
 	}
 }

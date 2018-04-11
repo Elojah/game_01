@@ -23,7 +23,7 @@
   branch = "master"
   name = "github.com/elojah/udp"
   packages = ["."]
-  revision = "baccad0851f0b9a0e01e77573946dc83e2d7778c"
+  revision = "a2c6fd059478b70098fcc7245e35e7a395f33e4a"
 
 [[projects]]
   branch = "master"
@@ -34,7 +34,7 @@
     "internal/murmur",
     "internal/streams"
   ]
-  revision = "12e3a8c05db483441932e84ab6c35c339fb01de7"
+  revision = "fa516cf7b8863ae9110072ca4368f6b1693e03c2"
 
 [[projects]]
   branch = "master"
@@ -55,6 +55,12 @@
   revision = "e80d13ce29ede4452c43dea11e79b9bc8a15b478"
 
 [[projects]]
+  name = "github.com/oklog/ulid"
+  packages = ["."]
+  revision = "d311cb43c92434ec4072dfbbda3400741d0a6337"
+  version = "v0.3.0"
+
+[[projects]]
   name = "github.com/sirupsen/logrus"
   packages = ["."]
   revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
@@ -64,7 +70,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "b2aa35443fbc700ab74c586ae79b81c171851023"
+  revision = "f70185d77e8278766928032ee1355e3da47e7181"
 
 [[projects]]
   branch = "master"

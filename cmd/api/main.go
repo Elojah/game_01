@@ -1,13 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/sirupsen/logrus"
 
-	// "github.com/elojah/game_01"
+	"github.com/elojah/game_01"
 	scyllax "github.com/elojah/game_01/storage/scylla"
 	"github.com/elojah/scylla"
 	"github.com/elojah/services"
@@ -24,6 +25,21 @@ func route(mux *udp.Mux, cfg Config) {
 			mux.Add("ACLI", a.ListActor)
 		}
 	}
+	mux.Dispatcher = dispatch
+}
+
+func dispatch(packet []byte) (string, error) {
+	msg := game.Message{}
+	if _, err := msg.Unmarshal(packet); err != nil {
+		return "", err
+	}
+	switch msg.Val.(type) {
+	case game.Create:
+		return "create", nil
+	case game.Update:
+		return "update", nil
+	}
+	return "", errors.New("unknown type")
 }
 
 // run services.
@@ -63,7 +79,7 @@ func run(prog string, filename string) {
 
 	route(&mux, cfg)
 	logger.Info("api up")
-	go func() { _ = mux.Read() }()
+	go func() { mux.Listen() }()
 }
 
 func main() {
