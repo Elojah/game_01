@@ -1,31 +1,66 @@
 package scylla
 
 import (
+	"bytes"
 	"strings"
 
-	// "github.com/gocql/gocql"
+	"github.com/gocql/gocql"
 
 	"github.com/elojah/game_01"
 )
 
 // CreateActor is scylla implementation to create Actor.
-func (s *Service) CreateActor(actors ...game.Actor) error {
-	return nil
+func (s *Service) CreateActor(actors []game.Actor) error {
+	if len(actors) == 0 {
+		return nil
+	}
+	sActors := actorsNew(actors)
+	values, args := sActors.values()
+	query := s.Service.Session.Query(sActors.insert()+values, args...)
+	return query.Exec()
 }
 
 // UpdateActor is scylla implementation to update Actor.
 func (s *Service) UpdateActor(subset game.ActorSubset, patch game.ActorPatch) error {
-	return nil
+	sSubset := actorSubset{subset}
+	sPatch := actorPatch{patch}
+	update, uArgs := sPatch.update()
+	where, wArgs := sSubset.where()
+	query := s.Service.Session.Query(update+where, append(uArgs, wArgs...)...)
+	return query.Exec()
 }
 
 // DeleteActor is scylla implementation to delete Actor.
 func (s *Service) DeleteActor(subset game.ActorSubset) error {
-	return nil
+	sSubset := actorSubset{subset}
+	where, args := sSubset.where()
+	query := s.Service.Session.Query(sSubset.delete()+where, args...)
+	return query.Exec()
 }
 
 // ListActor is scylla implementation to list Actor.
-func (s *Service) ListActor(subset game.ActorSubset) ([]byte, error) {
-	return nil, nil
+func (s *Service) ListActor(subset game.ActorSubset) ([]game.Actor, error) {
+	sSubset := actorSubset{subset}
+	where, args := sSubset.where()
+	query := s.Service.Session.
+		Query(sSubset.sel()+where, args...).
+		Consistency(gocql.One)
+	iter := query.Iter()
+	sMap, err := iter.SliceMap()
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]game.Actor, len(sMap))
+	for i, actor := range sMap {
+		result[i].ID = actor["uuid"].([16]byte)
+		result[i].HP = actor["hp"].(uint8)
+		result[i].MP = actor["mp"].(uint8)
+		result[i].Position.X = actor["x"].(float64)
+		result[i].Position.Y = actor["y"].(float64)
+		result[i].Position.Z = actor["z"].(float64)
+	}
+	return result, iter.Close()
 }
 
 type actorsNew []game.Actor
@@ -50,8 +85,11 @@ func (actors actorsNew) insert() string {
 }
 
 func (patch actorPatch) update() (string, []interface{}) {
+	var buffer bytes.Buffer
 	set, args := patch.set()
-	return `UPDATE global.actor ` + set + ` `, args
+	buffer.WriteString(`UPDATE global.actor `)
+	buffer.WriteString(set)
+	return buffer.String(), args
 }
 
 func (subset actorSubset) sel() string {
@@ -103,6 +141,7 @@ func (actors actorsNew) values() (string, []interface{}) {
 }
 
 func (patch actorPatch) set() (string, []interface{}) {
+	var buffer bytes.Buffer
 	var set []string
 	var args []interface{}
 	if patch.HP != nil {
@@ -120,10 +159,13 @@ func (patch actorPatch) set() (string, []interface{}) {
 	if len(set) == 0 {
 		return "", []interface{}{}
 	}
-	return `SET ` + strings.Join(set, ` , `), args
+	buffer.WriteString(`SET `)
+	buffer.WriteString(strings.Join(set, ` , `))
+	return buffer.String(), args
 }
 
 func (subset actorSubset) where() (string, []interface{}) {
+	var buffer bytes.Buffer
 	var where []string
 	var args []interface{}
 	for _, id := range subset.IDs {
@@ -133,5 +175,7 @@ func (subset actorSubset) where() (string, []interface{}) {
 	if len(where) == 0 {
 		return "", []interface{}{}
 	}
-	return `WHERE ` + strings.Join(where, ` AND `), args
+	buffer.WriteString(`WHERE `)
+	buffer.WriteString(strings.Join(where, ` AND `))
+	return buffer.String(), args
 }

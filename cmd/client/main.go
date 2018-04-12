@@ -1,8 +1,8 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
@@ -15,12 +15,6 @@ import (
 	"github.com/elojah/udp"
 )
 
-type randReader struct{}
-
-func (randReader) Read(p []byte) (n int, err error) {
-	return rand.Read(p)
-}
-
 func route(mux *udp.Mux, cfg Config) {
 	// for _,r_ := range cfg.Resources {
 	// 	// Add gamestate handling here
@@ -28,8 +22,8 @@ func route(mux *udp.Mux, cfg Config) {
 }
 
 func send(mux *udp.Mux, cfg Config) {
-	id := ulid.MustNew(ulid.Timestamp(time.Now()), randReader{})
-	actorID := ulid.MustNew(ulid.Timestamp(time.Now()), randReader{})
+	id := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
+	actorID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
 	ac := game.ActorCreate{
 		Token: id,
 		Actors: []game.Actor{
