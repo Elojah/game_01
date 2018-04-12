@@ -46,7 +46,7 @@ func send(mux *udp.Mux, cfg Config) {
 	}
 
 	for {
-		mux.Send("test", raw, "127.0.0.1:3400")
+		mux.Send("test", raw, "127.0.0.1:8080")
 		time.Sleep(time.Millisecond * time.Duration(cfg.TickRate))
 	}
 }

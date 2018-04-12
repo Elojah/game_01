@@ -23,7 +23,7 @@
   branch = "master"
   name = "github.com/elojah/udp"
   packages = ["."]
-  revision = "04cfb41fcb35ad7033acf49286525e71aca104af"
+  revision = "85a3f356ba04e63e1b3d762eba64508e4cc1632e"
 
 [[projects]]
   branch = "master"
