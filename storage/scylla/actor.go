@@ -3,8 +3,7 @@ package scylla
 import (
 	"strings"
 
-	"github.com/gocql/gocql"
-	flatbuffers "github.com/google/flatbuffers/go"
+	// "github.com/gocql/gocql"
 
 	"github.com/elojah/game_01"
 )
@@ -77,7 +76,7 @@ func (subset actorSubset) delete() string {
 func (actors actorsNew) values() (string, []interface{}) {
 	var values []string
 	var args []interface{}
-	for _, u := range actors {
+	for _, actor := range actors {
 		values = append(values, `
 			(
 				?,
@@ -88,14 +87,13 @@ func (actors actorsNew) values() (string, []interface{}) {
 				?
 			)
 		`)
-		pos := u.Position(nil)
 		args = append(args,
-			u.Token(),
-			u.Hp(),
-			u.Mp(),
-			pos.X(),
-			pos.Y(),
-			pos.Z(),
+			string(actor.ID[:]),
+			actor.HP,
+			actor.MP,
+			actor.Position.X,
+			actor.Position.Y,
+			actor.Position.Z,
 		)
 	}
 	if len(values) == 0 {
@@ -107,30 +105,17 @@ func (actors actorsNew) values() (string, []interface{}) {
 func (patch actorPatch) set() (string, []interface{}) {
 	var set []string
 	var args []interface{}
-	addHp := patch.Addhp(nil)
-	if addHp != nil {
-		set = append(set, `hp = hp + ?`)
-		args = append(args, addHp)
+	if patch.HP != nil {
+		set = append(set, `hp = ?`)
+		args = append(args, patch.HP)
 	}
-	subHp := patch.Subhp(nil)
-	if subHp != nil {
-		set = append(set, `hp = hp - ?`)
-		args = append(args, subHp)
+	if patch.MP != nil {
+		set = append(set, `mp = ?`)
+		args = append(args, patch.MP)
 	}
-	addMp := patch.Addmp(nil)
-	if addMp != nil {
-		set = append(set, `mp = mp + ?`)
-		args = append(args, addMp)
-	}
-	subMp := patch.Submp(nil)
-	if subMp != nil {
-		set = append(set, `mp = mp - ?`)
-		args = append(args, subMp)
-	}
-	position := patch.Position(nil)
-	if position != nil {
+	if patch.Position != nil {
 		set = append(set, `x = ?`, `y = ?`, `z = ?`)
-		args = append(args, position.X(), position.Y(), position.Z())
+		args = append(args, patch.Position.X, patch.Position.Y, patch.Position.Z)
 	}
 	if len(set) == 0 {
 		return "", []interface{}{}
@@ -141,11 +126,9 @@ func (patch actorPatch) set() (string, []interface{}) {
 func (subset actorSubset) where() (string, []interface{}) {
 	var where []string
 	var args []interface{}
-	for i := 0; i < subset.TokensLength(); i++ {
-		if token := subset.Tokens(i); token != nil {
-			where = append(where, `uuid IN ? `)
-			args = append(args, string(token))
-		}
+	for _, id := range subset.IDs {
+		where = append(where, `uuid IN ? `)
+		args = append(args, string(id[:]))
 	}
 	if len(where) == 0 {
 		return "", []interface{}{}

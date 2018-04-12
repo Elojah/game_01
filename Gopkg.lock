@@ -23,7 +23,7 @@
   branch = "master"
   name = "github.com/elojah/udp"
   packages = ["."]
-  revision = "a2c6fd059478b70098fcc7245e35e7a395f33e4a"
+  revision = "e34f5d799ae8597f366c6101b78242b0c83babde"
 
 [[projects]]
   branch = "master"
@@ -41,12 +41,6 @@
   name = "github.com/golang/snappy"
   packages = ["."]
   revision = "553a641470496b2327abcac10b36396bd98e45c9"
-
-[[projects]]
-  name = "github.com/google/flatbuffers"
-  packages = ["go"]
-  revision = "20a400e940634108bad812f571582eeffc728eac"
-  version = "v1.9.0"
 
 [[projects]]
   branch = "master"
@@ -70,7 +64,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "f70185d77e8278766928032ee1355e3da47e7181"
+  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
 
 [[projects]]
   branch = "master"
@@ -90,6 +84,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b62e699fff04bfd64a153746f71c272b34576d55c2ac69a1c14ae831855726bc"
+  inputs-digest = "abc97f333f9f5f8f32b8a8a4209cb24da2d74346af84b771039ebb91343e6fab"
   solver-name = "gps-cdcl"
   solver-version = 1

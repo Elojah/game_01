@@ -2,16 +2,24 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/oklog/ulid"
 	"github.com/sirupsen/logrus"
 
 	"github.com/elojah/game_01"
 	"github.com/elojah/services"
 	"github.com/elojah/udp"
 )
+
+type randReader struct{}
+
+func (randReader) Read(p []byte) (n int, err error) {
+	return rand.Read(p)
+}
 
 func route(mux *udp.Mux, cfg Config) {
 	// for _,r_ := range cfg.Resources {
@@ -20,27 +28,31 @@ func route(mux *udp.Mux, cfg Config) {
 }
 
 func send(mux *udp.Mux, cfg Config) {
-	b := flatbuffers.NewBuilder(0)
-	game.ActorStart(b)
-	game.ActorAddHp(b, 100)
-	game.ActorAddMp(b, 100)
-	actor := game.ActorEnd(b)
-	b.Finish(actor)
-
-	// b.Reset()
-	// b = flatbuffers.NewBuilder(0)
-	game.ActorCreateStartActorsVector(b, 1)
-	b.PrependUOffsetT(actor)
-	actors := b.EndVector(1)
-
-	game.ActorCreateStart(b)
-	game.ActorCreateAddActors(b, actors)
-	actorCreate := game.ActorCreateEnd(b)
-	b.Finish(actorCreate)
+	id := ulid.MustNew(ulid.Timestamp(time.Now()), randReader{})
+	actorID := ulid.MustNew(ulid.Timestamp(time.Now()), randReader{})
+	ac := game.ActorCreate{
+		Token: id,
+		Actors: []game.Actor{
+			game.Actor{
+				ID: actorID,
+				HP: 100,
+				MP: 100,
+				Position: game.Vec3{
+					X: 190.098,
+					Y: 34.9,
+					Z: 98.27,
+				},
+			},
+		},
+	}
+	raw, err := ac.Marshal(nil)
+	if err != nil {
+		fmt.Println("error marshaling:", err)
+		return
+	}
 
 	for {
-		// mux.Write([]byte("A"), "127.0.0.1:3400")
-		mux.Send("test", b.Bytes[b.Head():], "127.0.0.1:3400")
+		mux.Send("test", raw, "127.0.0.1:3400")
 		time.Sleep(time.Millisecond * time.Duration(cfg.TickRate))
 	}
 }

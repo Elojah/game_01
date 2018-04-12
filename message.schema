@@ -1,17 +1,46 @@
+struct Vec3 {
+	X float64
+	Y float64
+	Z float64
+}
+
 struct Actor {
-	ID [16]byte
+	ID       [16]byte
+	HP       uint8
+	MP       uint8
+	Position Vec3
 }
 
 struct ActorPatch {
+	HP       *uint8
+	MP       *uint8
+	Position *Vec3
 }
 
 struct ActorSubset {
+	IDs [][16]byte
+}
+
+struct ActorCreate {
+	Token  [16]byte
+	Actors []Actor
+}
+
+struct ActorUpdate {
+	Token  [16]byte
+	Subset ActorSubset
+	Patch  ActorPatch
+}
+
+struct ActorDelete {
+	Token [16]byte
+	Subset ActorSubset
 }
 
 struct Message {
 	Val union {
-		Actor
-		ActorPatch
-		ActorSubset
+		ActorCreate
+		ActorUpdate
+		ActorDelete
 	}
 }
