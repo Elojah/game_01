@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/udp"
 )
@@ -16,6 +14,5 @@ func dispatch(packet udp.Packet) error {
 	if _, err := msg.Unmarshal(packet.Data); err != nil {
 		return err
 	}
-	fmt.Println(msg)
 	return nil
 }
