@@ -47,7 +47,7 @@ func send(mux *udp.Mux, cfg Config) {
 	}
 
 	for {
-		mux.Send(udp.Packet{ID: packetID, Source: nil, Data: raw}, "127.0.0.1:8080")
+		mux.Send(udp.Packet{ID: packetID, Source: nil, Data: raw}, "127.0.0.1:3400")
 		time.Sleep(time.Millisecond * time.Duration(cfg.TickRate))
 	}
 }
