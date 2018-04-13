@@ -23,6 +23,7 @@ func route(mux *udp.Mux, cfg Config) {
 
 func send(mux *udp.Mux, cfg Config) {
 	id := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
+	packetID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
 	actorID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
 	ac := game.ActorCreate{
 		Token: id,
@@ -46,7 +47,7 @@ func send(mux *udp.Mux, cfg Config) {
 	}
 
 	for {
-		mux.Send("test", raw, "127.0.0.1:8080")
+		mux.Send(udp.Packet{ID: packetID, Source: nil, Data: raw}, "127.0.0.1:8080")
 		time.Sleep(time.Millisecond * time.Duration(cfg.TickRate))
 	}
 }
