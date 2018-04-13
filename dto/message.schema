@@ -4,11 +4,13 @@ struct Vec3 {
 	Z float64
 }
 
-struct Attack {}
+struct Attack {
+	Actor	[16]byte
+	Target	[16]byte
+}
 
 struct Message {
 	Token		[16]byte
-	Actor		[16]byte
 	Position	*Vec3
 	Action union {
 		Attack

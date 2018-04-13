@@ -1,8 +1,24 @@
 package game
 
-type Actor struct{}
-type ActorSubset struct{}
-type ActorPatch struct{}
+// Actor represents a dynamic entity.
+type Actor struct {
+	ID       ID
+	HP       uint8
+	MP       uint8
+	Position Vec3
+}
+
+// ActorSubset is a subset for Actor.
+type ActorSubset struct {
+	IDs []ID
+}
+
+// ActorPatch is a patch for Actor.
+type ActorPatch struct {
+	HP       *uint8
+	MP       *uint8
+	Position *Vec3
+}
 
 // ActorService is a REST interface for Actor object.
 type ActorService interface {

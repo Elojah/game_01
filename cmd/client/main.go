@@ -10,7 +10,7 @@ import (
 	"github.com/oklog/ulid"
 	"github.com/sirupsen/logrus"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/dto"
 	"github.com/elojah/services"
 	"github.com/elojah/udp"
 )
@@ -24,23 +24,19 @@ func route(mux *udp.Mux, cfg Config) {
 func send(mux *udp.Mux, cfg Config) {
 	id := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
 	packetID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
-	actorID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
-	ac := game.ActorCreate{
-		Token: id,
-		Actors: []game.Actor{
-			game.Actor{
-				ID: actorID,
-				HP: 100,
-				MP: 100,
-				Position: game.Vec3{
-					X: 190.098,
-					Y: 34.9,
-					Z: 98.27,
-				},
+	msg :=
+		dto.Message{
+			Token: id,
+			Position: &dto.Vec3{
+				X: 190.098,
+				Y: 34.9,
+				Z: 98.27,
 			},
-		},
-	}
-	raw, err := ac.Marshal(nil)
+			Action: nil,
+			ACK:    nil,
+		}
+
+	raw, err := msg.Marshal(nil)
 	if err != nil {
 		fmt.Println("error marshaling:", err)
 		return

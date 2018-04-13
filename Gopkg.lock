@@ -23,7 +23,7 @@
   branch = "master"
   name = "github.com/elojah/udp"
   packages = ["."]
-  revision = "de699effd5e478602dd0c9bdef2fdb18c3e1f110"
+  revision = "06f4dfb63c84231a63224828603e9a439e800d0b"
 
 [[projects]]
   branch = "master"
@@ -73,7 +73,7 @@
     "unix",
     "windows"
   ]
-  revision = "3b87a42e500a6dc65dae1a55d0b641295971163e"
+  revision = "f6f352972f061230a99fbf49d1eb8073ebdb36cb"
 
 [[projects]]
   name = "gopkg.in/inf.v0"

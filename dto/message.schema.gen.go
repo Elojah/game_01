@@ -125,10 +125,18 @@ func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type Attack struct {
+	Actor  [16]byte
+	Target [16]byte
 }
 
 func (d *Attack) Size() (s uint64) {
 
+	{
+		s += 16
+	}
+	{
+		s += 16
+	}
 	return
 }
 func (d *Attack) Marshal(buf []byte) ([]byte, error) {
@@ -142,18 +150,33 @@ func (d *Attack) Marshal(buf []byte) ([]byte, error) {
 	}
 	i := uint64(0)
 
+	{
+		copy(buf[i+0:], d.Actor[:])
+		i += 16
+	}
+	{
+		copy(buf[i+0:], d.Target[:])
+		i += 16
+	}
 	return buf[:i+0], nil
 }
 
 func (d *Attack) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
+	{
+		copy(d.Actor[:], buf[i+0:])
+		i += 16
+	}
+	{
+		copy(d.Target[:], buf[i+0:])
+		i += 16
+	}
 	return i + 0, nil
 }
 
 type Message struct {
 	Token    [16]byte
-	Actor    [16]byte
 	Position *Vec3
 	Action   interface{}
 	ACK      *int64
@@ -161,9 +184,6 @@ type Message struct {
 
 func (d *Message) Size() (s uint64) {
 
-	{
-		s += 16
-	}
 	{
 		s += 16
 	}
@@ -227,10 +247,6 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 
 	{
 		copy(buf[i+0:], d.Token[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Actor[:])
 		i += 16
 	}
 	{
@@ -321,10 +337,6 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 
 	{
 		copy(d.Token[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Actor[:], buf[i+0:])
 		i += 16
 	}
 	{
