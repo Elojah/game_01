@@ -38,6 +38,11 @@ client:
 		-o ../../bin/$(PACKAGE)_$(CLIENT)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(CLIENT)_$(VERSION) bin/$(PACKAGE)_$(CLIENT)
 
+.PHONY: gen
+gen:
+	$(info $(M) running gencode…) @
+	$Q cd dto && gencode go -schema=message.schema -package dto
+
 # Dependencies
 .PHONY: dep
 dep:

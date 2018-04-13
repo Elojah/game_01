@@ -1,0 +1,17 @@
+struct Vec3 {
+	X float64
+	Y float64
+	Z float64
+}
+
+struct Attack {}
+
+struct Message {
+	Token		[16]byte
+	Actor		[16]byte
+	Position	*Vec3
+	Action union {
+		Attack
+	}
+	ACK			*int64
+}
