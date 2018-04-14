@@ -7,6 +7,16 @@ AND DURABLE_WRITES =  true;
 USE global;
 
 CREATE TABLE
+	global.tok
+(
+	uuid        uuid,
+	permissions frozen<map<uuid, tinyint>>,
+	account     uuid,
+	ip          text,
+	PRIMARY KEY(uuid)
+);
+
+CREATE TABLE
 	global.actor
 (
 	uuid uuid,
