@@ -33,7 +33,7 @@ func (s *Service) GetToken(Token) (Token, error) {
 	return result, iter.Close()
 }
 
-func (s *Service) AddTokenPermission(ID, Right) error {
+func (s *Service) AddTokenPermission(TokenSubset, PermissionSubset, Right) error {
 	sSubset := tokenSubset{subset}
 	sPatch := tokenPatch{patch}
 	update, uArgs := sPatch.update()
@@ -67,11 +67,9 @@ func (subset tokenSubset) sel() string {
 	return `
 		SELECT
 			uuid,
-			hp,
-			mp,
-			x,
-			y,
-			z
+			permissions,
+			account,
+			ip,
 		FROM global.token
 	`
 }
@@ -80,59 +78,6 @@ func (subset tokenSubset) delete() string {
 	return `
 		DELETE from global.token
 	`
-}
-
-func (tokens tokensNew) values() (string, []interface{}) {
-	var values []string
-	var args []interface{}
-	for _, token := range tokens {
-		values = append(values, `
-			(
-				?,
-				?,
-				?,
-				?,
-				?,
-				?
-			)
-		`)
-		args = append(args,
-			string(token.ID[:]),
-			token.HP,
-			token.MP,
-			token.Position.X,
-			token.Position.Y,
-			token.Position.Z,
-		)
-	}
-	if len(values) == 0 {
-		return "", []interface{}{}
-	}
-	return `VALUES ` + strings.Join(values, ` , `), args
-}
-
-func (patch tokenPatch) set() (string, []interface{}) {
-	var buffer bytes.Buffer
-	var set []string
-	var args []interface{}
-	if patch.HP != nil {
-		set = append(set, `hp = ?`)
-		args = append(args, patch.HP)
-	}
-	if patch.MP != nil {
-		set = append(set, `mp = ?`)
-		args = append(args, patch.MP)
-	}
-	if patch.Position != nil {
-		set = append(set, `x = ?`, `y = ?`, `z = ?`)
-		args = append(args, patch.Position.X, patch.Position.Y, patch.Position.Z)
-	}
-	if len(set) == 0 {
-		return "", []interface{}{}
-	}
-	buffer.WriteString(`SET `)
-	buffer.WriteString(strings.Join(set, ` , `))
-	return buffer.String(), args
 }
 
 func (subset tokenSubset) where() (string, []interface{}) {
