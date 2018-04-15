@@ -7,7 +7,7 @@ AND DURABLE_WRITES =  true;
 USE global;
 
 CREATE TABLE
-	global.tok
+	global.token_
 (
 	uuid        uuid,
 	permissions frozen<map<uuid, tinyint>>,

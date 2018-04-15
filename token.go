@@ -12,13 +12,9 @@ type TokenSubset struct {
 	IDs []ID
 }
 
-type PermissionSubset struct {
-	IDs []ID
-}
-
 type TokenService interface {
-	GetToken(ID) (Token, error)
-	AddTokenPermission(TokenSubset, PermissionSubset, Right) error
-	UpdateTokenPermission(TokenSubset, PermissionSubset, Right) error
+	ListToken(TokenSubset) ([]Token, error)
+	AddTokenPermission(TokenSubset, Permissions) error
+	UpdateTokenPermission(TokenSubset, PermissionSubset, PermissionPatch) error
 	DeleteTokenPermission(TokenSubset, PermissionSubset) error
 }
