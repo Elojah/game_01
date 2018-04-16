@@ -10,7 +10,8 @@ type Actor struct {
 
 // ActorSubset is a subset for Actor.
 type ActorSubset struct {
-	IDs []ID
+	IDs    []ID
+	Nearby *Circle
 }
 
 // ActorPatch is a patch for Actor.

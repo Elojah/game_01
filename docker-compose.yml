@@ -6,3 +6,9 @@ services:
     image: scylladb/scylla
     ports:
       - 9042:9042
+
+# Tile38
+  tile38:
+    image: tile38/tile38
+    ports:
+      - 9851:9851
