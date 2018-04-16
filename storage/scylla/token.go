@@ -10,6 +10,7 @@ import (
 	"github.com/elojah/game_01"
 )
 
+// ListToken is the scylla implementation to list Token.
 func (s *Service) ListToken(subset game.TokenSubset) ([]game.Token, error) {
 	sSubset := tokenSubset{subset}
 	where, args := sSubset.where()
@@ -35,28 +36,40 @@ func (s *Service) ListToken(subset game.TokenSubset) ([]game.Token, error) {
 	return result, iter.Close()
 }
 
-func (s *Service) AddTokenPermission(subset TokenSubset, permissions game.Permissions) error {
+// AddTokenPermission is the scylla implementation to add TokenPermission.
+func (s *Service) AddTokenPermission(subset game.TokenSubset, permissions game.Permissions) error {
 	sSubset := tokenSubset{subset}
-	sPatch := tokenPatch{patch}
-	update, uArgs := sPatch.update()
+	sPerms := permissionsNew(permissions)
+
+	insert, iArgs := sPerms.insert()
 	where, wArgs := sSubset.where()
-	query := s.Service.Session.Query(update+where, append(uArgs, wArgs...)...)
+
+	query := s.Service.Session.Query(insert+where, append(iArgs, wArgs...)...)
 	return query.Exec()
 }
 
-func (s *Service) UpdateTokenPermission(subset TokenSubset, pSubset PermissionSubset, right Right) error {
+// UpdateTokenPermission is the scylla implementation to update TokenPermission.
+func (s *Service) UpdateTokenPermission(subset game.TokenSubset, pSubset game.PermissionSubset, patch game.PermissionPatch) error {
 	sSubset := tokenSubset{subset}
-	sPatch := tokenPatch{patch}
-	update, uArgs := sPatch.update()
+	spSubset := permissionSubset{pSubset}
+	sPatch := permissionPatch{patch}
+
+	update, uArgs := spSubset.update(sPatch)
 	where, wArgs := sSubset.where()
+
 	query := s.Service.Session.Query(update+where, append(uArgs, wArgs...)...)
 	return query.Exec()
 
 }
-func (s *Service) DeleteTokenPermission(subset TokenSubset, pSubset PermissionSubset) error {
+
+// DeleteTokenPermission is the scylla implementation to delete TokenPermission.
+func (s *Service) DeleteTokenPermission(subset game.TokenSubset, pSubset game.PermissionSubset) error {
 	sSubset := tokenSubset{subset}
-	where, args := sSubset.where()
-	query := s.Service.Session.Query(sSubset.delete()+where, args...)
+	spSubset := permissionSubset{pSubset}
+
+	delete, dArgs := spSubset.delete()
+	where, wArgs := sSubset.where()
+	query := s.Service.Session.Query(delete+where, append(dArgs, wArgs...)...)
 	return query.Exec()
 
 }
@@ -102,7 +115,7 @@ func (subset tokenSubset) where() (string, []interface{}) {
 	return buffer.String(), args
 }
 
-func (np permissionsNew) insert() (string, error) {
+func (np permissionsNew) insert() (string, []interface{}) {
 	var buffer bytes.Buffer
 	var where []string
 	var args []interface{}
@@ -120,18 +133,34 @@ func (np permissionsNew) insert() (string, error) {
 	return buffer.String(), args
 }
 
-func (subset permissionSubset) where() (string, error) {
+func (subset permissionSubset) update(patch permissionPatch) (string, []interface{}) {
 	var buffer bytes.Buffer
 	var where []string
 	var args []interface{}
-	for key, val := range np {
-		where = append(where, `? : ?`)
-		args = append(args, key, val)
+	for _, id := range subset.IDs {
+		where = append(where, ` permissions[?] = ? `)
+		args = append(args, id, patch.Right)
 	}
 	if len(where) == 0 {
 		return "", []interface{}{}
 	}
-	buffer.WriteString(`UPDATE global.token_ SET permissions = permissions + `)
+	buffer.WriteString(`UPDATE global.token_ SET `)
+	buffer.WriteString(strings.Join(where, `,`))
+	return buffer.String(), args
+}
+
+func (subset permissionSubset) delete() (string, []interface{}) {
+	var buffer bytes.Buffer
+	var where []string
+	var args []interface{}
+	for _, id := range subset.IDs {
+		where = append(where, `?`)
+		args = append(args, id)
+	}
+	if len(where) == 0 {
+		return "", []interface{}{}
+	}
+	buffer.WriteString(`UPDATE global.token_ SET permissions = permissions - `)
 	buffer.WriteString(`{`)
 	buffer.WriteString(strings.Join(where, `,`))
 	buffer.WriteString(`}`)

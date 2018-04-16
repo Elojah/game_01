@@ -1,5 +1,10 @@
 package game
 
+import (
+	"net"
+)
+
+// Token represents a user connection. Creation is made by secure https only.
 type Token struct {
 	ID          ID
 	Permissions map[ID]Right
@@ -8,10 +13,12 @@ type Token struct {
 	Account ID
 }
 
+// TokenSubset represents a subset of Token resources.
 type TokenSubset struct {
 	IDs []ID
 }
 
+// TokenService is the service gate for Token resource.
 type TokenService interface {
 	ListToken(TokenSubset) ([]Token, error)
 	AddTokenPermission(TokenSubset, Permissions) error
