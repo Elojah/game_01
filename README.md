@@ -18,3 +18,4 @@ make client && bin/game_client bin/config_client.json
   + ack state save
 - HTTPS service for users with token creation based on PG named `auth`
 - Response server to update all clients with delta compression named `sync`
+- Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?*
