@@ -4,6 +4,7 @@
 
 ```
 docker-compose -d
+make dep
 make api && bin/game_api bin/config_api.json
 make client && bin/game_client bin/config_client.json
 ```
