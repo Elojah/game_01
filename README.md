@@ -10,12 +10,12 @@ make client && bin/game_client bin/config_client.json
 ```
 
 ## TODO
+- ip service (+ token association)
+- ack service
+- handler controller
+    + resolve TODOs
 - `tile38` Actor Service
 - `storage/actor.go` to group use_cases
-- `cmd/api/actor.go` controllers
-  + token verification
-  + attack in 1 area/move
-  + ack state save
 - HTTPS service for users with token creation based on PG named `auth`
 - Response server to update all clients with delta compression named `sync`
 - Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?*
