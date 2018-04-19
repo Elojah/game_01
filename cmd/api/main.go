@@ -48,9 +48,11 @@ func run(prog string, filename string) {
 		return
 	}
 
-	route(&mux, cfg)
-	logger.Info("api up")
+	h := handler{}
+	h.Entry = logger
+	h.Route(&mux, cfg)
 	go func() { mux.Listen() }()
+	logger.Info("api up")
 }
 
 func main() {

@@ -15,5 +15,5 @@ struct Message {
 	Action union {
 		Attack
 	}
-	ACK			*int64
+	ACK			*[16]byte
 }

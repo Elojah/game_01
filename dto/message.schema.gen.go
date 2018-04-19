@@ -179,7 +179,7 @@ type Message struct {
 	Token    [16]byte
 	Position *Vec3
 	Action   interface{}
-	ACK      *int64
+	ACK      *[16]byte
 }
 
 func (d *Message) Size() (s uint64) {
@@ -228,7 +228,10 @@ func (d *Message) Size() (s uint64) {
 	{
 		if d.ACK != nil {
 
-			s += 8
+			{
+				s += 16
+			}
+			s += 0
 		}
 	}
 	s += 2
@@ -308,25 +311,10 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 			buf[i+1] = 1
 
 			{
-
-				buf[i+0+2] = byte((*d.ACK) >> 0)
-
-				buf[i+1+2] = byte((*d.ACK) >> 8)
-
-				buf[i+2+2] = byte((*d.ACK) >> 16)
-
-				buf[i+3+2] = byte((*d.ACK) >> 24)
-
-				buf[i+4+2] = byte((*d.ACK) >> 32)
-
-				buf[i+5+2] = byte((*d.ACK) >> 40)
-
-				buf[i+6+2] = byte((*d.ACK) >> 48)
-
-				buf[i+7+2] = byte((*d.ACK) >> 56)
-
+				copy(buf[i+2:], (*d.ACK)[:])
+				i += 16
 			}
-			i += 8
+			i += 0
 		}
 	}
 	return buf[:i+2], nil
@@ -396,15 +384,14 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 	{
 		if buf[i+1] == 1 {
 			if d.ACK == nil {
-				d.ACK = new(int64)
+				d.ACK = new([16]byte)
 			}
 
 			{
-
-				(*d.ACK) = 0 | (int64(buf[i+0+2]) << 0) | (int64(buf[i+1+2]) << 8) | (int64(buf[i+2+2]) << 16) | (int64(buf[i+3+2]) << 24) | (int64(buf[i+4+2]) << 32) | (int64(buf[i+5+2]) << 40) | (int64(buf[i+6+2]) << 48) | (int64(buf[i+7+2]) << 56)
-
+				copy((*d.ACK)[:], buf[i+2:])
+				i += 16
 			}
-			i += 8
+			i += 0
 		} else {
 			d.ACK = nil
 		}

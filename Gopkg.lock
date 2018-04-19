@@ -55,7 +55,7 @@
     "internal/murmur",
     "internal/streams"
   ]
-  revision = "fa516cf7b8863ae9110072ca4368f6b1693e03c2"
+  revision = "3540fc649cd7fc57cef5612b7bacac7a4fc443d6"
 
 [[projects]]
   branch = "master"
@@ -94,7 +94,7 @@
     "unix",
     "windows"
   ]
-  revision = "f6f352972f061230a99fbf49d1eb8073ebdb36cb"
+  revision = "3ccc7e5779793fd54564baf60c51bf017955e0ba"
 
 [[projects]]
   name = "gopkg.in/inf.v0"

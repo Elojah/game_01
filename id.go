@@ -13,5 +13,8 @@ type ID ulid.ULID
 // NewULID returns a new random ID.
 func NewULID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
+}
 
+func (id ID) String() string {
+	return ulid.ULID(id).String()
 }
