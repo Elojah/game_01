@@ -18,11 +18,10 @@ func (h handler) Route(mux *udp.Mux, cfg Config) {
 func (h *handler) handle(packet udp.Packet) error {
 	logger := h.WithField("id", packet.ID.String())
 
-	// TODO check ip validity in an IP service
-
 	msg := dto.Message{}
 	if _, err := msg.Unmarshal(packet.Data); err != nil {
 		logger.WithFields(logrus.Fields{
+			"source": packet.Source.String(),
 			"status": "unmarshalable",
 			"error":  err,
 		}).Error("packet rejected")
