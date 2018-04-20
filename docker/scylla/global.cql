@@ -9,9 +9,9 @@ USE global;
 CREATE TABLE
 	global.token_
 (
-	uuid        uuid,
-	permissions frozen<map<uuid, tinyint>>,
-	account     uuid,
+	uuid        timeuuid,
+	permissions frozen<map<timeuuid, tinyint>>,
+	account     timeuuid,
 	ip          text,
 	PRIMARY KEY(uuid)
 );
@@ -19,7 +19,7 @@ CREATE TABLE
 CREATE TABLE
 	global.actor
 (
-	uuid uuid,
+	uuid timeuuid,
 	hp   bigint,
 	mp   bigint,
 	x    double,

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gocql/gocql"
 	"github.com/oklog/ulid"
 	"github.com/sirupsen/logrus"
 
@@ -22,7 +23,7 @@ func route(mux *udp.Mux, cfg Config) {
 }
 
 func send(mux *udp.Mux, cfg Config) {
-	id := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
+	id := gocql.TimeUUID()
 	packetID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
 	msg :=
 		dto.Message{
@@ -42,7 +43,7 @@ func send(mux *udp.Mux, cfg Config) {
 		return
 	}
 
-	for n := 0; n < 60; n++ {
+	for n := 0; n < 5; n++ {
 		go func() { mux.Send(udp.Packet{ID: packetID, Source: nil, Data: raw}, "127.0.0.1:3400") }()
 	}
 }

@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/elojah/udp"
   packages = ["."]
-  revision = "06f4dfb63c84231a63224828603e9a439e800d0b"
+  revision = "a12752de08e0c165386e5cf86e2a961752df6e6f"
 
 [[projects]]
   name = "github.com/go-redis/redis"
@@ -94,7 +94,7 @@
     "unix",
     "windows"
   ]
-  revision = "3ccc7e5779793fd54564baf60c51bf017955e0ba"
+  revision = "a2a45943ae67364d56c5d7d62dee78cff16c8dc8"
 
 [[projects]]
   name = "gopkg.in/inf.v0"

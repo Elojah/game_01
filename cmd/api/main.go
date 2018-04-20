@@ -7,6 +7,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
+	"github.com/elojah/game_01"
 	scyllax "github.com/elojah/game_01/storage/scylla"
 	"github.com/elojah/scylla"
 	"github.com/elojah/services"
@@ -50,7 +51,11 @@ func run(prog string, filename string) {
 
 	h := handler{}
 	h.Entry = logger
+	h.Services = game.NewServices()
+	// h.ActorService =
+	h.TokenService = scx
 	h.Route(&mux, cfg)
+
 	go func() { mux.Listen() }()
 	logger.Info("api up")
 }

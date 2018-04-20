@@ -53,7 +53,7 @@ func (s *Service) ListActor(subset game.ActorSubset) ([]game.Actor, error) {
 
 	result := make([]game.Actor, len(sMap))
 	for i, actor := range sMap {
-		result[i].ID = actor["uuid"].([16]byte)
+		result[i].ID = actor["uuid"].(game.ID)
 		result[i].HP = actor["hp"].(uint8)
 		result[i].MP = actor["mp"].(uint8)
 		result[i].Position.X = actor["x"].(float64)
@@ -126,7 +126,7 @@ func (actors actorsNew) values() (string, []interface{}) {
 			)
 		`)
 		args = append(args,
-			string(actor.ID[:]),
+			actor.ID.String(),
 			actor.HP,
 			actor.MP,
 			actor.Position.X,
@@ -168,9 +168,17 @@ func (subset actorSubset) where() (string, []interface{}) {
 	var buffer bytes.Buffer
 	var where []string
 	var args []interface{}
-	for _, id := range subset.IDs {
-		where = append(where, `uuid IN ? `)
-		args = append(args, string(id[:]))
+	if subset.IDs != nil {
+		var bufferUUID bytes.Buffer
+		var whereUUID []string
+		bufferUUID.WriteString(`uuid IN (`)
+		for _, id := range subset.IDs {
+			whereUUID = append(whereUUID, `?`)
+			args = append(args, id)
+		}
+		bufferUUID.WriteString(strings.Join(whereUUID, `,`))
+		bufferUUID.WriteString(`)`)
+		where = append(where, bufferUUID.String())
 	}
 	if len(where) == 0 {
 		return "", []interface{}{}

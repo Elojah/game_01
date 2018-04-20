@@ -25,8 +25,8 @@ func (s *Service) ListToken(subset game.TokenSubset) ([]game.Token, error) {
 
 	result := make([]game.Token, len(sMap))
 	for i, token := range sMap {
-		result[i].ID = token["uuid"].([16]byte)
-		result[i].Account = token["account"].([16]byte)
+		result[i].ID = token["uuid"].(game.ID)
+		result[i].Account = token["account"].(game.ID)
 		result[i].IP, err = net.ResolveUDPAddr("udp", token["ip"].(string))
 		if err != nil {
 			return nil, err
@@ -94,7 +94,7 @@ func (subset tokenSubset) sel() string {
 			uuid,
 			permissions,
 			account,
-			ip,
+			ip
 		FROM global.token_
 	`
 }
@@ -103,9 +103,17 @@ func (subset tokenSubset) where() (string, []interface{}) {
 	var buffer bytes.Buffer
 	var where []string
 	var args []interface{}
-	for _, id := range subset.IDs {
-		where = append(where, `uuid IN ? `)
-		args = append(args, string(id[:]))
+	if subset.IDs != nil {
+		var bufferUUID bytes.Buffer
+		var whereUUID []string
+		bufferUUID.WriteString(`uuid IN (`)
+		for _, id := range subset.IDs {
+			whereUUID = append(whereUUID, `?`)
+			args = append(args, id)
+		}
+		bufferUUID.WriteString(strings.Join(whereUUID, `,`))
+		bufferUUID.WriteString(`)`)
+		where = append(where, bufferUUID.String())
 	}
 	if len(where) == 0 {
 		return "", []interface{}{}
