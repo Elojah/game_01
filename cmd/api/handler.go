@@ -20,6 +20,7 @@ func (h handler) Route(mux *udp.Mux, cfg Config) {
 }
 
 func (h *handler) handle(packet udp.Packet) error {
+
 	// # Set logger.
 	ip := packet.Source.String()
 	logger := h.WithFields(logrus.Fields{
@@ -86,7 +87,7 @@ func (h *handler) handle(packet udp.Packet) error {
 
 	switch msg.Action.(type) {
 	case dto.Attack:
-		return h.attack(logger.WithField("action", "attack"), msg.Action.(dto.Attack))
+		go func() { _ = h.attack(logger.WithField("action", "attack"), msg.Action.(dto.Attack)) }()
 	}
 
 	return nil
