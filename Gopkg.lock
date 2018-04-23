@@ -9,6 +9,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/elojah/nats-streaming"
+  packages = ["."]
+  revision = "0090fd02cc449b61a938d26fd1171c66b1319ff5"
+
+[[projects]]
+  branch = "master"
   name = "github.com/elojah/redis"
   packages = ["."]
   revision = "a5fdb8d549fcb5f9962ee6d3267fb92757073131"
@@ -58,6 +64,16 @@
   revision = "3540fc649cd7fc57cef5612b7bacac7a4fc443d6"
 
 [[projects]]
+  name = "github.com/gogo/protobuf"
+  packages = [
+    "gogoproto",
+    "proto",
+    "protoc-gen-gogo/descriptor"
+  ]
+  revision = "1adfc126b41513cc696b209667c8656ea7aac67c"
+  version = "v1.0.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/golang/snappy"
   packages = ["."]
@@ -68,6 +84,31 @@
   name = "github.com/hailocab/go-hostpool"
   packages = ["."]
   revision = "e80d13ce29ede4452c43dea11e79b9bc8a15b478"
+
+[[projects]]
+  name = "github.com/nats-io/go-nats"
+  packages = [
+    ".",
+    "encoders/builtin",
+    "util"
+  ]
+  revision = "062418ea1c2181f52dc0f954f6204370519a868b"
+  version = "v1.5.0"
+
+[[projects]]
+  name = "github.com/nats-io/go-nats-streaming"
+  packages = [
+    ".",
+    "pb"
+  ]
+  revision = "6e620057a207bd61e992c1c5b6a2de7b6a4cb010"
+  version = "v0.3.4"
+
+[[projects]]
+  name = "github.com/nats-io/nuid"
+  packages = ["."]
+  revision = "289cccf02c178dc782430d534e3c1f5b72af807f"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/oklog/ulid"
@@ -105,6 +146,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bd1150aa2a22ed6dce004f9c3fad7a218cd5ed989588a21a3f4345ee4576eae7"
+  inputs-digest = "b2587d4f0f322735bbe7a8b7926840ca476954d26020665bbe78420a94ff7e9b"
   solver-name = "gps-cdcl"
   solver-version = 1

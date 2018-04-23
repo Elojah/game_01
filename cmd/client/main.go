@@ -27,12 +27,7 @@ func send(mux *udp.Mux, cfg Config) {
 	packetID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
 	msg :=
 		dto.Message{
-			Token: id,
-			Position: &dto.Vec3{
-				X: 190.098,
-				Y: 34.9,
-				Z: 98.27,
-			},
+			Token:  id,
 			Action: nil,
 			ACK:    nil,
 		}

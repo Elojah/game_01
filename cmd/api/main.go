@@ -9,6 +9,7 @@ import (
 
 	"github.com/elojah/game_01"
 	scyllax "github.com/elojah/game_01/storage/scylla"
+	"github.com/elojah/nats-streaming"
 	"github.com/elojah/scylla"
 	"github.com/elojah/services"
 	"github.com/elojah/udp"
@@ -36,6 +37,12 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers = append(launchers, muxl)
 
+	ns := stan.Service{}
+	nsl := ns.NewLauncher(stan.Namespaces{
+		NatsStream: "nats-streaming",
+	}, "nats-streaming")
+	launchers = append(launchers, nsl)
+
 	cfg := Config{}
 	cfgl := cfg.NewLauncher(Namespaces{
 		API: "api",
@@ -52,6 +59,7 @@ func run(prog string, filename string) {
 	h := handler{}
 	h.Entry = logger
 	h.Services = game.NewServices()
+	h.Queue = ns
 	// h.ActorService =
 	h.TokenService = scx
 	h.Route(&mux, cfg)

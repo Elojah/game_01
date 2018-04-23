@@ -7,12 +7,14 @@ import (
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/game_01/storage"
+	"github.com/elojah/nats-streaming"
 	"github.com/elojah/udp"
 )
 
 type handler struct {
 	*logrus.Entry
 	game.Services
+	Queue stan.Service
 }
 
 func (h handler) Route(mux *udp.Mux, cfg Config) {
@@ -79,15 +81,11 @@ func (h *handler) handle(packet udp.Packet) error {
 		}()
 	}
 
-	// TODO set position in tile38 + scylla actor service
-	if msg.Position != nil {
-		go func() {
-		}()
-	}
-
 	switch msg.Action.(type) {
 	case dto.Attack:
 		go func() { _ = h.attack(logger.WithField("action", "attack"), msg.Action.(dto.Attack)) }()
+	case dto.Move:
+		go func() { _ = h.move(logger.WithField("action", "move"), msg.Action.(dto.Move)) }()
 	}
 
 	return nil
@@ -95,5 +93,10 @@ func (h *handler) handle(packet udp.Packet) error {
 
 func (h *handler) attack(logger *logrus.Entry, a dto.Attack) error {
 	// TODO remove hp from actor to target with actor service scylla only
+	return nil
+}
+
+func (h *handler) move(logger *logrus.Entry, m dto.Move) error {
+	// TODO move player
 	return nil
 }

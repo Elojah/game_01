@@ -175,11 +175,67 @@ func (d *Attack) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
+type Move struct {
+	Actor    [16]byte
+	Position Vec3
+}
+
+func (d *Move) Size() (s uint64) {
+
+	{
+		s += 16
+	}
+	{
+		s += d.Position.Size()
+	}
+	return
+}
+func (d *Move) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+		copy(buf[i+0:], d.Actor[:])
+		i += 16
+	}
+	{
+		nbuf, err := d.Position.Marshal(buf[i+0:])
+		if err != nil {
+			return nil, err
+		}
+		i += uint64(len(nbuf))
+	}
+	return buf[:i+0], nil
+}
+
+func (d *Move) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+		copy(d.Actor[:], buf[i+0:])
+		i += 16
+	}
+	{
+		ni, err := d.Position.Unmarshal(buf[i+0:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
+	}
+	return i + 0, nil
+}
+
 type Message struct {
-	Token    [16]byte
-	Position *Vec3
-	Action   interface{}
-	ACK      *[16]byte
+	Token  [16]byte
+	ACK    *[16]byte
+	Action interface{}
 }
 
 func (d *Message) Size() (s uint64) {
@@ -188,10 +244,10 @@ func (d *Message) Size() (s uint64) {
 		s += 16
 	}
 	{
-		if d.Position != nil {
+		if d.ACK != nil {
 
 			{
-				s += (*d.Position).Size()
+				s += 16
 			}
 			s += 0
 		}
@@ -202,6 +258,9 @@ func (d *Message) Size() (s uint64) {
 
 		case Attack:
 			v = 0 + 1
+
+		case Move:
+			v = 1 + 1
 
 		}
 
@@ -223,18 +282,15 @@ func (d *Message) Size() (s uint64) {
 				s += tt.Size()
 			}
 
-		}
-	}
-	{
-		if d.ACK != nil {
+		case Move:
 
 			{
-				s += 16
+				s += tt.Size()
 			}
-			s += 0
+
 		}
 	}
-	s += 2
+	s += 1
 	return
 }
 func (d *Message) Marshal(buf []byte) ([]byte, error) {
@@ -253,17 +309,14 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
-		if d.Position == nil {
+		if d.ACK == nil {
 			buf[i+0] = 0
 		} else {
 			buf[i+0] = 1
 
 			{
-				nbuf, err := (*d.Position).Marshal(buf[i+1:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
+				copy(buf[i+1:], (*d.ACK)[:])
+				i += 16
 			}
 			i += 0
 		}
@@ -274,6 +327,9 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 
 		case Attack:
 			v = 0 + 1
+
+		case Move:
+			v = 1 + 1
 
 		}
 
@@ -302,22 +358,19 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		}
-	}
-	{
-		if d.ACK == nil {
-			buf[i+1] = 0
-		} else {
-			buf[i+1] = 1
+		case Move:
 
 			{
-				copy(buf[i+2:], (*d.ACK)[:])
-				i += 16
+				nbuf, err := tt.Marshal(buf[i+1:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
 			}
-			i += 0
+
 		}
 	}
-	return buf[:i+2], nil
+	return buf[:i+1], nil
 }
 
 func (d *Message) Unmarshal(buf []byte) (uint64, error) {
@@ -329,20 +382,17 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 	}
 	{
 		if buf[i+0] == 1 {
-			if d.Position == nil {
-				d.Position = new(Vec3)
+			if d.ACK == nil {
+				d.ACK = new([16]byte)
 			}
 
 			{
-				ni, err := (*d.Position).Unmarshal(buf[i+1:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
+				copy((*d.ACK)[:], buf[i+1:])
+				i += 16
 			}
 			i += 0
 		} else {
-			d.Position = nil
+			d.ACK = nil
 		}
 	}
 	{
@@ -377,24 +427,22 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 
 			d.Action = tt
 
+		case 1 + 1:
+			var tt Move
+
+			{
+				ni, err := tt.Unmarshal(buf[i+1:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
 		default:
 			d.Action = nil
 		}
 	}
-	{
-		if buf[i+1] == 1 {
-			if d.ACK == nil {
-				d.ACK = new([16]byte)
-			}
-
-			{
-				copy((*d.ACK)[:], buf[i+2:])
-				i += 16
-			}
-			i += 0
-		} else {
-			d.ACK = nil
-		}
-	}
-	return i + 2, nil
+	return i + 1, nil
 }

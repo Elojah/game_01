@@ -9,11 +9,16 @@ struct Attack {
 	Target	[16]byte
 }
 
+struct Move {
+	Actor		[16]byte
+	Position	Vec3
+}
+
 struct Message {
 	Token		[16]byte
-	Position	*Vec3
+	ACK			*[16]byte
 	Action union {
 		Attack
+		Move
 	}
-	ACK			*[16]byte
 }
