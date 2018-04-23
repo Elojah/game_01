@@ -235,6 +235,7 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 type Message struct {
 	Token  [16]byte
 	ACK    *[16]byte
+	TS     int64
 	Action interface{}
 }
 
@@ -290,7 +291,7 @@ func (d *Message) Size() (s uint64) {
 
 		}
 	}
-	s += 1
+	s += 9
 	return
 }
 func (d *Message) Marshal(buf []byte) ([]byte, error) {
@@ -322,6 +323,25 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	{
+
+		buf[i+0+1] = byte(d.TS >> 0)
+
+		buf[i+1+1] = byte(d.TS >> 8)
+
+		buf[i+2+1] = byte(d.TS >> 16)
+
+		buf[i+3+1] = byte(d.TS >> 24)
+
+		buf[i+4+1] = byte(d.TS >> 32)
+
+		buf[i+5+1] = byte(d.TS >> 40)
+
+		buf[i+6+1] = byte(d.TS >> 48)
+
+		buf[i+7+1] = byte(d.TS >> 56)
+
+	}
+	{
 		var v uint64
 		switch d.Action.(type) {
 
@@ -338,11 +358,11 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 			t := uint64(v)
 
 			for t >= 0x80 {
-				buf[i+1] = byte(t) | 0x80
+				buf[i+9] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i+1] = byte(t)
+			buf[i+9] = byte(t)
 			i++
 
 		}
@@ -351,7 +371,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case Attack:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+1:])
+				nbuf, err := tt.Marshal(buf[i+9:])
 				if err != nil {
 					return nil, err
 				}
@@ -361,7 +381,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case Move:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+1:])
+				nbuf, err := tt.Marshal(buf[i+9:])
 				if err != nil {
 					return nil, err
 				}
@@ -370,7 +390,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 
 		}
 	}
-	return buf[:i+1], nil
+	return buf[:i+9], nil
 }
 
 func (d *Message) Unmarshal(buf []byte) (uint64, error) {
@@ -396,15 +416,20 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 		}
 	}
 	{
+
+		d.TS = 0 | (int64(buf[i+0+1]) << 0) | (int64(buf[i+1+1]) << 8) | (int64(buf[i+2+1]) << 16) | (int64(buf[i+3+1]) << 24) | (int64(buf[i+4+1]) << 32) | (int64(buf[i+5+1]) << 40) | (int64(buf[i+6+1]) << 48) | (int64(buf[i+7+1]) << 56)
+
+	}
+	{
 		v := uint64(0)
 
 		{
 
 			bs := uint8(7)
-			t := uint64(buf[i+1] & 0x7F)
-			for buf[i+1]&0x80 == 0x80 {
+			t := uint64(buf[i+9] & 0x7F)
+			for buf[i+9]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+1]&0x7F) << bs
+				t |= uint64(buf[i+9]&0x7F) << bs
 				bs += 7
 			}
 			i++
@@ -418,7 +443,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			var tt Attack
 
 			{
-				ni, err := tt.Unmarshal(buf[i+1:])
+				ni, err := tt.Unmarshal(buf[i+9:])
 				if err != nil {
 					return 0, err
 				}
@@ -431,7 +456,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			var tt Move
 
 			{
-				ni, err := tt.Unmarshal(buf[i+1:])
+				ni, err := tt.Unmarshal(buf[i+9:])
 				if err != nil {
 					return 0, err
 				}
@@ -444,5 +469,5 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = nil
 		}
 	}
-	return i + 1, nil
+	return i + 9, nil
 }

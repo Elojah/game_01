@@ -1,6 +1,8 @@
 package main
 
 import (
+"time"
+
 	"github.com/gocql/gocql"
 	"github.com/sirupsen/logrus"
 
@@ -91,12 +93,13 @@ func (h *handler) handle(packet udp.Packet) error {
 	return nil
 }
 
-func (h *handler) attack(logger *logrus.Entry, a dto.Attack) error {
+func (h *handler) attack(logger *logrus.Entry, a dto.Attack, ts time.Time) error {
 	// TODO remove hp from actor to target with actor service scylla only
 	return nil
 }
 
-func (h *handler) move(logger *logrus.Entry, m dto.Move) error {
+func (h *handler) move(logger *logrus.Entry, m dto.Move, ts time.Time) error {
+	h.Queue.
 	// TODO move player
 	return nil
 }
