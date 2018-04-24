@@ -1,0 +1,12 @@
+{
+	"server": {
+		"address": "localhost:8081",
+		"middlewares": ["lz4"],
+		"packet_size": 1024
+	},
+	"api": {
+		"version": "0",
+		"resources": [],
+		"tick_rate": 3000
+	}
+}

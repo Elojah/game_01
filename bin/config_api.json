@@ -1,0 +1,31 @@
+{
+	"scylla": {
+		"hosts": ["localhost:9042"],
+		"keyspace": "global",
+		"timeout": "3s",
+		"num_retries": 3,
+		"consistency": "LOCAL_ONE",
+		"username": "game",
+		"password": "secret",
+		"cert_path": "",
+		"key_path": ""
+	},
+	"nats-streaming": {
+		"cluster_id": "0",
+		"client_id": "0",
+		"nats_url": "",
+		"connect_timeout": "1s",
+		"ack_timeout": "1s",
+		"max_pub_acks_in_flight": 500
+	},
+	"server": {
+		"address": "localhost:3400",
+		"middlewares": ["lz4"],
+		"packet_size": 1024
+	},
+	"api": {
+		"version": "0",
+		"resources": ["actor"],
+		"tolerance": "2000"
+	}
+}
