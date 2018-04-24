@@ -11,11 +11,11 @@
 		"key_path": ""
 	},
 	"nats-streaming": {
-		"cluster_id": "0",
-		"client_id": "0",
-		"nats_url": "",
-		"connect_timeout": "1s",
-		"ack_timeout": "1s",
+		"cluster_id": "test-cluster",
+		"client_id": "game_api",
+		"nats_url": "nats://localhost:4222",
+		"connect_timeout": "10s",
+		"ack_timeout": "2s",
 		"max_pub_acks_in_flight": 500
 	},
 	"server": {
@@ -26,6 +26,6 @@
 	"api": {
 		"version": "0",
 		"resources": ["actor"],
-		"tolerance": "2000"
+		"tolerance": "2s"
 	}
 }

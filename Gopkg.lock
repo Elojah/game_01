@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/elojah/nats-streaming"
   packages = ["."]
-  revision = "0090fd02cc449b61a938d26fd1171c66b1319ff5"
+  revision = "d896addfa170615552e879359c82df26361b9271"
 
 [[projects]]
   branch = "master"
@@ -61,7 +61,7 @@
     "internal/murmur",
     "internal/streams"
   ]
-  revision = "3540fc649cd7fc57cef5612b7bacac7a4fc443d6"
+  revision = "4ba1af8a026b230ce3c646e594865c07ce01b541"
 
 [[projects]]
   name = "github.com/gogo/protobuf"
@@ -126,7 +126,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+  revision = "2b6c08872f4b66da917bb4ce98df4f0307330f78"
 
 [[projects]]
   branch = "master"
@@ -135,7 +135,7 @@
     "unix",
     "windows"
   ]
-  revision = "a2a45943ae67364d56c5d7d62dee78cff16c8dc8"
+  revision = "79b0c6888797020a994db17c8510466c72fe75d9"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
