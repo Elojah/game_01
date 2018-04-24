@@ -54,6 +54,7 @@ func (h *handler) handle(packet udp.Packet) error {
 	}
 
 	// # Search message UUID in storage.
+	println(uuid.String())
 	tokens, err := h.ListToken(game.TokenSubset{
 		IDs: []game.ID{uuid},
 	})

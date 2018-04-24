@@ -24,6 +24,7 @@ func route(mux *udp.Mux, cfg Config) {
 
 func send(mux *udp.Mux, cfg Config) {
 	id := gocql.TimeUUID()
+	id, _ = gocql.ParseUUID("d91cb620-47cf-11e8-bef2-000000000001")
 	packetID := ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader)
 	msg :=
 		dto.Message{
