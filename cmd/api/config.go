@@ -3,14 +3,16 @@ package main
 import (
 	"errors"
 	"sync"
+	"time"
 
 	"github.com/elojah/services"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Version   string   `json:"version"`
-	Resources []string `json:"resources"`
+	Version   string        `json:"version"`
+	Resources []string      `json:"resources"`
+	Tolerance time.Duration `json:"tolerance"`
 }
 
 // Equal returns is both configs are equal.
@@ -26,11 +28,15 @@ func (c Config) Equal(rhs Config) bool {
 	if c.Version != rhs.Version {
 		return false
 	}
+	if c.Tolerance != rhs.Tolerance {
+		return false
+	}
 	return true
 }
 
 // Dial set the config from a config namespace.
 func (c *Config) Dial(fileconf interface{}) error {
+	var err error
 	fconf, ok := fileconf.(map[string]interface{})
 	if !ok {
 		return errors.New("namespace empty")
@@ -41,6 +47,18 @@ func (c *Config) Dial(fileconf interface{}) error {
 	}
 	if c.Version, ok = cVersion.(string); !ok {
 		return errors.New("key version invalid. must be string")
+	}
+	cTolerance, ok := fconf["tolerance"]
+	if !ok {
+		return errors.New("missing key tolerance")
+	}
+	cToleranceString, ok := cTolerance.(string)
+	if !ok {
+		return errors.New("key tolerance invalid. must be string")
+	}
+	c.Tolerance, err = time.ParseDuration(cToleranceString)
+	if err != nil {
+		return err
 	}
 	cResource, ok := fconf["resources"]
 	if !ok {

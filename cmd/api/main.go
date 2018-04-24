@@ -59,6 +59,7 @@ func run(prog string, filename string) {
 	h := handler{}
 	h.Entry = logger
 	h.Services = game.NewServices()
+	h.Config = cfg
 	h.Queue = ns
 	// h.ActorService =
 	h.TokenService = scx

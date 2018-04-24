@@ -10,7 +10,8 @@ make client && bin/game_client bin/config_client.json
 ```
 
 ## TODO
-- ip service (+ token association)
+- Add replay nats stream for both server and client
+- Add server ack sending to client (and client resend)
 - ack service
 - handler controller
     + resolve TODOs

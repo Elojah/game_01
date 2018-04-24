@@ -1,7 +1,7 @@
 package main
 
 import (
-"time"
+	"time"
 
 	"github.com/gocql/gocql"
 	"github.com/sirupsen/logrus"
@@ -15,6 +15,7 @@ import (
 
 type handler struct {
 	*logrus.Entry
+	Config
 	game.Services
 	Queue stan.Service
 }
@@ -71,8 +72,20 @@ func (h *handler) handle(packet udp.Packet) error {
 	// # Match message UUID with source IP.
 	if token.IP.String() != ip {
 		logger.WithFields(logrus.Fields{
-			"status": "hijack",
-			"error":  err,
+			"status":   "hijack",
+			"expected": token.IP.String(),
+		}).Error("packet rejected")
+		return err
+	}
+
+	// # Check TS in tolerance range.
+	ts := time.Unix(msg.TS, 0)
+	now := time.Now()
+	if ts.After(now) || now.Sub(ts) > h.Tolerance {
+		logger.WithFields(logrus.Fields{
+			"status": "timeout",
+			"ts":     ts,
+			"now":    now,
 		}).Error("packet rejected")
 		return err
 	}
@@ -85,21 +98,23 @@ func (h *handler) handle(packet udp.Packet) error {
 
 	switch msg.Action.(type) {
 	case dto.Attack:
-		go func() { _ = h.attack(logger.WithField("action", "attack"), msg.Action.(dto.Attack)) }()
+		go func() { _ = h.attack(logger, msg.Action.(dto.Attack), ts) }()
 	case dto.Move:
-		go func() { _ = h.move(logger.WithField("action", "move"), msg.Action.(dto.Move)) }()
+		go func() { _ = h.move(logger, msg.Action.(dto.Move), ts) }()
 	}
 
 	return nil
 }
 
 func (h *handler) attack(logger *logrus.Entry, a dto.Attack, ts time.Time) error {
+	logger = logger.WithField("action", "attack")
 	// TODO remove hp from actor to target with actor service scylla only
 	return nil
 }
 
 func (h *handler) move(logger *logrus.Entry, m dto.Move, ts time.Time) error {
-	h.Queue.
+	logger = logger.WithField("action", "move")
+	// h.Queue.
 	// TODO move player
 	return nil
 }
