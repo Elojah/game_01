@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net"
 	"time"
 
 	"github.com/gocql/gocql"
@@ -64,16 +65,22 @@ func (h *handler) handle(packet udp.Packet) error {
 		logger.WithFields(logrus.Fields{
 			"status": "unidentified",
 			"error":  err,
+			"uuid":   uuid.String(),
 		}).Error("packet rejected")
 		return err
 	}
 	token := tokens[0]
 
 	// # Match message UUID with source IP.
-	if token.IP.String() != ip {
+	expected, _, _ := net.SplitHostPort(token.IP.String())
+	actual, _, _ := net.SplitHostPort(ip)
+	if expected != actual {
+		err := game.ErrWrongIP
 		logger.WithFields(logrus.Fields{
 			"status":   "hijack",
-			"expected": token.IP.String(),
+			"error":    err,
+			"expected": expected,
+			"actual":   actual,
 		}).Error("packet rejected")
 		return err
 	}
@@ -82,8 +89,10 @@ func (h *handler) handle(packet udp.Packet) error {
 	ts := time.Unix(msg.TS, 0)
 	now := time.Now()
 	if ts.After(now) || now.Sub(ts) > h.Tolerance {
+		err := game.ErrInvalidTS
 		logger.WithFields(logrus.Fields{
 			"status": "timeout",
+			"error":  err,
 			"ts":     ts,
 			"now":    now,
 		}).Error("packet rejected")

@@ -31,6 +31,7 @@ func send(mux *udp.Mux, cfg Config) {
 			Token:  id,
 			Action: nil,
 			ACK:    nil,
+			TS:     time.Now().Unix(),
 		}
 
 	raw, err := msg.Marshal(nil)
