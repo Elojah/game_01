@@ -23,17 +23,17 @@ func (s *Service) ListToken(subset game.TokenSubset) ([]game.Token, error) {
 		return nil, err
 	}
 
-	result := make([]game.Token, len(sMap))
+	tokens := make([]game.Token, len(sMap))
 	for i, token := range sMap {
-		result[i].ID = token["uuid"].(game.ID)
-		result[i].Account = token["account"].(game.ID)
-		result[i].IP, err = net.ResolveUDPAddr("udp", token["ip"].(string))
+		tokens[i].ID = token["uuid"].(game.ID)
+		tokens[i].Account = token["account"].(game.ID)
+		tokens[i].IP, err = net.ResolveUDPAddr("udp", token["ip"].(string))
 		if err != nil {
 			return nil, err
 		}
-		// result[i].Permissions = a
+		// tokens[i].Permissions = a
 	}
-	return result, iter.Close()
+	return tokens, iter.Close()
 }
 
 // AddTokenPermission is the scylla implementation to add TokenPermission.
@@ -104,16 +104,8 @@ func (subset tokenSubset) where() (string, []interface{}) {
 	var where []string
 	var args []interface{}
 	if subset.IDs != nil {
-		var bufferUUID bytes.Buffer
-		var whereUUID []string
-		bufferUUID.WriteString(`uuid IN (`)
-		for _, id := range subset.IDs {
-			whereUUID = append(whereUUID, `?`)
-			args = append(args, id)
-		}
-		bufferUUID.WriteString(strings.Join(whereUUID, `,`))
-		bufferUUID.WriteString(`)`)
-		where = append(where, bufferUUID.String())
+		where = append(where, `uuid IN ?`)
+		args = append(args, subset.IDs)
 	}
 	if len(where) == 0 {
 		return "", []interface{}{}
