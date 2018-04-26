@@ -9,9 +9,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/elojah/nats-streaming"
+  name = "github.com/elojah/mux"
   packages = ["."]
-  revision = "d896addfa170615552e879359c82df26361b9271"
+  revision = "52af5f952b9b909335f7d05c3bce1ef36c4aabad"
 
 [[projects]]
   branch = "master"
@@ -64,16 +64,6 @@
   revision = "4ba1af8a026b230ce3c646e594865c07ce01b541"
 
 [[projects]]
-  name = "github.com/gogo/protobuf"
-  packages = [
-    "gogoproto",
-    "proto",
-    "protoc-gen-gogo/descriptor"
-  ]
-  revision = "1adfc126b41513cc696b209667c8656ea7aac67c"
-  version = "v1.0.0"
-
-[[projects]]
   branch = "master"
   name = "github.com/golang/snappy"
   packages = ["."]
@@ -86,35 +76,21 @@
   revision = "e80d13ce29ede4452c43dea11e79b9bc8a15b478"
 
 [[projects]]
-  name = "github.com/nats-io/go-nats"
-  packages = [
-    ".",
-    "encoders/builtin",
-    "util"
-  ]
-  revision = "062418ea1c2181f52dc0f954f6204370519a868b"
-  version = "v1.5.0"
-
-[[projects]]
-  name = "github.com/nats-io/go-nats-streaming"
-  packages = [
-    ".",
-    "pb"
-  ]
-  revision = "6e620057a207bd61e992c1c5b6a2de7b6a4cb010"
-  version = "v0.3.4"
-
-[[projects]]
-  name = "github.com/nats-io/nuid"
-  packages = ["."]
-  revision = "289cccf02c178dc782430d534e3c1f5b72af807f"
-  version = "v1.0.0"
-
-[[projects]]
   name = "github.com/oklog/ulid"
   packages = ["."]
   revision = "d311cb43c92434ec4072dfbbda3400741d0a6337"
   version = "v0.3.0"
+
+[[projects]]
+  name = "github.com/rs/zerolog"
+  packages = [
+    ".",
+    "internal/cbor",
+    "internal/json",
+    "log"
+  ]
+  revision = "05eafee0eb17d0150591a8f30f0fa592cc9b7471"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -146,6 +122,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b2587d4f0f322735bbe7a8b7926840ca476954d26020665bbe78420a94ff7e9b"
+  inputs-digest = "1e459c6696b7cb16de065bd04fbb3cad4195597f01044fa2493e948264e5d5b5"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -1,56 +1,41 @@
 package main
 
 import (
+	"context"
 	"net"
 	"time"
 
 	"github.com/gocql/gocql"
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/game_01/storage"
-	"github.com/elojah/nats-streaming"
-	"github.com/elojah/udp"
+	"github.com/elojah/mux"
 )
 
 type handler struct {
-	*logrus.Entry
 	Config
 	game.Services
-	Queue stan.Service
 }
 
-func (h handler) Route(mux *udp.Mux, cfg Config) {
-	mux.Handler = h.handle
+func (h handler) Route(m *mux.M, cfg Config) {
+	m.Handler = h.handle
 }
 
-func (h *handler) handle(packet udp.Packet) error {
-
-	// # Set logger.
-	ip := packet.Source.String()
-	logger := h.WithFields(logrus.Fields{
-		"id":     packet.ID,
-		"source": ip,
-	})
+func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	// # Unmarshal message.
 	msg := dto.Message{}
-	if _, err := msg.Unmarshal(packet.Data); err != nil {
-		logger.WithFields(logrus.Fields{
-			"status": "unmarshalable",
-			"error":  err,
-		}).Error("packet rejected")
+	if _, err := msg.Unmarshal(raw); err != nil {
+		log.Ctx(ctx).Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
 	}
 
 	// # Parse message UUID.
 	uuid, err := gocql.UUIDFromBytes(msg.Token[:])
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"status": "unformatted",
-			"error":  err,
-		}).Error("packet rejected")
+		log.Ctx(ctx).Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
 		return err
 	}
 
@@ -62,26 +47,17 @@ func (h *handler) handle(packet udp.Packet) error {
 		err = storage.ErrNotFound
 	}
 	if err != nil {
-		logger.WithFields(logrus.Fields{
-			"status": "unidentified",
-			"error":  err,
-			"uuid":   uuid.String(),
-		}).Error("packet rejected")
+		log.Ctx(ctx).Error().Err(err).Str("status", "unidentified").Str("uuid", uuid.String()).Msg("packet rejected")
 		return err
 	}
 	token := tokens[0]
 
 	// # Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())
-	actual, _, _ := net.SplitHostPort(ip)
+	actual, _, _ := net.SplitHostPort(ctx.Value(mux.Address).(string))
 	if expected != actual {
 		err := game.ErrWrongIP
-		logger.WithFields(logrus.Fields{
-			"status":   "hijack",
-			"error":    err,
-			"expected": expected,
-			"actual":   actual,
-		}).Error("packet rejected")
+		log.Ctx(ctx).Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
 		return err
 	}
 
@@ -90,12 +66,7 @@ func (h *handler) handle(packet udp.Packet) error {
 	now := time.Now()
 	if ts.After(now) || now.Sub(ts) > h.Tolerance {
 		err := game.ErrInvalidTS
-		logger.WithFields(logrus.Fields{
-			"status": "timeout",
-			"error":  err,
-			"ts":     ts,
-			"now":    now,
-		}).Error("packet rejected")
+		log.Ctx(ctx).Error().Err(err).Str("status", "hijacked").Int64("ts", ts.Unix()).Int64("now", now.Unix()).Msg("packet rejected")
 		return err
 	}
 
@@ -105,26 +76,22 @@ func (h *handler) handle(packet udp.Packet) error {
 		}()
 	}
 
-	h.Queue.Publish("", nil)
-
 	switch msg.Action.(type) {
 	case dto.Attack:
-		go func() { _ = h.attack(logger, msg.Action.(dto.Attack), ts) }()
+		go func() { _ = h.attack(ctx, msg.Action.(dto.Attack), ts) }()
 	case dto.Move:
-		go func() { _ = h.move(logger, msg.Action.(dto.Move), ts) }()
+		go func() { _ = h.move(ctx, msg.Action.(dto.Move), ts) }()
 	}
 
 	return nil
 }
 
-func (h *handler) attack(logger *logrus.Entry, a dto.Attack, ts time.Time) error {
-	logger = logger.WithField("action", "attack")
+func (h *handler) attack(ctx context.Context, a dto.Attack, ts time.Time) error {
 	// TODO remove hp from actor to target with actor service scylla only
 	return nil
 }
 
-func (h *handler) move(logger *logrus.Entry, m dto.Move, ts time.Time) error {
-	logger = logger.WithField("action", "move")
+func (h *handler) move(ctx context.Context, m dto.Move, ts time.Time) error {
 	// h.Queue.
 	// TODO move player
 	return nil
