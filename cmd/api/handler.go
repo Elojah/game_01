@@ -105,6 +105,8 @@ func (h *handler) handle(packet udp.Packet) error {
 		}()
 	}
 
+	h.Queue.Publish("", nil)
+
 	switch msg.Action.(type) {
 	case dto.Attack:
 		go func() { _ = h.attack(logger, msg.Action.(dto.Attack), ts) }()
