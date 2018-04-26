@@ -10,9 +10,15 @@ make client && bin/game_client bin/config_client.json
 ```
 
 ## TODO
-- Add replay nats stream for both server and client
+- Remove NATS streaming
+- Change log to zap (uber faster log)
+- Add context + use it with sync.errgroup
+- Use TCP + rename UDP to mux
 - Add server ack sending to client (and client resend)
 - ack service
+- Add influxDB dep + impl actor/state service
+- Think about actor interactions limit to "what's around" to scale efficiently
+- Add NATS mqueue to cancel replay mechanism (in context usage ?)
 - handler controller
     + resolve TODOs
 - `tile38` Actor Service
