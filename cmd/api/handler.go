@@ -25,17 +25,19 @@ func (h handler) Route(m *mux.M, cfg Config) {
 
 func (h *handler) handle(ctx context.Context, raw []byte) error {
 
+	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
+
 	// # Unmarshal message.
 	msg := dto.Message{}
 	if _, err := msg.Unmarshal(raw); err != nil {
-		log.Ctx(ctx).Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
 	}
 
 	// # Parse message UUID.
 	uuid, err := gocql.UUIDFromBytes(msg.Token[:])
 	if err != nil {
-		log.Ctx(ctx).Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
 		return err
 	}
 
@@ -47,17 +49,17 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		err = storage.ErrNotFound
 	}
 	if err != nil {
-		log.Ctx(ctx).Error().Err(err).Str("status", "unidentified").Str("uuid", uuid.String()).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "unidentified").Str("uuid", uuid.String()).Msg("packet rejected")
 		return err
 	}
 	token := tokens[0]
 
 	// # Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())
-	actual, _, _ := net.SplitHostPort(ctx.Value("address").(string))
+	actual, _, _ := net.SplitHostPort(ctx.Value(mux.Key("address")).(string))
 	if expected != actual {
 		err := game.ErrWrongIP
-		log.Ctx(ctx).Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
 		return err
 	}
 
@@ -66,7 +68,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	now := time.Now()
 	if ts.After(now) || now.Sub(ts) > h.Tolerance {
 		err := game.ErrInvalidTS
-		log.Ctx(ctx).Error().Err(err).Str("status", "hijacked").Int64("ts", ts.Unix()).Int64("now", now.Unix()).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "hijacked").Int64("ts", ts.Unix()).Int64("now", now.Unix()).Msg("packet rejected")
 		return err
 	}
 
