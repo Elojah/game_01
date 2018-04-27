@@ -11,10 +11,10 @@
 		"key_path": ""
 	},
 	"server": {
-		"address": "localhost:3400",
+		"address": "127.0.0.1:3400",
 		"middlewares": ["lz4"],
 		"packet_size": 1024,
-		"server_protocol": "tcp"
+		"server_protocol": "udp"
 	},
 	"api": {
 		"version": "0",

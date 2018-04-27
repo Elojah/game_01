@@ -26,7 +26,7 @@ func send(mux *udp.Mux, cfg Config) {
 	id := gocql.TimeUUID()
 	id, _ = gocql.ParseUUID("d91cb620-47cf-11e8-bef2-000000000001")
 
-	conn, err := net.Dial("tcp", "127.0.0.1:3400")
+	conn, err := net.Dial("udp", "127.0.0.1:3400")
 	if err != nil {
 		fmt.Println("failed to establish connection", err)
 		return
