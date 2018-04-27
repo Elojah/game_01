@@ -54,7 +54,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	// # Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())
-	actual, _, _ := net.SplitHostPort(ctx.Value(mux.Address).(string))
+	actual, _, _ := net.SplitHostPort(ctx.Value("address").(string))
 	if expected != actual {
 		err := game.ErrWrongIP
 		log.Ctx(ctx).Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")

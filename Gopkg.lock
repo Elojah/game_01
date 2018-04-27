@@ -11,7 +11,7 @@
   branch = "master"
   name = "github.com/elojah/mux"
   packages = ["."]
-  revision = "52af5f952b9b909335f7d05c3bce1ef36c4aabad"
+  revision = "cf0697f16486b604f60dbe0bb7d60b8414ebadd2"
 
 [[projects]]
   branch = "master"
@@ -102,7 +102,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "2b6c08872f4b66da917bb4ce98df4f0307330f78"
+  revision = "b49d69b5da943f7ef3c9cf91c8777c1f78a0cc3c"
 
 [[projects]]
   branch = "master"
@@ -111,7 +111,7 @@
     "unix",
     "windows"
   ]
-  revision = "79b0c6888797020a994db17c8510466c72fe75d9"
+  revision = "bb9c189858d91f42db229b04d45a4c3d23a7662a"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
@@ -122,6 +122,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1e459c6696b7cb16de065bd04fbb3cad4195597f01044fa2493e948264e5d5b5"
+  inputs-digest = "7c30336121de965f0dcc973d47890b77d6a4e6a40efbbcc9c0a776ccbd5c05c7"
   solver-name = "gps-cdcl"
   solver-version = 1

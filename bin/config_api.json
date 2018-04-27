@@ -10,18 +10,11 @@
 		"cert_path": "",
 		"key_path": ""
 	},
-	"nats-streaming": {
-		"cluster_id": "test-cluster",
-		"client_id": "game_api",
-		"nats_url": "nats://localhost:4222",
-		"connect_timeout": "10s",
-		"ack_timeout": "2s",
-		"max_pub_acks_in_flight": 500
-	},
 	"server": {
 		"address": "localhost:3400",
 		"middlewares": ["lz4"],
-		"packet_size": 1024
+		"packet_size": 1024,
+		"server_protocol": "tcp"
 	},
 	"api": {
 		"version": "0",

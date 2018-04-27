@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
@@ -15,6 +16,8 @@ import (
 
 // run services.
 func run(prog string, filename string) {
+
+	zerolog.TimeFieldFormat = ""
 
 	launchers := services.Launchers{}
 
@@ -40,7 +43,7 @@ func run(prog string, filename string) {
 	_ = scx
 
 	if err := launchers.Up(filename); err != nil {
-		log.Error().Str("filename", filename).Msg("failed to start")
+		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
 
@@ -52,6 +55,7 @@ func run(prog string, filename string) {
 
 	go func() { m.Listen() }()
 	log.Info().Msg("api up")
+	select {}
 }
 
 func main() {
@@ -61,5 +65,4 @@ func main() {
 		return
 	}
 	run(args[0], args[1])
-	select {}
 }
