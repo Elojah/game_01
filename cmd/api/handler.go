@@ -64,11 +64,11 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 
 	// # Check TS in tolerance range.
-	ts := time.Unix(msg.TS, 0)
+	ts := time.Unix(0, msg.TS)
 	now := time.Now()
 	if ts.After(now) || now.Sub(ts) > h.Tolerance {
 		err := game.ErrInvalidTS
-		logger.Error().Err(err).Str("status", "hijacked").Int64("ts", ts.Unix()).Int64("now", now.Unix()).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "timeout").Int64("ts", ts.UnixNano()).Int64("now", now.UnixNano()).Msg("packet rejected")
 		return err
 	}
 

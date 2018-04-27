@@ -25,19 +25,6 @@ func route(mux *udp.Mux, cfg Config) {
 func send(mux *udp.Mux, cfg Config) {
 	id := gocql.TimeUUID()
 	id, _ = gocql.ParseUUID("d91cb620-47cf-11e8-bef2-000000000001")
-	msg :=
-		dto.Message{
-			Token:  id,
-			Action: nil,
-			ACK:    nil,
-			TS:     time.Now().Unix(),
-		}
-
-	raw, err := msg.Marshal(nil)
-	if err != nil {
-		fmt.Println("error marshaling:", err)
-		return
-	}
 
 	conn, err := net.Dial("tcp", "127.0.0.1:3400")
 	if err != nil {
@@ -45,18 +32,32 @@ func send(mux *udp.Mux, cfg Config) {
 		return
 	}
 
-	out := make([]byte, lz4.CompressBound(raw))
-
-	n, err := lz4.Compress(raw, out)
-	if err != nil {
-		fmt.Println("failed to compress lz4", err)
-		return
-	}
-
 	for i := 0; i < 20; i++ {
-		time.Sleep(1 * time.Second)
-		fmt.Println("send shit")
-		conn.Write(out[:n])
+		// time.Sleep(1 * time.Second)
+		msg :=
+			dto.Message{
+				Token:  id,
+				Action: nil,
+				ACK:    nil,
+				TS:     time.Now().UnixNano(),
+			}
+		raw, err := msg.Marshal(nil)
+		if err != nil {
+			fmt.Println("error marshaling:", err)
+			return
+		}
+		out := make([]byte, lz4.CompressBound(raw))
+		n, err := lz4.Compress(raw, out)
+		if err != nil {
+			fmt.Println("failed to compress lz4", err)
+			return
+		}
+		go func() {
+			fmt.Println(out[:n])
+			if _, err := conn.Write(out[:n]); err != nil {
+				fmt.Println("write error")
+			}
+		}()
 	}
 }
 

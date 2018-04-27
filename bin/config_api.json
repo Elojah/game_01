@@ -19,6 +19,6 @@
 	"api": {
 		"version": "0",
 		"resources": ["actor"],
-		"tolerance": "2s"
+		"tolerance": "10ms"
 	}
 }
