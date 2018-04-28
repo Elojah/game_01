@@ -8,7 +8,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	influxx "github.com/elojah/game_01/storage/influx"
 	scyllax "github.com/elojah/game_01/storage/scylla"
+	"github.com/elojah/influx"
 	"github.com/elojah/mux"
 	"github.com/elojah/scylla"
 	"github.com/elojah/services"
@@ -27,6 +29,13 @@ func run(prog string, filename string) {
 	}, "scylla")
 	launchers = append(launchers, scl)
 	scx := scyllax.NewService(&sc)
+
+	in := influx.Service{}
+	inl := in.NewLauncher(influx.Namespaces{
+		Influx: "influx",
+	}, "influx")
+	launchers = append(launchers, inl)
+	inx := influxx.NewService(&in)
 
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
@@ -51,6 +60,7 @@ func run(prog string, filename string) {
 	h.Services = game.NewServices()
 	h.Config = cfg
 	h.TokenService = scx
+	h.ActorService = inx
 	h.Route(&m, cfg)
 
 	go func() { m.Listen() }()

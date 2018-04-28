@@ -23,8 +23,9 @@ func route(mux *udp.Mux, cfg Config) {
 }
 
 func send(mux *udp.Mux, cfg Config) {
-	id := gocql.TimeUUID()
-	id, _ = gocql.ParseUUID("d91cb620-47cf-11e8-bef2-000000000001")
+	id, _ := gocql.ParseUUID("d91cb620-47cf-11e8-bef2-000000000001")
+
+	ack := [16]byte(id)
 
 	conn, err := net.Dial("udp", "127.0.0.1:3400")
 	if err != nil {
@@ -36,10 +37,13 @@ func send(mux *udp.Mux, cfg Config) {
 		// time.Sleep(1 * time.Second)
 		msg :=
 			dto.Message{
-				Token:  id,
-				Action: nil,
-				ACK:    nil,
-				TS:     time.Now().UnixNano(),
+				Token: id,
+				Action: dto.Attack{
+					Actor:  id,
+					Target: id,
+				},
+				ACK: &ack,
+				TS:  time.Now().UnixNano(),
 			}
 		raw, err := msg.Marshal(nil)
 		if err != nil {

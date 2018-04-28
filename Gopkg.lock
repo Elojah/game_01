@@ -9,9 +9,15 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/elojah/influx"
+  packages = ["."]
+  revision = "1dd0806db09a468885dfe0ae4d29850c2c64b85d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/elojah/mux"
   packages = ["."]
-  revision = "3d6ade7f28482c295a30a707c7c5f315f540ce65"
+  revision = "0b1b5e5a6a6e800133d78edd9834316316da42f7"
 
 [[projects]]
   branch = "master"
@@ -76,6 +82,16 @@
   revision = "e80d13ce29ede4452c43dea11e79b9bc8a15b478"
 
 [[projects]]
+  name = "github.com/influxdata/influxdb"
+  packages = [
+    "client/v2",
+    "models",
+    "pkg/escape"
+  ]
+  revision = "02d7d4f043b34ecb4e9b2dbec298c6f9450c2a32"
+  version = "v1.5.2"
+
+[[projects]]
   name = "github.com/oklog/ulid"
   packages = ["."]
   revision = "d311cb43c92434ec4072dfbbda3400741d0a6337"
@@ -111,7 +127,7 @@
     "unix",
     "windows"
   ]
-  revision = "bb9c189858d91f42db229b04d45a4c3d23a7662a"
+  revision = "cbbc999da32df943dac6cd71eb3ee39e1d7838b9"
 
 [[projects]]
   name = "gopkg.in/inf.v0"
@@ -122,6 +138,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "479d570d29ed10f3645712748274cff51d41205dc8c5af4d49fb82e59770e8bf"
+  inputs-digest = "c29856dffa4293129a2b967cf87caf4840d980bcf574842d5338b5559961c7f1"
   solver-name = "gps-cdcl"
   solver-version = 1
