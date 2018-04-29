@@ -6,22 +6,3 @@ services:
     image: scylladb/scylla
     ports:
       - 9042:9042
-
-  # InfluxDB
-  influx:
-    image: influxdb
-    ports:
-      - 8086:8086
-
-#   # Tile38
-#   tile38:
-#     image: tile38/tile38
-#     ports:
-#       - 9851:9851
-
-# # NATS streaming
-#   nats-streaming:
-#     image: nats-streaming
-#     ports:
-#       - 4222:4222
-#       - 8222:8222

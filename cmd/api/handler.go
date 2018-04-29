@@ -87,14 +87,3 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	return nil
 }
-
-func (h *handler) attack(ctx context.Context, a dto.Attack, ts time.Time) error {
-	// TODO remove hp from actor to target with actor service scylla only
-	return nil
-}
-
-func (h *handler) move(ctx context.Context, m dto.Move, ts time.Time) error {
-	// h.Queue.
-	// TODO move player
-	return nil
-}
