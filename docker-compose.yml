@@ -3,13 +3,14 @@ services:
 
   # Redis
   redis:
-    image: redis
+    build:
+      context: docker/redis
     ports:
       - 6379:6379
 
   # NATS
   nats:
-    images: nats
+    image: nats
     ports:
       - 4222:4222
       - 8222:8222

@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/mux"
 	"github.com/elojah/nats"
@@ -34,6 +35,7 @@ func run(prog string, filename string) {
 		Nats: "nats",
 	}, "nats")
 	launchers = append(launchers, nal)
+	nax := natsx.NewService(&na)
 
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
@@ -56,6 +58,7 @@ func run(prog string, filename string) {
 	h.Services = game.NewServices()
 	h.Config = cfg
 	h.TokenService = rdx
+	h.EventService = nax
 	// h.EntityService = rdx
 	h.Route(&m, cfg)
 

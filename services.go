@@ -4,6 +4,7 @@ package game
 type Services struct {
 	EntityService
 	TokenService
+	EventService
 }
 
 // NewServices returns a new empty datagate..

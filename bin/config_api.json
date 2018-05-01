@@ -1,14 +1,8 @@
 {
-	"scylla": {
-		"hosts": ["localhost:9042"],
-		"keyspace": "global",
-		"timeout": "3s",
-		"num_retries": 3,
-		"consistency": "LOCAL_ONE",
-		"username": "game",
-		"password": "secret",
-		"cert_path": "",
-		"key_path": ""
+	"api": {
+		"version": "0",
+		"resources": ["actor"],
+		"tolerance": "10ms"
 	},
 	"server": {
 		"address": "127.0.0.1:3400",
@@ -16,9 +10,15 @@
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
-	"api": {
-		"version": "0",
-		"resources": ["actor"],
-		"tolerance": "10ms"
+	"redis": {
+		"addr" : "localhost:6379",
+		"password" : "secret",
+		"db" : 1
+	},
+	"nats": {
+		"address": "nats://localhost:4222",
+		"max_reconnect": 3,
+		"reconnect_wait": "2s",
+		"timeout": "1s"
 	}
 }

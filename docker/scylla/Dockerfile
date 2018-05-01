@@ -1,1 +1,0 @@
-FROM scylladb/scylla

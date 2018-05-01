@@ -32,7 +32,7 @@ func send(cfg Config) {
 			dto.Message{
 				Token: id,
 				Action: dto.Attack{
-					Entity: id,
+					Source: id,
 					Target: id,
 				},
 				ACK: &ack,
@@ -50,7 +50,6 @@ func send(cfg Config) {
 			return
 		}
 		go func() {
-			fmt.Println(out[:n])
 			if _, err := conn.Write(out[:n]); err != nil {
 				fmt.Println("write error")
 			}
