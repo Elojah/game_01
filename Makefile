@@ -42,6 +42,7 @@ client:
 gen:
 	$(info $(M) running gencode…) @
 	$Q cd dto && gencode go -schema=message.schema -package dto
+	$Q cd storage && gencode go -schema=token.schema -package storage
 
 # Dependencies
 .PHONY: dep

@@ -8,11 +8,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
-	influxx "github.com/elojah/game_01/storage/influx"
-	scyllax "github.com/elojah/game_01/storage/scylla"
-	"github.com/elojah/influx"
+	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/mux"
-	"github.com/elojah/scylla"
+	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
 
@@ -23,19 +21,12 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
-	sc := scylla.Service{}
-	scl := sc.NewLauncher(scylla.Namespaces{
-		Scylla: "scylla",
-	}, "scylla")
-	launchers = append(launchers, scl)
-	scx := scyllax.NewService(&sc)
-
-	in := influx.Service{}
-	inl := in.NewLauncher(influx.Namespaces{
-		Influx: "influx",
-	}, "influx")
-	launchers = append(launchers, inl)
-	inx := influxx.NewService(&in)
+	rd := redis.Service{}
+	rdl := rd.NewLauncher(redis.Namespaces{
+		Redis: "redis",
+	}, "redis")
+	launchers = append(launchers, rdl)
+	rdx := redisx.NewService(&rd)
 
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
@@ -49,8 +40,6 @@ func run(prog string, filename string) {
 	}, "api")
 	launchers = append(launchers, cfgl)
 
-	_ = scx
-
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
@@ -59,8 +48,8 @@ func run(prog string, filename string) {
 	h := handler{}
 	h.Services = game.NewServices()
 	h.Config = cfg
-	h.TokenService = scx
-	h.ActorService = inx
+	h.TokenService = rdx
+	h.EntityService = rdx
 	h.Route(&m, cfg)
 
 	go func() { m.Listen() }()

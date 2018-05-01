@@ -13,16 +13,9 @@ import (
 
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/services"
-	"github.com/elojah/udp"
 )
 
-func route(mux *udp.Mux, cfg Config) {
-	// for _,r_ := range cfg.Resources {
-	// 	// Add gamestate handling here
-	// }
-}
-
-func send(mux *udp.Mux, cfg Config) {
+func send(cfg Config) {
 	id, _ := gocql.ParseUUID("d91cb620-47cf-11e8-bef2-000000000001")
 
 	ack := [16]byte(id)
@@ -39,7 +32,7 @@ func send(mux *udp.Mux, cfg Config) {
 			dto.Message{
 				Token: id,
 				Action: dto.Attack{
-					Actor:  id,
+					Entity: id,
 					Target: id,
 				},
 				ACK: &ack,
@@ -73,13 +66,6 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
-	mux := udp.Mux{}
-	mux.Entry = logger
-	muxl := mux.NewLauncher(udp.Namespaces{
-		UDP: "server",
-	}, "server")
-	launchers = append(launchers, muxl)
-
 	cfg := Config{}
 	cfgl := cfg.NewLauncher(Namespaces{
 		API: "api",
@@ -91,11 +77,10 @@ func run(prog string, filename string) {
 		return
 	}
 
-	route(&mux, cfg)
 	logger.Info("api up")
 
 	logger.Info("start sending")
-	send(&mux, cfg)
+	send(cfg)
 }
 
 func main() {

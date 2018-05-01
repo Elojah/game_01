@@ -27,3 +27,11 @@ CREATE TABLE
 	z    double,
 	PRIMARY KEY(uuid)
 );
+
+CREATE TABLE
+	global.action
+(
+	uuid timeuuid,
+	ts timestamp,
+	PRIMARY KEY((uuid, ts), ts)
+);

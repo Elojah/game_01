@@ -1,15 +1,15 @@
-package tile38
+package redis
 
 import (
 	"github.com/elojah/redis"
 )
 
-// Service is a redis service connected to tile38.
+// Service implements token and entity.
 type Service struct {
 	*redis.Service
 }
 
-// NewService returns a tile38 service based on redis argument.
+// NewService returns a new game_01 redis Service.
 func NewService(s *redis.Service) *Service {
 	return &Service{
 		Service: s,

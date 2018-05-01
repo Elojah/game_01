@@ -9,12 +9,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/elojah/influx"
-  packages = ["."]
-  revision = "1dd0806db09a468885dfe0ae4d29850c2c64b85d"
-
-[[projects]]
-  branch = "master"
   name = "github.com/elojah/mux"
   packages = ["."]
   revision = "0b1b5e5a6a6e800133d78edd9834316316da42f7"
@@ -27,21 +21,9 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/elojah/scylla"
-  packages = ["."]
-  revision = "6c1aab5ff245be190d7f70d60df4ff351c85d9cb"
-
-[[projects]]
-  branch = "master"
   name = "github.com/elojah/services"
   packages = ["."]
   revision = "d9930d97b9f832fd753fd538ee6d68db5b501b51"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/elojah/udp"
-  packages = ["."]
-  revision = "a12752de08e0c165386e5cf86e2a961752df6e6f"
 
 [[projects]]
   name = "github.com/go-redis/redis"
@@ -80,16 +62,6 @@
   name = "github.com/hailocab/go-hostpool"
   packages = ["."]
   revision = "e80d13ce29ede4452c43dea11e79b9bc8a15b478"
-
-[[projects]]
-  name = "github.com/influxdata/influxdb"
-  packages = [
-    "client/v2",
-    "models",
-    "pkg/escape"
-  ]
-  revision = "02d7d4f043b34ecb4e9b2dbec298c6f9450c2a32"
-  version = "v1.5.2"
 
 [[projects]]
   name = "github.com/oklog/ulid"
@@ -138,6 +110,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "c29856dffa4293129a2b967cf87caf4840d980bcf574842d5338b5559961c7f1"
+  inputs-digest = "b80f6ec669d628067e00925260516dd1e2774d27c9d4180f8e828875c2970e21"
   solver-name = "gps-cdcl"
   solver-version = 1

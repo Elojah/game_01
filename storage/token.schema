@@ -1,0 +1,12 @@
+struct Permission {
+	ID		[16]byte
+	Right	uint8
+}
+
+struct Token {
+	ID			[16]byte
+	Permissions	[]Permission
+
+	IP			string
+	Account		[16]byte
+}

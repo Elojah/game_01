@@ -6,7 +6,6 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/elojah/services"
-	"github.com/elojah/udp"
 )
 
 func BenchmarkSend(b *testing.B) {
@@ -18,13 +17,6 @@ func BenchmarkSend(b *testing.B) {
 
 	launchers := services.Launchers{}
 
-	mux := udp.Mux{}
-	mux.Entry = logger
-	muxl := mux.NewLauncher(udp.Namespaces{
-		UDP: "server",
-	}, "server")
-	launchers = append(launchers, muxl)
-
 	cfg := Config{}
 	cfgl := cfg.NewLauncher(Namespaces{
 		API: "api",
@@ -35,9 +27,7 @@ func BenchmarkSend(b *testing.B) {
 		logger.WithField("filename", filename).Fatal(err.Error())
 		return
 	}
-	defer muxl.Down(services.Configs{})
 
-	route(&mux, cfg)
 	logger.Info("api up")
 
 	logger.Info("start sending")
@@ -45,7 +35,7 @@ func BenchmarkSend(b *testing.B) {
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			send(&mux, cfg)
+			send(cfg)
 		}
 	})
 }

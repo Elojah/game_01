@@ -5,12 +5,10 @@ import (
 	"net"
 	"time"
 
-	"github.com/gocql/gocql"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
-	"github.com/elojah/game_01/storage"
 	"github.com/elojah/mux"
 )
 
@@ -35,24 +33,14 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 
 	// # Parse message UUID.
-	uuid, err := gocql.UUIDFromBytes(msg.Token[:])
-	if err != nil {
-		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
-		return err
-	}
+	uuid := game.ID(msg.Token)
 
 	// # Search message UUID in storage.
-	tokens, err := h.ListToken(game.TokenSubset{
-		IDs: []game.ID{uuid},
-	})
-	if err == nil && len(tokens) == 0 {
-		err = storage.ErrNotFound
-	}
+	token, err := h.GetToken(uuid)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("uuid", uuid.String()).Msg("packet rejected")
 		return err
 	}
-	token := tokens[0]
 
 	// # Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())

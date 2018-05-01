@@ -8,6 +8,6 @@ import (
 )
 
 func (h *handler) attack(ctx context.Context, a dto.Attack, ts time.Time) error {
-	// TODO remove hp from actor to target with actor service scylla only
+	// TODO remove hp from entity to target with entity service scylla only
 	return nil
 }

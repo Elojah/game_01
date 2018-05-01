@@ -5,12 +5,12 @@ struct Vec3 {
 }
 
 struct Attack {
-	Actor	[16]byte
+	Entity	[16]byte
 	Target	[16]byte
 }
 
 struct Move {
-	Actor		[16]byte
+	Entity		[16]byte
 	Position	Vec3
 }
 
