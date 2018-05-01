@@ -14,7 +14,8 @@ make client && bin/game_client bin/config_client.json
 - [x] Change log to zap (uber faster log)
 - [x] Add context + use it with sync.errgroup
 - [x] Use TCP + rename UDP to mux
-- [ ] Add influxDB dep + impl entity/state service
+- [ ] Create new https service to create new token
+- [ ] Create new bin to read events
 - [ ] Add NATS mqueue to cancel replay mechanism (in context usage ?)
 - [ ] Add server ack sending to client (and client resend)
 - [ ] ack service

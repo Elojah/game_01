@@ -8,10 +8,8 @@ import (
 	"github.com/elojah/services"
 )
 
-// Config is web quic server structure config.
+// Config is the udp server structure config.
 type Config struct {
-	Version   string        `json:"version"`
-	Resources []string      `json:"resources"`
 	Tolerance time.Duration `json:"tolerance"`
 }
 
@@ -25,12 +23,6 @@ func (c Config) Equal(rhs Config) bool {
 			return false
 		}
 	}
-	if c.Version != rhs.Version {
-		return false
-	}
-	if c.Tolerance != rhs.Tolerance {
-		return false
-	}
 	return true
 }
 
@@ -40,13 +32,6 @@ func (c *Config) Dial(fileconf interface{}) error {
 	fconf, ok := fileconf.(map[string]interface{})
 	if !ok {
 		return errors.New("namespace empty")
-	}
-	cVersion, ok := fconf["version"]
-	if !ok {
-		return errors.New("missing key version")
-	}
-	if c.Version, ok = cVersion.(string); !ok {
-		return errors.New("key version invalid. must be string")
 	}
 	cTolerance, ok := fconf["tolerance"]
 	if !ok {
@@ -59,20 +44,6 @@ func (c *Config) Dial(fileconf interface{}) error {
 	c.Tolerance, err = time.ParseDuration(cToleranceString)
 	if err != nil {
 		return err
-	}
-	cResource, ok := fconf["resources"]
-	if !ok {
-		return errors.New("missing key resources")
-	}
-	cResources, ok := cResource.([]interface{})
-	if !ok {
-		return errors.New("key resources invalid. must be array")
-	}
-	c.Resources = make([]string, len(cResources))
-	for i := range cResources {
-		if c.Resources[i], ok = cResources[i].(string); !ok {
-			return errors.New("key resources invalid. must be string array")
-		}
 	}
 	return nil
 }
