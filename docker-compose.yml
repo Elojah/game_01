@@ -1,8 +1,15 @@
 version: "3"
 services:
 
-  # ScyllaDB
-  scylla:
-    image: scylladb/scylla
+  # Redis
+  redis:
+    image: redis
     ports:
-      - 9042:9042
+      - 6379:6379
+
+  # NATS
+  nats:
+    images: nats
+    ports:
+      - 4222:4222
+      - 8222:8222

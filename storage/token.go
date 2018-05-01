@@ -16,10 +16,5 @@ func (t *Token) Domain() (game.Token, error) {
 	if token.IP, err = net.ResolveUDPAddr("udp", t.IP); err != nil {
 		return token, nil
 	}
-
-	token.Permissions = make(map[game.ID]game.Right, len(t.Permissions))
-	for _, permission := range t.Permissions {
-		token.Permissions[game.ID(permission.ID)] = game.Right(permission.Right)
-	}
 	return token, nil
 }

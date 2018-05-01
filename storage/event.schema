@@ -1,0 +1,18 @@
+struct Damage {
+	Source	[16]byte
+	Amount	float64
+}
+
+struct Heal {
+	Source	[16]byte
+	Amount	float64
+}
+
+struct Event {
+	ID	[16]byte
+	TS	int64
+	Action union {
+		Damage
+		Heal
+	}
+}

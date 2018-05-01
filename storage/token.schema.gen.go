@@ -64,39 +64,15 @@ func (d *Permission) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type Token struct {
-	ID          [16]byte
-	Permissions []Permission
-	IP          string
-	Account     [16]byte
+	ID      [16]byte
+	IP      string
+	Account [16]byte
 }
 
 func (d *Token) Size() (s uint64) {
 
 	{
 		s += 16
-	}
-	{
-		l := uint64(len(d.Permissions))
-
-		{
-
-			t := l
-			for t >= 0x80 {
-				t >>= 7
-				s++
-			}
-			s++
-
-		}
-
-		for k0 := range d.Permissions {
-
-			{
-				s += d.Permissions[k0].Size()
-			}
-
-		}
-
 	}
 	{
 		l := uint64(len(d.IP))
@@ -134,34 +110,6 @@ func (d *Token) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
-		l := uint64(len(d.Permissions))
-
-		{
-
-			t := uint64(l)
-
-			for t >= 0x80 {
-				buf[i+0] = byte(t) | 0x80
-				t >>= 7
-				i++
-			}
-			buf[i+0] = byte(t)
-			i++
-
-		}
-		for k0 := range d.Permissions {
-
-			{
-				nbuf, err := d.Permissions[k0].Marshal(buf[i+0:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
-
-		}
-	}
-	{
 		l := uint64(len(d.IP))
 
 		{
@@ -193,40 +141,6 @@ func (d *Token) Unmarshal(buf []byte) (uint64, error) {
 	{
 		copy(d.ID[:], buf[i+0:])
 		i += 16
-	}
-	{
-		l := uint64(0)
-
-		{
-
-			bs := uint8(7)
-			t := uint64(buf[i+0] & 0x7F)
-			for buf[i+0]&0x80 == 0x80 {
-				i++
-				t |= uint64(buf[i+0]&0x7F) << bs
-				bs += 7
-			}
-			i++
-
-			l = t
-
-		}
-		if uint64(cap(d.Permissions)) >= l {
-			d.Permissions = d.Permissions[:l]
-		} else {
-			d.Permissions = make([]Permission, l)
-		}
-		for k0 := range d.Permissions {
-
-			{
-				ni, err := d.Permissions[k0].Unmarshal(buf[i+0:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-		}
 	}
 	{
 		l := uint64(0)

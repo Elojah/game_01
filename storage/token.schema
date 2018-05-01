@@ -4,9 +4,7 @@ struct Permission {
 }
 
 struct Token {
-	ID			[16]byte
-	Permissions	[]Permission
-
-	IP			string
-	Account		[16]byte
+	ID		[16]byte
+	IP		string
+	Account	[16]byte
 }

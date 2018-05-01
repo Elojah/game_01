@@ -6,9 +6,7 @@ import (
 
 // Token represents a user connection. Creation is made by secure https only.
 type Token struct {
-	ID          ID
-	Permissions map[ID]Right
-
+	ID      ID
 	IP      *net.UDPAddr
 	Account ID
 }
