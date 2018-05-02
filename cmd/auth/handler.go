@@ -31,5 +31,17 @@ func (h *handler) Close() error {
 }
 
 func (h handler) login(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		// continue
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+	account, err := h.GetAccount(game.AccountBuilder)
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }

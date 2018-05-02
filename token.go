@@ -18,6 +18,7 @@ type TokenSubset struct {
 
 // TokenService is the service gate for Token resource.
 type TokenService interface {
+	CreateToken(Token) error
 	GetToken(ID) (Token, error)
 	// AddTokenPermission(TokenSubset, Permissions) error
 	// UpdateTokenPermission(TokenSubset, PermissionSubset, PermissionPatch) error

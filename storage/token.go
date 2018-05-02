@@ -18,3 +18,5 @@ func (t *Token) Domain() (game.Token, error) {
 	}
 	return token, nil
 }
+
+// func NewToken()

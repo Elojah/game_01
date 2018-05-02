@@ -27,3 +27,8 @@ func (s *Service) GetToken(id game.ID) (game.Token, error) {
 	}
 	return token.Domain()
 }
+
+// CreateToken creates a new token.
+func (s *Service) CreateToken(token game.Token) error {
+	return nil
+}

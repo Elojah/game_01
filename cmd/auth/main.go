@@ -37,6 +37,7 @@ func run(prog string, filename string) {
 
 	h.Services = game.NewServices()
 	h.TokenService = rdx
+	h.AccountService = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

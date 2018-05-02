@@ -1,0 +1,4 @@
+struct Account {
+	Username string
+	Password string
+}
