@@ -5,6 +5,7 @@ type Services struct {
 	EntityService
 	TokenService
 	EventService
+	AccountService
 }
 
 // NewServices returns a new empty datagate..

@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/elojah/game_01"
@@ -16,7 +18,7 @@ type handler struct {
 // Dial starts the auth server.
 func (h *handler) Dial(c Config) error {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/login", h.login)
+	mux.HandleFunc("/token", h.token)
 	h.srv = &http.Server{
 		Addr:    c.Address,
 		Handler: mux,
@@ -30,18 +32,39 @@ func (h *handler) Close() error {
 	return h.srv.Shutdown(context.Background())
 }
 
-func (h handler) login(w http.ResponseWriter, r *http.Request) {
+func (h handler) token(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		// continue
 	default:
-		w.WriteHeader(http.StatusMethodNotAllowed)
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-	account, err := h.GetAccount(game.AccountBuilder)
+
+	// Read body
+	b, err := ioutil.ReadAll(r.Body)
+	defer r.Body.Close()
 	if err != nil {
-		w.WriteHeader(http.StatusForbidden)
+		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+
+	// Unmarshal
+	var account game.Account
+	if err = json.Unmarshal(b, &account); err != nil {
+		http.Error(w, "payload invalid", http.StatusBadRequest)
+		return
+	}
+
+	// Search account in redis
+	account, err = h.GetAccount(game.AccountBuilder{
+		Username: account.Username,
+		Password: account.Password,
+	})
+	if err != nil {
+		http.Error(w, "payload invalid", http.StatusUnauthorized)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
 }
