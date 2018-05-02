@@ -10,6 +10,7 @@ GOLINT    = gometalinter
 
 API       = api
 CLIENT    = client
+AUTH      = auth
 
 FBSDIR    = .
 
@@ -19,7 +20,7 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 
 .PHONY: all
 
-all: api
+all: api client auth
 
 # Executables
 api:
@@ -37,6 +38,14 @@ client:
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(CLIENT)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(CLIENT)_$(VERSION) bin/$(PACKAGE)_$(CLIENT)
+
+auth:
+	$(info $(M) building executable auth…) @ ## Build program binary
+	$Q cd cmd/$(AUTH) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(AUTH)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(AUTH)_$(VERSION) bin/$(PACKAGE)_$(AUTH)
 
 .PHONY: gen
 gen:

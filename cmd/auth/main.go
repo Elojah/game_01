@@ -9,7 +9,6 @@ import (
 
 	"github.com/elojah/game_01"
 	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/mux"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -21,6 +20,7 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
+	// redis
 	rd := redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
@@ -28,24 +28,22 @@ func run(prog string, filename string) {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
-	cfg := Config{}
-	cfgl := cfg.NewLauncher(Namespaces{
-		API: "api",
-	}, "api")
-	launchers = append(launchers, cfgl)
+	// handler (https server)
+	h := handler{}
+	hl := h.NewLauncher(Namespaces{
+		Auth: "auth",
+	}, "auth")
+	launchers = append(launchers, hl)
+
+	h.Services = game.NewServices()
+	h.TokenService = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
 
-	h := handler{}
-	h.Services = game.NewServices()
-	h.Config = cfg
-	h.TokenService = rdx
-
-	go func() { h.Listen() }()
-	log.Info().Msg("api up")
+	log.Info().Msg("auth up")
 	select {}
 }
 

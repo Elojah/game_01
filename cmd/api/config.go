@@ -15,15 +15,7 @@ type Config struct {
 
 // Equal returns is both configs are equal.
 func (c Config) Equal(rhs Config) bool {
-	if len(c.Resources) != len(rhs.Resources) {
-		return false
-	}
-	for i := range c.Resources {
-		if c.Resources[i] != rhs.Resources[i] {
-			return false
-		}
-	}
-	return true
+	return c == rhs
 }
 
 // Dial set the config from a config namespace.
