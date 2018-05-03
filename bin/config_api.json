@@ -2,7 +2,7 @@
 	"api": {
 		"version": "0",
 		"resources": ["actor"],
-		"tolerance": "10ms"
+		"tolerance": "100ms"
 	},
 	"server": {
 		"address": "127.0.0.1:3400",
@@ -11,12 +11,12 @@
 		"server_protocol": "udp"
 	},
 	"redis": {
-		"addr" : "localhost:6379",
+		"addr" : "127.0.0.1:6379",
 		"password" : "secret",
-		"db" : 1
+		"db" : 0
 	},
 	"nats": {
-		"address": "nats://localhost:4222",
+		"address": "nats://127.0.0.1:4222",
 		"max_reconnect": 3,
 		"reconnect_wait": "2s",
 		"timeout": "1s"

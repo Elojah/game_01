@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/cloudflare/golz4"
-	"github.com/gocql/gocql"
+	"github.com/oklog/ulid"
 	"github.com/sirupsen/logrus"
 
 	"github.com/elojah/game_01/dto"
@@ -16,7 +16,8 @@ import (
 )
 
 func send(cfg Config) {
-	id, _ := gocql.ParseUUID("d91cb620-47cf-11e8-bef2-000000000001")
+
+	id, _ := ulid.Parse("01CCJTRK5C9CER4R65NDH3C6SN")
 
 	ack := [16]byte(id)
 
