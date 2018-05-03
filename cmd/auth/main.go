@@ -8,7 +8,9 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
+	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -28,6 +30,13 @@ func run(prog string, filename string) {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
+	na := nats.Service{}
+	nal := na.NewLauncher(nats.Namespaces{
+		Nats: "nats",
+	}, "nats")
+	launchers = append(launchers, nal)
+	nax := natsx.NewService(&na)
+
 	// handler (https server)
 	h := handler{}
 	hl := h.NewLauncher(Namespaces{
@@ -38,6 +47,7 @@ func run(prog string, filename string) {
 	h.Services = game.NewServices()
 	h.TokenService = rdx
 	h.AccountService = rdx
+	h.EventService = nax
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

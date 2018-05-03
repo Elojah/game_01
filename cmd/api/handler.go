@@ -17,6 +17,10 @@ type handler struct {
 	game.Services
 }
 
+func (h *handler) Dial(c Config) error {
+	return nil
+}
+
 func (h handler) Route(m *mux.M) {
 	m.Handler = h.handle
 }

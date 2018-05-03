@@ -6,6 +6,11 @@ import (
 	"time"
 )
 
+// Listener requires the receiver to create a new listener with subject ID.
+type Listener struct {
+	ID ID
+}
+
 // Damage received.
 type Damage struct {
 	Source ID

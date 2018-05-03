@@ -2,9 +2,6 @@ package main
 
 import (
 	"errors"
-	"sync"
-
-	"github.com/elojah/services"
 )
 
 // Config is the udp server structure config.
@@ -43,44 +40,5 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("key bufsize invalid. must be int")
 	}
 	c.Bufsize = int(cBufsizeFloat64)
-	return nil
-}
-
-// Namespaces maps configs used for api service with config file namespaces.
-type Namespaces struct {
-	Player services.Namespace
-}
-
-// Launcher represents a api launcher.
-type Launcher struct {
-	*services.Configs
-	ns Namespaces
-
-	c *Config
-	m sync.Mutex
-}
-
-// NewLauncher returns a new couchbase Launcher.
-func (c *Config) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
-	return &Launcher{
-		Configs: services.NewConfigs(nsRead...),
-		c:       c,
-		ns:      ns,
-	}
-}
-
-// Up starts the couchbase service with new configs.
-func (l *Launcher) Up(configs services.Configs) error {
-	l.m.Lock()
-	defer l.m.Unlock()
-
-	return l.c.Dial(configs[l.ns.Player])
-}
-
-// Down stops the couchbase service.
-func (l *Launcher) Down(configs services.Configs) error {
-	l.m.Lock()
-	defer l.m.Unlock()
-
 	return nil
 }

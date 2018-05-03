@@ -43,20 +43,18 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers = append(launchers, muxl)
 
-	cfg := Config{}
-	cfgl := cfg.NewLauncher(Namespaces{
+	h := handler{}
+	hl := h.NewLauncher(Namespaces{
 		API: "api",
 	}, "api")
-	launchers = append(launchers, cfgl)
+	launchers = append(launchers, hl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
 
-	h := handler{}
 	h.Services = game.NewServices()
-	h.Config = cfg
 	h.TokenService = rdx
 	h.EventService = nax
 	h.Route(&m)

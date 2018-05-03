@@ -35,19 +35,17 @@ func run(prog string, filename string) {
 	launchers = append(launchers, nal)
 	nax := natsx.NewService(&na)
 
-	cfg := Config{}
-	cfgl := cfg.NewLauncher(Namespaces{
+	a := app{}
+	al := a.NewLauncher(Namespaces{
 		Player: "player",
 	}, "player")
-	launchers = append(launchers, cfgl)
+	launchers = append(launchers, al)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
 
-	a := app{}
-	a.Config = cfg
 	a.EventService = nax
 	a.EntityService = rdx
 
