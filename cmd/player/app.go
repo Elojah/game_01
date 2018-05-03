@@ -63,10 +63,14 @@ func (a *app) AddListener(msg *nats.Msg) {
 		return
 	}
 	logger.Info().Str("id", id).Msg("listening")
-	select {
-	case msg := <-ch:
-		go a.Play(msg)
-	}
+	go func(ch chan *nats.Msg) {
+		for {
+			select {
+			case msg := <-ch:
+				go a.Play(msg)
+			}
+		}
+	}(ch)
 }
 
 func (a *app) Play(msg *nats.Msg) {
