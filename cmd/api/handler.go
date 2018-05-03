@@ -17,7 +17,7 @@ type handler struct {
 	game.Services
 }
 
-func (h handler) Route(m *mux.M, cfg Config) {
+func (h handler) Route(m *mux.M) {
 	m.Handler = h.handle
 }
 

@@ -11,6 +11,7 @@ GOLINT    = gometalinter
 API       = api
 CLIENT    = client
 AUTH      = auth
+PLAYER    = player
 
 FBSDIR    = .
 
@@ -46,6 +47,14 @@ auth:
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(AUTH)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(AUTH)_$(VERSION) bin/$(PACKAGE)_$(AUTH)
+
+player:
+	$(info $(M) building executable player…) @ ## Build program binary
+	$Q cd cmd/$(PLAYER) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(PLAYER)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(PLAYER)_$(VERSION) bin/$(PACKAGE)_$(PLAYER)
 
 .PHONY: gen
 gen:

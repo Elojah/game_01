@@ -7,10 +7,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/mux"
 	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -37,16 +35,10 @@ func run(prog string, filename string) {
 	launchers = append(launchers, nal)
 	nax := natsx.NewService(&na)
 
-	m := mux.M{}
-	muxl := m.NewLauncher(mux.Namespaces{
-		M: "server",
-	}, "server")
-	launchers = append(launchers, muxl)
-
 	cfg := Config{}
 	cfgl := cfg.NewLauncher(Namespaces{
-		API: "api",
-	}, "api")
+		Player: "player",
+	}, "player")
 	launchers = append(launchers, cfgl)
 
 	if err := launchers.Up(filename); err != nil {
@@ -54,15 +46,13 @@ func run(prog string, filename string) {
 		return
 	}
 
-	h := handler{}
-	h.Services = game.NewServices()
-	h.Config = cfg
-	h.TokenService = rdx
-	h.EventService = nax
-	h.Route(&m)
+	a := app{}
+	a.Config = cfg
+	a.EventService = nax
+	a.EntityService = rdx
 
-	go func() { m.Listen() }()
-	log.Info().Msg("api up")
+	go func() { a.Start() }()
+	log.Info().Msg("player up")
 	select {}
 }
 
