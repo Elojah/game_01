@@ -10,6 +10,7 @@ import (
 func NewEvent(event game.Event) *Event {
 	return &Event{
 		ID:     [16]byte(event.ID),
+		TS:     event.TS.UnixNano(),
 		Action: event.Action,
 	}
 }

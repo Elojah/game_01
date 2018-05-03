@@ -30,9 +30,11 @@ func (a *app) Start() {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
 	}
-	select {
-	case msg := <-ch:
-		go a.AddListener(msg)
+	for {
+		select {
+		case msg := <-ch:
+			go a.AddListener(msg)
+		}
 	}
 }
 
@@ -54,11 +56,13 @@ func (a *app) AddListener(msg *nats.Msg) {
 	}
 
 	listener := event.Action.(game.Listener)
-	_, ch, err := a.ReceiveEvent(listener.ID.String(), a.bufsize)
+	id := listener.ID.String()
+	_, ch, err := a.ReceiveEvent(id, a.bufsize)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
 	}
+	logger.Info().Str("id", id).Msg("listening")
 	select {
 	case msg := <-ch:
 		go a.Play(msg)
@@ -66,5 +70,4 @@ func (a *app) AddListener(msg *nats.Msg) {
 }
 
 func (a *app) Play(msg *nats.Msg) {
-	println(msg.Subject)
 }

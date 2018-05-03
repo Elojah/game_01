@@ -84,6 +84,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	// Create a new listener for this token
 	targetID := ulid.MustParse(h.listeners[rand.Intn(len(h.listeners))])
 	event := game.Event{
+		ID:     game.NewULID(),
 		TS:     time.Now(),
 		Action: game.Listener{ID: token.ID},
 	}
