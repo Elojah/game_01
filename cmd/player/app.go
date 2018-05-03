@@ -5,6 +5,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/storage"
 )
 
 type app struct {
@@ -31,10 +32,39 @@ func (a *app) Start() {
 	}
 	select {
 	case msg := <-ch:
-		go a.Listen(msg)
+		go a.AddListener(msg)
 	}
 }
 
-func (a *app) Listen(msg *nats.Msg) {
+func (a *app) AddListener(msg *nats.Msg) {
+	logger := log.With().Str("event", msg.Subject).Logger()
+
+	var eventS storage.Event
+	if _, err := eventS.Unmarshal(msg.Data); err != nil {
+		logger.Error().Err(err).Msg("failed to unmarshal event")
+		return
+	}
+
+	event := eventS.Domain()
+	switch event.Action.(type) {
+	case game.Listener:
+	default:
+		logger.Error().Msg("wrong action type")
+		return
+	}
+
+	listener := event.Action.(game.Listener)
+	_, ch, err := a.ReceiveEvent(listener.ID.String(), a.bufsize)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to sub")
+		return
+	}
+	select {
+	case msg := <-ch:
+		go a.Play(msg)
+	}
+}
+
+func (a *app) Play(msg *nats.Msg) {
 	println(msg.Subject)
 }
