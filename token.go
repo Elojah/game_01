@@ -6,9 +6,9 @@ import (
 
 // Token represents a user connection. Creation is made by secure https only.
 type Token struct {
-	ID      ID
-	IP      *net.UDPAddr
-	Account ID
+	ID      ID           `json:"ID"`
+	IP      *net.UDPAddr `json:"-"`
+	Account ID           `json:"-"`
 }
 
 // TokenSubset represents a subset of Token resources.
@@ -20,7 +20,4 @@ type TokenSubset struct {
 type TokenService interface {
 	CreateToken(Token) error
 	GetToken(ID) (Token, error)
-	// AddTokenPermission(TokenSubset, Permissions) error
-	// UpdateTokenPermission(TokenSubset, PermissionSubset, PermissionPatch) error
-	// DeleteTokenPermission(TokenSubset, PermissionSubset) error
 }

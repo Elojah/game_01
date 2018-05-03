@@ -7,11 +7,11 @@ import (
 )
 
 // Domain converts a storage token into a domain token.
-func (t *Token) Domain() (game.Token, error) {
+func (t *Token) Domain(id game.ID) (game.Token, error) {
 	var token game.Token
 	var err error
 
-	token.ID = game.ID(t.ID)
+	token.ID = id
 	token.Account = game.ID(t.Account)
 	if token.IP, err = net.ResolveUDPAddr("udp", t.IP); err != nil {
 		return token, nil
@@ -19,4 +19,10 @@ func (t *Token) Domain() (game.Token, error) {
 	return token, nil
 }
 
-// func NewToken()
+// NewToken converts a domain token into a storage token.
+func NewToken(token game.Token) *Token {
+	return &Token{
+		IP:      token.IP.String(),
+		Account: [16]byte(token.Account),
+	}
+}

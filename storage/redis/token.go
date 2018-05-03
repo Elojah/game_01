@@ -25,10 +25,14 @@ func (s *Service) GetToken(id game.ID) (game.Token, error) {
 	if _, err := token.Unmarshal([]byte(val)); err != nil {
 		return game.Token{}, err
 	}
-	return token.Domain()
+	return token.Domain(id)
 }
 
 // CreateToken creates a new token.
 func (s *Service) CreateToken(token game.Token) error {
-	return nil
+	raw, err := storage.NewToken(token).Marshal(nil)
+	if err != nil {
+		return err
+	}
+	return s.Set(token.ID.String(), raw, 0).Err()
 }

@@ -1,4 +1,4 @@
 struct Account {
-	Username string
-	Password string
+	ID			[16]byte
+	Password	string
 }

@@ -25,5 +25,14 @@ func (s *Service) GetAccount(builder game.AccountBuilder) (game.Account, error) 
 	if _, err := account.Unmarshal([]byte(val)); err != nil {
 		return game.Account{}, err
 	}
-	return account.Domain()
+	return account.Domain(builder.Username)
+}
+
+// CreateAccount implemented with redis.
+func (s *Service) CreateAccount(account game.Account) error {
+	raw, err := storage.NewAccount(account).Marshal(nil)
+	if err != nil {
+		return err
+	}
+	return s.Set(account.Username, raw, 0).Err()
 }
