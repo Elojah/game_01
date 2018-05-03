@@ -8,15 +8,23 @@ import (
 )
 
 type app struct {
-	Config
 	game.Services
+
+	subject string
+	bufsize int
+}
+
+func (a *app) Dial(c Config) error {
+	a.subject = c.Subject
+	a.bufsize = c.Bufsize
+	return nil
 }
 
 func (a *app) Start() {
 
-	logger := log.With().Str("player", a.Subject).Logger()
+	logger := log.With().Str("player", a.subject).Logger()
 
-	_, ch, err := a.ReceiveEvent(a.Subject, a.Bufsize)
+	_, ch, err := a.ReceiveEvent(a.subject, a.bufsize)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return

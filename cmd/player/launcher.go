@@ -8,7 +8,7 @@ import (
 
 // Namespaces maps configs used for api service with config file namespaces.
 type Namespaces struct {
-	Player services.Namespace
+	App services.Namespace
 }
 
 // Launcher represents a api launcher.
@@ -35,7 +35,7 @@ func (l *Launcher) Up(configs services.Configs) error {
 	defer l.m.Unlock()
 
 	sconfig := Config{}
-	if err := sconfig.Dial(configs[l.ns.Player]); err != nil {
+	if err := sconfig.Dial(configs[l.ns.App]); err != nil {
 		// Add namespace key when returning error with logrus
 		return err
 	}

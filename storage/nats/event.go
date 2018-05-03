@@ -13,8 +13,7 @@ func (s *Service) SendEvent(event game.Event, target game.ID) error {
 	if err != nil {
 		return err
 	}
-	s.Publish(target.String(), raw)
-	return nil
+	return s.Publish(target.String(), raw)
 }
 
 // ReceiveEvent returns a chan which follows events received in NATS queue.

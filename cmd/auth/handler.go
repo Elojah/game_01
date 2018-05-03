@@ -25,7 +25,8 @@ func (h *handler) Dial(c Config) error {
 		Handler: mux,
 	}
 	go func() { _ = h.srv.ListenAndServeTLS(c.Cert, c.Key) }()
-	h.listeners = c.Listeners
+	h.listeners = make([]string, len(c.Listeners))
+	copy(h.listeners, c.Listeners)
 	return nil
 }
 

@@ -37,8 +37,8 @@ func run(prog string, filename string) {
 
 	a := app{}
 	al := a.NewLauncher(Namespaces{
-		Player: "player",
-	}, "player")
+		App: "app",
+	}, "app")
 	launchers = append(launchers, al)
 
 	if err := launchers.Up(filename); err != nil {

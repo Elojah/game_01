@@ -2,7 +2,7 @@
 	"api": {
 		"version": "0",
 		"resources": ["actor"],
-		"tolerance": "100ms"
+		"tolerance": "500ms"
 	},
 	"server": {
 		"address": "127.0.0.1:3400",

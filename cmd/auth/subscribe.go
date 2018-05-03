@@ -11,7 +11,7 @@ import (
 	"github.com/elojah/game_01/storage"
 )
 
-func (h handler) subscribe(w http.ResponseWriter, r *http.Request) {
+func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		// continue

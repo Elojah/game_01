@@ -13,11 +13,13 @@ import (
 )
 
 type handler struct {
-	Config
 	game.Services
+
+	tolerance time.Duration
 }
 
 func (h *handler) Dial(c Config) error {
+	h.tolerance = c.Tolerance
 	return nil
 }
 
@@ -58,7 +60,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	// # Check TS in tolerance range.
 	ts := time.Unix(0, msg.TS)
 	now := time.Now()
-	if ts.After(now) || now.Sub(ts) > h.Tolerance {
+	if ts.After(now) || now.Sub(ts) > h.tolerance {
 		err := game.ErrInvalidTS
 		logger.Error().Err(err).Str("status", "timeout").Int64("ts", ts.UnixNano()).Int64("now", now.UnixNano()).Msg("packet rejected")
 		return err
