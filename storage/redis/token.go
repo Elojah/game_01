@@ -34,5 +34,5 @@ func (s *Service) CreateToken(token game.Token) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(token.ID.String(), raw, 0).Err()
+	return s.Set(tokenKey+token.ID.String(), raw, 0).Err()
 }

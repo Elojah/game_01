@@ -6,6 +6,8 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/storage"
 )
@@ -19,10 +21,13 @@ func (h handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger := log.With().Str("route", "/login").Logger()
+
 	// Read body
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
+		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
@@ -30,6 +35,7 @@ func (h handler) login(w http.ResponseWriter, r *http.Request) {
 	// Unmarshal payload
 	var accountPayload game.Account
 	if err = json.Unmarshal(b, &accountPayload); err != nil {
+		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
@@ -39,17 +45,23 @@ func (h handler) login(w http.ResponseWriter, r *http.Request) {
 		Username: accountPayload.Username,
 	})
 	if err != nil && err != storage.ErrNotFound {
+		logger.Error().Err(err).Msg("failed to get account")
 		http.Error(w, "failed to retrieve account", http.StatusInternalServerError)
 		return
 	}
-	if err == storage.ErrNotFound || account.Password != accountPayload.Password {
+	if account.Password != accountPayload.Password {
+		err = game.ErrWrongCredentials
+	}
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to authenticate")
 		http.Error(w, "wrong username/password", http.StatusUnauthorized)
 		return
 	}
 
 	// Identify origin IP
-	ip, err := net.ResolveUDPAddr("tcp", r.RemoteAddr)
+	ip, err := net.ResolveUDPAddr("udp", r.RemoteAddr)
 	if err != nil {
+		logger.Error().Err(err).Str("address", r.RemoteAddr).Msg("failed to get valid IP")
 		http.Error(w, "failed to identify ip", http.StatusInternalServerError)
 		return
 	}
@@ -61,6 +73,7 @@ func (h handler) login(w http.ResponseWriter, r *http.Request) {
 		IP:      ip,
 	}
 	if err := h.CreateToken(token); err != nil {
+		logger.Error().Err(err).Msg("failed to create token")
 		http.Error(w, "failed to create token", http.StatusInternalServerError)
 		return
 	}
@@ -68,6 +81,7 @@ func (h handler) login(w http.ResponseWriter, r *http.Request) {
 	// Marshal token for response
 	raw, err := json.Marshal(token)
 	if err != nil {
+		logger.Error().Err(err).Msg("failed to marshal token")
 		http.Error(w, "failed to marshal response", http.StatusInternalServerError)
 		return
 	}

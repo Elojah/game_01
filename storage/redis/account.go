@@ -34,5 +34,5 @@ func (s *Service) CreateAccount(account game.Account) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(account.Username, raw, 0).Err()
+	return s.Set(accountKey+account.Username, raw, 0).Err()
 }
