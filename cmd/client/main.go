@@ -17,7 +17,7 @@ import (
 
 func send(cfg Config) {
 
-	id, _ := ulid.Parse("01CCNMHF6JW82GQNPQN4T3Q8SS")
+	id, _ := ulid.Parse("01CCNMX0YZWJTV2Y2ZKT0QHT3Y")
 
 	ack := [16]byte(id)
 
@@ -27,30 +27,30 @@ func send(cfg Config) {
 		return
 	}
 
-	for i := 0; i < 20; i++ {
+	for i := 0; i < 1000; i++ {
 		// time.Sleep(1 * time.Second)
-		msg :=
-			dto.Message{
-				Token: id,
-				Action: dto.Attack{
-					Source: id,
-					Target: id,
-				},
-				ACK: &ack,
-				TS:  time.Now().UnixNano(),
-			}
-		raw, err := msg.Marshal(nil)
-		if err != nil {
-			fmt.Println("error marshaling:", err)
-			return
-		}
-		out := make([]byte, lz4.CompressBound(raw))
-		n, err := lz4.Compress(raw, out)
-		if err != nil {
-			fmt.Println("failed to compress lz4", err)
-			return
-		}
 		go func() {
+			msg :=
+				dto.Message{
+					Token: id,
+					Action: dto.Attack{
+						Source: id,
+						Target: id,
+					},
+					ACK: &ack,
+					TS:  time.Now().UnixNano(),
+				}
+			raw, err := msg.Marshal(nil)
+			if err != nil {
+				fmt.Println("error marshaling:", err)
+				return
+			}
+			out := make([]byte, lz4.CompressBound(raw))
+			n, err := lz4.Compress(raw, out)
+			if err != nil {
+				fmt.Println("failed to compress lz4", err)
+				return
+			}
 			if _, err := conn.Write(out[:n]); err != nil {
 				fmt.Println("write error")
 			}
