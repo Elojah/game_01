@@ -51,7 +51,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 	switch event.Action.(type) {
 	case game.Listener:
 	default:
-		logger.Error().Msg("wrong action type")
+		logger.Error().Str("expected", "listener").Msg("invalid action type")
 		return
 	}
 
@@ -63,17 +63,15 @@ func (a *app) AddListener(msg *nats.Msg) {
 		return
 	}
 	logger.Info().Str("id", id).Msg("listening")
-	go func(ch chan *nats.Msg) {
-		for {
-			select {
-			case msg := <-ch:
-				go a.Play(msg)
-			}
-		}
-	}(ch)
+	go a.Play(ch)
 }
 
-func (a *app) Play(msg *nats.Msg) {
-	logger := log.With().Str("event", msg.Subject).Logger()
-	logger.Info().Msg("message received")
+func (a *app) Play(ch chan *nats.Msg) {
+	for {
+		select {
+		case msg := <-ch:
+			logger := log.With().Str("event", msg.Subject).Logger()
+			logger.Info().Msg("message received")
+		}
+	}
 }
