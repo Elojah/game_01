@@ -74,4 +74,6 @@ func (a *app) AddListener(msg *nats.Msg) {
 }
 
 func (a *app) Play(msg *nats.Msg) {
+	logger := log.With().Str("event", msg.Subject).Logger()
+	logger.Info().Msg("message received")
 }
