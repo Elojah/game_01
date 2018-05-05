@@ -67,11 +67,18 @@ func (a *app) AddListener(msg *nats.Msg) {
 }
 
 func (a *app) Play(ch chan *nats.Msg) {
+	var current uint64
 	for {
 		select {
 		case msg := <-ch:
-			logger := log.With().Str("event", msg.Subject).Logger()
-			logger.Info().Msg("message received")
+			logger := log.With().Str("listener", msg.Subject).Logger()
+			var event storage.Event
+			if _, err := event.Unmarshal(msg.Data); err != nil {
+
+			}
+
+			_ = event
+			_ = current
 		}
 	}
 }

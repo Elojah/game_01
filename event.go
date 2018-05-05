@@ -6,40 +6,11 @@ import (
 	"time"
 )
 
-// Listener requires the receiver to create a new listener with subject ID.
-type Listener struct {
-	ID ID
-}
-
-// Damage received.
-type Damage struct {
-	Source ID
-	Amount int64
-}
-
-// DamageInflict inflicted.
-type DamageInflict struct {
-	Target ID
-	Amount int64
-}
-
-// Heal received.
-type Heal struct {
-	Source ID
-	Amount int64
-}
-
-// HealInflict inflicted.
-type HealInflict struct {
-	Target ID
-	Amount int64
-}
-
 // Event is an entity action.
 type Event struct {
 	ID     ID
 	TS     time.Time
-	Action interface{}
+	Action Action
 }
 
 // EventService must be implemented by a queue.

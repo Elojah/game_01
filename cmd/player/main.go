@@ -48,6 +48,7 @@ func run(prog string, filename string) {
 
 	a.EventService = nax
 	a.EntityService = rdx
+	a.ActionService = rdx
 
 	go func() { a.Start() }()
 	log.Info().Msg("player up")
