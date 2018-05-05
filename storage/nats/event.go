@@ -17,8 +17,8 @@ func (s *Service) SendEvent(event game.Event, target game.ID) error {
 }
 
 // ReceiveEvent returns a chan which follows events received in NATS queue.
-func (s *Service) ReceiveEvent(subject string, bufsize int) (*nats.Subscription, chan *nats.Msg, error) {
+func (s *Service) ReceiveEvent(subject string, bufsize int) (*game.Subscription, game.MsgChan, error) {
 	ch := make(chan *nats.Msg, bufsize)
 	sub, err := s.ChanSubscribe(subject, ch)
-	return sub, ch, err
+	return (*game.Subscription)(sub), game.MsgChan(ch), err
 }

@@ -74,7 +74,8 @@ func (a *app) Play(ch chan *nats.Msg) {
 			logger := log.With().Str("listener", msg.Subject).Logger()
 			var event storage.Event
 			if _, err := event.Unmarshal(msg.Data); err != nil {
-
+				logger.Error().Err(err).Msg("error unmarshaling event")
+				break
 			}
 
 			_ = event
