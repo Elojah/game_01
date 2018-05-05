@@ -11,7 +11,7 @@ GOLINT    = gometalinter
 API       = api
 CLIENT    = client
 AUTH      = auth
-PLAYER    = player
+COORD     = coord
 
 FBSDIR    = .
 
@@ -21,17 +21,9 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 
 .PHONY: all
 
-all: api client auth
+all: client auth api coord
 
 # Executables
-api:
-	$(info $(M) building executable api…) @ ## Build program binary
-	$Q cd cmd/$(API) &&  $(GO) build \
-		-tags release \
-		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
-		-o ../../bin/$(PACKAGE)_$(API)_$(VERSION)
-	$Q cp bin/$(PACKAGE)_$(API)_$(VERSION) bin/$(PACKAGE)_$(API)
-
 client:
 	$(info $(M) building executable client…) @ ## Build program binary
 	$Q cd cmd/$(CLIENT) &&  $(GO) build \
@@ -48,14 +40,23 @@ auth:
 		-o ../../bin/$(PACKAGE)_$(AUTH)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(AUTH)_$(VERSION) bin/$(PACKAGE)_$(AUTH)
 
-player:
-	$(info $(M) building executable player…) @ ## Build program binary
-	$Q cd cmd/$(PLAYER) &&  $(GO) build \
+api:
+	$(info $(M) building executable api…) @ ## Build program binary
+	$Q cd cmd/$(API) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
-		-o ../../bin/$(PACKAGE)_$(PLAYER)_$(VERSION)
-	$Q cp bin/$(PACKAGE)_$(PLAYER)_$(VERSION) bin/$(PACKAGE)_$(PLAYER)
+		-o ../../bin/$(PACKAGE)_$(API)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(API)_$(VERSION) bin/$(PACKAGE)_$(API)
 
+coord:
+	$(info $(M) building executable coord…) @ ## Build program binary
+	$Q cd cmd/$(COORD) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(COORD)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(COORD)_$(VERSION) bin/$(PACKAGE)_$(COORD)
+
+# Utils
 .PHONY: gen
 gen:
 	$(info $(M) running gencode…) @

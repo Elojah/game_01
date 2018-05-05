@@ -23,7 +23,7 @@ func (a *app) Dial(c Config) error {
 
 func (a *app) Start() {
 
-	logger := log.With().Str("player", a.subject).Logger()
+	logger := log.With().Str("coord", a.subject).Logger()
 
 	_, ch, err := a.ReceiveEvent(a.subject, a.bufsize)
 	if err != nil {

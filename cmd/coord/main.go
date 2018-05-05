@@ -51,7 +51,7 @@ func run(prog string, filename string) {
 	a.ActionService = rdx
 
 	go func() { a.Start() }()
-	log.Info().Msg("player up")
+	log.Info().Msg("coord up")
 	select {}
 }
 
