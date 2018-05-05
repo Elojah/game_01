@@ -1,0 +1,17 @@
+{
+	"app": {
+		"subject": "01CCS1SZ4B20G98XYMFGVC9VS4",
+		"bufsize": 0
+	},
+	"redis": {
+		"addr": "127.0.0.1:6379",
+		"password": "secret",
+		"db": 0
+	},
+	"nats": {
+		"address": "nats://127.0.0.1:4222",
+		"max_reconnect": 3,
+		"reconnect_wait": "2s",
+		"timeout": "1s"
+	}
+}
