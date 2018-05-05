@@ -13,8 +13,8 @@ func NewEvent(event game.Event) *Event {
 		TS: event.TS.UnixNano(),
 	}
 	switch event.Action.(type) {
-	case game.Listener:
-		e.Action = NewListener(event.Action.(game.Listener))
+	// case game.Listener:
+	// 	e.Action = NewListener(event.Action.(game.Listener))
 	}
 	return e
 }
@@ -26,22 +26,8 @@ func (e Event) Domain() game.Event {
 		TS: time.Unix(0, e.TS),
 	}
 	switch e.Action.(type) {
-	case Listener:
-		event.Action = e.Action.(Listener).Domain()
+	// case Listener:
+	// 	event.Action = e.Action.(Listener).Domain()
 	}
 	return event
-}
-
-// NewListener converts a domain listener to a storage listener.
-func NewListener(listener game.Listener) Listener {
-	return Listener{
-		ID: [16]byte(listener.ID),
-	}
-}
-
-// Domain converts a storage user into a domain user.
-func (l Listener) Domain() game.Listener {
-	return game.Listener{
-		ID: game.ID(l.ID),
-	}
 }

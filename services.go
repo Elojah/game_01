@@ -4,9 +4,10 @@ package game
 type Services struct {
 	EntityService
 	TokenService
+	QEventService
 	EventService
 	AccountService
-	ActionService
+	ListenerService
 }
 
 // NewServices returns a new empty datagate..

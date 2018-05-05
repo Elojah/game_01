@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"net"
 	"net/http"
-	"time"
 
 	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
@@ -83,12 +82,8 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 
 	// Create a new listener for this token
 	targetID := ulid.MustParse(h.listeners[rand.Intn(len(h.listeners))])
-	event := game.Event{
-		ID:     game.NewULID(),
-		TS:     time.Now(),
-		Action: game.Listener{ID: token.ID},
-	}
-	if err := h.SendEvent(event, targetID); err != nil {
+	listener := game.Listener{ID: token.ID}
+	if err := h.SendListener(listener, targetID); err != nil {
 		logger.Error().Err(err).Msg("failed to create queue")
 		http.Error(w, "failed to setup token", http.StatusInternalServerError)
 		return

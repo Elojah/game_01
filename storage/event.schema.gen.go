@@ -12,45 +12,6 @@ var (
 	_ = time.Now()
 )
 
-type Listener struct {
-	ID [16]byte
-}
-
-func (d *Listener) Size() (s uint64) {
-
-	{
-		s += 16
-	}
-	return
-}
-func (d *Listener) Marshal(buf []byte) ([]byte, error) {
-	size := d.Size()
-	{
-		if uint64(cap(buf)) >= size {
-			buf = buf[:size]
-		} else {
-			buf = make([]byte, size)
-		}
-	}
-	i := uint64(0)
-
-	{
-		copy(buf[i+0:], d.ID[:])
-		i += 16
-	}
-	return buf[:i+0], nil
-}
-
-func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
-	i := uint64(0)
-
-	{
-		copy(d.ID[:], buf[i+0:])
-		i += 16
-	}
-	return i + 0, nil
-}
-
 type Damage struct {
 	Source [16]byte
 	Amount int64
@@ -326,20 +287,17 @@ func (d *Event) Size() (s uint64) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case Listener:
+		case Damage:
 			v = 0 + 1
 
-		case Damage:
+		case DamageInflict:
 			v = 1 + 1
 
-		case DamageInflict:
+		case Heal:
 			v = 2 + 1
 
-		case Heal:
-			v = 3 + 1
-
 		case HealInflict:
-			v = 4 + 1
+			v = 3 + 1
 
 		}
 
@@ -354,12 +312,6 @@ func (d *Event) Size() (s uint64) {
 
 		}
 		switch tt := d.Action.(type) {
-
-		case Listener:
-
-			{
-				s += tt.Size()
-			}
 
 		case Damage:
 
@@ -428,20 +380,17 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case Listener:
+		case Damage:
 			v = 0 + 1
 
-		case Damage:
+		case DamageInflict:
 			v = 1 + 1
 
-		case DamageInflict:
+		case Heal:
 			v = 2 + 1
 
-		case Heal:
-			v = 3 + 1
-
 		case HealInflict:
-			v = 4 + 1
+			v = 3 + 1
 
 		}
 
@@ -459,16 +408,6 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 
 		}
 		switch tt := d.Action.(type) {
-
-		case Listener:
-
-			{
-				nbuf, err := tt.Marshal(buf[i+8:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
 
 		case Damage:
 
@@ -547,19 +486,6 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 		switch v {
 
 		case 0 + 1:
-			var tt Listener
-
-			{
-				ni, err := tt.Unmarshal(buf[i+8:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-			d.Action = tt
-
-		case 1 + 1:
 			var tt Damage
 
 			{
@@ -572,7 +498,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 
 			d.Action = tt
 
-		case 2 + 1:
+		case 1 + 1:
 			var tt DamageInflict
 
 			{
@@ -585,7 +511,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 
 			d.Action = tt
 
-		case 3 + 1:
+		case 2 + 1:
 			var tt Heal
 
 			{
@@ -598,7 +524,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 
 			d.Action = tt
 
-		case 4 + 1:
+		case 3 + 1:
 			var tt HealInflict
 
 			{

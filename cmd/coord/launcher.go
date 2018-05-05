@@ -47,5 +47,6 @@ func (l *Launcher) Down(configs services.Configs) error {
 	l.m.Lock()
 	defer l.m.Unlock()
 
+	l.a.Close()
 	return nil
 }

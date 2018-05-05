@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
@@ -13,6 +15,10 @@ type app struct {
 
 	subject string
 	bufsize int
+
+	listenerSub  *game.Subscription
+	listenerChan game.MsgChan
+	subs         [](*game.Subscription)
 }
 
 func (a *app) Dial(c Config) error {
@@ -22,14 +28,15 @@ func (a *app) Dial(c Config) error {
 }
 
 func (a *app) Start() {
-
 	logger := log.With().Str("coord", a.subject).Logger()
 
-	_, ch, err := a.ReceiveEvent(a.subject, a.bufsize)
+	sub, ch, err := a.ReceiveEvent(a.subject, a.bufsize)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
 	}
+	a.listenerSub = (*game.Subscription)(sub)
+	a.listenerChan = (game.MsgChan)(ch)
 	for {
 		select {
 		case msg := <-ch:
@@ -38,48 +45,82 @@ func (a *app) Start() {
 	}
 }
 
+func (a *app) Close() {
+	for _, s := range a.subs {
+		s.Unsubscribe()
+	}
+	a.listenerSub.Unsubscribe()
+	close(a.listenerChan)
+}
+
 func (a *app) AddListener(msg *nats.Msg) {
 	logger := log.With().Str("event", msg.Subject).Logger()
 
-	var eventS storage.Event
-	if _, err := eventS.Unmarshal(msg.Data); err != nil {
-		logger.Error().Err(err).Msg("failed to unmarshal event")
+	var listenerS storage.Listener
+	if _, err := listenerS.Unmarshal(msg.Data); err != nil {
+		logger.Error().Err(err).Msg("failed to unmarshal listener")
 		return
 	}
+	listener := listenerS.Domain()
+	id := listener.ID
 
-	event := eventS.Domain()
-	switch event.Action.(type) {
-	case game.Listener:
-	default:
-		logger.Error().Str("expected", "listener").Msg("invalid action type")
-		return
-	}
-
-	listener := event.Action.(game.Listener)
-	id := listener.ID.String()
-	_, ch, err := a.ReceiveEvent(id, a.bufsize)
+	sub, ch, err := a.ReceiveEvent(id.String(), a.bufsize)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
 	}
-	logger.Info().Str("id", id).Msg("listening")
-	go a.Play(ch)
+	a.subs = append(a.subs, (*game.Subscription)(sub))
+	logger.Info().Str("id", id.String()).Msg("listening")
+
+	go a.Listen(ch, id)
 }
 
-func (a *app) Play(ch chan *nats.Msg) {
-	var current uint64
+func (a *app) Listen(ch game.MsgChan, id game.ID) {
+	var last time.Time
+	var closer chan struct{}
+	logger := log.With().Str("listener", id.String()).Logger()
 	for {
 		select {
 		case msg := <-ch:
-			logger := log.With().Str("listener", msg.Subject).Logger()
-			var event storage.Event
-			if _, err := event.Unmarshal(msg.Data); err != nil {
+			var eventS storage.Event
+			if _, err := eventS.Unmarshal(msg.Data); err != nil {
 				logger.Error().Err(err).Msg("error unmarshaling event")
 				break
 			}
-
-			_ = event
-			_ = current
+			event := eventS.Domain()
+			if err := a.CreateEvent(event, id); err != nil {
+				logger.Error().Err(err).Msg("error creating event")
+				break
+			}
+			if event.TS.Before(last) {
+				closer <- struct{}{}
+				// close closer somewhere...
+			}
+			closer = a.ReplayFrom(event, id)
 		}
 	}
+}
+
+func (a *app) ReplayFrom(event game.Event, id game.ID) chan struct{} {
+	closer := make(chan struct{}, 0)
+	logger := log.With().Str("replay", event.ID.String()).Logger()
+	go func() {
+		events, err := a.ListEvent(game.EventBuilder{
+			Key:   id.String(),
+			Start: event.TS.UnixNano(),
+		})
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to replay events")
+			return
+		}
+		for _, e := range events {
+			select {
+			case _, _ = <-closer:
+				return
+			default:
+				logger.Info().Msg("replay event" + e.TS.String())
+			}
+		}
+	}()
+	return closer
 }

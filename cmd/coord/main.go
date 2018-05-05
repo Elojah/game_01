@@ -46,9 +46,9 @@ func run(prog string, filename string) {
 		return
 	}
 
-	a.EventService = nax
+	a.QEventService = nax
+	a.EventService = rdx
 	a.EntityService = rdx
-	a.ActionService = rdx
 
 	go func() { a.Start() }()
 	log.Info().Msg("coord up")

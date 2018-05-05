@@ -1,7 +1,3 @@
-struct Listener {
-	ID	[16]byte
-}
-
 struct Damage {
 	Source	[16]byte
 	Amount	int64
@@ -26,7 +22,6 @@ struct Event {
 	ID	[16]byte
 	TS	int64
 	Action union {
-		Listener
 		Damage
 		DamageInflict
 		Heal

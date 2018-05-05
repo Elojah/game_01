@@ -7,10 +7,10 @@ import (
 )
 
 // Subscription alias a nats subscription.
-type Subscription nats.Subscription
+type Subscription = nats.Subscription
 
 // MsgChan alias a chan of nats Msg.
-type MsgChan chan *nats.Msg
+type MsgChan = chan *nats.Msg
 
 // Event is an entity action.
 type Event struct {
@@ -19,8 +19,20 @@ type Event struct {
 	Action Action
 }
 
-// EventService must be implemented by a queue.
+// QEventService must be implemented by a queue.
+type QEventService interface {
+	SendEvent(Event, ID) error
+	ReceiveEvent(string, int) (*Subscription, MsgChan, error)
+}
+
+// EventService wraps action interactions.
 type EventService interface {
-	SendEvent(event Event, target ID) error
-	ReceiveEvent(subject string, bufsize int) (*Subscription, MsgChan, error)
+	CreateEvent(Event, ID) error
+	ListEvent(EventBuilder) ([]Event, error)
+}
+
+// EventBuilder is a builder for actions. Internally usage done with ZRangeWithScores.
+type EventBuilder struct {
+	Key   string
+	Start int64
 }

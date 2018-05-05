@@ -56,7 +56,7 @@ func run(prog string, filename string) {
 
 	h.Services = game.NewServices()
 	h.TokenService = rdx
-	h.EventService = nax
+	h.QEventService = nax
 	h.Route(&m)
 
 	go func() { m.Listen() }()
