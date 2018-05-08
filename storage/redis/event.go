@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"time"
+	"strconv"
 
 	"github.com/go-redis/redis"
 
@@ -30,10 +30,12 @@ func (s *Service) CreateEvent(event game.Event, id game.ID) error {
 
 // ListEvent retrieves event in Redis using ZRangeWithScores.
 func (s *Service) ListEvent(builder game.EventBuilder) ([]game.Event, error) {
-	cmd := s.ZRangeWithScores(
-		builder.Key,
-		builder.Start,
-		time.Now().UnixNano(),
+	cmd := s.ZRangeByScore(
+		eventKey+builder.Key,
+		redis.ZRangeBy{
+			Min: strconv.Itoa(builder.Min),
+			Max: "+inf",
+		},
 	)
 	vals, err := cmd.Result()
 	if err != nil {
@@ -41,7 +43,11 @@ func (s *Service) ListEvent(builder game.EventBuilder) ([]game.Event, error) {
 	}
 	events := make([]game.Event, len(vals))
 	for i := range vals {
-		events[i] = vals[i].Member.(storage.Event).Domain()
+		var eventS storage.Event
+		if _, err := eventS.Unmarshal([]byte(vals[i])); err != nil {
+			return nil, err
+		}
+		events[i] = eventS.Domain()
 	}
 	return events, nil
 }

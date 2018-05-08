@@ -8,5 +8,5 @@ type Listener struct {
 // ListenerService handles send/receive methods for listeners.
 type ListenerService interface {
 	SendListener(Listener, ID) error
-	ReceiveListener(string, int) (*Subscription, MsgChan, error)
+	ReceiveListener(string, int) (Subscription, error)
 }

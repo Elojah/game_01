@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -52,7 +54,16 @@ func run(prog string, filename string) {
 
 	go func() { a.Start() }()
 	log.Info().Msg("coord up")
-	select {}
+
+	c := make(chan os.Signal, 0)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	for {
+		select {
+		case _ = <-c:
+			a.Close()
+			return
+		}
+	}
 }
 
 func main() {

@@ -17,6 +17,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, ts time.Time) error 
 
 	go func() {
 		err := h.SendEvent(game.Event{
+			ID: game.NewULID(),
 			TS: ts,
 			Action: game.DamageInflict{
 				Target: game.ID(a.Target),
@@ -30,6 +31,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, ts time.Time) error 
 	}()
 	go func() {
 		err := h.SendEvent(game.Event{
+			ID: game.NewULID(),
 			TS: ts,
 			Action: game.Damage{
 				Source: game.ID(a.Source),
