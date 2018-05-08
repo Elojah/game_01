@@ -1,8 +1,6 @@
 package nats
 
 import (
-	"github.com/nats-io/go-nats"
-
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/storage"
 )
@@ -15,14 +13,4 @@ func (s *Service) SendListener(listener game.Listener, target game.ID) error {
 		return err
 	}
 	return s.Publish(target.String(), raw)
-}
-
-// ReceiveListener returns a chan which follows events received in NATS queue.
-func (s *Service) ReceiveListener(subject string, bufsize int) (game.Subscription, error) {
-	ch := make(chan *nats.Msg, bufsize)
-	sub, err := s.ChanSubscribe(subject, ch)
-	return game.Subscription{
-		Subscription: sub,
-		Ch:           game.MsgChan(ch),
-	}, err
 }

@@ -50,9 +50,10 @@ func run(prog string, filename string) {
 
 	na.Flush()
 
-	a.QEventService = nax
-	a.EventService = rdx
 	a.EntityService = rdx
+	a.EventService = rdx
+	a.QEventService = nax
+	a.SubscriptionService = nax
 
 	go func() { a.Start() }()
 	log.Info().Msg("coord up")

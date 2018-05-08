@@ -2,12 +2,13 @@ package game
 
 // Services handles all services and rules interaction between them.
 type Services struct {
-	EntityService
-	TokenService
-	QEventService
-	EventService
 	AccountService
-	ListenerService
+	EntityService
+	EventService
+	QEventService
+	QListenerService
+	SubscriptionService
+	TokenService
 }
 
 // NewServices returns a new empty datagate..

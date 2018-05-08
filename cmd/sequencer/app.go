@@ -27,7 +27,7 @@ func (a *app) Dial(c Config) error {
 func (a *app) Start() {
 	logger := log.With().Str("coord", a.id.String()).Logger()
 
-	sub, err := a.ReceiveEvent(a.id.String(), a.limit)
+	sub, err := a.CreateSubscription(a.id.String(), a.limit)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
@@ -58,7 +58,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 	}
 	id := listenerS.Domain().ID
 
-	sub, err := a.ReceiveEvent(id.String(), a.limit)
+	sub, err := a.CreateSubscription(id.String(), a.limit)
 	if err != nil {
 		logger.Error().Err(err).Str("id", id.String()).Msg("failed to sub")
 		return

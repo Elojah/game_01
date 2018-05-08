@@ -14,7 +14,6 @@ type Event struct {
 // QEventService must be implemented by a queue.
 type QEventService interface {
 	SendEvent(Event, ID) error
-	ReceiveEvent(string, int) (Subscription, error)
 }
 
 // EventService wraps action interactions.

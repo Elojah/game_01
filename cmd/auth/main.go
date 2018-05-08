@@ -48,7 +48,7 @@ func run(prog string, filename string) {
 	h.TokenService = rdx
 	h.AccountService = rdx
 	h.QEventService = nax
-	h.ListenerService = nax
+	h.QListenerService = nax
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

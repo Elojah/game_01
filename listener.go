@@ -5,8 +5,7 @@ type Listener struct {
 	ID ID
 }
 
-// ListenerService handles send/receive methods for listeners.
-type ListenerService interface {
+// QListenerService handles send/receive methods for listeners.
+type QListenerService interface {
 	SendListener(Listener, ID) error
-	ReceiveListener(string, int) (Subscription, error)
 }
