@@ -10,21 +10,24 @@ import (
 
 type app struct {
 	game.Services
-
 	id game.ID
 
 	subs map[game.ID]game.Subscription
+
+	limit int
 }
 
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
+	a.limit = c.Limit
+
 	return nil
 }
 
 func (a *app) Start() {
 	logger := log.With().Str("coord", a.id.String()).Logger()
 
-	sub, err := a.ReceiveEvent(a.id.String(), 0)
+	sub, err := a.ReceiveEvent(a.id.String(), a.limit)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
@@ -55,7 +58,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 	}
 	id := listenerS.Domain().ID
 
-	sub, err := a.ReceiveEvent(id.String(), 0)
+	sub, err := a.ReceiveEvent(id.String(), a.limit)
 	if err != nil {
 		logger.Error().Err(err).Str("id", id.String()).Msg("failed to sub")
 		return
@@ -86,6 +89,7 @@ func (a *app) Listen(ch game.MsgChan, id game.ID) {
 				logger.Error().Err(err).Msg("error creating event")
 				break
 			}
+			logger.Info().Str("event", event.ID.String()).Msg("event received")
 			r.Trigger <- event.TS
 		}
 	}

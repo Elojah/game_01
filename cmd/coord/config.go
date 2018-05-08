@@ -10,7 +10,8 @@ import (
 
 // Config is the udp server structure config.
 type Config struct {
-	ID game.ID `json:"id"`
+	ID    game.ID `json:"id"`
+	Limit int     `json:"limit"`
 }
 
 // Equal returns is both configs are equal.
@@ -37,6 +38,16 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if c.ID, err = ulid.Parse(cIDString); err != nil {
 		return err
 	}
+
+	cLimit, ok := fconf["limit"]
+	if !ok {
+		return errors.New("missing key limit")
+	}
+	cLimitFloat, ok := cLimit.(float64)
+	if !ok {
+		return errors.New("key limit invalid. must be numeric")
+	}
+	c.Limit = int(cLimitFloat)
 
 	return nil
 }

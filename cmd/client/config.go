@@ -66,7 +66,7 @@ func (c *Config) Dial(fileconf interface{}) error {
 	}
 	cTickRateFloat, ok := cTickRate.(float64)
 	if !ok {
-		return errors.New("key tick_rate invalid. must be string")
+		return errors.New("key tick_rate invalid. must be numeric")
 	}
 	c.TickRate = uint(cTickRateFloat)
 	return nil

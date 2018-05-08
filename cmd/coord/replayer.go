@@ -9,6 +9,10 @@ import (
 	"github.com/elojah/game_01"
 )
 
+var (
+	maxTime = time.Unix(1<<63-62135596801, 999999999)
+)
+
 type tick chan time.Time
 
 type replayer struct {
@@ -56,7 +60,7 @@ func (a *app) newReplayer(id game.ID) replayer {
 	}(id)
 	go func(id game.ID) {
 		var current time.Time
-		var waiting time.Time
+		waiting := maxTime
 		for {
 			select {
 			case t := <-r.Trigger:
@@ -71,8 +75,10 @@ func (a *app) newReplayer(id game.ID) replayer {
 				}
 				if event.TS.After(waiting) {
 					atomic.CompareAndSwapInt32(&r.Interrupt, 0, 1)
+					waiting = maxTime
 					break
 				}
+				current = event.TS
 				a.Play(event)
 			}
 		}

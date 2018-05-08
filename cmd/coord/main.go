@@ -48,6 +48,8 @@ func run(prog string, filename string) {
 		return
 	}
 
+	na.Flush()
+
 	a.QEventService = nax
 	a.EventService = rdx
 	a.EntityService = rdx

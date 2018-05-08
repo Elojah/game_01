@@ -1,6 +1,7 @@
 {
 	"app": {
-		"id": "01CCS1SZ4B20G98XYMFGVC9VS4"
+		"id": "01CCS1SZ4B20G98XYMFGVC9VS4",
+		"limit": 0
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",
