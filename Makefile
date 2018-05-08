@@ -11,7 +11,7 @@ GOLINT    = gometalinter
 API       = api
 CLIENT    = client
 AUTH      = auth
-COORD     = coord
+SEQ       = sequencer
 
 FBSDIR    = .
 
@@ -21,7 +21,7 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 
 .PHONY: all
 
-all: client auth api coord
+all: client auth api sequencer
 
 # Executables
 client:
@@ -48,13 +48,13 @@ api:
 		-o ../../bin/$(PACKAGE)_$(API)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(API)_$(VERSION) bin/$(PACKAGE)_$(API)
 
-coord:
-	$(info $(M) building executable coord…) @ ## Build program binary
-	$Q cd cmd/$(COORD) &&  $(GO) build \
+sequencer:
+	$(info $(M) building executable sequencer…) @ ## Build program binary
+	$Q cd cmd/$(SEQ) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
-		-o ../../bin/$(PACKAGE)_$(COORD)_$(VERSION)
-	$Q cp bin/$(PACKAGE)_$(COORD)_$(VERSION) bin/$(PACKAGE)_$(COORD)
+		-o ../../bin/$(PACKAGE)_$(SEQ)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(SEQ)_$(VERSION) bin/$(PACKAGE)_$(SEQ)
 
 # Utils
 .PHONY: gen
