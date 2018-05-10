@@ -80,5 +80,14 @@ func (a *app) Apply(event game.Event) {
 		Str("event", event.ID.String()).
 		Int("ts", int(event.TS.UnixNano())).
 		Logger()
-	logger.Info().Msg("play event")
+	switch event.Action.(type) {
+	case game.Damage:
+		logger.Info().Str("type", "damage").Msg("apply action")
+	case game.DamageInflict:
+		logger.Info().Str("type", "damage_inflict").Msg("apply action")
+	case game.Heal:
+		logger.Info().Str("type", "heal").Msg("apply action")
+	case game.HealInflict:
+		logger.Info().Str("type", "heal_inflict").Msg("apply action")
+	}
 }
