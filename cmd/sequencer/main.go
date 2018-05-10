@@ -56,7 +56,7 @@ func run(prog string, filename string) {
 	a.SubscriptionService = nax
 
 	go func() { a.Start() }()
-	log.Info().Msg("coord up")
+	log.Info().Msg("sequencer up")
 
 	c := make(chan os.Signal, 0)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)

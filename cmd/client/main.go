@@ -17,7 +17,7 @@ import (
 
 func send(cfg Config) {
 
-	id, _ := ulid.Parse("01CD05WMYFFMTHWCNE3PZNWPVK")
+	id, _ := ulid.Parse("01CD4XQ9DVEKVNDZS9BA7S488B")
 
 	ack := [16]byte(id)
 
@@ -27,7 +27,7 @@ func send(cfg Config) {
 		return
 	}
 
-	for i := 0; i < 100; i++ {
+	for i := 0; i < 1000; i++ {
 		// time.Sleep(1 * time.Second)
 		go func() {
 			msg :=
