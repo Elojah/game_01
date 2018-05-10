@@ -8,7 +8,10 @@ import (
 )
 
 type handler struct {
-	game.Services
+	game.AccountService
+	game.QEventService
+	game.QListenerService
+	game.TokenService
 
 	srv *http.Server
 

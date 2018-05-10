@@ -13,7 +13,8 @@ import (
 )
 
 type handler struct {
-	game.Services
+	game.QEventService
+	game.TokenService
 
 	tolerance time.Duration
 }

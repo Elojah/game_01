@@ -9,7 +9,11 @@ import (
 )
 
 type app struct {
-	game.Services
+	game.EntityService
+	game.EventService
+	game.QEventService
+	game.SubscriptionService
+
 	id game.ID
 
 	subs map[game.ID]*game.Subscription
@@ -26,7 +30,7 @@ func (a *app) Dial(c Config) error {
 }
 
 func (a *app) Start() {
-	logger := log.With().Str("sequencer", a.id.String()).Logger()
+	logger := log.With().Str("core", a.id.String()).Logger()
 
 	sub, err := a.CreateSubscription(a.id.String(), a.AddListener)
 	if err != nil {

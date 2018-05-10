@@ -42,7 +42,7 @@ func (s *Sequencer) Close() {
 func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *Sequencer {
 	s := Sequencer{
 		id:           id,
-		logger:       log.With().Str("seq", id.String()).Logger(),
+		logger:       log.With().Str("sequencer", id.String()).Logger(),
 		EventService: es,
 		fetcher:      make(tick, 0),
 		input:        make(tick, 0),
@@ -101,7 +101,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 }
 
 // MsgHandler is the consumer function to subscribe for event ordering.
-func (s Sequencer) MsgHandler(msg *nats.Msg) {
+func (s *Sequencer) MsgHandler(msg *nats.Msg) {
 	var eventS storage.Event
 	if _, err := eventS.Unmarshal(msg.Data); err != nil {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
@@ -113,5 +113,5 @@ func (s Sequencer) MsgHandler(msg *nats.Msg) {
 		return
 	}
 	s.logger.Info().Str("event", event.ID.String()).Msg("event received")
-	go func(ts time.Time) { s.input <- ts }(event.TS)
+	s.input <- event.TS
 }

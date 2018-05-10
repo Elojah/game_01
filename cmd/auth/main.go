@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/nats"
@@ -44,11 +43,10 @@ func run(prog string, filename string) {
 	}, "auth")
 	launchers = append(launchers, hl)
 
-	h.Services = game.NewServices()
-	h.TokenService = rdx
 	h.AccountService = rdx
 	h.QEventService = nax
 	h.QListenerService = nax
+	h.TokenService = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

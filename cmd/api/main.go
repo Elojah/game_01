@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/mux"
@@ -54,9 +53,8 @@ func run(prog string, filename string) {
 		return
 	}
 
-	h.Services = game.NewServices()
-	h.TokenService = rdx
 	h.QEventService = nax
+	h.TokenService = rdx
 	h.Route(&m)
 
 	go func() { m.Listen() }()
