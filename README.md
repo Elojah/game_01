@@ -24,6 +24,7 @@
 - [x] Create new bin to read events
 - [x] Add NATS mqueue to cancel replay mechanism (in context usage ?)
 - [x] Fix NATS slow consumer
+- [ ] Add `sequencer_test.go`, 100% plz
 - [ ] Add state/entity service impl + interactions
 - [ ] Add server ack sending to client (and client resend)
 - [ ] ack service
