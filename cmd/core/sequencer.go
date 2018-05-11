@@ -113,5 +113,5 @@ func (s *Sequencer) MsgHandler(msg *nats.Msg) {
 		return
 	}
 	s.logger.Info().Str("event", event.ID.String()).Msg("event received")
-	s.input <- event.TS
+	go func(ts time.Time) { s.input <- ts }(event.TS)
 }
