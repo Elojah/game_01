@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"math"
 	"sync/atomic"
 	"time"
 
@@ -12,11 +14,7 @@ import (
 	"github.com/elojah/game_01/storage"
 )
 
-var (
-	maxTime = time.Unix(1<<63-62135596801, 999999999)
-)
-
-type tick chan time.Time
+type tick chan int64
 
 // Sequencer is an ordering/event extractor layer between two consumers.
 type Sequencer struct {
@@ -29,11 +27,15 @@ type Sequencer struct {
 	output  chan game.Event
 	fetcher tick
 
-	interrupt int32
+	current   int64
+	min       int64
+	interrupt chan struct{}
 }
 
 // Close kills both fetch/input goroutines.
 func (s *Sequencer) Close() {
+	s.logger.Info().Msg("close sequencer")
+	close(s.input)
 	close(s.fetcher)
 	close(s.output)
 }
@@ -44,14 +46,35 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 		id:           id,
 		logger:       log.With().Str("sequencer", id.String()).Logger(),
 		EventService: es,
-		fetcher:      make(tick, 0),
-		input:        make(tick, 0),
-		output:       make(chan game.Event, 0),
+		fetcher:      make(tick, 32),
+		input:        make(tick, 32),
+		output:       make(chan game.Event, 32),
+		min:          math.MaxInt64,
+		current:      0,
 	}
 	go func() {
 		for {
 			select {
+			case t, ok := <-s.input:
+				fmt.Println("input:", t.String(), ok)
+				if !ok {
+					break
+				}
+				if t < atomic.LoadInt64(&s.current) {
+					s.interrupt <- struct{}{}
+				}
+				if t < atomic.LoadInt64(&s.min) {
+					atomic.StoreInt64(&s.min, t)
+				}
+				s.fetcher <- t
+			}
+		}
+	}()
+	go func() {
+		for {
+			select {
 			case t, ok := <-s.fetcher:
+				fmt.Println("fetcher:", t.String(), ok)
 				if !ok {
 					return
 				}
@@ -63,36 +86,36 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					s.logger.Error().Err(err).Msg("failed to fetch events")
 					break
 				}
-				for _, event := range events {
-					if atomic.CompareAndSwapInt32(&s.interrupt, 1, 0) {
-						break
+				loop := func() {
+					defer atomic.StoreInt64(&s.current, 0)
+					for _, event := range events {
+						select {
+						case s.interrupt:
+							fmt.Println("break event loop by interrupt")
+							return
+						default:
+							ts := event.TS.UnixNano()
+							atomic.StoreInt64(&s.current, ts)
+							if ts > atomic.LoadInt64(&s.min) {
+								fmt.Println("break event loop by min value")
+								return
+							}
+							s.output <- event
+						}
 					}
-					s.output <- event
-				}
+					atomic.StoreInt64(&s.min, math.MaxInt64)
+				}()
 			}
 		}
 	}()
 	go func() {
-		var current time.Time
-		waiting := maxTime
 		for {
 			select {
-			case t := <-s.input:
-				if t.Before(current) {
-					atomic.CompareAndSwapInt32(&s.interrupt, 0, 1)
-				}
-				waiting = t
-				s.fetcher <- t
 			case event, ok := <-s.output:
+				fmt.Println("output:", event.TS.String(), ok)
 				if !ok {
 					return
 				}
-				if event.TS.After(waiting) {
-					atomic.CompareAndSwapInt32(&s.interrupt, 0, 1)
-					waiting = maxTime
-					break
-				}
-				current = event.TS
 				callback(event)
 			}
 		}
@@ -113,5 +136,5 @@ func (s *Sequencer) MsgHandler(msg *nats.Msg) {
 		return
 	}
 	s.logger.Info().Str("event", event.ID.String()).Msg("event received")
-	go func(ts time.Time) { s.input <- ts }(event.TS)
+	s.input <- event.TS.UnixNano()
 }
