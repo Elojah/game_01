@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"sync/atomic"
-	"time"
 
 	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog"
@@ -52,14 +51,15 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 		min:          math.MaxInt64,
 		current:      0,
 	}
+
 	go func() {
 		for {
 			select {
 			case t, ok := <-s.input:
-				fmt.Println("input:", t.String(), ok)
 				if !ok {
-					break
+					return
 				}
+				fmt.Println(t, atomic.LoadInt64(&s.current))
 				if t < atomic.LoadInt64(&s.current) {
 					s.interrupt <- struct{}{}
 				}
@@ -70,36 +70,35 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 			}
 		}
 	}()
+
 	go func() {
 		for {
 			select {
 			case t, ok := <-s.fetcher:
-				fmt.Println("fetcher:", t.String(), ok)
 				if !ok {
 					return
 				}
 				events, err := s.ListEvent(game.EventBuilder{
 					Key: s.id.String(),
-					Min: int(t.UnixNano()),
+					Min: int(t),
 				})
 				if err != nil {
 					s.logger.Error().Err(err).Msg("failed to fetch events")
 					break
 				}
-				loop := func() {
+				func() {
 					defer atomic.StoreInt64(&s.current, 0)
 					for _, event := range events {
 						select {
-						case s.interrupt:
-							fmt.Println("break event loop by interrupt")
+						case _ = <-s.interrupt:
 							return
 						default:
 							ts := event.TS.UnixNano()
 							atomic.StoreInt64(&s.current, ts)
-							if ts > atomic.LoadInt64(&s.min) {
-								fmt.Println("break event loop by min value")
-								return
-							}
+							fmt.Println(atomic.LoadInt64(&s.current))
+							// if ts > atomic.LoadInt64(&s.min) {
+							// 	return
+							// }
 							s.output <- event
 						}
 					}
@@ -108,11 +107,11 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 			}
 		}
 	}()
+
 	go func() {
 		for {
 			select {
 			case event, ok := <-s.output:
-				fmt.Println("output:", event.TS.String(), ok)
 				if !ok {
 					return
 				}
