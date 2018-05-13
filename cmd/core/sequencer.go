@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
+	// "sync/atomic"
 	"math"
-	"sync/atomic"
 
 	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog"
@@ -23,11 +23,10 @@ type Sequencer struct {
 	logger zerolog.Logger
 
 	input   tick
-	output  chan game.Event
-	fetcher tick
+	fetch   tick
+	process chan game.Event
 
-	current   int64
-	min       int64
+	last      tick
 	interrupt chan struct{}
 }
 
@@ -35,8 +34,8 @@ type Sequencer struct {
 func (s *Sequencer) Close() {
 	s.logger.Info().Msg("close sequencer")
 	close(s.input)
-	close(s.fetcher)
-	close(s.output)
+	close(s.fetch)
+	close(s.process)
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
@@ -45,28 +44,32 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 		id:           id,
 		logger:       log.With().Str("sequencer", id.String()).Logger(),
 		EventService: es,
-		fetcher:      make(tick, 32),
-		input:        make(tick, 32),
-		output:       make(chan game.Event, 32),
-		min:          math.MaxInt64,
-		current:      0,
+
+		input:   make(tick, 32),
+		fetch:   make(tick, 32),
+		process: make(chan game.Event, 32),
+
+		last:      make(tick, 32),
+		interrupt: make(chan struct{}, 32),
 	}
 
 	go func() {
+		var last int64
 		for {
 			select {
 			case t, ok := <-s.input:
 				if !ok {
 					return
 				}
-				fmt.Println(t, atomic.LoadInt64(&s.current))
-				if t < atomic.LoadInt64(&s.current) {
+				if t < last {
 					s.interrupt <- struct{}{}
 				}
-				if t < atomic.LoadInt64(&s.min) {
-					atomic.StoreInt64(&s.min, t)
+				s.fetch <- t
+			case t, ok := <-s.last:
+				if !ok {
+					return
 				}
-				s.fetcher <- t
+				last = t
 			}
 		}
 	}()
@@ -74,7 +77,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 	go func() {
 		for {
 			select {
-			case t, ok := <-s.fetcher:
+			case t, ok := <-s.fetch:
 				if !ok {
 					return
 				}
@@ -86,23 +89,24 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					s.logger.Error().Err(err).Msg("failed to fetch events")
 					break
 				}
+				send := func(event game.Event) {
+					s.last <- event.TS.UnixNano()
+					s.process <- event
+				}
 				func() {
-					defer atomic.StoreInt64(&s.current, 0)
-					for _, event := range events {
+					for i, event := range events {
 						select {
 						case _ = <-s.interrupt:
-							return
+							if i != 0 {
+								return
+							}
+							// Happens when s.last has not been set at 0 yet but interrupt has been sent.
+							send(event)
 						default:
-							ts := event.TS.UnixNano()
-							atomic.StoreInt64(&s.current, ts)
-							fmt.Println(atomic.LoadInt64(&s.current))
-							// if ts > atomic.LoadInt64(&s.min) {
-							// 	return
-							// }
-							s.output <- event
+							send(event)
 						}
 					}
-					atomic.StoreInt64(&s.min, math.MaxInt64)
+					s.last <- 0
 				}()
 			}
 		}
@@ -111,7 +115,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 	go func() {
 		for {
 			select {
-			case event, ok := <-s.output:
+			case event, ok := <-s.process:
 				if !ok {
 					return
 				}
