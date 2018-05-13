@@ -1,10 +1,6 @@
 package main
 
 import (
-	// "fmt"
-	// "sync/atomic"
-	"math"
-
 	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -50,7 +46,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 		process: make(chan game.Event, 32),
 
 		last:      make(tick, 32),
-		interrupt: make(chan struct{}, 32),
+		interrupt: make(chan struct{}, 1),
 	}
 
 	go func() {
@@ -62,8 +58,10 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					return
 				}
 				if t < last {
+					s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
 					s.interrupt <- struct{}{}
 				}
+				s.logger.Info().Int64("current", t).Msg("fetch post events")
 				s.fetch <- t
 			case t, ok := <-s.last:
 				if !ok {
@@ -75,12 +73,14 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 	}()
 
 	go func() {
+		var min int64
 		for {
 			select {
 			case t, ok := <-s.fetch:
 				if !ok {
 					return
 				}
+
 				events, err := s.ListEvent(game.EventBuilder{
 					Key: s.id.String(),
 					Min: int(t),
@@ -89,6 +89,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					s.logger.Error().Err(err).Msg("failed to fetch events")
 					break
 				}
+
 				send := func(event game.Event) {
 					s.last <- event.TS.UnixNano()
 					s.process <- event
@@ -119,6 +120,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 				if !ok {
 					return
 				}
+				s.logger.Info().Str("event", event.ID.String()).Msg("run")
 				callback(event)
 			}
 		}
