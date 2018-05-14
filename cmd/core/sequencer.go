@@ -36,42 +36,45 @@ func (s *Sequencer) Close() {
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
-func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *Sequencer {
+func NewSequencer(id game.ID, limit int, es game.EventService, callback func(game.Event)) *Sequencer {
 	s := Sequencer{
 		id:           id,
 		logger:       log.With().Str("sequencer", id.String()).Logger(),
 		EventService: es,
 
-		input:   make(tick, 32),
-		fetch:   make(tick, 32),
-		process: make(chan game.Event, 32),
+		input:   make(tick, limit),
+		fetch:   make(tick, limit),
+		process: make(chan game.Event, limit),
 
-		min:       make(tick, 32),
-		last:      make(tick, 32),
+		min:       make(tick, limit),
+		last:      make(tick, limit),
 		interrupt: make(chan struct{}, 1),
 	}
 
 	go func() {
 		var last int64
-		for t := range s.input {
+		for {
 			select {
+			case t, ok := <-s.input:
+				if !ok {
+					return
+				}
+				if t < last {
+					s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
+					s.interrupt <- struct{}{}
+				}
+				s.logger.Info().Int64("current", t).Msg("fetch post events")
+				s.min <- t
+				s.fetch <- t
 			case t := <-s.last:
 				last = t
-			default:
 			}
-			if t < last {
-				s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
-				s.interrupt <- struct{}{}
-			}
-			s.logger.Info().Int64("current", t).Msg("fetch post events")
-			s.min <- t
-			s.fetch <- t
 		}
 	}()
 
 	go func() {
+		var min int64
 		for t := range s.fetch {
-			var min int64
 			events, err := s.ListEvent(game.EventBuilder{
 				Key: s.id.String(),
 				Min: int(t),
@@ -93,11 +96,14 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					if m == t {
 						m = 0
 					}
-					min = m
+					if min == 0 || m < min {
+						min = m
+					}
 				default:
 				}
 				ts := event.TS.UnixNano()
 				if min != 0 && ts > min {
+					s.logger.Info().Int64("ts", ts).Int64("min", min).Msg("skip")
 					s.last <- 0
 					break
 				}

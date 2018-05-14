@@ -62,7 +62,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 	}
 	id := listenerS.Domain().ID
 
-	seq := NewSequencer(a.id, a.EventService, a.Apply)
+	seq := NewSequencer(a.id, a.limit, a.EventService, a.Apply)
 	a.seqs[id] = seq
 
 	sub, err := a.CreateSubscription(id.String(), seq.MsgHandler)
