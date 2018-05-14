@@ -77,13 +77,13 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 
 	go func() {
 		for {
-			var min int64
 			select {
 			case t, ok := <-s.fetch:
 				if !ok {
 					return
 				}
 
+				var min int64
 				events, err := s.ListEvent(game.EventBuilder{
 					Key: s.id.String(),
 					Min: int(t),
@@ -103,7 +103,10 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 								return
 							}
 						case m := <-s.min:
-							if m != t {
+							// Case where min is the tick from same event.
+							if m == t {
+								m = 0
+							} else {
 								min = m
 							}
 						default:
@@ -129,7 +132,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 				if !ok {
 					return
 				}
-				s.logger.Info().Str("event", event.ID.String()).Msg("run")
+				s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
 				callback(event)
 			}
 		}
