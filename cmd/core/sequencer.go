@@ -103,8 +103,8 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 				}
 				s.last <- ts
 				s.process <- event
-				s.last <- 0
 			}
+			s.last <- 0
 		}
 	}()
 
