@@ -70,8 +70,8 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 	}()
 
 	go func() {
+		var min int64
 		for t := range s.fetch {
-			var min int64
 			events, err := s.ListEvent(game.EventBuilder{
 				Key: s.id.String(),
 				Min: int(t),
@@ -93,7 +93,9 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					if m == t {
 						m = 0
 					}
-					min = m
+					if min == 0 || m < min {
+						min = m
+					}
 				default:
 				}
 				ts := event.TS.UnixNano()
