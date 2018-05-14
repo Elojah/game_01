@@ -53,88 +53,65 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 
 	go func() {
 		var last int64
-		for {
+		for t := range s.input {
 			select {
-			case t, ok := <-s.input:
-				if !ok {
-					return
-				}
-				if t < last {
-					s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
-					s.interrupt <- struct{}{}
-				}
-				s.logger.Info().Int64("current", t).Msg("fetch post events")
-				s.min <- t
-				s.fetch <- t
-			case t, ok := <-s.last:
-				if !ok {
-					return
-				}
+			case t := <-s.last:
 				last = t
+			default:
 			}
+			if t < last {
+				s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
+				s.interrupt <- struct{}{}
+			}
+			s.logger.Info().Int64("current", t).Msg("fetch post events")
+			s.min <- t
+			s.fetch <- t
 		}
 	}()
 
 	go func() {
-		for {
-			select {
-			case t, ok := <-s.fetch:
-				if !ok {
-					return
+		for t := range s.fetch {
+			var min int64
+			events, err := s.ListEvent(game.EventBuilder{
+				Key: s.id.String(),
+				Min: int(t),
+			})
+			if err != nil {
+				s.logger.Error().Err(err).Msg("failed to fetch events")
+				continue
+			}
+			for i, event := range events {
+				select {
+				case _ = <-s.interrupt:
+					// Case where interrupt ticks at previous last run.
+					if i != 0 {
+						s.last <- 0
+						break
+					}
+				case m := <-s.min:
+					// Case where min is the tick from same event.
+					if m == t {
+						m = 0
+					}
+					min = m
+				default:
 				}
-
-				var min int64
-				events, err := s.ListEvent(game.EventBuilder{
-					Key: s.id.String(),
-					Min: int(t),
-				})
-				if err != nil {
-					s.logger.Error().Err(err).Msg("failed to fetch events")
+				ts := event.TS.UnixNano()
+				if min != 0 && ts > min {
+					s.last <- 0
 					break
 				}
-
-				func() {
-					for i, event := range events {
-						select {
-						case _ = <-s.interrupt:
-							// Case where interrupt ticks at previous last run.
-							if i != 0 {
-								s.last <- 0
-								return
-							}
-						case m := <-s.min:
-							// Case where min is the tick from same event.
-							if m == t {
-								m = 0
-							} else {
-								min = m
-							}
-						default:
-						}
-						ts := event.TS.UnixNano()
-						if min != 0 && ts > min {
-							s.last <- 0
-							return
-						}
-						s.last <- ts
-						s.process <- event
-						s.last <- 0
-					}
-				}()
+				s.last <- ts
+				s.process <- event
 			}
+			s.last <- 0
 		}
 	}()
 
 	go func() {
-		for {
-			select {
-			case event, ok := <-s.process:
-				if !ok {
-					return
-				}
-				s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
-				callback(event)
-			}
+		for event := range s.process {
+			s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
+			callback(event)
 		}
 	}()
 	return &s
