@@ -2,7 +2,6 @@ package main
 
 import (
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -114,54 +113,6 @@ func TestSequencer(t *testing.T) {
 		seq.Close()
 	})
 
-	t.Run("replay", func(t *testing.T) {
-
-		seqID := game.NewULID()
-		es := mocks.NewEventService()
-		es.ListEventFunc = func(builder game.EventBuilder) ([]game.Event, error) {
-			assert.Equal(t, seqID.String(), builder.Key)
-			switch int64(builder.Min) {
-			case eset[0].TS.UnixNano():
-				return []game.Event{eset[0]}, nil
-			case eset[1].TS.UnixNano():
-				return []game.Event{eset[1], eset[0]}, nil
-			}
-			return nil, nil
-		}
-
-		var wg sync.WaitGroup
-		var count int32
-		wg.Add(3)
-		seq := NewSequencer(seqID, 32, es,
-			func(event game.Event) {
-				atomic.AddInt32(&count, 1)
-				switch count {
-				case 1:
-					assert.True(t, equalEvent(eset[0], event))
-				case 2:
-					assert.True(t, equalEvent(eset[1], event))
-				case 3:
-					assert.True(t, equalEvent(eset[0], event))
-				}
-				wg.Done()
-			},
-		)
-
-		raw0, err := storage.NewEvent(eset[0]).Marshal(nil)
-		assert.NoError(t, err)
-		msg0 := &nats.Msg{Data: raw0}
-		seq.MsgHandler(msg0)
-
-		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
-		assert.NoError(t, err)
-		msg1 := &nats.Msg{Data: raw1}
-		seq.MsgHandler(msg1)
-
-		wg.Wait()
-
-		seq.Close()
-	})
-
 	t.Run("cancel", func(t *testing.T) {
 
 		seqID := game.NewULID()
@@ -193,6 +144,51 @@ func TestSequencer(t *testing.T) {
 		assert.NoError(t, err)
 		msg1 := &nats.Msg{Data: raw1}
 		seq.MsgHandler(msg1)
+
+		raw2, err := storage.NewEvent(eset[2]).Marshal(nil)
+		assert.NoError(t, err)
+		msg2 := &nats.Msg{Data: raw2}
+		seq.MsgHandler(msg2)
+
+		wg.Wait()
+
+		seq.Close()
+	})
+
+	t.Run("interrupt", func(t *testing.T) {
+
+		seqID := game.NewULID()
+		es := mocks.NewEventService()
+		es.ListEventFunc = func(builder game.EventBuilder) ([]game.Event, error) {
+			assert.Equal(t, seqID.String(), builder.Key)
+			switch int64(builder.Min) {
+			case eset[1].TS.UnixNano():
+				time.Sleep(10 * time.Millisecond)
+				return []game.Event{eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1],
+					eset[0]}, nil
+			case eset[2].TS.UnixNano():
+				return []game.Event{eset[3], eset[2]}, nil
+			}
+			return nil, nil
+		}
+
+		var wg sync.WaitGroup
+		wg.Add(1)
+		seq := NewSequencer(seqID, 1, es,
+			func(event game.Event) {
+				assert.False(t, equalEvent(event, eset[0]))
+				if equalEvent(event, eset[2]) {
+					wg.Done()
+				}
+			},
+		)
+
+		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
+		assert.NoError(t, err)
+		msg1 := &nats.Msg{Data: raw1}
+		seq.MsgHandler(msg1)
+
+		time.Sleep(10*time.Millisecond + 1*time.Nanosecond)
 
 		raw2, err := storage.NewEvent(eset[2]).Marshal(nil)
 		assert.NoError(t, err)
