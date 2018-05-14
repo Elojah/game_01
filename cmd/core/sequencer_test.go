@@ -61,7 +61,7 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, es,
+		seq := NewSequencer(seqID, 32, es,
 			func(event game.Event) {
 				assert.True(t, equalEvent(eset[0], event))
 				wg.Done()
@@ -93,7 +93,7 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(2)
-		seq := NewSequencer(seqID, es,
+		seq := NewSequencer(seqID, 32, es,
 			func(event game.Event) {
 				wg.Done()
 			},
@@ -132,7 +132,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		var count int32
 		wg.Add(3)
-		seq := NewSequencer(seqID, es,
+		seq := NewSequencer(seqID, 32, es,
 			func(event game.Event) {
 				atomic.AddInt32(&count, 1)
 				switch count {
@@ -180,7 +180,7 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, es,
+		seq := NewSequencer(seqID, 32, es,
 			func(event game.Event) {
 				assert.False(t, equalEvent(event, eset[0]))
 				if equalEvent(event, eset[2]) {

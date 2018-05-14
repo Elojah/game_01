@@ -36,18 +36,18 @@ func (s *Sequencer) Close() {
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
-func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *Sequencer {
+func NewSequencer(id game.ID, limit int, es game.EventService, callback func(game.Event)) *Sequencer {
 	s := Sequencer{
 		id:           id,
 		logger:       log.With().Str("sequencer", id.String()).Logger(),
 		EventService: es,
 
-		input:   make(tick, 32),
-		fetch:   make(tick, 32),
-		process: make(chan game.Event, 32),
+		input:   make(tick, limit),
+		fetch:   make(tick, limit),
+		process: make(chan game.Event, limit),
 
-		min:       make(tick, 32),
-		last:      make(tick, 32),
+		min:       make(tick, 1),
+		last:      make(tick, 1),
 		interrupt: make(chan struct{}, 1),
 	}
 
@@ -100,6 +100,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 				}
 				ts := event.TS.UnixNano()
 				if min != 0 && ts > min {
+					s.logger.Info().Int64("ts", ts).Int64("min", min).Msg("skip")
 					s.last <- 0
 					break
 				}
