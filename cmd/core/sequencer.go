@@ -53,25 +53,19 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 
 	go func() {
 		var last int64
-		for {
+		for t := range s.input {
 			select {
-			case t, ok := <-s.input:
-				if !ok {
-					return
-				}
-				if t < last {
-					s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
-					s.interrupt <- struct{}{}
-				}
-				s.logger.Info().Int64("current", t).Msg("fetch post events")
-				s.min <- t
-				s.fetch <- t
-			case t, ok := <-s.last:
-				if !ok {
-					return
-				}
+			case t := <-s.last:
 				last = t
+			default:
 			}
+			if t < last {
+				s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
+				s.interrupt <- struct{}{}
+			}
+			s.logger.Info().Int64("current", t).Msg("fetch post events")
+			s.min <- t
+			s.fetch <- t
 		}
 	}()
 
