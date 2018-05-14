@@ -12,12 +12,12 @@ var (
 	_ = time.Now()
 )
 
-type Damage struct {
+type DamageReceived struct {
 	Source [16]byte
 	Amount int64
 }
 
-func (d *Damage) Size() (s uint64) {
+func (d *DamageReceived) Size() (s uint64) {
 
 	{
 		s += 16
@@ -25,7 +25,7 @@ func (d *Damage) Size() (s uint64) {
 	s += 8
 	return
 }
-func (d *Damage) Marshal(buf []byte) ([]byte, error) {
+func (d *DamageReceived) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -62,7 +62,7 @@ func (d *Damage) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+8], nil
 }
 
-func (d *Damage) Unmarshal(buf []byte) (uint64, error) {
+func (d *DamageReceived) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
@@ -77,12 +77,12 @@ func (d *Damage) Unmarshal(buf []byte) (uint64, error) {
 	return i + 8, nil
 }
 
-type DamageInflict struct {
+type DamageDone struct {
 	Target [16]byte
 	Amount int64
 }
 
-func (d *DamageInflict) Size() (s uint64) {
+func (d *DamageDone) Size() (s uint64) {
 
 	{
 		s += 16
@@ -90,7 +90,7 @@ func (d *DamageInflict) Size() (s uint64) {
 	s += 8
 	return
 }
-func (d *DamageInflict) Marshal(buf []byte) ([]byte, error) {
+func (d *DamageDone) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -127,7 +127,7 @@ func (d *DamageInflict) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+8], nil
 }
 
-func (d *DamageInflict) Unmarshal(buf []byte) (uint64, error) {
+func (d *DamageDone) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
@@ -142,12 +142,12 @@ func (d *DamageInflict) Unmarshal(buf []byte) (uint64, error) {
 	return i + 8, nil
 }
 
-type Heal struct {
+type HealReceived struct {
 	Source [16]byte
 	Amount int64
 }
 
-func (d *Heal) Size() (s uint64) {
+func (d *HealReceived) Size() (s uint64) {
 
 	{
 		s += 16
@@ -155,7 +155,7 @@ func (d *Heal) Size() (s uint64) {
 	s += 8
 	return
 }
-func (d *Heal) Marshal(buf []byte) ([]byte, error) {
+func (d *HealReceived) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -192,7 +192,7 @@ func (d *Heal) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+8], nil
 }
 
-func (d *Heal) Unmarshal(buf []byte) (uint64, error) {
+func (d *HealReceived) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
@@ -207,12 +207,12 @@ func (d *Heal) Unmarshal(buf []byte) (uint64, error) {
 	return i + 8, nil
 }
 
-type HealInflict struct {
+type HealDone struct {
 	Target [16]byte
 	Amount int64
 }
 
-func (d *HealInflict) Size() (s uint64) {
+func (d *HealDone) Size() (s uint64) {
 
 	{
 		s += 16
@@ -220,7 +220,7 @@ func (d *HealInflict) Size() (s uint64) {
 	s += 8
 	return
 }
-func (d *HealInflict) Marshal(buf []byte) ([]byte, error) {
+func (d *HealDone) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -257,7 +257,7 @@ func (d *HealInflict) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+8], nil
 }
 
-func (d *HealInflict) Unmarshal(buf []byte) (uint64, error) {
+func (d *HealDone) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
@@ -287,16 +287,16 @@ func (d *Event) Size() (s uint64) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case Damage:
+		case DamageReceived:
 			v = 0 + 1
 
-		case DamageInflict:
+		case DamageDone:
 			v = 1 + 1
 
-		case Heal:
+		case HealReceived:
 			v = 2 + 1
 
-		case HealInflict:
+		case HealDone:
 			v = 3 + 1
 
 		}
@@ -313,25 +313,25 @@ func (d *Event) Size() (s uint64) {
 		}
 		switch tt := d.Action.(type) {
 
-		case Damage:
+		case DamageReceived:
 
 			{
 				s += tt.Size()
 			}
 
-		case DamageInflict:
+		case DamageDone:
 
 			{
 				s += tt.Size()
 			}
 
-		case Heal:
+		case HealReceived:
 
 			{
 				s += tt.Size()
 			}
 
-		case HealInflict:
+		case HealDone:
 
 			{
 				s += tt.Size()
@@ -380,16 +380,16 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case Damage:
+		case DamageReceived:
 			v = 0 + 1
 
-		case DamageInflict:
+		case DamageDone:
 			v = 1 + 1
 
-		case Heal:
+		case HealReceived:
 			v = 2 + 1
 
-		case HealInflict:
+		case HealDone:
 			v = 3 + 1
 
 		}
@@ -409,7 +409,7 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 		}
 		switch tt := d.Action.(type) {
 
-		case Damage:
+		case DamageReceived:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -419,7 +419,7 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case DamageInflict:
+		case DamageDone:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -429,7 +429,7 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case Heal:
+		case HealReceived:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -439,7 +439,7 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case HealInflict:
+		case HealDone:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -486,7 +486,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 		switch v {
 
 		case 0 + 1:
-			var tt Damage
+			var tt DamageReceived
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
@@ -499,7 +499,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 1 + 1:
-			var tt DamageInflict
+			var tt DamageDone
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
@@ -512,7 +512,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 2 + 1:
-			var tt Heal
+			var tt HealReceived
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
@@ -525,7 +525,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 3 + 1:
-			var tt HealInflict
+			var tt HealDone
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])

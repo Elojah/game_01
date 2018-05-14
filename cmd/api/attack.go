@@ -19,7 +19,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, ts time.Time) error 
 		err := h.SendEvent(game.Event{
 			ID: game.NewULID(),
 			TS: ts,
-			Action: game.DamageInflict{
+			Action: game.DamageDone{
 				Target: game.ID(a.Target),
 				// TODO yes it is a const random number
 				Amount: 10,
@@ -33,7 +33,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, ts time.Time) error 
 		err := h.SendEvent(game.Event{
 			ID: game.NewULID(),
 			TS: ts,
-			Action: game.Damage{
+			Action: game.DamageReceived{
 				Source: game.ID(a.Source),
 				// TODO yes it is a const random number
 				Amount: 10,

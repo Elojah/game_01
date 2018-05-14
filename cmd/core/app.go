@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
@@ -78,16 +79,17 @@ func (a *app) AddListener(msg *nats.Msg) {
 func (a *app) Apply(event game.Event) {
 	logger := log.With().
 		Str("event", event.ID.String()).
-		Int("ts", int(event.TS.UnixNano())).
+		Int64("ts", event.TS.UnixNano()).
 		Logger()
+	fmt.Println(event)
 	switch event.Action.(type) {
-	case game.Damage:
-		logger.Info().Str("type", "damage").Msg("apply action")
-	case game.DamageInflict:
-		logger.Info().Str("type", "damage_inflict").Msg("apply action")
-	case game.Heal:
-		logger.Info().Str("type", "heal").Msg("apply action")
-	case game.HealInflict:
-		logger.Info().Str("type", "heal_inflict").Msg("apply action")
+	case game.DamageReceived:
+		logger.Info().Str("type", "damage_received").Msg("apply action")
+	case game.DamageDone:
+		logger.Info().Str("type", "damage_done").Msg("apply action")
+	case game.HealReceived:
+		logger.Info().Str("type", "heal_received").Msg("apply action")
+	case game.HealDone:
+		logger.Info().Str("type", "heal_done").Msg("apply action")
 	}
 }

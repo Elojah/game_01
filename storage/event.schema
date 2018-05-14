@@ -1,19 +1,19 @@
-struct Damage {
+struct DamageReceived {
 	Source	[16]byte
 	Amount	int64
 }
 
-struct DamageInflict {
+struct DamageDone {
 	Target	[16]byte
 	Amount	int64
 }
 
-struct Heal {
+struct HealReceived {
 	Source	[16]byte
 	Amount	int64
 }
 
-struct HealInflict {
+struct HealDone {
 	Target	[16]byte
 	Amount	int64
 }
@@ -22,9 +22,9 @@ struct Event {
 	ID	[16]byte
 	TS	int64
 	Action union {
-		Damage
-		DamageInflict
-		Heal
-		HealInflict
+		DamageReceived
+		DamageDone
+		HealReceived
+		HealDone
 	}
 }

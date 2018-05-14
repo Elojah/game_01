@@ -3,26 +3,26 @@ package game
 // Action is a client action.
 type Action interface{}
 
-// Damage received.
-type Damage struct {
-	Source ID
-	Amount int64
-}
-
-// DamageInflict inflicted.
-type DamageInflict struct {
+// DamageDone is an amount of damage done by the player to Target.
+type DamageDone struct {
 	Target ID
 	Amount int64
 }
 
-// Heal received.
-type Heal struct {
+// DamageReceived is an amount of damage received by the player and done by Source.
+type DamageReceived struct {
 	Source ID
 	Amount int64
 }
 
-// HealInflict inflicted.
-type HealInflict struct {
+// HealDone is an amount of heal done by the player to Target.
+type HealDone struct {
 	Target ID
+	Amount int64
+}
+
+// HealReceived is an amount of heal received by the player and done by Source.
+type HealReceived struct {
+	Source ID
 	Amount int64
 }
