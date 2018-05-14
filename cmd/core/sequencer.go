@@ -22,6 +22,7 @@ type Sequencer struct {
 	fetch   tick
 	process chan game.Event
 
+	min       tick
 	last      tick
 	interrupt chan struct{}
 }
@@ -45,6 +46,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 		fetch:   make(tick, 32),
 		process: make(chan game.Event, 32),
 
+		min:       make(tick, 32),
 		last:      make(tick, 32),
 		interrupt: make(chan struct{}, 1),
 	}
@@ -62,6 +64,7 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					s.interrupt <- struct{}{}
 				}
 				s.logger.Info().Int64("current", t).Msg("fetch post events")
+				s.min <- t
 				s.fetch <- t
 			case t, ok := <-s.last:
 				if !ok {
@@ -73,8 +76,8 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 	}()
 
 	go func() {
-		var min int64
 		for {
+			var min int64
 			select {
 			case t, ok := <-s.fetch:
 				if !ok {
@@ -90,24 +93,30 @@ func NewSequencer(id game.ID, es game.EventService, callback func(game.Event)) *
 					break
 				}
 
-				send := func(event game.Event) {
-					s.last <- event.TS.UnixNano()
-					s.process <- event
-				}
 				func() {
 					for i, event := range events {
 						select {
 						case _ = <-s.interrupt:
+							// Case where interrupt ticks at previous last run.
 							if i != 0 {
+								s.last <- 0
 								return
 							}
-							// Happens when s.last has not been set at 0 yet but interrupt has been sent.
-							send(event)
+						case m := <-s.min:
+							if m != t {
+								min = m
+							}
 						default:
-							send(event)
 						}
+						ts := event.TS.UnixNano()
+						if min != 0 && ts > min {
+							s.last <- 0
+							return
+						}
+						s.last <- ts
+						s.process <- event
+						s.last <- 0
 					}
-					s.last <- 0
 				}()
 			}
 		}
