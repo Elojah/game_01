@@ -4,14 +4,19 @@ struct Vec3 {
 	Z float64
 }
 
+struct Move {
+	Source		[16]byte
+	Position	Vec3
+}
+
 struct Attack {
 	Source	[16]byte
 	Target	[16]byte
 }
 
-struct Move {
-	Source		[16]byte
-	Position	Vec3
+struct Heal {
+	Source	[16]byte
+	Target	[16]byte
 }
 
 struct Message {
@@ -19,7 +24,8 @@ struct Message {
 	ACK			*[16]byte
 	TS			int64
 	Action union {
-		Attack
 		Move
+		Attack
+		Heal
 	}
 }

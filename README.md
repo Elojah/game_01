@@ -34,3 +34,9 @@
 - [ ] `tile38` Entity Service
 - [ ] Response server to update all clients with delta compression named `sync`
 - [ ] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?*
+
+## RANDOM
+- [ ] entity take control of others entities
+- [ ] entity can switch position with others entities
+- [ ] entity can merge others entities (allies also)
+- [ ] 

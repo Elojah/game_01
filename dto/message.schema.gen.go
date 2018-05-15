@@ -124,57 +124,6 @@ func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 	return i + 24, nil
 }
 
-type Attack struct {
-	Source [16]byte
-	Target [16]byte
-}
-
-func (d *Attack) Size() (s uint64) {
-
-	{
-		s += 16
-	}
-	{
-		s += 16
-	}
-	return
-}
-func (d *Attack) Marshal(buf []byte) ([]byte, error) {
-	size := d.Size()
-	{
-		if uint64(cap(buf)) >= size {
-			buf = buf[:size]
-		} else {
-			buf = make([]byte, size)
-		}
-	}
-	i := uint64(0)
-
-	{
-		copy(buf[i+0:], d.Source[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
-	}
-	return buf[:i+0], nil
-}
-
-func (d *Attack) Unmarshal(buf []byte) (uint64, error) {
-	i := uint64(0)
-
-	{
-		copy(d.Source[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
-	}
-	return i + 0, nil
-}
-
 type Move struct {
 	Source   [16]byte
 	Position Vec3
@@ -232,6 +181,108 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
+type Attack struct {
+	Source [16]byte
+	Target [16]byte
+}
+
+func (d *Attack) Size() (s uint64) {
+
+	{
+		s += 16
+	}
+	{
+		s += 16
+	}
+	return
+}
+func (d *Attack) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
+		copy(buf[i+0:], d.Target[:])
+		i += 16
+	}
+	return buf[:i+0], nil
+}
+
+func (d *Attack) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
+	{
+		copy(d.Target[:], buf[i+0:])
+		i += 16
+	}
+	return i + 0, nil
+}
+
+type Heal struct {
+	Source [16]byte
+	Target [16]byte
+}
+
+func (d *Heal) Size() (s uint64) {
+
+	{
+		s += 16
+	}
+	{
+		s += 16
+	}
+	return
+}
+func (d *Heal) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
+		copy(buf[i+0:], d.Target[:])
+		i += 16
+	}
+	return buf[:i+0], nil
+}
+
+func (d *Heal) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
+	{
+		copy(d.Target[:], buf[i+0:])
+		i += 16
+	}
+	return i + 0, nil
+}
+
 type Message struct {
 	Token  [16]byte
 	ACK    *[16]byte
@@ -257,11 +308,14 @@ func (d *Message) Size() (s uint64) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case Attack:
+		case Move:
 			v = 0 + 1
 
-		case Move:
+		case Attack:
 			v = 1 + 1
+
+		case Heal:
+			v = 2 + 1
 
 		}
 
@@ -277,13 +331,19 @@ func (d *Message) Size() (s uint64) {
 		}
 		switch tt := d.Action.(type) {
 
+		case Move:
+
+			{
+				s += tt.Size()
+			}
+
 		case Attack:
 
 			{
 				s += tt.Size()
 			}
 
-		case Move:
+		case Heal:
 
 			{
 				s += tt.Size()
@@ -345,11 +405,14 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case Attack:
+		case Move:
 			v = 0 + 1
 
-		case Move:
+		case Attack:
 			v = 1 + 1
+
+		case Heal:
+			v = 2 + 1
 
 		}
 
@@ -368,6 +431,16 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		}
 		switch tt := d.Action.(type) {
 
+		case Move:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+9:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
 		case Attack:
 
 			{
@@ -378,7 +451,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case Move:
+		case Heal:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+9:])
@@ -440,7 +513,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 		switch v {
 
 		case 0 + 1:
-			var tt Attack
+			var tt Move
 
 			{
 				ni, err := tt.Unmarshal(buf[i+9:])
@@ -453,7 +526,20 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 1 + 1:
-			var tt Move
+			var tt Attack
+
+			{
+				ni, err := tt.Unmarshal(buf[i+9:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 2 + 1:
+			var tt Heal
 
 			{
 				ni, err := tt.Unmarshal(buf[i+9:])

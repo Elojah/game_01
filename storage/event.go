@@ -6,6 +6,11 @@ import (
 	"github.com/elojah/game_01"
 )
 
+// NewMove convert a game.Move into a storage Move.
+func NewMove(a game.Move) Move {
+	return Move(a)
+}
+
 // NewDamageDone convert a game.DamageDone into a storage DamageDone.
 func NewDamageDone(a game.DamageDone) DamageDone {
 	return DamageDone{
@@ -36,6 +41,11 @@ func NewHealReceived(a game.HealReceived) HealReceived {
 		Source: [16]byte(a.Source),
 		Amount: a.Amount,
 	}
+}
+
+// Domain converts a storage Move into a game Move.
+func (a Move) Domain() game.Move {
+	return game.Move(a)
 }
 
 // Domain converts a storage DamageDone into a game DamageDone.
@@ -73,8 +83,9 @@ func (a HealReceived) Domain() game.HealReceived {
 // NewEvent converts a domain event to a storage event.
 func NewEvent(event game.Event) *Event {
 	e := &Event{
-		ID: [16]byte(event.ID),
-		TS: event.TS.UnixNano(),
+		ID:     [16]byte(event.ID),
+		Source: [16]byte(event.Source),
+		TS:     event.TS.UnixNano(),
 	}
 	switch event.Action.(type) {
 	case game.DamageDone:
@@ -92,8 +103,9 @@ func NewEvent(event game.Event) *Event {
 // Domain converts a storage user into a domain user.
 func (e Event) Domain() game.Event {
 	event := game.Event{
-		ID: game.ID(e.ID),
-		TS: time.Unix(0, e.TS),
+		ID:     game.ID(e.ID),
+		Source: game.ID(e.Source),
+		TS:     time.Unix(0, e.TS),
 	}
 	switch e.Action.(type) {
 	case DamageDone:

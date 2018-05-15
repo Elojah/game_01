@@ -1,3 +1,9 @@
+struct Move {
+	X		float64
+	Y		float64
+	Z		float64
+}
+
 struct DamageReceived {
 	Source	[16]byte
 	Amount	int64
@@ -19,9 +25,11 @@ struct HealDone {
 }
 
 struct Event {
-	ID	[16]byte
-	TS	int64
+	ID		[16]byte
+	Source	[16]byte
+	TS		int64
 	Action union {
+		Move
 		DamageReceived
 		DamageDone
 		HealReceived

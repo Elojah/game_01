@@ -74,10 +74,12 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 
 	switch msg.Action.(type) {
-	case dto.Attack:
-		go func() { _ = h.attack(ctx, msg.Action.(dto.Attack), ts) }()
 	case dto.Move:
-		go func() { _ = h.move(ctx, msg.Action.(dto.Move), ts) }()
+		go func() { _ = h.move(ctx, msg.Action.(dto.Move), token, ts) }()
+	case dto.Attack:
+		go func() { _ = h.attack(ctx, msg.Action.(dto.Attack), token, ts) }()
+	case dto.Heal:
+		go func() { _ = h.heal(ctx, msg.Action.(dto.Heal), token, ts) }()
 	}
 
 	return nil

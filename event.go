@@ -8,6 +8,7 @@ import (
 type Event struct {
 	ID     ID
 	TS     time.Time
+	Source ID
 	Action Action
 }
 

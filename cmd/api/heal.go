@@ -11,7 +11,7 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts time.Time) error {
+func (h *handler) heal(ctx context.Context, a dto.Heal, token game.Token, ts time.Time) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
@@ -20,7 +20,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts
 			ID:     game.NewULID(),
 			Source: token.ID,
 			TS:     ts,
-			Action: game.DamageDone{
+			Action: game.HealDone{
 				Target: game.ID(a.Target),
 				Amount: 10,
 			},
@@ -34,7 +34,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts
 			ID:     game.NewULID(),
 			Source: token.ID,
 			TS:     ts,
-			Action: game.DamageReceived{
+			Action: game.HealReceived{
 				Source: game.ID(a.Source),
 				Amount: 10,
 			},

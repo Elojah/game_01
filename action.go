@@ -3,6 +3,9 @@ package game
 // Action is a client action.
 type Action interface{}
 
+// Move is a new position of player.
+type Move Vec3
+
 // DamageDone is an amount of damage done by the player to Target.
 type DamageDone struct {
 	Target ID
