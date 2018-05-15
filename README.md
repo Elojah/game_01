@@ -23,8 +23,8 @@
 - [x] Create new https service to create new token
 - [x] Create new bin to read events
 - [x] Add NATS mqueue to cancel replay mechanism (in context usage ?)
-- [x] Fix NATS slow consumer
-- [x] Add `sequencer_test.go`, 100% plz
+- [x] Fix NATS slow consumer, mouais
+- [x] Add `sequencer_test.go`, 100% plz (ok)
 - [ ] Add state/entity service impl + interactions
 - [ ] Handle token permissions/entity actions (linked to above)
 - [ ] Add server ack sending to client (and client resend)
@@ -32,9 +32,11 @@
 - [ ] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?
 - [ ] Response server to update all clients with delta compression named `sync`
 - [ ] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?* + first graphic client
+- [ ] Add context everywhere
 
 ## RANDOM
-- [ ] entity can switch position with others entities
-- [ ] entity take control of others entities
-- [ ] entity can merge others entities (allies/enemies)
-- [ ] 
+- [ ] `Trickster` entity can switch position with his own entities and switch them
+- [ ] `Mesmerist` entity can take control of enemy entities
+- [ ] `Inquisitor` entity can merge entities (allies/enemies) and can switch control between allies entities
+- [ ] `Totemist` entity can clone his own entities
+- [ ] `Scavenger` entity can sacrify his own entities

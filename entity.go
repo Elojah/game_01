@@ -23,8 +23,12 @@ type EntityPatch struct {
 
 // EntityService is a REST interface for Entity object.
 type EntityService interface {
-	CreateEntity([]Entity) error
-	UpdateEntity(EntitySubset, EntityPatch) error
-	DeleteEntity(EntitySubset) error
-	ListEntity(EntitySubset) ([]Entity, error)
+	CreateEntity(Entity, int64) error
+	GetEntity(EntityBuilder) (Entity, error)
+}
+
+// EntityBuilder is a builder to retrieve one entity.
+type EntityBuilder struct {
+	Key string
+	Max int
 }
