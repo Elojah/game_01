@@ -6,9 +6,6 @@ type Entity struct {
 	HP       uint8
 	MP       uint8
 	Position Vec3
-
-	// Static belongs for no HP/MP (no damage/heal) and no move unless special skills.
-	Static bool
 }
 
 // EntitySubset is a subset for Entity.

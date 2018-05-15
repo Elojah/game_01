@@ -1,0 +1,10 @@
+struct Entity {
+	ID		[16]byte
+
+	HP		uint8
+	MP		uint8
+
+	X		float64
+	Y		float64
+	Z		float64
+}
