@@ -8,12 +8,18 @@ import (
 
 // NewMove convert a game.Move into a storage Move.
 func NewMove(a game.Move) Move {
-	return Move(a)
+	return Move{
+		X:      a.Position.X,
+		Y:      a.Position.Y,
+		Z:      a.Position.Z,
+		Target: [16]byte(a.Target),
+	}
 }
 
 // NewDamageDone convert a game.DamageDone into a storage DamageDone.
 func NewDamageDone(a game.DamageDone) DamageDone {
 	return DamageDone{
+		Source: [16]byte(a.Source),
 		Target: [16]byte(a.Target),
 		Amount: a.Amount,
 	}
@@ -23,6 +29,7 @@ func NewDamageDone(a game.DamageDone) DamageDone {
 func NewDamageReceived(a game.DamageReceived) DamageReceived {
 	return DamageReceived{
 		Source: [16]byte(a.Source),
+		Target: [16]byte(a.Target),
 		Amount: a.Amount,
 	}
 }
@@ -30,6 +37,7 @@ func NewDamageReceived(a game.DamageReceived) DamageReceived {
 // NewHealDone convert a game.HealDone into a storage HealDone.
 func NewHealDone(a game.HealDone) HealDone {
 	return HealDone{
+		Source: [16]byte(a.Source),
 		Target: [16]byte(a.Target),
 		Amount: a.Amount,
 	}
@@ -39,18 +47,27 @@ func NewHealDone(a game.HealDone) HealDone {
 func NewHealReceived(a game.HealReceived) HealReceived {
 	return HealReceived{
 		Source: [16]byte(a.Source),
+		Target: [16]byte(a.Target),
 		Amount: a.Amount,
 	}
 }
 
 // Domain converts a storage Move into a game Move.
 func (a Move) Domain() game.Move {
-	return game.Move(a)
+	return game.Move{
+		Position: game.Vec3{
+			X: a.X,
+			Y: a.Y,
+			Z: a.Z,
+		},
+		Target: [16]byte(a.Target),
+	}
 }
 
 // Domain converts a storage DamageDone into a game DamageDone.
 func (a DamageDone) Domain() game.DamageDone {
 	return game.DamageDone{
+		Source: game.ID(a.Source),
 		Target: game.ID(a.Target),
 		Amount: a.Amount,
 	}
@@ -60,6 +77,7 @@ func (a DamageDone) Domain() game.DamageDone {
 func (a DamageReceived) Domain() game.DamageReceived {
 	return game.DamageReceived{
 		Source: game.ID(a.Source),
+		Target: game.ID(a.Target),
 		Amount: a.Amount,
 	}
 }
@@ -67,6 +85,7 @@ func (a DamageReceived) Domain() game.DamageReceived {
 // Domain converts a storage HealDone into a game HealDone.
 func (a HealDone) Domain() game.HealDone {
 	return game.HealDone{
+		Source: game.ID(a.Source),
 		Target: game.ID(a.Target),
 		Amount: a.Amount,
 	}
@@ -76,6 +95,7 @@ func (a HealDone) Domain() game.HealDone {
 func (a HealReceived) Domain() game.HealReceived {
 	return game.HealReceived{
 		Source: game.ID(a.Source),
+		Target: game.ID(a.Target),
 		Amount: a.Amount,
 	}
 }
@@ -88,6 +108,8 @@ func NewEvent(event game.Event) *Event {
 		TS:     event.TS.UnixNano(),
 	}
 	switch event.Action.(type) {
+	case game.Move:
+		e.Action = NewMove(event.Action.(game.Move))
 	case game.DamageDone:
 		e.Action = NewDamageDone(event.Action.(game.DamageDone))
 	case game.DamageReceived:
@@ -108,6 +130,8 @@ func (e Event) Domain() game.Event {
 		TS:     time.Unix(0, e.TS),
 	}
 	switch e.Action.(type) {
+	case Move:
+		event.Action = e.Action.(Move).Domain()
 	case DamageDone:
 		event.Action = e.Action.(DamageDone).Domain()
 	case DamageReceived:

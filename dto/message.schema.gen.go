@@ -125,7 +125,7 @@ func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type Move struct {
-	Source   [16]byte
+	Target   [16]byte
 	Position Vec3
 }
 
@@ -151,7 +151,7 @@ func (d *Move) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-		copy(buf[i+0:], d.Source[:])
+		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
 	{
@@ -168,7 +168,7 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.Source[:], buf[i+0:])
+		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
 	{

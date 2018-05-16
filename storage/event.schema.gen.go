@@ -13,13 +13,17 @@ var (
 )
 
 type Move struct {
-	X float64
-	Y float64
-	Z float64
+	X      float64
+	Y      float64
+	Z      float64
+	Target [16]byte
 }
 
 func (d *Move) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	s += 24
 	return
 }
@@ -97,6 +101,10 @@ func (d *Move) Marshal(buf []byte) ([]byte, error) {
 		buf[7+16] = byte(v >> 56)
 
 	}
+	{
+		copy(buf[i+24:], d.Target[:])
+		i += 16
+	}
 	return buf[:i+24], nil
 }
 
@@ -105,32 +113,40 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 
 	{
 
-		v := 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
+		v := 0 | (uint64(buf[i+0+0]) << 0) | (uint64(buf[i+1+0]) << 8) | (uint64(buf[i+2+0]) << 16) | (uint64(buf[i+3+0]) << 24) | (uint64(buf[i+4+0]) << 32) | (uint64(buf[i+5+0]) << 40) | (uint64(buf[i+6+0]) << 48) | (uint64(buf[i+7+0]) << 56)
 		d.X = *(*float64)(unsafe.Pointer(&v))
 
 	}
 	{
 
-		v := 0 | (uint64(buf[0+8]) << 0) | (uint64(buf[1+8]) << 8) | (uint64(buf[2+8]) << 16) | (uint64(buf[3+8]) << 24) | (uint64(buf[4+8]) << 32) | (uint64(buf[5+8]) << 40) | (uint64(buf[6+8]) << 48) | (uint64(buf[7+8]) << 56)
+		v := 0 | (uint64(buf[i+0+8]) << 0) | (uint64(buf[i+1+8]) << 8) | (uint64(buf[i+2+8]) << 16) | (uint64(buf[i+3+8]) << 24) | (uint64(buf[i+4+8]) << 32) | (uint64(buf[i+5+8]) << 40) | (uint64(buf[i+6+8]) << 48) | (uint64(buf[i+7+8]) << 56)
 		d.Y = *(*float64)(unsafe.Pointer(&v))
 
 	}
 	{
 
-		v := 0 | (uint64(buf[0+16]) << 0) | (uint64(buf[1+16]) << 8) | (uint64(buf[2+16]) << 16) | (uint64(buf[3+16]) << 24) | (uint64(buf[4+16]) << 32) | (uint64(buf[5+16]) << 40) | (uint64(buf[6+16]) << 48) | (uint64(buf[7+16]) << 56)
+		v := 0 | (uint64(buf[i+0+16]) << 0) | (uint64(buf[i+1+16]) << 8) | (uint64(buf[i+2+16]) << 16) | (uint64(buf[i+3+16]) << 24) | (uint64(buf[i+4+16]) << 32) | (uint64(buf[i+5+16]) << 40) | (uint64(buf[i+6+16]) << 48) | (uint64(buf[i+7+16]) << 56)
 		d.Z = *(*float64)(unsafe.Pointer(&v))
 
+	}
+	{
+		copy(d.Target[:], buf[i+24:])
+		i += 16
 	}
 	return i + 24, nil
 }
 
 type DamageReceived struct {
 	Source [16]byte
+	Target [16]byte
 	Amount int64
 }
 
 func (d *DamageReceived) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -150,6 +166,10 @@ func (d *DamageReceived) Marshal(buf []byte) ([]byte, error) {
 
 	{
 		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
+		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
 	{
@@ -182,6 +202,10 @@ func (d *DamageReceived) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	{
+		copy(d.Target[:], buf[i+0:])
+		i += 16
+	}
+	{
 
 		d.Amount = 0 | (int64(buf[i+0+0]) << 0) | (int64(buf[i+1+0]) << 8) | (int64(buf[i+2+0]) << 16) | (int64(buf[i+3+0]) << 24) | (int64(buf[i+4+0]) << 32) | (int64(buf[i+5+0]) << 40) | (int64(buf[i+6+0]) << 48) | (int64(buf[i+7+0]) << 56)
 
@@ -190,12 +214,16 @@ func (d *DamageReceived) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type DamageDone struct {
+	Source [16]byte
 	Target [16]byte
 	Amount int64
 }
 
 func (d *DamageDone) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -213,6 +241,10 @@ func (d *DamageDone) Marshal(buf []byte) ([]byte, error) {
 	}
 	i := uint64(0)
 
+	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
 	{
 		copy(buf[i+0:], d.Target[:])
 		i += 16
@@ -243,6 +275,10 @@ func (d *DamageDone) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
+	{
 		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
@@ -256,11 +292,15 @@ func (d *DamageDone) Unmarshal(buf []byte) (uint64, error) {
 
 type HealReceived struct {
 	Source [16]byte
+	Target [16]byte
 	Amount int64
 }
 
 func (d *HealReceived) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -280,6 +320,10 @@ func (d *HealReceived) Marshal(buf []byte) ([]byte, error) {
 
 	{
 		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
+		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
 	{
@@ -312,6 +356,10 @@ func (d *HealReceived) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	{
+		copy(d.Target[:], buf[i+0:])
+		i += 16
+	}
+	{
 
 		d.Amount = 0 | (int64(buf[i+0+0]) << 0) | (int64(buf[i+1+0]) << 8) | (int64(buf[i+2+0]) << 16) | (int64(buf[i+3+0]) << 24) | (int64(buf[i+4+0]) << 32) | (int64(buf[i+5+0]) << 40) | (int64(buf[i+6+0]) << 48) | (int64(buf[i+7+0]) << 56)
 
@@ -320,12 +368,16 @@ func (d *HealReceived) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type HealDone struct {
+	Source [16]byte
 	Target [16]byte
 	Amount int64
 }
 
 func (d *HealDone) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -343,6 +395,10 @@ func (d *HealDone) Marshal(buf []byte) ([]byte, error) {
 	}
 	i := uint64(0)
 
+	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
 	{
 		copy(buf[i+0:], d.Target[:])
 		i += 16
@@ -372,6 +428,10 @@ func (d *HealDone) Marshal(buf []byte) ([]byte, error) {
 func (d *HealDone) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
+	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
 	{
 		copy(d.Target[:], buf[i+0:])
 		i += 16

@@ -8,7 +8,7 @@ type Entity struct {
 	Position Vec3
 }
 
-// EntityService is a REST interface for Entity object.
+// EntityService is an interface for Entity object.
 type EntityService interface {
 	CreateEntity(Entity, int64) error
 	GetEntity(EntityBuilder) (Entity, error)

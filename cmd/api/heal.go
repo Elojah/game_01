@@ -21,6 +21,7 @@ func (h *handler) heal(ctx context.Context, a dto.Heal, token game.Token, ts tim
 			Source: token.ID,
 			TS:     ts,
 			Action: game.HealDone{
+				Source: game.ID(a.Source),
 				Target: game.ID(a.Target),
 				Amount: 10,
 			},
@@ -36,6 +37,7 @@ func (h *handler) heal(ctx context.Context, a dto.Heal, token game.Token, ts tim
 			TS:     ts,
 			Action: game.HealReceived{
 				Source: game.ID(a.Source),
+				Target: game.ID(a.Target),
 				Amount: 10,
 			},
 		}, game.ID(a.Target))

@@ -20,8 +20,11 @@ func (h *handler) move(ctx context.Context, m dto.Move, token game.Token, ts tim
 			ID:     game.NewULID(),
 			Source: token.ID,
 			TS:     ts,
-			Action: game.Move(m.Position),
-		}, game.ID(m.Source))
+			Action: game.Move{
+				Position: game.Vec3(m.Position),
+				Target:   m.Target,
+			},
+		}, game.ID(m.Target))
 		if err != nil {
 			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")
 		}

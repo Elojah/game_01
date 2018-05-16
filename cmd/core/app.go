@@ -83,7 +83,7 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		Str("source", event.Source.String()).
 		Int64("ts", ts).
 		Logger()
-	_, _ = a.GetEntity(game.EntityBuilder{Key: key, Max: int(ts)})
+
 	switch event.Action.(type) {
 	case game.Move:
 		logger.Info().Str("type", "move").Msg("apply action")
@@ -96,4 +96,8 @@ func (a *app) Apply(id game.ID, event game.Event) {
 	case game.HealDone:
 		logger.Info().Str("type", "heal_done").Msg("apply action")
 	}
+	// if err != nil {
+	// 	logger.Error().Err(err).Msg("event rejected")
+	// 	return
+	// }
 }

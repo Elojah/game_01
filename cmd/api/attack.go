@@ -21,6 +21,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts
 			Source: token.ID,
 			TS:     ts,
 			Action: game.DamageDone{
+				Source: game.ID(a.Source),
 				Target: game.ID(a.Target),
 				Amount: 10,
 			},
@@ -36,6 +37,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts
 			TS:     ts,
 			Action: game.DamageReceived{
 				Source: game.ID(a.Source),
+				Target: game.ID(a.Target),
 				Amount: 10,
 			},
 		}, game.ID(a.Target))

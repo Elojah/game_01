@@ -2,24 +2,29 @@ struct Move {
 	X		float64
 	Y		float64
 	Z		float64
+	Target	[16]byte
 }
 
 struct DamageReceived {
 	Source	[16]byte
+	Target	[16]byte
 	Amount	int64
 }
 
 struct DamageDone {
+	Source	[16]byte
 	Target	[16]byte
 	Amount	int64
 }
 
 struct HealReceived {
 	Source	[16]byte
+	Target	[16]byte
 	Amount	int64
 }
 
 struct HealDone {
+	Source	[16]byte
 	Target	[16]byte
 	Amount	int64
 }

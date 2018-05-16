@@ -5,7 +5,7 @@ struct Vec3 {
 }
 
 struct Move {
-	Source		[16]byte
+	Target		[16]byte
 	Position	Vec3
 }
 
