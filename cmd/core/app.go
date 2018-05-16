@@ -87,17 +87,28 @@ func (a *app) Apply(id game.ID, event game.Event) {
 	switch event.Action.(type) {
 	case game.Move:
 		logger.Info().Str("type", "move").Msg("apply action")
+		if err := a.Move(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	case game.DamageReceived:
 		logger.Info().Str("type", "damage_received").Msg("apply action")
+		if err := a.DamageReceived(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	case game.DamageDone:
 		logger.Info().Str("type", "damage_done").Msg("apply action")
+		if err := a.DamageDone(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	case game.HealReceived:
 		logger.Info().Str("type", "heal_received").Msg("apply action")
+		if err := a.HealReceived(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	case game.HealDone:
 		logger.Info().Str("type", "heal_done").Msg("apply action")
+		if err := a.HealDone(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	}
-	// if err != nil {
-	// 	logger.Error().Err(err).Msg("event rejected")
-	// 	return
-	// }
 }
