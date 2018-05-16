@@ -29,11 +29,11 @@ func (s *Service) CreateEvent(event game.Event, id game.ID) error {
 }
 
 // ListEvent retrieves event in Redis using ZRangeWithScores.
-func (s *Service) ListEvent(builder game.EventBuilder) ([]game.Event, error) {
+func (s *Service) ListEvent(subset game.EventSubset) ([]game.Event, error) {
 	cmd := s.ZRangeByScore(
-		eventKey+builder.Key,
+		eventKey+subset.Key,
 		redis.ZRangeBy{
-			Min: strconv.Itoa(builder.Min),
+			Min: strconv.FormatInt(subset.Min, 10),
 			Max: "+inf",
 		},
 	)

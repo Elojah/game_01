@@ -11,11 +11,11 @@ type Permission struct {
 // PermissionService defines Permission operations.
 type PermissionService interface {
 	CreatePermission(Permission) error
-	GetPermission(PermissionBuilder) (Permission, error)
+	GetPermission(PermissionSubset) (Permission, error)
 }
 
-// PermissionBuilder is the builder to retrieve a Permission.
-type PermissionBuilder struct {
+// PermissionSubset is the subset to retrieve a Permission.
+type PermissionSubset struct {
 	Source ID
 	Target ID
 }

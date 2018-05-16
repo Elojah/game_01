@@ -75,9 +75,9 @@ func NewSequencer(id game.ID, limit int, es game.EventService, callback func(gam
 	go func() {
 		var min int64
 		for t := range s.fetch {
-			events, err := s.ListEvent(game.EventBuilder{
+			events, err := s.ListEvent(game.EventSubset{
 				Key: s.id.String(),
-				Min: int(t),
+				Min: t,
 			})
 			if err != nil {
 				s.logger.Error().Err(err).Msg("failed to fetch events")

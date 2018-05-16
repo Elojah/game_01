@@ -20,11 +20,11 @@ type QEventService interface {
 // EventService wraps action interactions.
 type EventService interface {
 	CreateEvent(Event, ID) error
-	ListEvent(EventBuilder) ([]Event, error)
+	ListEvent(EventSubset) ([]Event, error)
 }
 
-// EventBuilder is a builder for actions. Internally usage done with ZRangeWithScores.
-type EventBuilder struct {
+// EventSubset is a subset for actions. Internally usage done with ZRangeWithScores.
+type EventSubset struct {
 	Key string
-	Min int
+	Min int64
 }

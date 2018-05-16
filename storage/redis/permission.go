@@ -14,8 +14,8 @@ const (
 )
 
 // GetPermission implemented with redis.
-func (s *Service) GetPermission(builder game.PermissionBuilder) (game.Permission, error) {
-	val, err := s.Get(permissionKey + builder.Source.String() + ":" + builder.Target.String()).Result()
+func (s *Service) GetPermission(subset game.PermissionSubset) (game.Permission, error) {
+	val, err := s.Get(permissionKey + subset.Source.String() + ":" + subset.Target.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return game.Permission{}, err
@@ -24,8 +24,8 @@ func (s *Service) GetPermission(builder game.PermissionBuilder) (game.Permission
 	}
 
 	permission := game.Permission{
-		Source: builder.Source,
-		Target: builder.Target,
+		Source: subset.Source,
+		Target: subset.Target,
 	}
 	value, err := strconv.Atoi(val)
 	permission.Value = game.Right(value)

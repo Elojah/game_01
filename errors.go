@@ -11,4 +11,6 @@ var (
 	ErrInvalidTS = errors.New("packet TS is out of valid range")
 	// ErrWrongCredentials is raised when user logs with invalid username/password.
 	ErrWrongCredentials = errors.New("invalid credentials")
+	// ErrInsufficientRights is raised when a user apply an action without valid rights.
+	ErrInsufficientRights = errors.New("insufficient rights")
 )

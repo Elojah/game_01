@@ -11,6 +11,7 @@ import (
 type app struct {
 	game.EntityService
 	game.EventService
+	game.PermissionService
 	game.QEventService
 	game.SubscriptionService
 

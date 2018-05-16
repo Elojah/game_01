@@ -5,8 +5,30 @@ import (
 )
 
 func (a *app) Move(event game.Event) error {
-	// move := event.Action.(Move)
-	// TODO Check permission
 
-	return nil
+	move := event.Action.(game.Move)
+
+	// #Check permission on target
+	permission, err := a.GetPermission(game.PermissionSubset{
+		Source: event.Source,
+		Target: move.Target,
+	})
+	if err != nil {
+		return err
+	}
+	if permission.Value != game.Owner {
+		return game.ErrInsufficientRights
+	}
+
+	// #Retrieve previous state target.
+	target, err := a.GetEntity(game.EntitySubset{Key: move.Target.String(), Max: event.TS.UnixNano()})
+	if err != nil {
+		return err
+	}
+
+	// #Move target
+	target.MoveTo(move.Position)
+
+	// #Write new target state.
+	return a.CreateEntity(target, event.TS.UnixNano()+1)
 }

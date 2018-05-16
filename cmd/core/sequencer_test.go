@@ -49,11 +49,11 @@ func TestSequencer(t *testing.T) {
 
 		seqID := game.NewULID()
 		es := mocks.NewEventService()
-		es.ListEventFunc = func(builder game.EventBuilder) ([]game.Event, error) {
-			assert.Equal(t, seqID.String(), builder.Key)
+		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
+			assert.Equal(t, seqID.String(), subset.Key)
 			switch es.ListEventCount {
 			case 0:
-				assert.Equal(t, eset[0].TS.UnixNano(), builder.Min)
+				assert.Equal(t, eset[0].TS.UnixNano(), subset.Min)
 			}
 			return []game.Event{eset[0]}, nil
 		}
@@ -79,9 +79,9 @@ func TestSequencer(t *testing.T) {
 
 		seqID := game.NewULID()
 		es := mocks.NewEventService()
-		es.ListEventFunc = func(builder game.EventBuilder) ([]game.Event, error) {
-			assert.Equal(t, seqID.String(), builder.Key)
-			switch int64(builder.Min) {
+		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
+			assert.Equal(t, seqID.String(), subset.Key)
+			switch int64(subset.Min) {
 			case eset[0].TS.UnixNano():
 				return []game.Event{eset[0]}, nil
 			case eset[1].TS.UnixNano():
@@ -117,9 +117,9 @@ func TestSequencer(t *testing.T) {
 
 		seqID := game.NewULID()
 		es := mocks.NewEventService()
-		es.ListEventFunc = func(builder game.EventBuilder) ([]game.Event, error) {
-			assert.Equal(t, seqID.String(), builder.Key)
-			switch int64(builder.Min) {
+		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
+			assert.Equal(t, seqID.String(), subset.Key)
+			switch int64(subset.Min) {
 			case eset[1].TS.UnixNano():
 				return []game.Event{eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1],
 					eset[0]}, nil
@@ -159,9 +159,9 @@ func TestSequencer(t *testing.T) {
 
 		seqID := game.NewULID()
 		es := mocks.NewEventService()
-		es.ListEventFunc = func(builder game.EventBuilder) ([]game.Event, error) {
-			assert.Equal(t, seqID.String(), builder.Key)
-			switch int64(builder.Min) {
+		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
+			assert.Equal(t, seqID.String(), subset.Key)
+			switch int64(subset.Min) {
 			case eset[1].TS.UnixNano():
 				time.Sleep(10 * time.Millisecond)
 				return []game.Event{eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1], eset[1],

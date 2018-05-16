@@ -43,7 +43,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Search account in redis
-	account, err := h.GetAccount(game.AccountBuilder{
+	account, err := h.GetAccount(game.AccountSubset{
 		Username: accountPayload.Username,
 	})
 	if err != nil && err != storage.ErrNotFound {

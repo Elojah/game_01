@@ -41,7 +41,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	account.ID = game.NewULID()
 
 	// Check username is unique
-	_, err = h.GetAccount(game.AccountBuilder{
+	_, err = h.GetAccount(game.AccountSubset{
 		Username: account.Username,
 	})
 	if err != nil && err != storage.ErrNotFound {

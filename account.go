@@ -7,8 +7,8 @@ type Account struct {
 	Password string `json:"-"`
 }
 
-// AccountBuilder is the builder to retrieve an account.
-type AccountBuilder struct {
+// AccountSubset is the subset to retrieve an account.
+type AccountSubset struct {
 	Username string
 	Password string
 }
@@ -16,5 +16,5 @@ type AccountBuilder struct {
 // AccountService wraps account interactions.
 type AccountService interface {
 	CreateAccount(Account) error
-	GetAccount(AccountBuilder) (Account, error)
+	GetAccount(AccountSubset) (Account, error)
 }

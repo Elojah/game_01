@@ -12,8 +12,8 @@ const (
 )
 
 // GetAccount implemented with redis.
-func (s *Service) GetAccount(builder game.AccountBuilder) (game.Account, error) {
-	val, err := s.Get(accountKey + builder.Username).Result()
+func (s *Service) GetAccount(subset game.AccountSubset) (game.Account, error) {
+	val, err := s.Get(accountKey + subset.Username).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return game.Account{}, err
@@ -25,7 +25,7 @@ func (s *Service) GetAccount(builder game.AccountBuilder) (game.Account, error) 
 	if _, err := account.Unmarshal([]byte(val)); err != nil {
 		return game.Account{}, err
 	}
-	return account.Domain(builder.Username)
+	return account.Domain(subset.Username)
 }
 
 // CreateAccount implemented with redis.

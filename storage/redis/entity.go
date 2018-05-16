@@ -29,13 +29,13 @@ func (s *Service) CreateEntity(entity game.Entity, ts int64) error {
 }
 
 // GetEntity retrieves entity in Redis using ZRangeWithScores.
-func (s *Service) GetEntity(builder game.EntityBuilder) (game.Entity, error) {
+func (s *Service) GetEntity(subset game.EntitySubset) (game.Entity, error) {
 	cmd := s.ZRevRangeByScore(
-		entityKey+builder.Key,
+		entityKey+subset.Key,
 		redis.ZRangeBy{
 			Count: 1,
 			Min:   "-inf",
-			Max:   strconv.Itoa(builder.Max),
+			Max:   strconv.FormatInt(subset.Max, 10),
 		},
 	)
 	vals, err := cmd.Result()
