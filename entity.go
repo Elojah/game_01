@@ -8,19 +8,6 @@ type Entity struct {
 	Position Vec3
 }
 
-// EntitySubset is a subset for Entity.
-type EntitySubset struct {
-	IDs    []ID
-	Nearby *Circle
-}
-
-// EntityPatch is a patch for Entity.
-type EntityPatch struct {
-	HP       *uint8
-	MP       *uint8
-	Position *Vec3
-}
-
 // EntityService is a REST interface for Entity object.
 type EntityService interface {
 	CreateEntity(Entity, int64) error

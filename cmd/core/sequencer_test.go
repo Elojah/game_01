@@ -61,7 +61,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32, es,
-			func(event game.Event) {
+			func(id game.ID, event game.Event) {
 				assert.True(t, equalEvent(eset[0], event))
 				wg.Done()
 			},
@@ -93,7 +93,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(2)
 		seq := NewSequencer(seqID, 32, es,
-			func(event game.Event) {
+			func(id game.ID, event game.Event) {
 				wg.Done()
 			},
 		)
@@ -132,7 +132,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32, es,
-			func(event game.Event) {
+			func(id game.ID, event game.Event) {
 				assert.False(t, equalEvent(event, eset[0]))
 				if equalEvent(event, eset[2]) {
 					wg.Done()
@@ -175,7 +175,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 1, es,
-			func(event game.Event) {
+			func(id game.ID, event game.Event) {
 				assert.False(t, equalEvent(event, eset[0]))
 				if equalEvent(event, eset[2]) {
 					wg.Done()

@@ -75,12 +75,15 @@ func (a *app) AddListener(msg *nats.Msg) {
 	logger.Info().Str("id", id.String()).Msg("listening")
 }
 
-func (a *app) Apply(event game.Event) {
+func (a *app) Apply(id game.ID, event game.Event) {
+	ts := event.TS.UnixNano()
+	key := id.String()
 	logger := log.With().
-		Str("event", event.ID.String()).
+		Str("event", key).
 		Str("source", event.Source.String()).
-		Int64("ts", event.TS.UnixNano()).
+		Int64("ts", ts).
 		Logger()
+	_, _ = a.GetEntity(game.EntityBuilder{Key: key, Max: int(ts)})
 	switch event.Action.(type) {
 	case game.Move:
 		logger.Info().Str("type", "move").Msg("apply action")

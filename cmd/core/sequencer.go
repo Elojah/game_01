@@ -36,7 +36,7 @@ func (s *Sequencer) Close() {
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
-func NewSequencer(id game.ID, limit int, es game.EventService, callback func(game.Event)) *Sequencer {
+func NewSequencer(id game.ID, limit int, es game.EventService, callback func(game.ID, game.Event)) *Sequencer {
 	s := Sequencer{
 		id:           id,
 		logger:       log.With().Str("sequencer", id.String()).Logger(),
@@ -117,7 +117,7 @@ func NewSequencer(id game.ID, limit int, es game.EventService, callback func(gam
 	go func() {
 		for event := range s.process {
 			s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
-			callback(event)
+			callback(s.id, event)
 		}
 	}()
 	return &s
