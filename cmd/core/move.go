@@ -5,5 +5,8 @@ import (
 )
 
 func (a *app) Move(event game.Event) error {
+	// move := event.Action.(Move)
+	// TODO Check permission
+
 	return nil
 }
