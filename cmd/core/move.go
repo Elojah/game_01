@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/storage"
 )
 
 func (a *app) Move(event game.Event) error {
@@ -14,6 +15,9 @@ func (a *app) Move(event game.Event) error {
 		Target: move.Target,
 	})
 	if err != nil {
+		if err == storage.ErrNotFound {
+			return game.ErrInsufficientRights
+		}
 		return err
 	}
 	if permission.Value != game.Owner {
@@ -27,7 +31,7 @@ func (a *app) Move(event game.Event) error {
 	}
 
 	// #Check if target has move in correct boundaries.
-	if game.AxisDistance(target.Position, move.Position) > a.moveTolerance {
+	if game.Segment(target.Position, move.Position) > a.moveTolerance {
 		return game.ErrInvalidAction
 	}
 

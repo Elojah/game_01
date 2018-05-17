@@ -17,7 +17,7 @@ import (
 
 func send(cfg Config) {
 
-	id, _ := ulid.Parse("01CDG223V6BGMBZ9NGNVXB146P")
+	id, _ := ulid.Parse("01CDPQRBXSA0KSH9FVQ8526AWX")
 
 	ack := [16]byte(id)
 
@@ -27,15 +27,19 @@ func send(cfg Config) {
 		return
 	}
 
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1; i++ {
 		// time.Sleep(1 * time.Second)
 		go func() {
 			msg :=
 				dto.Message{
 					Token: id,
-					Action: dto.Attack{
-						Source: id,
+					Action: dto.Move{
 						Target: id,
+						Position: dto.Vec3{
+							X: 10,
+							Y: 10,
+							Z: 10,
+						},
 					},
 					ACK: &ack,
 					TS:  time.Now().UnixNano(),
