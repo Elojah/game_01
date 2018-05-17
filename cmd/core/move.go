@@ -26,9 +26,14 @@ func (a *app) Move(event game.Event) error {
 		return err
 	}
 
+	// #Check if target has move in correct boundaries.
+	if game.AxisDistance(target.Position, move.Position) > a.moveTolerance {
+		return game.ErrInvalidAction
+	}
+
 	// #Move target
 	target.MoveTo(move.Position)
 
 	// #Write new target state.
-	return a.CreateEntity(target, event.TS.UnixNano()+1)
+	return a.CreateEntity(target, event.TS.UnixNano())
 }

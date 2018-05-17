@@ -10,8 +10,9 @@ import (
 
 // Config is the udp server structure config.
 type Config struct {
-	ID    game.ID `json:"id"`
-	Limit int     `json:"limit"`
+	ID            game.ID `json:"id"`
+	Limit         int     `json:"limit"`
+	MoveTolerance float64 `json:"move_tolerance"`
 }
 
 // Equal returns is both configs are equal.
@@ -48,6 +49,15 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("key limit invalid. must be numeric")
 	}
 	c.Limit = int(cLimitFloat)
+
+	cMoveTolerance, ok := fconf["move_tolerance"]
+	if !ok {
+		return errors.New("missing key move_tolerance")
+	}
+	c.MoveTolerance, ok = cMoveTolerance.(float64)
+	if !ok {
+		return errors.New("key move_tolerance invalid. must be numeric")
+	}
 
 	return nil
 }

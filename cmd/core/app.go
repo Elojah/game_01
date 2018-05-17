@@ -20,12 +20,14 @@ type app struct {
 	subs map[game.ID]*game.Subscription
 	seqs map[game.ID]*Sequencer
 
-	limit int
+	limit         int
+	moveTolerance float64
 }
 
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
+	a.moveTolerance = c.MoveTolerance
 
 	return nil
 }

@@ -13,4 +13,6 @@ var (
 	ErrWrongCredentials = errors.New("invalid credentials")
 	// ErrInsufficientRights is raised when a user apply an action without valid rights.
 	ErrInsufficientRights = errors.New("insufficient rights")
+	// ErrInvalidAction is raised when an action is not possible following game rules.
+	ErrInvalidAction = errors.New("action is not possible")
 )
