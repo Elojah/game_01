@@ -283,6 +283,75 @@ func (d *Heal) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
+type CreateEntity struct {
+	Source   [16]byte
+	Type     uint8
+	Position Vec3
+}
+
+func (d *CreateEntity) Size() (s uint64) {
+
+	{
+		s += 16
+	}
+	{
+		s += d.Position.Size()
+	}
+	s += 1
+	return
+}
+func (d *CreateEntity) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
+
+		buf[i+0+0] = byte(d.Type >> 0)
+
+	}
+	{
+		nbuf, err := d.Position.Marshal(buf[i+1:])
+		if err != nil {
+			return nil, err
+		}
+		i += uint64(len(nbuf))
+	}
+	return buf[:i+1], nil
+}
+
+func (d *CreateEntity) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
+	{
+
+		d.Type = 0 | (uint8(buf[i+0+0]) << 0)
+
+	}
+	{
+		ni, err := d.Position.Unmarshal(buf[i+1:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
+	}
+	return i + 1, nil
+}
+
 type Message struct {
 	Token  [16]byte
 	ACK    *[16]byte

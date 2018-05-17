@@ -3,6 +3,13 @@ package game
 // Action is a client action.
 type Action interface{}
 
+// CreateEntity is an entity creation.
+type CreateEntity struct {
+	Source   ID
+	Type     EntityType
+	Position Vec3
+}
+
 // Move is a new position of player.
 type Move struct {
 	Position Vec3

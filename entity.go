@@ -1,5 +1,21 @@
 package game
 
+// EntityType represents the type of an entity.
+type EntityType uint8
+
+const (
+	// Trickster represents a PJ with Trickster class.
+	Trickster EntityType = 0
+	// Mesmerist represents a PJ with Mesmerist class.
+	Mesmerist EntityType = 1
+	// Inquisitor represents a PJ with Inquisitor class.
+	Inquisitor EntityType = 2
+	// Totemist represents a PJ with Totemist class.
+	Totemist EntityType = 3
+	// Scavenger represents a PJ with Scavenger class.
+	Scavenger EntityType = 4
+)
+
 // Entity represents a dynamic entity.
 type Entity struct {
 	ID       ID
