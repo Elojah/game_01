@@ -15,15 +15,15 @@ func (h *handler) heal(ctx context.Context, a dto.Heal, token game.Token, ts tim
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
+	id := game.NewULID()
 	go func() {
 		err := h.SendEvent(game.Event{
-			ID:     game.NewULID(),
+			ID:     id,
 			Source: token.ID,
 			TS:     ts,
 			Action: game.HealDone{
 				Source: game.ID(a.Source),
 				Target: game.ID(a.Target),
-				Amount: 10,
 			},
 		}, game.ID(a.Source))
 		if err != nil {
@@ -32,13 +32,12 @@ func (h *handler) heal(ctx context.Context, a dto.Heal, token game.Token, ts tim
 	}()
 	go func() {
 		err := h.SendEvent(game.Event{
-			ID:     game.NewULID(),
+			ID:     id,
 			Source: token.ID,
 			TS:     ts,
 			Action: game.HealReceived{
 				Source: game.ID(a.Source),
 				Target: game.ID(a.Target),
-				Amount: 10,
 			},
 		}, game.ID(a.Target))
 		if err != nil {

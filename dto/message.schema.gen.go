@@ -125,12 +125,16 @@ func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type Move struct {
+	Source   [16]byte
 	Target   [16]byte
 	Position Vec3
 }
 
 func (d *Move) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -151,6 +155,10 @@ func (d *Move) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
 		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
@@ -167,6 +175,10 @@ func (d *Move) Marshal(buf []byte) ([]byte, error) {
 func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
+	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
 	{
 		copy(d.Target[:], buf[i+0:])
 		i += 16
@@ -348,6 +360,45 @@ func (d *CreateEntity) Unmarshal(buf []byte) (uint64, error) {
 			return 0, err
 		}
 		i += ni
+	}
+	return i + 1, nil
+}
+
+type CreatePC struct {
+	Type uint8
+}
+
+func (d *CreatePC) Size() (s uint64) {
+
+	s += 1
+	return
+}
+func (d *CreatePC) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+
+		buf[0+0] = byte(d.Type >> 0)
+
+	}
+	return buf[:i+1], nil
+}
+
+func (d *CreatePC) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+
+		d.Type = 0 | (uint8(buf[0+0]) << 0)
+
 	}
 	return i + 1, nil
 }

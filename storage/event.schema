@@ -5,28 +5,24 @@ struct Move {
 	Target	[16]byte
 }
 
-struct DamageReceived {
+struct AttackReceived {
 	Source	[16]byte
 	Target	[16]byte
-	Amount	int64
 }
 
-struct DamageDone {
+struct AttackDone {
 	Source	[16]byte
 	Target	[16]byte
-	Amount	int64
 }
 
 struct HealReceived {
 	Source	[16]byte
 	Target	[16]byte
-	Amount	int64
 }
 
 struct HealDone {
 	Source	[16]byte
 	Target	[16]byte
-	Amount	int64
 }
 
 struct Event {
@@ -35,8 +31,8 @@ struct Event {
 	TS		int64
 	Action union {
 		Move
-		DamageReceived
-		DamageDone
+		AttackReceived
+		AttackDone
 		HealReceived
 		HealDone
 	}

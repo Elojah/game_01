@@ -5,6 +5,7 @@ struct Vec3 {
 }
 
 struct Move {
+	Source		[16]byte
 	Target		[16]byte
 	Position	Vec3
 }
@@ -23,6 +24,10 @@ struct CreateEntity {
 	Source		[16]byte
 	Type		uint8
 	Position	Vec3
+}
+
+struct CreatePC {
+	Type		uint8
 }
 
 struct Message {

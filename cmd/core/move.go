@@ -9,19 +9,30 @@ func (a *app) Move(event game.Event) error {
 
 	move := event.Action.(game.Move)
 
-	// #Check permission on target
+	// #Check permission token/source.
 	permission, err := a.GetPermission(game.PermissionSubset{
-		Source: event.Source,
-		Target: move.Target,
+		Source: event.Source.String(),
+		Target: move.Source.String(),
 	})
+	if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
+		return game.ErrInsufficientRights
+	}
 	if err != nil {
-		if err == storage.ErrNotFound {
-			return game.ErrInsufficientRights
-		}
 		return err
 	}
-	if permission.Value != game.Owner {
-		return game.ErrInsufficientRights
+
+	// #Check permission source/target if source != target.
+	if move.Source != move.Target {
+		permission, err := a.GetPermission(game.PermissionSubset{
+			Source: move.Source.String(),
+			Target: move.Target.String(),
+		})
+		if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
+			return game.ErrInsufficientRights
+		}
+		if err != nil {
+			return err
+		}
 	}
 
 	// #Retrieve previous state target.

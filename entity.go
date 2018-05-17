@@ -4,17 +4,34 @@ package game
 type EntityType uint8
 
 const (
-	// Trickster represents a PJ with Trickster class.
+	// Trickster represents a PC with Trickster class.
 	Trickster EntityType = 0
-	// Mesmerist represents a PJ with Mesmerist class.
+	// Mesmerist represents a PC with Mesmerist class.
 	Mesmerist EntityType = 1
-	// Inquisitor represents a PJ with Inquisitor class.
+	// Inquisitor represents a PC with Inquisitor class.
 	Inquisitor EntityType = 2
-	// Totemist represents a PJ with Totemist class.
+	// Totemist represents a PC with Totemist class.
 	Totemist EntityType = 3
-	// Scavenger represents a PJ with Scavenger class.
+	// Scavenger represents a PC with Scavenger class.
 	Scavenger EntityType = 4
 )
+
+func (e EntityType) String() string {
+	switch e {
+	case Trickster:
+		return "trickster"
+	case Mesmerist:
+		return "mesmerist"
+	case Inquisitor:
+		return "inquisitor"
+	case Totemist:
+		return "totemist"
+	case Scavenger:
+		return "scavenger"
+	default:
+		return "unknown"
+	}
+}
 
 // Entity represents a dynamic entity.
 type Entity struct {
@@ -22,6 +39,7 @@ type Entity struct {
 	HP       uint8
 	MP       uint8
 	Position Vec3
+	Type     EntityType
 }
 
 // MoveTo moves entity to position p.

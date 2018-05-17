@@ -15,17 +15,35 @@ func (h *handler) move(ctx context.Context, m dto.Move, token game.Token, ts tim
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
+	id := game.NewULID()
+	source := game.ID(m.Source)
+	target := game.ID(m.Target)
 	go func() {
-		err := h.SendEvent(game.Event{
-			ID:     game.NewULID(),
+		if err := h.SendEvent(game.Event{
+			ID:     id,
 			Source: token.ID,
 			TS:     ts,
-			Action: game.Move{
+			Action: game.MoveDone{
+				Source:   source,
+				Target:   target,
 				Position: game.Vec3(m.Position),
-				Target:   m.Target,
 			},
-		}, game.ID(m.Target))
-		if err != nil {
+		}, source); err != nil {
+			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")
+		}
+	}()
+
+	go func() {
+		if err := h.SendEvent(game.Event{
+			ID:     id,
+			Source: token.ID,
+			TS:     ts,
+			Action: game.MoveReceived{
+				Source:   source,
+				Target:   target,
+				Position: game.Vec3(m.Position),
+			},
+		}, target); err != nil {
 			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")
 		}
 	}()

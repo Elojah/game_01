@@ -3,43 +3,52 @@ package game
 // Action is a client action.
 type Action interface{}
 
-// CreateEntity is an entity creation.
+// CreatePC is a token action to create a new PC entity.
+type CreatePC struct {
+	Type EntityType
+}
+
+// CreateEntity is a player action to create a new target entity.
 type CreateEntity struct {
 	Source   ID
 	Type     EntityType
 	Position Vec3
 }
 
-// Move is a new position of player.
-type Move struct {
-	Position Vec3
+// MoveDone is an order to move Target.
+type MoveDone struct {
+	Source   ID
 	Target   ID
+	Position Vec3
 }
 
-// DamageDone is an amount of damage done by the player to Target.
-type DamageDone struct {
-	Source ID
-	Target ID
-	Amount int64
+// MoveReceived is an ordered to move by Source.
+type MoveReceived struct {
+	Source   ID
+	Target   ID
+	Position Vec3
 }
 
-// DamageReceived is an amount of damage received by the player and done by Source.
-type DamageReceived struct {
+// AttackDone is a basic attack done by Source.
+type AttackDone struct {
 	Source ID
 	Target ID
-	Amount int64
+}
+
+// AttackReceived is a basic attack received by Target.
+type AttackReceived struct {
+	Source ID
+	Target ID
 }
 
 // HealDone is an amount of heal done by the player to Target.
 type HealDone struct {
 	Source ID
 	Target ID
-	Amount int64
 }
 
 // HealReceived is an amount of heal received by the player and done by Source.
 type HealReceived struct {
 	Source ID
 	Target ID
-	Amount int64
 }

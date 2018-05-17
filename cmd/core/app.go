@@ -93,14 +93,14 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		if err := a.Move(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case game.DamageReceived:
-		logger.Info().Str("type", "damage_received").Msg("apply action")
-		if err := a.DamageReceived(event); err != nil {
+	case game.AttackReceived:
+		logger.Info().Str("type", "attack_received").Msg("apply action")
+		if err := a.AttackReceived(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case game.DamageDone:
-		logger.Info().Str("type", "damage_done").Msg("apply action")
-		if err := a.DamageDone(event); err != nil {
+	case game.AttackDone:
+		logger.Info().Str("type", "attack_done").Msg("apply action")
+		if err := a.AttackDone(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.HealReceived:
@@ -113,5 +113,16 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		if err := a.HealDone(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
+	case game.CreateEntity:
+		logger.Info().Str("type", "create_entity").Msg("apply action")
+		if err := a.CreateEntity(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case game.CreatePC:
+		logger.Info().Str("type", "create_pc").Msg("apply action")
+		if err := a.CreatePC(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	}
+
 }

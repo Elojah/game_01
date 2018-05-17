@@ -3,9 +3,9 @@ package game
 // Permission represents a links between 2 objects (token/identities/etc.).
 type Permission struct {
 	ID     ID
-	Source ID
-	Target ID
-	Value  Right
+	Source string
+	Target string
+	Value  int
 }
 
 // PermissionService defines Permission operations.
@@ -16,6 +16,6 @@ type PermissionService interface {
 
 // PermissionSubset is the subset to retrieve a Permission.
 type PermissionSubset struct {
-	Source ID
-	Target ID
+	Source string
+	Target string
 }
