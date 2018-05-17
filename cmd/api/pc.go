@@ -11,7 +11,7 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) createPC(ctx context.Context, a dto.CreatePC, token game.Token, ts time.Time) error {
+func (h *handler) createPC(ctx context.Context, a dto.SetPC, token game.Token, ts time.Time) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
@@ -20,7 +20,7 @@ func (h *handler) createPC(ctx context.Context, a dto.CreatePC, token game.Token
 			ID:     game.NewULID(),
 			Source: token.ID,
 			TS:     ts,
-			Action: game.CreatePC{
+			Action: game.SetPC{
 				Type: game.EntityType(a.Type),
 			},
 		}, game.ID(token.ID))

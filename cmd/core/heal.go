@@ -7,3 +7,7 @@ import (
 func (a *app) HealDone(event game.Event) error {
 	return nil
 }
+
+func (a *app) HealReceived(event game.Event) error {
+	return nil
+}

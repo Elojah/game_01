@@ -49,7 +49,7 @@ func (e *Entity) MoveTo(p Vec3) {
 
 // EntityService is an interface for Entity object.
 type EntityService interface {
-	CreateEntity(Entity, int64) error
+	SetEntity(Entity, int64) error
 	GetEntity(EntitySubset) (Entity, error)
 }
 

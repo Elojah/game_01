@@ -13,8 +13,8 @@ const (
 	eventKey = "event:"
 )
 
-// CreateEvent implemented with redis.
-func (s *Service) CreateEvent(event game.Event, id game.ID) error {
+// SetEvent implemented with redis.
+func (s *Service) SetEvent(event game.Event, id game.ID) error {
 	raw, err := storage.NewEvent(event).Marshal(nil)
 	if err != nil {
 		return err

@@ -11,7 +11,7 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) createEntity(ctx context.Context, a dto.CreateEntity, token game.Token, ts time.Time) error {
+func (h *handler) createEntity(ctx context.Context, a dto.SetEntity, token game.Token, ts time.Time) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
@@ -20,7 +20,7 @@ func (h *handler) createEntity(ctx context.Context, a dto.CreateEntity, token ga
 			ID:     game.NewULID(),
 			Source: token.ID,
 			TS:     ts,
-			Action: game.CreateEntity{
+			Action: game.SetEntity{
 				Source:   game.ID(a.Source),
 				Type:     game.EntityType(a.Type),
 				Position: game.Vec3(a.Position),

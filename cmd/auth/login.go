@@ -68,19 +68,19 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create a new token
+	// Set a new token
 	token := game.Token{
 		ID:      game.NewULID(),
 		Account: account.ID,
 		IP:      ip,
 	}
-	if err := h.CreateToken(token); err != nil {
+	if err := h.SetToken(token); err != nil {
 		logger.Error().Err(err).Msg("failed to create token")
 		http.Error(w, "failed to create token", http.StatusInternalServerError)
 		return
 	}
 
-	// Create a new listener for this token
+	// Set a new listener for this token
 	targetID := ulid.MustParse(h.listeners[rand.Intn(len(h.listeners))])
 	listener := game.Listener{ID: token.ID}
 	if err := h.SendListener(listener, targetID); err != nil {

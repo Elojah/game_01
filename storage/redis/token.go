@@ -28,8 +28,8 @@ func (s *Service) GetToken(id game.ID) (game.Token, error) {
 	return token.Domain(id)
 }
 
-// CreateToken creates a new token.
-func (s *Service) CreateToken(token game.Token) error {
+// SetToken creates a new token.
+func (s *Service) SetToken(token game.Token) error {
 	raw, err := storage.NewToken(token).Marshal(nil)
 	if err != nil {
 		return err

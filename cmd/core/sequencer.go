@@ -131,7 +131,7 @@ func (s *Sequencer) MsgHandler(msg *nats.Msg) {
 		return
 	}
 	event := eventS.Domain()
-	if err := s.CreateEvent(event, s.id); err != nil {
+	if err := s.SetEvent(event, s.id); err != nil {
 		s.logger.Error().Err(err).Msg("error creating event")
 		return
 	}

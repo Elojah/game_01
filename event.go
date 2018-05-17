@@ -19,7 +19,7 @@ type QEventService interface {
 
 // EventService wraps action interactions.
 type EventService interface {
-	CreateEvent(Event, ID) error
+	SetEvent(Event, ID) error
 	ListEvent(EventSubset) ([]Event, error)
 }
 

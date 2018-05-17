@@ -295,13 +295,13 @@ func (d *Heal) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
-type CreateEntity struct {
+type SetEntity struct {
 	Source   [16]byte
 	Type     uint8
 	Position Vec3
 }
 
-func (d *CreateEntity) Size() (s uint64) {
+func (d *SetEntity) Size() (s uint64) {
 
 	{
 		s += 16
@@ -312,7 +312,7 @@ func (d *CreateEntity) Size() (s uint64) {
 	s += 1
 	return
 }
-func (d *CreateEntity) Marshal(buf []byte) ([]byte, error) {
+func (d *SetEntity) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -342,7 +342,7 @@ func (d *CreateEntity) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+1], nil
 }
 
-func (d *CreateEntity) Unmarshal(buf []byte) (uint64, error) {
+func (d *SetEntity) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
@@ -364,16 +364,16 @@ func (d *CreateEntity) Unmarshal(buf []byte) (uint64, error) {
 	return i + 1, nil
 }
 
-type CreatePC struct {
+type SetPC struct {
 	Type uint8
 }
 
-func (d *CreatePC) Size() (s uint64) {
+func (d *SetPC) Size() (s uint64) {
 
 	s += 1
 	return
 }
-func (d *CreatePC) Marshal(buf []byte) ([]byte, error) {
+func (d *SetPC) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -392,7 +392,7 @@ func (d *CreatePC) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+1], nil
 }
 
-func (d *CreatePC) Unmarshal(buf []byte) (uint64, error) {
+func (d *SetPC) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{

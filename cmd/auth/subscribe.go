@@ -55,8 +55,8 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create account in redis
-	if err = h.CreateAccount(account); err != nil {
+	// Set account in redis
+	if err = h.SetAccount(account); err != nil {
 		logger.Error().Err(err).Msg("failed to create account")
 		http.Error(w, "failed to create account", http.StatusInternalServerError)
 		return

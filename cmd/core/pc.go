@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/elojah/game_01"
-	"github.com/elojah/game_01/storage"
 )
 
 const (
@@ -11,7 +10,8 @@ const (
 
 func (a *app) CreatePC(event game.Event) error {
 
-	create := event.Action.(game.CreatePC)
+	spc := event.Action.(game.SetPC)
+	_ = spc
 
 	// #Check token permission to create a new PC.
 	permission, err := a.GetPermission(game.PermissionSubset{
@@ -29,7 +29,8 @@ func (a *app) CreatePC(event game.Event) error {
 	if err := a.SetPermission(game.Permission{
 		Source: event.Source.String(),
 		Target: characterKey,
-	}, permission.Value-1); err != nil {
+		Value:  permission.Value - 1,
+	}); err != nil {
 		return err
 	}
 

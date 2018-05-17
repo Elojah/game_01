@@ -20,13 +20,13 @@ struct Heal {
 	Target	[16]byte
 }
 
-struct CreateEntity {
+struct SetEntity {
 	Source		[16]byte
 	Type		uint8
 	Position	Vec3
 }
 
-struct CreatePC {
+struct SetPC {
 	Type		uint8
 }
 

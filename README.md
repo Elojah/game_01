@@ -20,8 +20,8 @@
 - [x] Change log to zap (uber faster log)
 - [x] Add context + use it with sync.errgroup
 - [x] Use TCP + rename UDP to mux
-- [x] Create new https service to create new token
-- [x] Create new bin to read events
+- [x] Set new https service to create new token
+- [x] Set new bin to read events
 - [x] Add NATS mqueue to cancel replay mechanism (in context usage ?)
 - [x] Fix NATS slow consumer, mouais
 - [x] Add `sequencer_test.go`, 100% plz (ok)

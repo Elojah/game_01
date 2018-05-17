@@ -28,8 +28,8 @@ func (s *Service) GetTemplate(subset game.TemplateSubset) (game.Template, error)
 	return game.Template(entity.Domain()), nil
 }
 
-// CreateTemplate implemented with redis.
-func (s *Service) CreateTemplate(template game.Template) error {
+// SetTemplate implemented with redis.
+func (s *Service) SetTemplate(template game.Template) error {
 	raw, err := storage.NewEntity(game.Entity(template)).Marshal(nil)
 	if err != nil {
 		return err

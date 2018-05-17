@@ -13,8 +13,8 @@ const (
 	entityKey = "entity:"
 )
 
-// CreateEntity implemented with redis.
-func (s *Service) CreateEntity(entity game.Entity, ts int64) error {
+// SetEntity implemented with redis.
+func (s *Service) SetEntity(entity game.Entity, ts int64) error {
 	raw, err := storage.NewEntity(entity).Marshal(nil)
 	if err != nil {
 		return err

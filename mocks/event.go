@@ -8,19 +8,19 @@ import (
 
 // EventService mocks game.EventService.
 type EventService struct {
-	CreateEventFunc  func(game.Event, game.ID) error
-	CreateEventCount int32
-	ListEventFunc    func(game.EventSubset) ([]game.Event, error)
-	ListEventCount   int32
+	SetEventFunc   func(game.Event, game.ID) error
+	SetEventCount  int32
+	ListEventFunc  func(game.EventSubset) ([]game.Event, error)
+	ListEventCount int32
 }
 
-// CreateEvent mocks game.EventService.
-func (s *EventService) CreateEvent(event game.Event, id game.ID) error {
-	atomic.AddInt32(&s.CreateEventCount, 1)
-	if s.CreateEventFunc == nil {
+// SetEvent mocks game.EventService.
+func (s *EventService) SetEvent(event game.Event, id game.ID) error {
+	atomic.AddInt32(&s.SetEventCount, 1)
+	if s.SetEventFunc == nil {
 		return nil
 	}
-	return s.CreateEventFunc(event, id)
+	return s.SetEventFunc(event, id)
 }
 
 // ListEvent mocks game.EventService.

@@ -5,9 +5,13 @@ import (
 	"github.com/elojah/game_01/storage"
 )
 
-func (a *app) Move(event game.Event) error {
+func (a *app) MoveDone(event game.Event) error {
+	return nil
+}
 
-	move := event.Action.(game.Move)
+func (a *app) MoveReceived(event game.Event) error {
+
+	move := event.Action.(game.MoveReceived)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(game.PermissionSubset{
@@ -50,5 +54,5 @@ func (a *app) Move(event game.Event) error {
 	target.MoveTo(move.Position)
 
 	// #Write new target state.
-	return a.CreateEntity(target, event.TS.UnixNano())
+	return a.SetEntity(target, event.TS.UnixNano())
 }

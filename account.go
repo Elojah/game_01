@@ -15,6 +15,6 @@ type AccountSubset struct {
 
 // AccountService wraps account interactions.
 type AccountService interface {
-	CreateAccount(Account) error
+	SetAccount(Account) error
 	GetAccount(AccountSubset) (Account, error)
 }

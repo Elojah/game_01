@@ -12,5 +12,5 @@ type Subscription = nats.Subscription
 
 // SubscriptionService creates a new subscription.
 type SubscriptionService interface {
-	CreateSubscription(subject string, consumer MsgHandler) (*Subscription, error)
+	SetSubscription(subject string, consumer MsgHandler) (*Subscription, error)
 }

@@ -28,8 +28,8 @@ func (s *Service) GetAccount(subset game.AccountSubset) (game.Account, error) {
 	return account.Domain(subset.Username)
 }
 
-// CreateAccount implemented with redis.
-func (s *Service) CreateAccount(account game.Account) error {
+// SetAccount implemented with redis.
+func (s *Service) SetAccount(account game.Account) error {
 	raw, err := storage.NewAccount(account).Marshal(nil)
 	if err != nil {
 		return err

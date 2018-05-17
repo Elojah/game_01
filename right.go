@@ -8,8 +8,8 @@ const (
 	Read Right = 0
 	// Update right gives access to update an already existing value.
 	Update Right = 1
-	// Create right gives access to create a new entity.
-	Create Right = 2
+	// Set right gives access to create a new entity.
+	Set Right = 2
 	// Delete right gives access to delete an already existing entity.
 	Delete Right = 3
 	// Owner right gives access to all rights.

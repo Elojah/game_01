@@ -35,7 +35,7 @@ func (a *app) Dial(c Config) error {
 func (a *app) Start() {
 	logger := log.With().Str("core", a.id.String()).Logger()
 
-	sub, err := a.CreateSubscription(a.id.String(), a.AddListener)
+	sub, err := a.SetSubscription(a.id.String(), a.AddListener)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
@@ -68,7 +68,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 	seq := NewSequencer(a.id, a.limit, a.EventService, a.Apply)
 	a.seqs[id] = seq
 
-	sub, err := a.CreateSubscription(id.String(), seq.MsgHandler)
+	sub, err := a.SetSubscription(id.String(), seq.MsgHandler)
 	if err != nil {
 		logger.Error().Err(err).Str("id", id.String()).Msg("failed to sub")
 		return
@@ -88,9 +88,14 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		Logger()
 
 	switch event.Action.(type) {
-	case game.Move:
-		logger.Info().Str("type", "move").Msg("apply action")
-		if err := a.Move(event); err != nil {
+	case game.MoveDone:
+		logger.Info().Str("type", "move_done").Msg("apply action")
+		if err := a.MoveDone(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case game.MoveReceived:
+		logger.Info().Str("type", "move_received").Msg("apply action")
+		if err := a.MoveReceived(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.AttackReceived:
@@ -113,12 +118,12 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		if err := a.HealDone(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case game.CreateEntity:
+	case game.SetEntity:
 		logger.Info().Str("type", "create_entity").Msg("apply action")
 		if err := a.CreateEntity(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case game.CreatePC:
+	case game.SetPC:
 		logger.Info().Str("type", "create_pc").Msg("apply action")
 		if err := a.CreatePC(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")

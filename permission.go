@@ -10,7 +10,7 @@ type Permission struct {
 
 // PermissionService defines Permission operations.
 type PermissionService interface {
-	CreatePermission(Permission) error
+	SetPermission(Permission) error
 	GetPermission(PermissionSubset) (Permission, error)
 }
 

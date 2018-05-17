@@ -6,13 +6,25 @@ import (
 	"github.com/elojah/game_01"
 )
 
-// NewMove convert a game.Move into a storage Move.
-func NewMove(a game.Move) Move {
-	return Move{
+// NewMoveDone convert a game.MoveDone into a storage MoveDone.
+func NewMoveDone(a game.MoveDone) MoveDone {
+	return MoveDone{
+		Source: [16]byte(a.Source),
+		Target: [16]byte(a.Target),
 		X:      a.Position.X,
 		Y:      a.Position.Y,
 		Z:      a.Position.Z,
+	}
+}
+
+// NewMoveReceived convert a game.MoveReceived into a storage MoveReceived.
+func NewMoveReceived(a game.MoveReceived) MoveReceived {
+	return MoveReceived{
+		Source: [16]byte(a.Source),
 		Target: [16]byte(a.Target),
+		X:      a.Position.X,
+		Y:      a.Position.Y,
+		Z:      a.Position.Z,
 	}
 }
 
@@ -48,15 +60,29 @@ func NewHealReceived(a game.HealReceived) HealReceived {
 	}
 }
 
-// Domain converts a storage Move into a game Move.
-func (a Move) Domain() game.Move {
-	return game.Move{
+// Domain converts a storage MoveDone into a game MoveDone.
+func (a MoveDone) Domain() game.MoveDone {
+	return game.MoveDone{
+		Source: game.ID(a.Target),
+		Target: game.ID(a.Target),
 		Position: game.Vec3{
 			X: a.X,
 			Y: a.Y,
 			Z: a.Z,
 		},
-		Target: [16]byte(a.Target),
+	}
+}
+
+// Domain converts a storage MoveReceived into a game MoveReceived.
+func (a MoveReceived) Domain() game.MoveReceived {
+	return game.MoveReceived{
+		Source: game.ID(a.Target),
+		Target: game.ID(a.Target),
+		Position: game.Vec3{
+			X: a.X,
+			Y: a.Y,
+			Z: a.Z,
+		},
 	}
 }
 
@@ -100,8 +126,10 @@ func NewEvent(event game.Event) *Event {
 		TS:     event.TS.UnixNano(),
 	}
 	switch event.Action.(type) {
-	case game.Move:
-		e.Action = NewMove(event.Action.(game.Move))
+	case game.MoveDone:
+		e.Action = NewMoveDone(event.Action.(game.MoveDone))
+	case game.MoveReceived:
+		e.Action = NewMoveReceived(event.Action.(game.MoveReceived))
 	case game.AttackDone:
 		e.Action = NewAttackDone(event.Action.(game.AttackDone))
 	case game.AttackReceived:
@@ -122,8 +150,10 @@ func (e Event) Domain() game.Event {
 		TS:     time.Unix(0, e.TS),
 	}
 	switch e.Action.(type) {
-	case Move:
-		event.Action = e.Action.(Move).Domain()
+	case MoveDone:
+		event.Action = e.Action.(MoveDone).Domain()
+	case MoveReceived:
+		event.Action = e.Action.(MoveReceived).Domain()
 	case AttackDone:
 		event.Action = e.Action.(AttackDone).Domain()
 	case AttackReceived:

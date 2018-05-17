@@ -16,8 +16,8 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	id := game.NewULID()
-	source := game.ID(m.Source)
-	target := game.ID(m.Target)
+	source := game.ID(a.Source)
+	target := game.ID(a.Target)
 	go func() {
 		err := h.SendEvent(game.Event{
 			ID:     id,

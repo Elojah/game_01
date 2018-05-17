@@ -3,13 +3,13 @@ package game
 // Action is a client action.
 type Action interface{}
 
-// CreatePC is a token action to create a new PC entity.
-type CreatePC struct {
+// SetPC is a token action to create a new PC entity.
+type SetPC struct {
 	Type EntityType
 }
 
-// CreateEntity is a player action to create a new target entity.
-type CreateEntity struct {
+// SetEntity is a player action to create a new target entity.
+type SetEntity struct {
 	Source   ID
 	Type     EntityType
 	Position Vec3

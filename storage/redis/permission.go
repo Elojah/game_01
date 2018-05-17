@@ -32,7 +32,7 @@ func (s *Service) GetPermission(subset game.PermissionSubset) (game.Permission, 
 	return permission, err
 }
 
-// CreatePermission implemented with redis.
-func (s *Service) CreatePermission(permission game.Permission) error {
+// SetPermission implemented with redis.
+func (s *Service) SetPermission(permission game.Permission) error {
 	return s.Set(permissionKey+permission.Source+":"+permission.Target, permission.Value, 0).Err()
 }

@@ -1,8 +1,17 @@
-struct Move {
+struct MoveDone {
+	Source	[16]byte
+	Target	[16]byte
 	X		float64
 	Y		float64
 	Z		float64
+}
+
+struct MoveReceived {
+	Source	[16]byte
 	Target	[16]byte
+	X		float64
+	Y		float64
+	Z		float64
 }
 
 struct AttackReceived {
@@ -30,7 +39,8 @@ struct Event {
 	Source	[16]byte
 	TS		int64
 	Action union {
-		Move
+		MoveDone
+		MoveReceived
 		AttackReceived
 		AttackDone
 		HealReceived

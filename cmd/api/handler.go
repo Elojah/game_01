@@ -80,10 +80,10 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		go func() { _ = h.attack(ctx, msg.Action.(dto.Attack), token, ts) }()
 	case dto.Heal:
 		go func() { _ = h.heal(ctx, msg.Action.(dto.Heal), token, ts) }()
-	case dto.CreateEntity:
-		go func() { _ = h.createEntity(ctx, msg.Action.(dto.CreateEntity), token, ts) }()
-	case dto.CreatePC:
-		go func() { _ = h.createPC(ctx, msg.Action.(dto.CreatePC), token, ts) }()
+	case dto.SetEntity:
+		go func() { _ = h.createEntity(ctx, msg.Action.(dto.SetEntity), token, ts) }()
+	case dto.SetPC:
+		go func() { _ = h.createPC(ctx, msg.Action.(dto.SetPC), token, ts) }()
 	}
 
 	return nil

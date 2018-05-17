@@ -6,7 +6,7 @@ type Template Entity
 
 // TemplateService is an interface for Template object.
 type TemplateService interface {
-	CreateTemplate(Template) error
+	SetTemplate(Template) error
 	GetTemplate(TemplateSubset) (Template, error)
 }
 

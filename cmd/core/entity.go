@@ -7,14 +7,15 @@ import (
 
 func (a *app) CreateEntity(event game.Event) error {
 
-	create := event.Action.(game.CreateEntity)
+	se := event.Action.(game.SetEntity)
+	_ = se
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(game.PermissionSubset{
-		Source: event.Source,
-		Target: create.Source,
+		Source: event.Source.String(),
+		Target: se.Source.String(),
 	})
-	if err == storage.ErrNotFound || (err != nil && permission.Value != game.Owner) {
+	if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
 		return game.ErrInsufficientRights
 	}
 	if err != nil {
