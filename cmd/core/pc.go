@@ -6,19 +6,20 @@ import (
 	"github.com/elojah/game_01"
 )
 
-const (
-	characterKey = "pc"
-)
-
 func (a *app) CreatePC(event game.Event) error {
 
 	spc := event.Action.(game.SetPC)
-	_ = spc
 
-	// #Check token permission to create a new PC.
+	// #Retrieve token object for accountID.
+	token, err := a.GetToken(event.Source)
+	if err != nil {
+		return err
+	}
+
+	// #Check user permission to create a new PC.
 	permission, err := a.GetPermission(game.PermissionSubset{
-		Source: event.Source.String(),
-		Target: characterKey,
+		Source: game.PCLeftKey,
+		Target: token.Account.String(),
 	})
 	if err != nil {
 		return err
@@ -29,8 +30,8 @@ func (a *app) CreatePC(event game.Event) error {
 
 	// #Decrease token permission to create a new PC by 1.
 	if err := a.SetPermission(game.Permission{
-		Source: event.Source.String(),
-		Target: characterKey,
+		Source: game.PCLeftKey,
+		Target: token.Account.String(),
 		Value:  permission.Value - 1,
 	}); err != nil {
 		return err
@@ -43,20 +44,9 @@ func (a *app) CreatePC(event game.Event) error {
 	}
 
 	// #Create PC from the template.
-	pc := PC(template)
+	pc := game.PC(template)
 	pc.ID = game.NewULID()
 	// TODO list of positions config ? Areas config + random ? Define spawn
-	pc.Position = game.Vec3{X: rand.Intn(100), rand.Intn(100), rand.Intn(100)}
-	if err := a.SetPC(pc); err != nil {
-		return err
-	}
-
-	// #Add a new listener for PC.
-	targetID := ulid.MustParse(h.listeners[rand.Intn(len(h.listeners))])
-	listener := game.Listener{ID: pc.ID}
-	if err := h.SendListener(listener, targetID); err != nil {
-		return err
-	}
-
-	return nil
+	pc.Position = game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()}
+	return a.SetPC(pc, token.Account)
 }

@@ -14,9 +14,9 @@ type app struct {
 	game.PCService
 	game.PermissionService
 	game.QEventService
-	game.QListenerService
 	game.SubscriptionService
 	game.TemplateService
+	game.TokenService
 
 	id game.ID
 

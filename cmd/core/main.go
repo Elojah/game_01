@@ -55,9 +55,9 @@ func run(prog string, filename string) {
 	a.PCService = rdx
 	a.PermissionService = rdx
 	a.QEventService = nax
-	a.QListenerService = nax
 	a.SubscriptionService = nax
 	a.TemplateService = rdx
+	a.TokenService = rdx
 
 	go func() { a.Start() }()
 	log.Info().Msg("core up")

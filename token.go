@@ -11,11 +11,6 @@ type Token struct {
 	Account ID           `json:"-"`
 }
 
-// TokenSubset represents a subset of Token resources.
-type TokenSubset struct {
-	IDs []ID
-}
-
 // TokenService is the service gate for Token resource.
 type TokenService interface {
 	SetToken(Token) error

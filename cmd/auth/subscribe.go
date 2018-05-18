@@ -22,7 +22,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/subscribe").Logger()
 
-	// Read body
+	// #Read body
 	b, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 	if err != nil {
@@ -31,7 +31,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Unmarshal payload
+	// #Unmarshal payload
 	var account game.Account
 	if err = json.Unmarshal(b, &account); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
@@ -40,7 +40,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 	account.ID = game.NewULID()
 
-	// Check username is unique
+	// #Check username is unique
 	_, err = h.GetAccount(game.AccountSubset{
 		Username: account.Username,
 	})
@@ -55,14 +55,25 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Set account in redis
+	// #Set account in redis
 	if err = h.SetAccount(account); err != nil {
 		logger.Error().Err(err).Msg("failed to create account")
 		http.Error(w, "failed to create account", http.StatusInternalServerError)
 		return
 	}
 
-	// Marshal token for response
+	// #Add Permission to create X new chars.
+	if err := h.SetPermission(game.Permission{
+		Source: game.PCLeftKey,
+		Target: account.ID.String(),
+		Value:  game.MaxPC,
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to set character permission")
+		http.Error(w, "failed to set permissions", http.StatusInternalServerError)
+		return
+	}
+
+	// #Marshal token for response
 	raw, err := json.Marshal(account)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal account")
@@ -70,7 +81,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Write response
+	// #Write response
 	w.WriteHeader(http.StatusOK)
 	w.Write(raw)
 }

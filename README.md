@@ -37,6 +37,6 @@
 ## RANDOM
 - [ ] `Trickster` entity can switch position with his own entities and switch them
 - [ ] `Mesmerist` entity can take control of enemy entities
-- [ ] `Inquisitor` entity can merge entities (allies/enemies) and can switch control between allies entities
+- [ ] `Inquisitor` entity can merge entities (allies/enemies)
 - [ ] `Totemist` entity can clone his own entities
 - [ ] `Scavenger` entity can sacrify his own entities

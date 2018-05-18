@@ -9,6 +9,7 @@ import (
 
 type handler struct {
 	game.AccountService
+	game.PermissionService
 	game.QEventService
 	game.QListenerService
 	game.TokenService

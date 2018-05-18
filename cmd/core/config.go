@@ -26,9 +26,9 @@ func (c Config) Equal(rhs Config) bool {
 			return false
 		}
 	}
-	return c.Limit == rhs.Limit &&
-		c.MoveTolerance == rhs.MoveTolerance &&
-		c.Listeners == rhs.Listeners
+	return c.ID == rhs.ID &&
+		c.Limit == rhs.Limit &&
+		c.MoveTolerance == rhs.MoveTolerance
 }
 
 // Dial set the config from a config namespace.
