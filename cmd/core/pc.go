@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math/rand"
+
 	"github.com/elojah/game_01"
 )
 
@@ -31,6 +33,28 @@ func (a *app) CreatePC(event game.Event) error {
 		Target: characterKey,
 		Value:  permission.Value - 1,
 	}); err != nil {
+		return err
+	}
+
+	// #Retrieve template for new PC.
+	template, err := a.GetTemplate(game.TemplateSubset{Type: spc.Type.String()})
+	if err != nil {
+		return err
+	}
+
+	// #Create PC from the template.
+	pc := PC(template)
+	pc.ID = game.NewULID()
+	// TODO list of positions config ? Areas config + random ? Define spawn
+	pc.Position = game.Vec3{X: rand.Intn(100), rand.Intn(100), rand.Intn(100)}
+	if err := a.SetPC(pc); err != nil {
+		return err
+	}
+
+	// #Add a new listener for PC.
+	targetID := ulid.MustParse(h.listeners[rand.Intn(len(h.listeners))])
+	listener := game.Listener{ID: pc.ID}
+	if err := h.SendListener(listener, targetID); err != nil {
 		return err
 	}
 

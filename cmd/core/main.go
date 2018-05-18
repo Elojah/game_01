@@ -52,9 +52,12 @@ func run(prog string, filename string) {
 
 	a.EntityService = rdx
 	a.EventService = rdx
+	a.PCService = rdx
 	a.PermissionService = rdx
 	a.QEventService = nax
+	a.QListenerService = nax
 	a.SubscriptionService = nax
+	a.TemplateService = rdx
 
 	go func() { a.Start() }()
 	log.Info().Msg("core up")
