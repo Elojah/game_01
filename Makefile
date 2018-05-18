@@ -12,6 +12,7 @@ API       = api
 CLIENT    = client
 AUTH      = auth
 CORE      = core
+TOOL      = tool
 
 FBSDIR    = .
 
@@ -55,6 +56,14 @@ core:
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(CORE)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(CORE)_$(VERSION) bin/$(PACKAGE)_$(CORE)
+
+tool:
+	$(info $(M) building executable tool…) @ ## Build program binary
+	$Q cd cmd/$(TOOL) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(TOOL)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(TOOL)_$(VERSION) bin/$(PACKAGE)_$(TOOL)
 
 # Utils
 .PHONY: gen
