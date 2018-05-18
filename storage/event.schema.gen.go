@@ -488,6 +488,180 @@ func (d *HealDone) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
+type SetPC struct {
+	Type uint8
+}
+
+func (d *SetPC) Size() (s uint64) {
+
+	s += 1
+	return
+}
+func (d *SetPC) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+
+		buf[0+0] = byte(d.Type >> 0)
+
+	}
+	return buf[:i+1], nil
+}
+
+func (d *SetPC) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+
+		d.Type = 0 | (uint8(buf[0+0]) << 0)
+
+	}
+	return i + 1, nil
+}
+
+type SetEntity struct {
+	Source [16]byte
+	Type   uint8
+	X      float64
+	Y      float64
+	Z      float64
+}
+
+func (d *SetEntity) Size() (s uint64) {
+
+	{
+		s += 16
+	}
+	s += 25
+	return
+}
+func (d *SetEntity) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
+
+		buf[i+0+0] = byte(d.Type >> 0)
+
+	}
+	{
+
+		v := *(*uint64)(unsafe.Pointer(&(d.X)))
+
+		buf[i+0+1] = byte(v >> 0)
+
+		buf[i+1+1] = byte(v >> 8)
+
+		buf[i+2+1] = byte(v >> 16)
+
+		buf[i+3+1] = byte(v >> 24)
+
+		buf[i+4+1] = byte(v >> 32)
+
+		buf[i+5+1] = byte(v >> 40)
+
+		buf[i+6+1] = byte(v >> 48)
+
+		buf[i+7+1] = byte(v >> 56)
+
+	}
+	{
+
+		v := *(*uint64)(unsafe.Pointer(&(d.Y)))
+
+		buf[i+0+9] = byte(v >> 0)
+
+		buf[i+1+9] = byte(v >> 8)
+
+		buf[i+2+9] = byte(v >> 16)
+
+		buf[i+3+9] = byte(v >> 24)
+
+		buf[i+4+9] = byte(v >> 32)
+
+		buf[i+5+9] = byte(v >> 40)
+
+		buf[i+6+9] = byte(v >> 48)
+
+		buf[i+7+9] = byte(v >> 56)
+
+	}
+	{
+
+		v := *(*uint64)(unsafe.Pointer(&(d.Z)))
+
+		buf[i+0+17] = byte(v >> 0)
+
+		buf[i+1+17] = byte(v >> 8)
+
+		buf[i+2+17] = byte(v >> 16)
+
+		buf[i+3+17] = byte(v >> 24)
+
+		buf[i+4+17] = byte(v >> 32)
+
+		buf[i+5+17] = byte(v >> 40)
+
+		buf[i+6+17] = byte(v >> 48)
+
+		buf[i+7+17] = byte(v >> 56)
+
+	}
+	return buf[:i+25], nil
+}
+
+func (d *SetEntity) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
+	{
+
+		d.Type = 0 | (uint8(buf[i+0+0]) << 0)
+
+	}
+	{
+
+		v := 0 | (uint64(buf[i+0+1]) << 0) | (uint64(buf[i+1+1]) << 8) | (uint64(buf[i+2+1]) << 16) | (uint64(buf[i+3+1]) << 24) | (uint64(buf[i+4+1]) << 32) | (uint64(buf[i+5+1]) << 40) | (uint64(buf[i+6+1]) << 48) | (uint64(buf[i+7+1]) << 56)
+		d.X = *(*float64)(unsafe.Pointer(&v))
+
+	}
+	{
+
+		v := 0 | (uint64(buf[i+0+9]) << 0) | (uint64(buf[i+1+9]) << 8) | (uint64(buf[i+2+9]) << 16) | (uint64(buf[i+3+9]) << 24) | (uint64(buf[i+4+9]) << 32) | (uint64(buf[i+5+9]) << 40) | (uint64(buf[i+6+9]) << 48) | (uint64(buf[i+7+9]) << 56)
+		d.Y = *(*float64)(unsafe.Pointer(&v))
+
+	}
+	{
+
+		v := 0 | (uint64(buf[i+0+17]) << 0) | (uint64(buf[i+1+17]) << 8) | (uint64(buf[i+2+17]) << 16) | (uint64(buf[i+3+17]) << 24) | (uint64(buf[i+4+17]) << 32) | (uint64(buf[i+5+17]) << 40) | (uint64(buf[i+6+17]) << 48) | (uint64(buf[i+7+17]) << 56)
+		d.Z = *(*float64)(unsafe.Pointer(&v))
+
+	}
+	return i + 25, nil
+}
+
 type Event struct {
 	ID     [16]byte
 	Source [16]byte
@@ -524,6 +698,12 @@ func (d *Event) Size() (s uint64) {
 
 		case HealDone:
 			v = 5 + 1
+
+		case SetPC:
+			v = 6 + 1
+
+		case SetEntity:
+			v = 7 + 1
 
 		}
 
@@ -570,6 +750,18 @@ func (d *Event) Size() (s uint64) {
 			}
 
 		case HealDone:
+
+			{
+				s += tt.Size()
+			}
+
+		case SetPC:
+
+			{
+				s += tt.Size()
+			}
+
+		case SetEntity:
 
 			{
 				s += tt.Size()
@@ -640,6 +832,12 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 		case HealDone:
 			v = 5 + 1
 
+		case SetPC:
+			v = 6 + 1
+
+		case SetEntity:
+			v = 7 + 1
+
 		}
 
 		{
@@ -708,6 +906,26 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 			}
 
 		case HealDone:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+8:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
+		case SetPC:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+8:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
+		case SetEntity:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -824,6 +1042,32 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 
 		case 5 + 1:
 			var tt HealDone
+
+			{
+				ni, err := tt.Unmarshal(buf[i+8:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 6 + 1:
+			var tt SetPC
+
+			{
+				ni, err := tt.Unmarshal(buf[i+8:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 7 + 1:
+			var tt SetEntity
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])

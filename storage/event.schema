@@ -34,6 +34,18 @@ struct HealDone {
 	Target	[16]byte
 }
 
+struct SetPC {
+	Type uint8
+}
+
+struct SetEntity {
+	Source	[16]byte
+	Type	uint8
+	X		float64
+	Y		float64
+	Z		float64
+}
+
 struct Event {
 	ID		[16]byte
 	Source	[16]byte
@@ -45,5 +57,7 @@ struct Event {
 		AttackDone
 		HealReceived
 		HealDone
+		SetPC
+		SetEntity
 	}
 }

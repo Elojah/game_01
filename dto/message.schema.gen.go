@@ -437,6 +437,12 @@ func (d *Message) Size() (s uint64) {
 		case Heal:
 			v = 2 + 1
 
+		case SetEntity:
+			v = 3 + 1
+
+		case SetPC:
+			v = 4 + 1
+
 		}
 
 		{
@@ -464,6 +470,18 @@ func (d *Message) Size() (s uint64) {
 			}
 
 		case Heal:
+
+			{
+				s += tt.Size()
+			}
+
+		case SetEntity:
+
+			{
+				s += tt.Size()
+			}
+
+		case SetPC:
 
 			{
 				s += tt.Size()
@@ -534,6 +552,12 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case Heal:
 			v = 2 + 1
 
+		case SetEntity:
+			v = 3 + 1
+
+		case SetPC:
+			v = 4 + 1
+
 		}
 
 		{
@@ -572,6 +596,26 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 			}
 
 		case Heal:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+9:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
+		case SetEntity:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+9:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
+		case SetPC:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+9:])
@@ -660,6 +704,32 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 
 		case 2 + 1:
 			var tt Heal
+
+			{
+				ni, err := tt.Unmarshal(buf[i+9:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 3 + 1:
+			var tt SetEntity
+
+			{
+				ni, err := tt.Unmarshal(buf[i+9:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 4 + 1:
+			var tt SetPC
 
 			{
 				ni, err := tt.Unmarshal(buf[i+9:])

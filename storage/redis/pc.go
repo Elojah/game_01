@@ -51,7 +51,7 @@ func (s *Service) SetPC(pc game.PC, account game.ID) error {
 
 // SetPCLeft implemented with redis.
 func (s *Service) SetPCLeft(pc game.PCLeft, account game.ID) error {
-	return s.Set(pcLeftKey+account.String(), pc, 0).Err()
+	return s.Set(pcLeftKey+account.String(), int(pc), 0).Err()
 }
 
 // GetPCLeft implemented with redis.

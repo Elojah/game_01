@@ -60,6 +60,24 @@ func NewHealReceived(a game.HealReceived) HealReceived {
 	}
 }
 
+// NewSetEntity convert a game.SetEntity into a storage SetEntity.
+func NewSetEntity(a game.SetEntity) SetEntity {
+	return SetEntity{
+		Source: [16]byte(a.Source),
+		Type:   uint8(a.Type),
+		X:      a.Position.X,
+		Y:      a.Position.Y,
+		Z:      a.Position.Z,
+	}
+}
+
+// NewSetPC convert a game.SetPC into a storage SetPC.
+func NewSetPC(a game.SetPC) SetPC {
+	return SetPC{
+		Type: uint8(a.Type),
+	}
+}
+
 // Domain converts a storage MoveDone into a game MoveDone.
 func (a MoveDone) Domain() game.MoveDone {
 	return game.MoveDone{
@@ -118,6 +136,26 @@ func (a HealReceived) Domain() game.HealReceived {
 	}
 }
 
+// Domain converts a storage SetEntity into a game SetEntity.
+func (a SetEntity) Domain() game.SetEntity {
+	return game.SetEntity{
+		Source: game.ID(a.Source),
+		Type:   game.EntityType(a.Type),
+		Position: game.Vec3{
+			X: a.X,
+			Y: a.Y,
+			Z: a.Z,
+		},
+	}
+}
+
+// Domain converts a storage SetPC into a game SetPC.
+func (a SetPC) Domain() game.SetPC {
+	return game.SetPC{
+		Type: game.EntityType(a.Type),
+	}
+}
+
 // NewEvent converts a domain event to a storage event.
 func NewEvent(event game.Event) *Event {
 	e := &Event{
@@ -138,6 +176,10 @@ func NewEvent(event game.Event) *Event {
 		e.Action = NewHealDone(event.Action.(game.HealDone))
 	case game.HealReceived:
 		e.Action = NewHealReceived(event.Action.(game.HealReceived))
+	case game.SetEntity:
+		e.Action = NewSetEntity(event.Action.(game.SetEntity))
+	case game.SetPC:
+		e.Action = NewSetPC(event.Action.(game.SetPC))
 	}
 	return e
 }
@@ -162,6 +204,10 @@ func (e Event) Domain() game.Event {
 		event.Action = e.Action.(HealDone).Domain()
 	case HealReceived:
 		event.Action = e.Action.(HealReceived).Domain()
+	case SetEntity:
+		event.Action = e.Action.(SetEntity).Domain()
+	case SetPC:
+		event.Action = e.Action.(SetPC).Domain()
 	}
 	return event
 }

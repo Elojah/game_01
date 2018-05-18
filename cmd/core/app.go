@@ -64,7 +64,7 @@ func (a *app) Close() {
 }
 
 func (a *app) AddListener(msg *nats.Msg) {
-	logger := log.With().Str("event", a.id.String()).Logger()
+	logger := log.With().Str("app", a.id.String()).Logger()
 
 	var listenerS storage.Listener
 	if _, err := listenerS.Unmarshal(msg.Data); err != nil {
@@ -78,12 +78,12 @@ func (a *app) AddListener(msg *nats.Msg) {
 
 	sub, err := a.SetSubscription(id.String(), seq.MsgHandler)
 	if err != nil {
-		logger.Error().Err(err).Str("id", id.String()).Msg("failed to sub")
+		logger.Error().Err(err).Str("listener", id.String()).Msg("failed to sub")
 		return
 	}
 	a.subs[id] = sub
 
-	logger.Info().Str("id", id.String()).Msg("listening")
+	logger.Info().Str("listener", id.String()).Msg("listening")
 }
 
 func (a *app) Apply(id game.ID, event game.Event) {
@@ -136,6 +136,7 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		if err := a.CreatePC(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
+	default:
+		logger.Error().Msg("unrecognized action")
 	}
-
 }

@@ -17,7 +17,7 @@ import (
 
 func send(cfg Config) {
 
-	id, _ := ulid.Parse("01CDPQRBXSA0KSH9FVQ8526AWX")
+	id, _ := ulid.Parse("01CDSSZQA7G75NTZPGYVGY45NQ")
 
 	ack := [16]byte(id)
 
@@ -33,13 +33,8 @@ func send(cfg Config) {
 			msg :=
 				dto.Message{
 					Token: id,
-					Action: dto.Move{
-						Target: id,
-						Position: dto.Vec3{
-							X: 10,
-							Y: 10,
-							Z: 10,
-						},
+					Action: dto.SetPC{
+						Type: 2,
 					},
 					ACK: &ack,
 					TS:  time.Now().UnixNano(),

@@ -38,5 +38,7 @@ struct Message {
 		Move
 		Attack
 		Heal
+		SetEntity
+		SetPC
 	}
 }

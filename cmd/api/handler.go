@@ -84,6 +84,8 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		go func() { _ = h.createEntity(ctx, msg.Action.(dto.SetEntity), token, ts) }()
 	case dto.SetPC:
 		go func() { _ = h.createPC(ctx, msg.Action.(dto.SetPC), token, ts) }()
+	default:
+		logger.Error().Msg("unrecognized action")
 	}
 
 	return nil

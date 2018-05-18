@@ -23,7 +23,7 @@ func (h *handler) createPC(ctx context.Context, a dto.SetPC, token game.Token, t
 			Action: game.SetPC{
 				Type: game.EntityType(a.Type),
 			},
-		}, game.ID(token.ID))
+		}, token.ID)
 		if err != nil {
 			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")
 		}
