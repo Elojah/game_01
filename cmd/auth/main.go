@@ -44,7 +44,7 @@ func run(prog string, filename string) {
 	launchers = append(launchers, hl)
 
 	h.AccountService = rdx
-	h.PermissionService = rdx
+	h.PCLeftService = rdx
 	h.QEventService = nax
 	h.QListenerService = nax
 	h.TokenService = rdx

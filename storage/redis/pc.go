@@ -1,6 +1,8 @@
 package redis
 
 import (
+	"strconv"
+
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01"
@@ -8,7 +10,8 @@ import (
 )
 
 const (
-	pcKey = "pc:"
+	pcKey     = "pc:"
+	pcLeftKey = "pc_left:"
 )
 
 // ListPC implemented with redis.
@@ -44,4 +47,23 @@ func (s *Service) SetPC(pc game.PC, account game.ID) error {
 		return err
 	}
 	return s.Set(pcKey+account.String()+":"+pc.ID.String(), raw, 0).Err()
+}
+
+// SetPCLeft implemented with redis.
+func (s *Service) SetPCLeft(pc game.PCLeft, account game.ID) error {
+	return s.Set(pcLeftKey+account.String(), pc, 0).Err()
+}
+
+// GetPCLeft implemented with redis.
+func (s *Service) GetPCLeft(subset game.PCLeftSubset) (game.PCLeft, error) {
+	val, err := s.Get(pcLeftKey + subset.AccountID.String()).Result()
+	if err != nil {
+		if err != redis.Nil {
+			return game.PCLeft(0), err
+		}
+		return game.PCLeft(0), storage.ErrNotFound
+	}
+
+	pcLeft, err := strconv.Atoi(val)
+	return game.PCLeft(pcLeft), err
 }

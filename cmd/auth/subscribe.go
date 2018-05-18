@@ -63,11 +63,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Add Permission to create X new chars.
-	if err := h.SetPermission(game.Permission{
-		Source: game.PCLeftKey,
-		Target: account.ID.String(),
-		Value:  game.MaxPC,
-	}); err != nil {
+	if err := h.SetPCLeft(game.MaxPC, account.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to set character permission")
 		http.Error(w, "failed to set permissions", http.StatusInternalServerError)
 		return

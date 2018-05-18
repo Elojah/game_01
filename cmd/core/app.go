@@ -12,6 +12,7 @@ type app struct {
 	game.EntityService
 	game.EventService
 	game.PCService
+	game.PCLeftService
 	game.PermissionService
 	game.QEventService
 	game.SubscriptionService

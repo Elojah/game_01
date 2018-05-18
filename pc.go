@@ -3,8 +3,6 @@ package game
 const (
 	// MaxPC is the maximum number of characters an account can have.
 	MaxPC = 4
-	// PCLeftKey is the redis key which substitute Source in Permission.
-	PCLeftKey = "pc_left"
 )
 
 // PC alias an entity.
@@ -18,5 +16,19 @@ type PCService interface {
 
 // PCSubset represents a subset of PC by account ID.
 type PCSubset struct {
+	AccountID ID
+}
+
+// PCLeft represents the number of character an account can still create.
+type PCLeft int
+
+// PCLeftService interfaces creation/retrieval of PCLeft.
+type PCLeftService interface {
+	SetPCLeft(PCLeft, ID) error
+	GetPCLeft(PCLeftSubset) (PCLeft, error)
+}
+
+// PCLeftSubset represents a subset of PCLeft per account.
+type PCLeftSubset struct {
 	AccountID ID
 }

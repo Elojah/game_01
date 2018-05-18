@@ -17,23 +17,16 @@ func (a *app) CreatePC(event game.Event) error {
 	}
 
 	// #Check user permission to create a new PC.
-	permission, err := a.GetPermission(game.PermissionSubset{
-		Source: game.PCLeftKey,
-		Target: token.Account.String(),
-	})
+	left, err := a.GetPCLeft(game.PCLeftSubset{AccountID: token.Account})
 	if err != nil {
 		return err
 	}
-	if permission.Value <= 0 {
+	if left <= 0 {
 		return game.ErrInvalidAction
 	}
 
 	// #Decrease token permission to create a new PC by 1.
-	if err := a.SetPermission(game.Permission{
-		Source: game.PCLeftKey,
-		Target: token.Account.String(),
-		Value:  permission.Value - 1,
-	}); err != nil {
+	if err := a.SetPCLeft(left-1, token.Account); err != nil {
 		return err
 	}
 

@@ -53,6 +53,7 @@ func run(prog string, filename string) {
 	a.EntityService = rdx
 	a.EventService = rdx
 	a.PCService = rdx
+	a.PCLeftService = rdx
 	a.PermissionService = rdx
 	a.QEventService = nax
 	a.SubscriptionService = nax
