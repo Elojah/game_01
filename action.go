@@ -6,12 +6,6 @@ type Action interface{}
 // ActionString acts for action.String() in declarative mode.
 func ActionString(a Action) string {
 	switch a.(type) {
-	case SetPC:
-		return "set_pc"
-	case ConnectPC:
-		return "connect_pc"
-	case SetEntity:
-		return "set_entity"
 	case MoveDone:
 		return "move_done"
 	case MoveReceived:
@@ -24,6 +18,12 @@ func ActionString(a Action) string {
 		return "heal_done"
 	case HealReceived:
 		return "heal_received"
+	case SetEntity:
+		return "set_entity"
+	case SetPC:
+		return "set_pc"
+	case ConnectPC:
+		return "connect_pc"
 	default:
 		return "unknown"
 	}

@@ -11,11 +11,13 @@ type PC Entity
 // PCService is an interface to create a new PC.
 type PCService interface {
 	SetPC(PC, ID) error
+	GetPC(PCSubset) (PC, error)
 	ListPC(PCSubset) ([]PC, error)
 }
 
 // PCSubset represents a subset of PC by account ID.
 type PCSubset struct {
+	ID        ID
 	AccountID ID
 }
 

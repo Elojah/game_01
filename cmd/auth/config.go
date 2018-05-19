@@ -2,14 +2,18 @@ package main
 
 import (
 	"errors"
+
+	"github.com/oklog/ulid"
+
+	"github.com/elojah/game_01"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Address   string   `json:"address"`
-	Cert      string   `json:"cert"`
-	Key       string   `json:"key"`
-	Listeners []string `json:"listeners"`
+	Address   string    `json:"address"`
+	Cert      string    `json:"cert"`
+	Key       string    `json:"key"`
+	Listeners []game.ID `json:"listeners"`
 }
 
 // Equal returns is both configs are equal.
@@ -18,7 +22,7 @@ func (c Config) Equal(rhs Config) bool {
 		return false
 	}
 	for i := range c.Listeners {
-		if c.Listeners[i] != rhs.Listeners[i] {
+		if c.Listeners[i].Compare(rhs.Listeners[i]) != 0 {
 			return false
 		}
 	}
@@ -66,11 +70,16 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key listeners invalid. must be slice")
 	}
-	c.Listeners = make([]string, len(cListenersSlice))
+	c.Listeners = make([]game.ID, len(cListenersSlice))
 	for i, listener := range cListenersSlice {
-		c.Listeners[i], ok = listener.(string)
+		listenerString, ok := listener.(string)
 		if !ok {
 			return errors.New("value in listeners invalid. must be string")
+		}
+		var err error
+		c.Listeners[i], err = ulid.Parse(listenerString)
+		if err != nil {
+			return err
 		}
 	}
 

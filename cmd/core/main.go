@@ -56,6 +56,7 @@ func run(prog string, filename string) {
 	a.PCLeftService = rdx
 	a.PermissionService = rdx
 	a.QEventService = nax
+	a.QListenerService = nax
 	a.SubscriptionService = nax
 	a.TemplateService = rdx
 	a.TokenService = rdx

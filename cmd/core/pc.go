@@ -46,5 +46,33 @@ func (a *app) CreatePC(event game.Event) error {
 
 // ConnectPC creates an entity from a PC.
 func (a *app) ConnectPC(event game.Event) error {
-	return nil
+
+	cpc := event.Action.(game.ConnectPC)
+
+	// #Retrieve token object for accountID.
+	token, err := a.GetToken(event.Source)
+	if err != nil {
+		return err
+	}
+
+	// #Retrieve PC for this account.
+	pc, err := a.GetPC(game.PCSubset{
+		AccountID: token.Account,
+		ID:        cpc.Target,
+	})
+	if err != nil {
+		return err
+	}
+
+	entity := game.Entity(pc)
+	entity.ID = game.NewULID()
+	// #Creates entity cloned from pc.
+	if err := a.SetEntity(entity, event.TS.UnixNano()); err != nil {
+		return err
+	}
+
+	// #Creates a new listener for this entity.
+	targetID := a.listeners[rand.Intn(len(a.listeners))]
+	listener := game.Listener{ID: entity.ID}
+	return a.SendListener(listener, targetID)
 }

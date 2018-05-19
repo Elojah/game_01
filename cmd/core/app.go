@@ -15,6 +15,7 @@ type app struct {
 	game.PCLeftService
 	game.PermissionService
 	game.QEventService
+	game.QListenerService
 	game.SubscriptionService
 	game.TemplateService
 	game.TokenService
@@ -27,14 +28,14 @@ type app struct {
 	limit         int
 	moveTolerance float64
 
-	listeners []string
+	listeners []game.ID
 }
 
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
 	a.moveTolerance = c.MoveTolerance
-	a.listeners = make([]string, len(c.Listeners))
+	a.listeners = make([]game.ID, len(c.Listeners))
 	copy(a.listeners, c.Listeners)
 
 	return nil

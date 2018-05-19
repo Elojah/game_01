@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
@@ -81,7 +80,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set a new listener for this token
-	targetID := ulid.MustParse(h.listeners[rand.Intn(len(h.listeners))])
+	targetID := h.listeners[rand.Intn(len(h.listeners))]
 	listener := game.Listener{ID: token.ID}
 	if err := h.SendListener(listener, targetID); err != nil {
 		logger.Error().Err(err).Msg("failed to create queue")
