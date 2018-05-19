@@ -1,4 +1,8 @@
 [
-	{},
-	{}
+	{
+	"ID":       "01CDSTJRVK0HMG6TREBJR7FG1N",
+	"HP":       100,
+	"MP":       100,
+	"Type":     2
+	}
 ]
