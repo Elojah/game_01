@@ -16,7 +16,7 @@ type handler struct {
 
 	srv *http.Server
 
-	listeners []game.ID
+	cores []game.ID
 }
 
 // Dial starts the auth server.
@@ -29,8 +29,8 @@ func (h *handler) Dial(c Config) error {
 		Handler: mux,
 	}
 	go func() { _ = h.srv.ListenAndServeTLS(c.Cert, c.Key) }()
-	h.listeners = make([]game.ID, len(c.Listeners))
-	copy(h.listeners, c.Listeners)
+	h.cores = make([]game.ID, len(c.Cores))
+	copy(h.cores, c.Cores)
 	return nil
 }
 

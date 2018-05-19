@@ -10,19 +10,19 @@ import (
 
 // Config is web quic server structure config.
 type Config struct {
-	Address   string    `json:"address"`
-	Cert      string    `json:"cert"`
-	Key       string    `json:"key"`
-	Listeners []game.ID `json:"listeners"`
+	Address string    `json:"address"`
+	Cert    string    `json:"cert"`
+	Key     string    `json:"key"`
+	Cores   []game.ID `json:"cores"`
 }
 
 // Equal returns is both configs are equal.
 func (c Config) Equal(rhs Config) bool {
-	if len(c.Listeners) != len(rhs.Listeners) {
+	if len(c.Cores) != len(rhs.Cores) {
 		return false
 	}
-	for i := range c.Listeners {
-		if c.Listeners[i].Compare(rhs.Listeners[i]) != 0 {
+	for i := range c.Cores {
+		if c.Cores[i].Compare(rhs.Cores[i]) != 0 {
 			return false
 		}
 	}
@@ -62,22 +62,22 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("key key invalid. must be string")
 	}
 
-	cListeners, ok := fconf["listeners"]
+	cCores, ok := fconf["cores"]
 	if !ok {
-		return errors.New("missing key listeners")
+		return errors.New("missing key cores")
 	}
-	cListenersSlice, ok := cListeners.([]interface{})
+	cCoresSlice, ok := cCores.([]interface{})
 	if !ok {
-		return errors.New("key listeners invalid. must be slice")
+		return errors.New("key cores invalid. must be slice")
 	}
-	c.Listeners = make([]game.ID, len(cListenersSlice))
-	for i, listener := range cListenersSlice {
-		listenerString, ok := listener.(string)
+	c.Cores = make([]game.ID, len(cCoresSlice))
+	for i, core := range cCoresSlice {
+		coreString, ok := core.(string)
 		if !ok {
-			return errors.New("value in listeners invalid. must be string")
+			return errors.New("value in cores invalid. must be string")
 		}
 		var err error
-		c.Listeners[i], err = ulid.Parse(listenerString)
+		c.Cores[i], err = ulid.Parse(coreString)
 		if err != nil {
 			return err
 		}

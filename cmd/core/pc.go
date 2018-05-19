@@ -72,7 +72,7 @@ func (a *app) ConnectPC(event game.Event) error {
 	}
 
 	// #Creates a new listener for this entity.
-	targetID := a.listeners[rand.Intn(len(a.listeners))]
+	core := a.cores[rand.Intn(len(a.cores))]
 	listener := game.Listener{ID: entity.ID}
-	return a.SendListener(listener, targetID)
+	return a.SendListener(listener, core)
 }

@@ -3,7 +3,7 @@
 		"address": "127.0.0.1:8080",
 		"cert": "bin/server.crt",
 		"key": "bin/server.key",
-		"listeners": ["01CCS1SZ4B20G98XYMFGVC9VS4"]
+		"cores": ["01CCS1SZ4B20G98XYMFGVC9VS4"]
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",

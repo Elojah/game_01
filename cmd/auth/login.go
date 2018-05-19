@@ -80,9 +80,9 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set a new listener for this token
-	targetID := h.listeners[rand.Intn(len(h.listeners))]
+	core := h.cores[rand.Intn(len(h.cores))]
 	listener := game.Listener{ID: token.ID}
-	if err := h.SendListener(listener, targetID); err != nil {
+	if err := h.SendListener(listener, core); err != nil {
 		logger.Error().Err(err).Msg("failed to create queue")
 		http.Error(w, "failed to setup token", http.StatusInternalServerError)
 		return
