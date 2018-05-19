@@ -11,21 +11,27 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) heal(ctx context.Context, a dto.Heal, token game.Token, ts time.Time) error {
+func (h *handler) heal(ctx context.Context, msg dto.Message) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	id := game.NewULID()
+	a := msg.Action.(dto.Heal)
+	token := game.ID(msg.Token)
+	ts := time.Unix(0, msg.TS)
+	source := game.ID(a.Source)
+	target := game.ID(a.Target)
+
 	go func() {
 		err := h.SendEvent(game.Event{
 			ID:     id,
-			Source: token.ID,
+			Source: token,
 			TS:     ts,
 			Action: game.HealDone{
-				Source: game.ID(a.Source),
-				Target: game.ID(a.Target),
+				Source: source,
+				Target: target,
 			},
-		}, game.ID(a.Source))
+		}, source)
 		if err != nil {
 			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")
 		}
@@ -33,13 +39,13 @@ func (h *handler) heal(ctx context.Context, a dto.Heal, token game.Token, ts tim
 	go func() {
 		err := h.SendEvent(game.Event{
 			ID:     id,
-			Source: token.ID,
+			Source: token,
 			TS:     ts,
 			Action: game.HealReceived{
-				Source: game.ID(a.Source),
-				Target: game.ID(a.Target),
+				Source: source,
+				Target: target,
 			},
-		}, game.ID(a.Target))
+		}, target)
 		if err != nil {
 			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")
 		}

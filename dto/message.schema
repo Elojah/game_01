@@ -30,6 +30,10 @@ struct SetPC {
 	Type		uint8
 }
 
+struct ConnectPC {
+	Target		[16]byte
+}
+
 struct Message {
 	Token		[16]byte
 	ACK			*[16]byte
@@ -39,6 +43,7 @@ struct Message {
 		Attack
 		Heal
 		SetEntity
+		ConnectPC
 		SetPC
 	}
 }

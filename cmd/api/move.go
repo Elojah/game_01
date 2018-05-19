@@ -11,22 +11,27 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) move(ctx context.Context, m dto.Move, token game.Token, ts time.Time) error {
+func (h *handler) move(ctx context.Context, msg dto.Message) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	id := game.NewULID()
-	source := game.ID(m.Source)
-	target := game.ID(m.Target)
+	a := msg.Action.(dto.Move)
+	token := game.ID(msg.Token)
+	ts := time.Unix(0, msg.TS)
+	source := game.ID(a.Source)
+	target := game.ID(a.Target)
+	position := game.Vec3(a.Position)
+
 	go func() {
 		if err := h.SendEvent(game.Event{
 			ID:     id,
-			Source: token.ID,
+			Source: token,
 			TS:     ts,
 			Action: game.MoveDone{
 				Source:   source,
 				Target:   target,
-				Position: game.Vec3(m.Position),
+				Position: position,
 			},
 		}, source); err != nil {
 			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")
@@ -36,12 +41,12 @@ func (h *handler) move(ctx context.Context, m dto.Move, token game.Token, ts tim
 	go func() {
 		if err := h.SendEvent(game.Event{
 			ID:     id,
-			Source: token.ID,
+			Source: token,
 			TS:     ts,
 			Action: game.MoveReceived{
 				Source:   source,
 				Target:   target,
-				Position: game.Vec3(m.Position),
+				Position: position,
 			},
 		}, target); err != nil {
 			logger.Error().Err(err).Str("event", "unmarshalable").Msg("event rejected")

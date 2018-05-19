@@ -403,6 +403,45 @@ func (d *SetPC) Unmarshal(buf []byte) (uint64, error) {
 	return i + 1, nil
 }
 
+type ConnectPC struct {
+	Target [16]byte
+}
+
+func (d *ConnectPC) Size() (s uint64) {
+
+	{
+		s += 16
+	}
+	return
+}
+func (d *ConnectPC) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+		copy(buf[i+0:], d.Target[:])
+		i += 16
+	}
+	return buf[:i+0], nil
+}
+
+func (d *ConnectPC) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+		copy(d.Target[:], buf[i+0:])
+		i += 16
+	}
+	return i + 0, nil
+}
+
 type Message struct {
 	Token  [16]byte
 	ACK    *[16]byte
@@ -440,8 +479,11 @@ func (d *Message) Size() (s uint64) {
 		case SetEntity:
 			v = 3 + 1
 
-		case SetPC:
+		case ConnectPC:
 			v = 4 + 1
+
+		case SetPC:
+			v = 5 + 1
 
 		}
 
@@ -476,6 +518,12 @@ func (d *Message) Size() (s uint64) {
 			}
 
 		case SetEntity:
+
+			{
+				s += tt.Size()
+			}
+
+		case ConnectPC:
 
 			{
 				s += tt.Size()
@@ -555,8 +603,11 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case SetEntity:
 			v = 3 + 1
 
-		case SetPC:
+		case ConnectPC:
 			v = 4 + 1
+
+		case SetPC:
+			v = 5 + 1
 
 		}
 
@@ -606,6 +657,16 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 			}
 
 		case SetEntity:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+9:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
+		case ConnectPC:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+9:])
@@ -729,6 +790,19 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 4 + 1:
+			var tt ConnectPC
+
+			{
+				ni, err := tt.Unmarshal(buf[i+9:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 5 + 1:
 			var tt SetPC
 
 			{

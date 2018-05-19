@@ -95,44 +95,41 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		Int64("ts", ts).
 		Logger()
 
+	logger.Info().Str("type", game.ActionString(event.Action)).Msg("apply action")
 	switch event.Action.(type) {
 	case game.MoveDone:
-		logger.Info().Str("type", "move_done").Msg("apply action")
 		if err := a.MoveDone(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.MoveReceived:
-		logger.Info().Str("type", "move_received").Msg("apply action")
 		if err := a.MoveReceived(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.AttackReceived:
-		logger.Info().Str("type", "attack_received").Msg("apply action")
 		if err := a.AttackReceived(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.AttackDone:
-		logger.Info().Str("type", "attack_done").Msg("apply action")
 		if err := a.AttackDone(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.HealReceived:
-		logger.Info().Str("type", "heal_received").Msg("apply action")
 		if err := a.HealReceived(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.HealDone:
-		logger.Info().Str("type", "heal_done").Msg("apply action")
 		if err := a.HealDone(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.SetEntity:
-		logger.Info().Str("type", "create_entity").Msg("apply action")
 		if err := a.CreateEntity(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
+	case game.ConnectPC:
+		if err := a.ConnectPC(event); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	case game.SetPC:
-		logger.Info().Str("type", "create_pc").Msg("apply action")
 		if err := a.CreatePC(event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}

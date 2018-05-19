@@ -3,9 +3,40 @@ package game
 // Action is a client action.
 type Action interface{}
 
+// ActionString acts for action.String() in declarative mode.
+func ActionString(a Action) string {
+	switch a.(type) {
+	case SetPC:
+		return "set_pc"
+	case ConnectPC:
+		return "connect_pc"
+	case SetEntity:
+		return "set_entity"
+	case MoveDone:
+		return "move_done"
+	case MoveReceived:
+		return "move_received"
+	case AttackDone:
+		return "attack_done"
+	case AttackReceived:
+		return "attack_received"
+	case HealDone:
+		return "heal_done"
+	case HealReceived:
+		return "heal_received"
+	default:
+		return "unknown"
+	}
+}
+
 // SetPC is a token action to create a new PC entity.
 type SetPC struct {
 	Type EntityType
+}
+
+// ConnectPC is a token action to connect to a previously created PC.
+type ConnectPC struct {
+	Target ID
 }
 
 // SetEntity is a player action to create a new target entity.

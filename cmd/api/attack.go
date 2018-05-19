@@ -11,17 +11,21 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts time.Time) error {
+func (h *handler) attack(ctx context.Context, msg dto.Message) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	id := game.NewULID()
+	a := msg.Action.(dto.Attack)
+	token := game.ID(msg.Token)
+	ts := time.Unix(0, msg.TS)
 	source := game.ID(a.Source)
 	target := game.ID(a.Target)
+
 	go func() {
 		err := h.SendEvent(game.Event{
 			ID:     id,
-			Source: token.ID,
+			Source: token,
 			TS:     ts,
 			Action: game.AttackDone{
 				Source: source,
@@ -35,7 +39,7 @@ func (h *handler) attack(ctx context.Context, a dto.Attack, token game.Token, ts
 	go func() {
 		err := h.SendEvent(game.Event{
 			ID:     id,
-			Source: token.ID,
+			Source: token,
 			TS:     ts,
 			Action: game.AttackReceived{
 				Source: source,

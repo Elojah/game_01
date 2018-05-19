@@ -43,3 +43,8 @@ func (a *app) CreatePC(event game.Event) error {
 	pc.Position = game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()}
 	return a.SetPC(pc, token.Account)
 }
+
+// ConnectPC creates an entity from a PC.
+func (a *app) ConnectPC(event game.Event) error {
+	return nil
+}
