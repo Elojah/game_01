@@ -78,9 +78,9 @@ func main() {
 		`,
 		Run: s.AddSkills,
 	}
-	addTemplateCmd.Flags().StringVar(&s.config, "config", "", "config file for DB connections")
-	addTemplateCmd.MarkFlagRequired("config")
-	addTemplateCmd.Flags().StringVar(&s.skills, "skills", "", "file where skills are represented in JSON")
+	skillsCmd.Flags().StringVar(&s.config, "config", "", "config file for DB connections")
+	skillsCmd.MarkFlagRequired("config")
+	skillsCmd.Flags().StringVar(&s.skills, "skills", "", "file where skills are represented in JSON")
 
 	var idCmd = &cobra.Command{
 		Use:   "id [no options!]",
