@@ -73,12 +73,16 @@ gen:
 	$Q cd storage && ls *.schema | xargs -n1 gencode go -package storage -schema
 
 add-templates:
-	$(info $(M) running gencode…) @
+	$(info $(M) running add-templates…) @
 	$Q make tool && ./bin/game_tool add-template --config=bin/config_core.json --skills=bin/skill_templates.json --entities=bin/entity_templates.json
 
 show-templates:
-	$(info $(M) running gencode…) @
+	$(info $(M) running show-templates…) @
 	$Q make tool && ./bin/game_tool show-template --config=bin/config_core.json skills entities
+
+add-skills:
+	$(info $(M) running add-skills…) @
+	$Q make tool && ./bin/game_tool add-skills --config=bin/config_core.json --skills=bin/skill_templates.json
 
 # Dependencies
 .PHONY: dep

@@ -15,6 +15,13 @@
 > make client && bin/game_client bin/config_client.json
 ```
 
+##### Tool
+```
+> make add-templates
+> make show-templates
+> make add-skills
+```
+
 ## TODO
 - [x] Remove NATS streaming
 - [x] Change log to zap (uber faster log)
