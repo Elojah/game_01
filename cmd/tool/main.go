@@ -15,7 +15,7 @@ import (
 )
 
 type template struct {
-	game.TemplateService
+	game.EntityTemplateService
 
 	config    string
 	templates string
@@ -36,7 +36,7 @@ func (t *template) run(cmd *cobra.Command, args []string) {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
-	t.TemplateService = rdx
+	t.EntityTemplateService = rdx
 
 	if err := launchers.Up(t.config); err != nil {
 		logger.Error().Err(err).Str("filename", t.config).Msg("failed to start")
@@ -48,7 +48,7 @@ func (t *template) run(cmd *cobra.Command, args []string) {
 		logger.Error().Err(err).Str("templates", t.templates).Msg("failed to read templates file")
 		return
 	}
-	var templates []game.Template
+	var templates []game.EntityTemplate
 	if err := json.Unmarshal(raw, &templates); err != nil {
 		logger.Error().Err(err).Str("templates", t.templates).Msg("invalid JSON")
 		return
@@ -57,7 +57,7 @@ func (t *template) run(cmd *cobra.Command, args []string) {
 	logger.Info().Int("templates", len(templates)).Msg("found")
 
 	for _, tpl := range templates {
-		if err := t.SetTemplate(tpl); err != nil {
+		if err := t.SetEntityTemplate(tpl); err != nil {
 			logger.Error().Err(err).Str("template", tpl.ID.String()).Msg("failed to set template")
 			return
 		}

@@ -1,7 +1,7 @@
 struct Vec3 {
-	X float64
-	Y float64
-	Z float64
+	X			float64
+	Y			float64
+	Z			float64
 }
 
 struct Move {
@@ -10,19 +10,10 @@ struct Move {
 	Position	Vec3
 }
 
-struct Attack {
-	Source	[16]byte
-	Target	[16]byte
-}
-
-struct Heal {
-	Source	[16]byte
-	Target	[16]byte
-}
-
-struct SetEntity {
+struct Skill {
+	ID			[16]byte
 	Source		[16]byte
-	Type		uint8
+	Target		[16]byte
 	Position	Vec3
 }
 
@@ -40,9 +31,7 @@ struct Message {
 	TS			int64
 	Action union {
 		Move
-		Attack
-		Heal
-		SetEntity
+		Skill
 		ConnectPC
 		SetPC
 	}

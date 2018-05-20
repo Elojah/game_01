@@ -58,7 +58,7 @@ func run(prog string, filename string) {
 	a.QEventService = nax
 	a.QListenerService = nax
 	a.SubscriptionService = nax
-	a.TemplateService = rdx
+	a.EntityTemplateService = rdx
 	a.TokenService = rdx
 
 	go func() { a.Start() }()

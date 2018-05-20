@@ -12,26 +12,18 @@ var (
 	_ = time.Now()
 )
 
-type MoveDone struct {
-	Source [16]byte
-	Target [16]byte
-	X      float64
-	Y      float64
-	Z      float64
+type Vec3 struct {
+	X float64
+	Y float64
+	Z float64
 }
 
-func (d *MoveDone) Size() (s uint64) {
+func (d *Vec3) Size() (s uint64) {
 
-	{
-		s += 16
-	}
-	{
-		s += 16
-	}
 	s += 24
 	return
 }
-func (d *MoveDone) Marshal(buf []byte) ([]byte, error) {
+func (d *Vec3) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -43,263 +35,115 @@ func (d *MoveDone) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-		copy(buf[i+0:], d.Source[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
-	}
-	{
 
 		v := *(*uint64)(unsafe.Pointer(&(d.X)))
 
-		buf[i+0+0] = byte(v >> 0)
+		buf[0+0] = byte(v >> 0)
 
-		buf[i+1+0] = byte(v >> 8)
+		buf[1+0] = byte(v >> 8)
 
-		buf[i+2+0] = byte(v >> 16)
+		buf[2+0] = byte(v >> 16)
 
-		buf[i+3+0] = byte(v >> 24)
+		buf[3+0] = byte(v >> 24)
 
-		buf[i+4+0] = byte(v >> 32)
+		buf[4+0] = byte(v >> 32)
 
-		buf[i+5+0] = byte(v >> 40)
+		buf[5+0] = byte(v >> 40)
 
-		buf[i+6+0] = byte(v >> 48)
+		buf[6+0] = byte(v >> 48)
 
-		buf[i+7+0] = byte(v >> 56)
+		buf[7+0] = byte(v >> 56)
 
 	}
 	{
 
 		v := *(*uint64)(unsafe.Pointer(&(d.Y)))
 
-		buf[i+0+8] = byte(v >> 0)
+		buf[0+8] = byte(v >> 0)
 
-		buf[i+1+8] = byte(v >> 8)
+		buf[1+8] = byte(v >> 8)
 
-		buf[i+2+8] = byte(v >> 16)
+		buf[2+8] = byte(v >> 16)
 
-		buf[i+3+8] = byte(v >> 24)
+		buf[3+8] = byte(v >> 24)
 
-		buf[i+4+8] = byte(v >> 32)
+		buf[4+8] = byte(v >> 32)
 
-		buf[i+5+8] = byte(v >> 40)
+		buf[5+8] = byte(v >> 40)
 
-		buf[i+6+8] = byte(v >> 48)
+		buf[6+8] = byte(v >> 48)
 
-		buf[i+7+8] = byte(v >> 56)
-
-	}
-	{
-
-		v := *(*uint64)(unsafe.Pointer(&(d.Z)))
-
-		buf[i+0+16] = byte(v >> 0)
-
-		buf[i+1+16] = byte(v >> 8)
-
-		buf[i+2+16] = byte(v >> 16)
-
-		buf[i+3+16] = byte(v >> 24)
-
-		buf[i+4+16] = byte(v >> 32)
-
-		buf[i+5+16] = byte(v >> 40)
-
-		buf[i+6+16] = byte(v >> 48)
-
-		buf[i+7+16] = byte(v >> 56)
-
-	}
-	return buf[:i+24], nil
-}
-
-func (d *MoveDone) Unmarshal(buf []byte) (uint64, error) {
-	i := uint64(0)
-
-	{
-		copy(d.Source[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
-	}
-	{
-
-		v := 0 | (uint64(buf[i+0+0]) << 0) | (uint64(buf[i+1+0]) << 8) | (uint64(buf[i+2+0]) << 16) | (uint64(buf[i+3+0]) << 24) | (uint64(buf[i+4+0]) << 32) | (uint64(buf[i+5+0]) << 40) | (uint64(buf[i+6+0]) << 48) | (uint64(buf[i+7+0]) << 56)
-		d.X = *(*float64)(unsafe.Pointer(&v))
-
-	}
-	{
-
-		v := 0 | (uint64(buf[i+0+8]) << 0) | (uint64(buf[i+1+8]) << 8) | (uint64(buf[i+2+8]) << 16) | (uint64(buf[i+3+8]) << 24) | (uint64(buf[i+4+8]) << 32) | (uint64(buf[i+5+8]) << 40) | (uint64(buf[i+6+8]) << 48) | (uint64(buf[i+7+8]) << 56)
-		d.Y = *(*float64)(unsafe.Pointer(&v))
-
-	}
-	{
-
-		v := 0 | (uint64(buf[i+0+16]) << 0) | (uint64(buf[i+1+16]) << 8) | (uint64(buf[i+2+16]) << 16) | (uint64(buf[i+3+16]) << 24) | (uint64(buf[i+4+16]) << 32) | (uint64(buf[i+5+16]) << 40) | (uint64(buf[i+6+16]) << 48) | (uint64(buf[i+7+16]) << 56)
-		d.Z = *(*float64)(unsafe.Pointer(&v))
-
-	}
-	return i + 24, nil
-}
-
-type MoveReceived struct {
-	Source [16]byte
-	Target [16]byte
-	X      float64
-	Y      float64
-	Z      float64
-}
-
-func (d *MoveReceived) Size() (s uint64) {
-
-	{
-		s += 16
-	}
-	{
-		s += 16
-	}
-	s += 24
-	return
-}
-func (d *MoveReceived) Marshal(buf []byte) ([]byte, error) {
-	size := d.Size()
-	{
-		if uint64(cap(buf)) >= size {
-			buf = buf[:size]
-		} else {
-			buf = make([]byte, size)
-		}
-	}
-	i := uint64(0)
-
-	{
-		copy(buf[i+0:], d.Source[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
-	}
-	{
-
-		v := *(*uint64)(unsafe.Pointer(&(d.X)))
-
-		buf[i+0+0] = byte(v >> 0)
-
-		buf[i+1+0] = byte(v >> 8)
-
-		buf[i+2+0] = byte(v >> 16)
-
-		buf[i+3+0] = byte(v >> 24)
-
-		buf[i+4+0] = byte(v >> 32)
-
-		buf[i+5+0] = byte(v >> 40)
-
-		buf[i+6+0] = byte(v >> 48)
-
-		buf[i+7+0] = byte(v >> 56)
-
-	}
-	{
-
-		v := *(*uint64)(unsafe.Pointer(&(d.Y)))
-
-		buf[i+0+8] = byte(v >> 0)
-
-		buf[i+1+8] = byte(v >> 8)
-
-		buf[i+2+8] = byte(v >> 16)
-
-		buf[i+3+8] = byte(v >> 24)
-
-		buf[i+4+8] = byte(v >> 32)
-
-		buf[i+5+8] = byte(v >> 40)
-
-		buf[i+6+8] = byte(v >> 48)
-
-		buf[i+7+8] = byte(v >> 56)
+		buf[7+8] = byte(v >> 56)
 
 	}
 	{
 
 		v := *(*uint64)(unsafe.Pointer(&(d.Z)))
 
-		buf[i+0+16] = byte(v >> 0)
+		buf[0+16] = byte(v >> 0)
 
-		buf[i+1+16] = byte(v >> 8)
+		buf[1+16] = byte(v >> 8)
 
-		buf[i+2+16] = byte(v >> 16)
+		buf[2+16] = byte(v >> 16)
 
-		buf[i+3+16] = byte(v >> 24)
+		buf[3+16] = byte(v >> 24)
 
-		buf[i+4+16] = byte(v >> 32)
+		buf[4+16] = byte(v >> 32)
 
-		buf[i+5+16] = byte(v >> 40)
+		buf[5+16] = byte(v >> 40)
 
-		buf[i+6+16] = byte(v >> 48)
+		buf[6+16] = byte(v >> 48)
 
-		buf[i+7+16] = byte(v >> 56)
+		buf[7+16] = byte(v >> 56)
 
 	}
 	return buf[:i+24], nil
 }
 
-func (d *MoveReceived) Unmarshal(buf []byte) (uint64, error) {
+func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.Source[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
-	}
-	{
 
-		v := 0 | (uint64(buf[i+0+0]) << 0) | (uint64(buf[i+1+0]) << 8) | (uint64(buf[i+2+0]) << 16) | (uint64(buf[i+3+0]) << 24) | (uint64(buf[i+4+0]) << 32) | (uint64(buf[i+5+0]) << 40) | (uint64(buf[i+6+0]) << 48) | (uint64(buf[i+7+0]) << 56)
+		v := 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
 		d.X = *(*float64)(unsafe.Pointer(&v))
 
 	}
 	{
 
-		v := 0 | (uint64(buf[i+0+8]) << 0) | (uint64(buf[i+1+8]) << 8) | (uint64(buf[i+2+8]) << 16) | (uint64(buf[i+3+8]) << 24) | (uint64(buf[i+4+8]) << 32) | (uint64(buf[i+5+8]) << 40) | (uint64(buf[i+6+8]) << 48) | (uint64(buf[i+7+8]) << 56)
+		v := 0 | (uint64(buf[0+8]) << 0) | (uint64(buf[1+8]) << 8) | (uint64(buf[2+8]) << 16) | (uint64(buf[3+8]) << 24) | (uint64(buf[4+8]) << 32) | (uint64(buf[5+8]) << 40) | (uint64(buf[6+8]) << 48) | (uint64(buf[7+8]) << 56)
 		d.Y = *(*float64)(unsafe.Pointer(&v))
 
 	}
 	{
 
-		v := 0 | (uint64(buf[i+0+16]) << 0) | (uint64(buf[i+1+16]) << 8) | (uint64(buf[i+2+16]) << 16) | (uint64(buf[i+3+16]) << 24) | (uint64(buf[i+4+16]) << 32) | (uint64(buf[i+5+16]) << 40) | (uint64(buf[i+6+16]) << 48) | (uint64(buf[i+7+16]) << 56)
+		v := 0 | (uint64(buf[0+16]) << 0) | (uint64(buf[1+16]) << 8) | (uint64(buf[2+16]) << 16) | (uint64(buf[3+16]) << 24) | (uint64(buf[4+16]) << 32) | (uint64(buf[5+16]) << 40) | (uint64(buf[6+16]) << 48) | (uint64(buf[7+16]) << 56)
 		d.Z = *(*float64)(unsafe.Pointer(&v))
 
 	}
 	return i + 24, nil
 }
 
-type AttackReceived struct {
-	Source [16]byte
-	Target [16]byte
+type Move struct {
+	Source   [16]byte
+	Target   [16]byte
+	Position Vec3
 }
 
-func (d *AttackReceived) Size() (s uint64) {
+func (d *Move) Size() (s uint64) {
 
 	{
 		s += 16
 	}
 	{
 		s += 16
+	}
+	{
+		s += d.Position.Size()
 	}
 	return
 }
-func (d *AttackReceived) Marshal(buf []byte) ([]byte, error) {
+func (d *Move) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -318,10 +162,17 @@ func (d *AttackReceived) Marshal(buf []byte) ([]byte, error) {
 		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
+	{
+		nbuf, err := d.Position.Marshal(buf[i+0:])
+		if err != nil {
+			return nil, err
+		}
+		i += uint64(len(nbuf))
+	}
 	return buf[:i+0], nil
 }
 
-func (d *AttackReceived) Unmarshal(buf []byte) (uint64, error) {
+func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
@@ -331,26 +182,41 @@ func (d *AttackReceived) Unmarshal(buf []byte) (uint64, error) {
 	{
 		copy(d.Target[:], buf[i+0:])
 		i += 16
+	}
+	{
+		ni, err := d.Position.Unmarshal(buf[i+0:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
 	}
 	return i + 0, nil
 }
 
-type AttackDone struct {
-	Source [16]byte
-	Target [16]byte
+type Skill struct {
+	ID       [16]byte
+	Source   [16]byte
+	Target   [16]byte
+	Position Vec3
 }
 
-func (d *AttackDone) Size() (s uint64) {
+func (d *Skill) Size() (s uint64) {
 
 	{
 		s += 16
 	}
 	{
 		s += 16
+	}
+	{
+		s += 16
+	}
+	{
+		s += d.Position.Size()
 	}
 	return
 }
-func (d *AttackDone) Marshal(buf []byte) ([]byte, error) {
+func (d *Skill) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -362,6 +228,10 @@ func (d *AttackDone) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
+		copy(buf[i+0:], d.ID[:])
+		i += 16
+	}
+	{
 		copy(buf[i+0:], d.Source[:])
 		i += 16
 	}
@@ -369,63 +239,23 @@ func (d *AttackDone) Marshal(buf []byte) ([]byte, error) {
 		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
-	return buf[:i+0], nil
-}
-
-func (d *AttackDone) Unmarshal(buf []byte) (uint64, error) {
-	i := uint64(0)
-
 	{
-		copy(d.Source[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
-	}
-	return i + 0, nil
-}
-
-type HealReceived struct {
-	Source [16]byte
-	Target [16]byte
-}
-
-func (d *HealReceived) Size() (s uint64) {
-
-	{
-		s += 16
-	}
-	{
-		s += 16
-	}
-	return
-}
-func (d *HealReceived) Marshal(buf []byte) ([]byte, error) {
-	size := d.Size()
-	{
-		if uint64(cap(buf)) >= size {
-			buf = buf[:size]
-		} else {
-			buf = make([]byte, size)
+		nbuf, err := d.Position.Marshal(buf[i+0:])
+		if err != nil {
+			return nil, err
 		}
-	}
-	i := uint64(0)
-
-	{
-		copy(buf[i+0:], d.Source[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
+		i += uint64(len(nbuf))
 	}
 	return buf[:i+0], nil
 }
 
-func (d *HealReceived) Unmarshal(buf []byte) (uint64, error) {
+func (d *Skill) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
+	{
+		copy(d.ID[:], buf[i+0:])
+		i += 16
+	}
 	{
 		copy(d.Source[:], buf[i+0:])
 		i += 16
@@ -434,56 +264,12 @@ func (d *HealReceived) Unmarshal(buf []byte) (uint64, error) {
 		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
-	return i + 0, nil
-}
-
-type HealDone struct {
-	Source [16]byte
-	Target [16]byte
-}
-
-func (d *HealDone) Size() (s uint64) {
-
 	{
-		s += 16
-	}
-	{
-		s += 16
-	}
-	return
-}
-func (d *HealDone) Marshal(buf []byte) ([]byte, error) {
-	size := d.Size()
-	{
-		if uint64(cap(buf)) >= size {
-			buf = buf[:size]
-		} else {
-			buf = make([]byte, size)
+		ni, err := d.Position.Unmarshal(buf[i+0:])
+		if err != nil {
+			return 0, err
 		}
-	}
-	i := uint64(0)
-
-	{
-		copy(buf[i+0:], d.Source[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
-	}
-	return buf[:i+0], nil
-}
-
-func (d *HealDone) Unmarshal(buf []byte) (uint64, error) {
-	i := uint64(0)
-
-	{
-		copy(d.Source[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
+		i += ni
 	}
 	return i + 0, nil
 }
@@ -527,23 +313,18 @@ func (d *SetPC) Unmarshal(buf []byte) (uint64, error) {
 	return i + 1, nil
 }
 
-type SetEntity struct {
-	Source [16]byte
-	Type   uint8
-	X      float64
-	Y      float64
-	Z      float64
+type ConnectPC struct {
+	Target [16]byte
 }
 
-func (d *SetEntity) Size() (s uint64) {
+func (d *ConnectPC) Size() (s uint64) {
 
 	{
 		s += 16
 	}
-	s += 25
 	return
 }
-func (d *SetEntity) Marshal(buf []byte) ([]byte, error) {
+func (d *ConnectPC) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -555,111 +336,20 @@ func (d *SetEntity) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-		copy(buf[i+0:], d.Source[:])
+		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
-	{
-
-		buf[i+0+0] = byte(d.Type >> 0)
-
-	}
-	{
-
-		v := *(*uint64)(unsafe.Pointer(&(d.X)))
-
-		buf[i+0+1] = byte(v >> 0)
-
-		buf[i+1+1] = byte(v >> 8)
-
-		buf[i+2+1] = byte(v >> 16)
-
-		buf[i+3+1] = byte(v >> 24)
-
-		buf[i+4+1] = byte(v >> 32)
-
-		buf[i+5+1] = byte(v >> 40)
-
-		buf[i+6+1] = byte(v >> 48)
-
-		buf[i+7+1] = byte(v >> 56)
-
-	}
-	{
-
-		v := *(*uint64)(unsafe.Pointer(&(d.Y)))
-
-		buf[i+0+9] = byte(v >> 0)
-
-		buf[i+1+9] = byte(v >> 8)
-
-		buf[i+2+9] = byte(v >> 16)
-
-		buf[i+3+9] = byte(v >> 24)
-
-		buf[i+4+9] = byte(v >> 32)
-
-		buf[i+5+9] = byte(v >> 40)
-
-		buf[i+6+9] = byte(v >> 48)
-
-		buf[i+7+9] = byte(v >> 56)
-
-	}
-	{
-
-		v := *(*uint64)(unsafe.Pointer(&(d.Z)))
-
-		buf[i+0+17] = byte(v >> 0)
-
-		buf[i+1+17] = byte(v >> 8)
-
-		buf[i+2+17] = byte(v >> 16)
-
-		buf[i+3+17] = byte(v >> 24)
-
-		buf[i+4+17] = byte(v >> 32)
-
-		buf[i+5+17] = byte(v >> 40)
-
-		buf[i+6+17] = byte(v >> 48)
-
-		buf[i+7+17] = byte(v >> 56)
-
-	}
-	return buf[:i+25], nil
+	return buf[:i+0], nil
 }
 
-func (d *SetEntity) Unmarshal(buf []byte) (uint64, error) {
+func (d *ConnectPC) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.Source[:], buf[i+0:])
+		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
-	{
-
-		d.Type = 0 | (uint8(buf[i+0+0]) << 0)
-
-	}
-	{
-
-		v := 0 | (uint64(buf[i+0+1]) << 0) | (uint64(buf[i+1+1]) << 8) | (uint64(buf[i+2+1]) << 16) | (uint64(buf[i+3+1]) << 24) | (uint64(buf[i+4+1]) << 32) | (uint64(buf[i+5+1]) << 40) | (uint64(buf[i+6+1]) << 48) | (uint64(buf[i+7+1]) << 56)
-		d.X = *(*float64)(unsafe.Pointer(&v))
-
-	}
-	{
-
-		v := 0 | (uint64(buf[i+0+9]) << 0) | (uint64(buf[i+1+9]) << 8) | (uint64(buf[i+2+9]) << 16) | (uint64(buf[i+3+9]) << 24) | (uint64(buf[i+4+9]) << 32) | (uint64(buf[i+5+9]) << 40) | (uint64(buf[i+6+9]) << 48) | (uint64(buf[i+7+9]) << 56)
-		d.Y = *(*float64)(unsafe.Pointer(&v))
-
-	}
-	{
-
-		v := 0 | (uint64(buf[i+0+17]) << 0) | (uint64(buf[i+1+17]) << 8) | (uint64(buf[i+2+17]) << 16) | (uint64(buf[i+3+17]) << 24) | (uint64(buf[i+4+17]) << 32) | (uint64(buf[i+5+17]) << 40) | (uint64(buf[i+6+17]) << 48) | (uint64(buf[i+7+17]) << 56)
-		d.Z = *(*float64)(unsafe.Pointer(&v))
-
-	}
-	return i + 25, nil
+	return i + 0, nil
 }
 
 type Event struct {
@@ -681,29 +371,17 @@ func (d *Event) Size() (s uint64) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case MoveDone:
+		case Move:
 			v = 0 + 1
 
-		case MoveReceived:
+		case Skill:
 			v = 1 + 1
 
-		case AttackReceived:
+		case SetPC:
 			v = 2 + 1
 
-		case AttackDone:
+		case ConnectPC:
 			v = 3 + 1
-
-		case HealReceived:
-			v = 4 + 1
-
-		case HealDone:
-			v = 5 + 1
-
-		case SetPC:
-			v = 6 + 1
-
-		case SetEntity:
-			v = 7 + 1
 
 		}
 
@@ -719,37 +397,13 @@ func (d *Event) Size() (s uint64) {
 		}
 		switch tt := d.Action.(type) {
 
-		case MoveDone:
+		case Move:
 
 			{
 				s += tt.Size()
 			}
 
-		case MoveReceived:
-
-			{
-				s += tt.Size()
-			}
-
-		case AttackReceived:
-
-			{
-				s += tt.Size()
-			}
-
-		case AttackDone:
-
-			{
-				s += tt.Size()
-			}
-
-		case HealReceived:
-
-			{
-				s += tt.Size()
-			}
-
-		case HealDone:
+		case Skill:
 
 			{
 				s += tt.Size()
@@ -761,7 +415,7 @@ func (d *Event) Size() (s uint64) {
 				s += tt.Size()
 			}
 
-		case SetEntity:
+		case ConnectPC:
 
 			{
 				s += tt.Size()
@@ -814,29 +468,17 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 		var v uint64
 		switch d.Action.(type) {
 
-		case MoveDone:
+		case Move:
 			v = 0 + 1
 
-		case MoveReceived:
+		case Skill:
 			v = 1 + 1
 
-		case AttackReceived:
+		case SetPC:
 			v = 2 + 1
 
-		case AttackDone:
+		case ConnectPC:
 			v = 3 + 1
-
-		case HealReceived:
-			v = 4 + 1
-
-		case HealDone:
-			v = 5 + 1
-
-		case SetPC:
-			v = 6 + 1
-
-		case SetEntity:
-			v = 7 + 1
 
 		}
 
@@ -855,7 +497,7 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 		}
 		switch tt := d.Action.(type) {
 
-		case MoveDone:
+		case Move:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -865,47 +507,7 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case MoveReceived:
-
-			{
-				nbuf, err := tt.Marshal(buf[i+8:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
-
-		case AttackReceived:
-
-			{
-				nbuf, err := tt.Marshal(buf[i+8:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
-
-		case AttackDone:
-
-			{
-				nbuf, err := tt.Marshal(buf[i+8:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
-
-		case HealReceived:
-
-			{
-				nbuf, err := tt.Marshal(buf[i+8:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
-
-		case HealDone:
+		case Skill:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -925,7 +527,7 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case SetEntity:
+		case ConnectPC:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -976,7 +578,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 		switch v {
 
 		case 0 + 1:
-			var tt MoveDone
+			var tt Move
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
@@ -989,7 +591,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 1 + 1:
-			var tt MoveReceived
+			var tt Skill
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
@@ -1002,58 +604,6 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 2 + 1:
-			var tt AttackReceived
-
-			{
-				ni, err := tt.Unmarshal(buf[i+8:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-			d.Action = tt
-
-		case 3 + 1:
-			var tt AttackDone
-
-			{
-				ni, err := tt.Unmarshal(buf[i+8:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-			d.Action = tt
-
-		case 4 + 1:
-			var tt HealReceived
-
-			{
-				ni, err := tt.Unmarshal(buf[i+8:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-			d.Action = tt
-
-		case 5 + 1:
-			var tt HealDone
-
-			{
-				ni, err := tt.Unmarshal(buf[i+8:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-			d.Action = tt
-
-		case 6 + 1:
 			var tt SetPC
 
 			{
@@ -1066,8 +616,8 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 
 			d.Action = tt
 
-		case 7 + 1:
-			var tt SetEntity
+		case 3 + 1:
+			var tt ConnectPC
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])

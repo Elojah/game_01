@@ -25,8 +25,9 @@
 - [x] Add NATS mqueue to cancel replay mechanism (in context usage ?)
 - [x] Fix NATS slow consumer, mouais
 - [x] Add `sequencer_test.go`, 100% plz (ok)
-- [ ] Add state/entity service impl + interactions
-- [ ] Handle token permissions/entity actions (linked to above)
+- [x] Add state/entity service impl + interactions
+- [x] Handle token permissions/entity actions (linked to above)
+- [ ] Refacto skill mechanic to be like class definition (json template + tool)
 - [ ] Add server ack sending to client (and client resend)
 - [ ] ack service
 - [ ] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?

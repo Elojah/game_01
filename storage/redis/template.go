@@ -11,25 +11,25 @@ const (
 	templateKey = "template:"
 )
 
-// GetTemplate implemented with redis.
-func (s *Service) GetTemplate(subset game.TemplateSubset) (game.Template, error) {
+// GetEntityTemplate implemented with redis.
+func (s *Service) GetEntityTemplate(subset game.EntityTemplateSubset) (game.EntityTemplate, error) {
 	val, err := s.Get(templateKey + subset.Type).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.Template{}, err
+			return game.EntityTemplate{}, err
 		}
-		return game.Template{}, storage.ErrNotFound
+		return game.EntityTemplate{}, storage.ErrNotFound
 	}
 
 	var entity storage.Entity
 	if _, err := entity.Unmarshal([]byte(val)); err != nil {
-		return game.Template{}, err
+		return game.EntityTemplate{}, err
 	}
-	return game.Template(entity.Domain()), nil
+	return game.EntityTemplate(entity.Domain()), nil
 }
 
-// SetTemplate implemented with redis.
-func (s *Service) SetTemplate(template game.Template) error {
+// SetEntityTemplate implemented with redis.
+func (s *Service) SetEntityTemplate(template game.EntityTemplate) error {
 	raw, err := storage.NewEntity(game.Entity(template)).Marshal(nil)
 	if err != nil {
 		return err

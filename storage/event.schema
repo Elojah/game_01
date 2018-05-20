@@ -1,49 +1,28 @@
-struct MoveDone {
-	Source	[16]byte
-	Target	[16]byte
+struct Vec3 {
 	X		float64
 	Y		float64
 	Z		float64
 }
 
-struct MoveReceived {
+struct Move {
 	Source	[16]byte
 	Target	[16]byte
-	X		float64
-	Y		float64
-	Z		float64
+	Position Vec3
 }
 
-struct AttackReceived {
+struct Skill {
+	ID		[16]byte
 	Source	[16]byte
 	Target	[16]byte
-}
-
-struct AttackDone {
-	Source	[16]byte
-	Target	[16]byte
-}
-
-struct HealReceived {
-	Source	[16]byte
-	Target	[16]byte
-}
-
-struct HealDone {
-	Source	[16]byte
-	Target	[16]byte
+	Position Vec3
 }
 
 struct SetPC {
 	Type uint8
 }
 
-struct SetEntity {
-	Source	[16]byte
-	Type	uint8
-	X		float64
-	Y		float64
-	Z		float64
+struct ConnectPC {
+	Target		[16]byte
 }
 
 struct Event {
@@ -51,13 +30,9 @@ struct Event {
 	Source	[16]byte
 	TS		int64
 	Action union {
-		MoveDone
-		MoveReceived
-		AttackReceived
-		AttackDone
-		HealReceived
-		HealDone
+		Move
+		Skill
 		SetPC
-		SetEntity
+		ConnectPC
 	}
 }

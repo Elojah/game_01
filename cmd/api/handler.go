@@ -76,12 +76,8 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	switch msg.Action.(type) {
 	case dto.Move:
 		go func() { _ = h.move(ctx, msg) }()
-	case dto.Attack:
-		go func() { _ = h.attack(ctx, msg) }()
-	case dto.Heal:
-		go func() { _ = h.heal(ctx, msg) }()
-	case dto.SetEntity:
-		go func() { _ = h.createEntity(ctx, msg) }()
+	case dto.Skill:
+		go func() { _ = h.skill(ctx, msg) }()
 	case dto.ConnectPC:
 		go func() { _ = h.connectPC(ctx, msg) }()
 	case dto.SetPC:

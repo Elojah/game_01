@@ -10,6 +10,7 @@ import (
 
 type app struct {
 	game.EntityService
+	game.EntityTemplateService
 	game.EventService
 	game.PCService
 	game.PCLeftService
@@ -17,7 +18,6 @@ type app struct {
 	game.QEventService
 	game.QListenerService
 	game.SubscriptionService
-	game.TemplateService
 	game.TokenService
 
 	id game.ID
