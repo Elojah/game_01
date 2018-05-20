@@ -8,8 +8,8 @@ func ActionString(a Action) string {
 	switch a.(type) {
 	case Move:
 		return "move"
-	case Skill:
-		return "skill"
+	case Cast:
+		return "cast"
 	case ConnectPC:
 		return "connect_pc"
 	case SetPC:
@@ -17,6 +17,21 @@ func ActionString(a Action) string {
 	default:
 		return "unknown"
 	}
+}
+
+// Move represents a unit move.
+type Move struct {
+	Source   ID
+	Target   ID
+	Position Vec3
+}
+
+// Cast represents a skill launch.
+type Cast struct {
+	SkillID  ID
+	Source   ID
+	Target   ID
+	Position Vec3
 }
 
 // SetPC is a token action to create a new PC entity.

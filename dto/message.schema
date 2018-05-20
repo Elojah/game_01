@@ -10,15 +10,15 @@ struct Move {
 	Position	Vec3
 }
 
-struct Skill {
-	ID			[16]byte
+struct Cast {
+	SkillID		[16]byte
 	Source		[16]byte
 	Target		[16]byte
 	Position	Vec3
 }
 
 struct SetPC {
-	Type		uint8
+	Type		[16]byte
 }
 
 struct ConnectPC {
@@ -31,7 +31,7 @@ struct Message {
 	TS			int64
 	Action union {
 		Move
-		Skill
+		Cast
 		ConnectPC
 		SetPC
 	}

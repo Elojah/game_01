@@ -26,7 +26,7 @@ func TestSequencer(t *testing.T) {
 		game.Event{
 			ID:     game.NewULID(),
 			TS:     now,
-			Action: game.Skill{Source: game.NewULID()},
+			Action: game.Cast{Source: game.NewULID()},
 		},
 		game.Event{
 			ID:     game.NewULID(),

@@ -51,14 +51,16 @@ func run(prog string, filename string) {
 	na.Flush()
 
 	a.EntityService = rdx
+	a.EntityTemplateService = rdx
 	a.EventService = rdx
 	a.PCService = rdx
 	a.PCLeftService = rdx
 	a.PermissionService = rdx
 	a.QEventService = nax
 	a.QListenerService = nax
+	a.SkillService = rdx
+	a.SkillTemplateService = rdx
 	a.SubscriptionService = nax
-	a.EntityTemplateService = rdx
 	a.TokenService = rdx
 
 	go func() { a.Start() }()

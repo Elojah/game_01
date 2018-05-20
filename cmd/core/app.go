@@ -17,6 +17,8 @@ type app struct {
 	game.PermissionService
 	game.QEventService
 	game.QListenerService
+	game.SkillService
+	game.SkillTemplateService
 	game.SubscriptionService
 	game.TokenService
 
@@ -102,8 +104,8 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		if err := a.Move(id, event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case game.Skill:
-		if err := a.Skill(id, event); err != nil {
+	case game.Cast:
+		if err := a.Cast(id, event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.ConnectPC:

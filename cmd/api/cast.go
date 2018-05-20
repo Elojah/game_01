@@ -11,11 +11,11 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) skill(ctx context.Context, msg dto.Message) error {
+func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
-	a := msg.Action.(dto.Skill)
+	a := msg.Action.(dto.Cast)
 	source := game.ID(a.Source)
 	target := game.ID(a.Target)
 
@@ -23,8 +23,8 @@ func (h *handler) skill(ctx context.Context, msg dto.Message) error {
 		ID:     game.NewULID(),
 		Source: game.ID(msg.Token),
 		TS:     time.Unix(0, msg.TS),
-		Action: game.Skill{
-			ID:       game.ID(a.ID),
+		Action: game.Cast{
+			SkillID:  game.ID(a.SkillID),
 			Source:   source,
 			Target:   target,
 			Position: game.Vec3(a.Position),

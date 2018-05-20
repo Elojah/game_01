@@ -193,14 +193,14 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
-type Skill struct {
-	ID       [16]byte
+type Cast struct {
+	SkillID  [16]byte
 	Source   [16]byte
 	Target   [16]byte
 	Position Vec3
 }
 
-func (d *Skill) Size() (s uint64) {
+func (d *Cast) Size() (s uint64) {
 
 	{
 		s += 16
@@ -216,7 +216,7 @@ func (d *Skill) Size() (s uint64) {
 	}
 	return
 }
-func (d *Skill) Marshal(buf []byte) ([]byte, error) {
+func (d *Cast) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -228,7 +228,7 @@ func (d *Skill) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-		copy(buf[i+0:], d.ID[:])
+		copy(buf[i+0:], d.SkillID[:])
 		i += 16
 	}
 	{
@@ -249,11 +249,11 @@ func (d *Skill) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+0], nil
 }
 
-func (d *Skill) Unmarshal(buf []byte) (uint64, error) {
+func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.ID[:], buf[i+0:])
+		copy(d.SkillID[:], buf[i+0:])
 		i += 16
 	}
 	{
@@ -275,12 +275,14 @@ func (d *Skill) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type SetPC struct {
-	Type uint8
+	Type [16]byte
 }
 
 func (d *SetPC) Size() (s uint64) {
 
-	s += 1
+	{
+		s += 16
+	}
 	return
 }
 func (d *SetPC) Marshal(buf []byte) ([]byte, error) {
@@ -295,22 +297,20 @@ func (d *SetPC) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-
-		buf[0+0] = byte(d.Type >> 0)
-
+		copy(buf[i+0:], d.Type[:])
+		i += 16
 	}
-	return buf[:i+1], nil
+	return buf[:i+0], nil
 }
 
 func (d *SetPC) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-
-		d.Type = 0 | (uint8(buf[0+0]) << 0)
-
+		copy(d.Type[:], buf[i+0:])
+		i += 16
 	}
-	return i + 1, nil
+	return i + 0, nil
 }
 
 type ConnectPC struct {
@@ -380,7 +380,7 @@ func (d *Message) Size() (s uint64) {
 		case Move:
 			v = 0 + 1
 
-		case Skill:
+		case Cast:
 			v = 1 + 1
 
 		case ConnectPC:
@@ -409,7 +409,7 @@ func (d *Message) Size() (s uint64) {
 				s += tt.Size()
 			}
 
-		case Skill:
+		case Cast:
 
 			{
 				s += tt.Size()
@@ -486,7 +486,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case Move:
 			v = 0 + 1
 
-		case Skill:
+		case Cast:
 			v = 1 + 1
 
 		case ConnectPC:
@@ -522,7 +522,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case Skill:
+		case Cast:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+9:])
@@ -617,7 +617,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 1 + 1:
-			var tt Skill
+			var tt Cast
 
 			{
 				ni, err := tt.Unmarshal(buf[i+9:])

@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	templateKey = "template:"
+	entityTemplateKey = "e_template:"
 )
 
 // GetEntityTemplate implemented with redis.
 func (s *Service) GetEntityTemplate(subset game.EntityTemplateSubset) (game.EntityTemplate, error) {
-	val, err := s.Get(templateKey + subset.Type).Result()
+	val, err := s.Get(entityTemplateKey + subset.Type.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return game.EntityTemplate{}, err
@@ -34,5 +34,5 @@ func (s *Service) SetEntityTemplate(template game.EntityTemplate) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(templateKey+template.Type.String(), raw, 0).Err()
+	return s.Set(entityTemplateKey+template.Type.String(), raw, 0).Err()
 }

@@ -15,10 +15,10 @@ func NewMove(a game.Move) Move {
 	}
 }
 
-// NewSkill convert a game.Skill into a storage Skill.
-func NewSkill(a game.Skill) Skill {
-	return Skill{
-		ID:       [16]byte(a.ID),
+// NewCast convert a game.Cast into a storage Cast.
+func NewCast(a game.Cast) Cast {
+	return Cast{
+		SkillID:  [16]byte(a.SkillID),
 		Source:   [16]byte(a.Source),
 		Target:   [16]byte(a.Target),
 		Position: Vec3(a.Position),
@@ -28,7 +28,7 @@ func NewSkill(a game.Skill) Skill {
 // NewSetPC convert a game.SetPC into a storage SetPC.
 func NewSetPC(a game.SetPC) SetPC {
 	return SetPC{
-		Type: uint8(a.Type),
+		Type: [16]byte(a.Type),
 	}
 }
 
@@ -48,10 +48,10 @@ func (a Move) Domain() game.Move {
 	}
 }
 
-// Domain converts a storage Skill into a game Skill.
-func (a Skill) Domain() game.Skill {
-	return game.Skill{
-		ID:       game.ID(a.ID),
+// Domain converts a storage Cast into a game Cast.
+func (a Cast) Domain() game.Cast {
+	return game.Cast{
+		SkillID:  game.ID(a.SkillID),
 		Source:   game.ID(a.Source),
 		Target:   game.ID(a.Target),
 		Position: game.Vec3(a.Position),
@@ -82,8 +82,8 @@ func NewEvent(event game.Event) *Event {
 	switch event.Action.(type) {
 	case game.Move:
 		e.Action = NewMove(event.Action.(game.Move))
-	case game.Skill:
-		e.Action = NewSkill(event.Action.(game.Skill))
+	case game.Cast:
+		e.Action = NewCast(event.Action.(game.Cast))
 	case game.SetPC:
 		e.Action = NewSetPC(event.Action.(game.SetPC))
 	case game.ConnectPC:
@@ -102,8 +102,8 @@ func (e Event) Domain() game.Event {
 	switch e.Action.(type) {
 	case Move:
 		event.Action = e.Action.(Move).Domain()
-	case Skill:
-		event.Action = e.Action.(Skill).Domain()
+	case Cast:
+		event.Action = e.Action.(Cast).Domain()
 	case SetPC:
 		event.Action = e.Action.(SetPC).Domain()
 	case ConnectPC:

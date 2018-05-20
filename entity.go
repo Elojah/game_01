@@ -1,45 +1,16 @@
 package game
 
 // EntityType represents the type of an entity.
-type EntityType uint8
-
-const (
-	// Trickster represents a PC with Trickster class.
-	Trickster EntityType = 0
-	// Mesmerist represents a PC with Mesmerist class.
-	Mesmerist EntityType = 1
-	// Inquisitor represents a PC with Inquisitor class.
-	Inquisitor EntityType = 2
-	// Totemist represents a PC with Totemist class.
-	Totemist EntityType = 3
-	// Scavenger represents a PC with Scavenger class.
-	Scavenger EntityType = 4
-)
-
-func (e EntityType) String() string {
-	switch e {
-	case Trickster:
-		return "trickster"
-	case Mesmerist:
-		return "mesmerist"
-	case Inquisitor:
-		return "inquisitor"
-	case Totemist:
-		return "totemist"
-	case Scavenger:
-		return "scavenger"
-	default:
-		return "unknown"
-	}
-}
+type EntityType = ID
 
 // Entity represents a dynamic entity.
 type Entity struct {
 	ID       ID
-	HP       uint8
-	MP       uint8
-	Position Vec3
 	Type     EntityType
+	Name     string
+	HP       uint64
+	MP       uint64
+	Position Vec3
 }
 
 // MoveTo moves entity to position p.

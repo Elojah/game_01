@@ -31,7 +31,7 @@ func (a *app) CreatePC(id game.ID, event game.Event) error {
 	}
 
 	// #Retrieve template for new PC.
-	template, err := a.GetEntityTemplate(game.EntityTemplateSubset{Type: spc.Type.String()})
+	template, err := a.GetEntityTemplate(game.EntityTemplateSubset{Type: spc.Type})
 	if err != nil {
 		return err
 	}

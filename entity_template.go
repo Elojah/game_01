@@ -12,5 +12,5 @@ type EntityTemplateService interface {
 
 // EntityTemplateSubset is a subset to retrieve one template.
 type EntityTemplateSubset struct {
-	Type string
+	Type EntityType
 }

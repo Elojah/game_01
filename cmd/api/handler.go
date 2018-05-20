@@ -76,8 +76,8 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	switch msg.Action.(type) {
 	case dto.Move:
 		go func() { _ = h.move(ctx, msg) }()
-	case dto.Skill:
-		go func() { _ = h.skill(ctx, msg) }()
+	case dto.Cast:
+		go func() { _ = h.cast(ctx, msg) }()
 	case dto.ConnectPC:
 		go func() { _ = h.connectPC(ctx, msg) }()
 	case dto.SetPC:
