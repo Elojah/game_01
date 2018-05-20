@@ -5,12 +5,12 @@ type EntityType = ID
 
 // Entity represents a dynamic entity.
 type Entity struct {
-	ID       ID
-	Type     EntityType
-	Name     string
-	HP       uint64
-	MP       uint64
-	Position Vec3
+	ID       ID         `json:"id"`
+	Type     EntityType `json:"type"`
+	Name     string     `json:"name"`
+	HP       uint64     `json:"hp"`
+	MP       uint64     `json:"mp"`
+	Position Vec3       `json:"position"`
 }
 
 // MoveTo moves entity to position p.

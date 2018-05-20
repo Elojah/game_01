@@ -5,14 +5,14 @@ type SkillType = ID
 
 // Skill represents a skill.
 type Skill struct {
-	ID            ID
-	Type          SkillType
-	Name          string
-	MPConsumption uint64
-	DirectDamage  uint64
-	DirectHeal    uint64
-	CD            uint32
-	CurrentCD     uint32
+	ID            ID        `json:"id"`
+	Type          SkillType `json:"type"`
+	Name          string    `json:"name"`
+	MPConsumption uint64    `json:"mp_consumption"`
+	DirectDamage  uint64    `json:"direct_damage"`
+	DirectHeal    uint64    `json:"direct_heal"`
+	CD            uint32    `json:"cd"`
+	CurrentCD     uint32    `json:"current_cd"`
 }
 
 // SkillService is the communication interface for skills.
