@@ -10,6 +10,7 @@ import (
 
 func main() {
 	var t template
+	var s skill
 
 	var root = &cobra.Command{
 		Use:   "game_tool [add-template] [show-template]",
@@ -59,6 +60,28 @@ func main() {
 	showTemplateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
 	showTemplateCmd.MarkFlagRequired("config")
 
+	var skillsCmd = &cobra.Command{
+		Use:   "add-skills --config=bin/config_core.json --skills=skills.json",
+		Short: "add new skills linked to an entity",
+		Long: `add-skills creates new skills from JSON files. e.g:
+			skills:
+			[{
+				"entity_id"      : "01CDSTJRVK0HMG6TREBJR7FG1N",
+				"type"           : "01CDSTJRVK0HMG6TREBJR7FG1N",
+				"name"           : "fireball",
+				"mp_consumption" : 30,
+				"direct_damage"  : 12,
+				"direct_heal"    : 0,
+				"cd"             : 4,
+				"current_cd"     : 0
+			}]
+		`,
+		Run: s.AddSkills,
+	}
+	addTemplateCmd.Flags().StringVar(&s.config, "config", "", "config file for DB connections")
+	addTemplateCmd.MarkFlagRequired("config")
+	addTemplateCmd.Flags().StringVar(&s.skills, "skills", "", "file where skills are represented in JSON")
+
 	var idCmd = &cobra.Command{
 		Use:   "id [no options!]",
 		Short: "returns a valid ULID",
@@ -68,6 +91,7 @@ func main() {
 
 	root.AddCommand(addTemplateCmd)
 	root.AddCommand(showTemplateCmd)
+	root.AddCommand(skillsCmd)
 	root.AddCommand(idCmd)
 	root.Execute()
 }
