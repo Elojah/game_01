@@ -10,10 +10,10 @@ func ActionString(a Action) string {
 		return "move"
 	case Skill:
 		return "skill"
-	case SetPC:
-		return "set_pc"
 	case ConnectPC:
 		return "connect_pc"
+	case SetPC:
+		return "set_pc"
 	default:
 		return "unknown"
 	}

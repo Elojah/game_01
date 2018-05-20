@@ -32,7 +32,7 @@ struct Event {
 	Action union {
 		Move
 		Skill
-		SetPC
 		ConnectPC
+		SetPC
 	}
 }

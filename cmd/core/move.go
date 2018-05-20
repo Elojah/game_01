@@ -5,13 +5,28 @@ import (
 	"github.com/elojah/game_01/storage"
 )
 
-func (a *app) MoveDone(event game.Event) error {
+func (a *app) Move(id game.ID, event game.Event) error {
+
+	move := event.Action.(game.Move)
+
+	if id.Compare(move.Source) == 0 {
+		return a.MoveSource(event)
+	}
+	if id.Compare(move.Target) == 0 {
+		return a.MoveTarget(event)
+	}
 	return nil
 }
 
-func (a *app) MoveReceived(event game.Event) error {
+func (a *app) MoveSource(event game.Event) error {
+	// TODO check if source is not stun/slience/unable to move units.
+	// in this case cancel (what mechanism ?) the move on both source + target.
+	return nil
+}
 
-	move := event.Action.(game.MoveReceived)
+func (a *app) MoveTarget(event game.Event) error {
+
+	move := event.Action.(game.Move)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(game.PermissionSubset{
