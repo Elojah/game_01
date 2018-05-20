@@ -28,6 +28,8 @@
 - [x] Add state/entity service impl + interactions
 - [x] Handle token permissions/entity actions (linked to above)
 - [x] Refacto skill mechanic to be like class definition (json template + tool)
+- [ ] Add core app handler skill
+- [ ] Add sequencer cancelling mechanism
 - [ ] Add server ack sending to client (and client resend)
 - [ ] ack service
 - [ ] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?
