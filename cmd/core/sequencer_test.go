@@ -26,22 +26,22 @@ func TestSequencer(t *testing.T) {
 		game.Event{
 			ID:     game.NewULID(),
 			TS:     now,
-			Action: game.AttackReceived{Source: game.NewULID()},
+			Action: game.Cast{Source: game.NewULID()},
 		},
 		game.Event{
 			ID:     game.NewULID(),
 			TS:     now.Add(-1 * time.Second),
-			Action: game.HealReceived{Source: game.NewULID()},
+			Action: game.Move{Source: game.NewULID()},
 		},
 		game.Event{
 			ID:     game.NewULID(),
 			TS:     now.Add(-2 * time.Second),
-			Action: game.HealReceived{Source: game.NewULID()},
+			Action: game.Move{Source: game.NewULID()},
 		},
 		game.Event{
 			ID:     game.NewULID(),
 			TS:     now.Add(-3 * time.Second),
-			Action: game.HealReceived{Source: game.NewULID()},
+			Action: game.Move{Source: game.NewULID()},
 		},
 	}
 

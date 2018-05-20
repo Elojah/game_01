@@ -10,14 +10,16 @@ import (
 
 type app struct {
 	game.EntityService
+	game.EntityTemplateService
 	game.EventService
 	game.PCService
 	game.PCLeftService
 	game.PermissionService
 	game.QEventService
 	game.QListenerService
+	game.SkillService
+	game.SkillTemplateService
 	game.SubscriptionService
-	game.TemplateService
 	game.TokenService
 
 	id game.ID
@@ -98,40 +100,20 @@ func (a *app) Apply(id game.ID, event game.Event) {
 
 	logger.Info().Str("type", game.ActionString(event.Action)).Msg("apply action")
 	switch event.Action.(type) {
-	case game.MoveDone:
-		if err := a.MoveDone(event); err != nil {
+	case game.Move:
+		if err := a.Move(id, event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case game.MoveReceived:
-		if err := a.MoveReceived(event); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-	case game.AttackReceived:
-		if err := a.AttackReceived(event); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-	case game.AttackDone:
-		if err := a.AttackDone(event); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-	case game.HealReceived:
-		if err := a.HealReceived(event); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-	case game.HealDone:
-		if err := a.HealDone(event); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-	case game.SetEntity:
-		if err := a.CreateEntity(event); err != nil {
+	case game.Cast:
+		if err := a.Cast(id, event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.ConnectPC:
-		if err := a.ConnectPC(event); err != nil {
+		if err := a.ConnectPC(id, event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	case game.SetPC:
-		if err := a.CreatePC(event); err != nil {
+		if err := a.CreatePC(id, event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	default:

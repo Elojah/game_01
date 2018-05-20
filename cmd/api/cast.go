@@ -11,18 +11,20 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) move(ctx context.Context, msg dto.Message) error {
+func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
-	a := msg.Action.(dto.Move)
+	a := msg.Action.(dto.Cast)
 	source := game.ID(a.Source)
 	target := game.ID(a.Target)
+
 	event := game.Event{
 		ID:     game.NewULID(),
 		Source: game.ID(msg.Token),
 		TS:     time.Unix(0, msg.TS),
-		Action: game.Move{
+		Action: game.Cast{
+			SkillID:  game.ID(a.SkillID),
 			Source:   source,
 			Target:   target,
 			Position: game.Vec3(a.Position),
@@ -34,12 +36,10 @@ func (h *handler) move(ctx context.Context, msg dto.Message) error {
 			logger.Error().Err(err).Str("event", event.ID.String()).Msg("event rejected")
 		}
 	}()
-
 	go func() {
 		if err := h.SendEvent(event, target); err != nil {
 			logger.Error().Err(err).Str("event", event.ID.String()).Msg("event rejected")
 		}
 	}()
-
 	return nil
 }

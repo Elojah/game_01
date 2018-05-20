@@ -193,126 +193,30 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
-type Attack struct {
-	Source [16]byte
-	Target [16]byte
-}
-
-func (d *Attack) Size() (s uint64) {
-
-	{
-		s += 16
-	}
-	{
-		s += 16
-	}
-	return
-}
-func (d *Attack) Marshal(buf []byte) ([]byte, error) {
-	size := d.Size()
-	{
-		if uint64(cap(buf)) >= size {
-			buf = buf[:size]
-		} else {
-			buf = make([]byte, size)
-		}
-	}
-	i := uint64(0)
-
-	{
-		copy(buf[i+0:], d.Source[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
-	}
-	return buf[:i+0], nil
-}
-
-func (d *Attack) Unmarshal(buf []byte) (uint64, error) {
-	i := uint64(0)
-
-	{
-		copy(d.Source[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
-	}
-	return i + 0, nil
-}
-
-type Heal struct {
-	Source [16]byte
-	Target [16]byte
-}
-
-func (d *Heal) Size() (s uint64) {
-
-	{
-		s += 16
-	}
-	{
-		s += 16
-	}
-	return
-}
-func (d *Heal) Marshal(buf []byte) ([]byte, error) {
-	size := d.Size()
-	{
-		if uint64(cap(buf)) >= size {
-			buf = buf[:size]
-		} else {
-			buf = make([]byte, size)
-		}
-	}
-	i := uint64(0)
-
-	{
-		copy(buf[i+0:], d.Source[:])
-		i += 16
-	}
-	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
-	}
-	return buf[:i+0], nil
-}
-
-func (d *Heal) Unmarshal(buf []byte) (uint64, error) {
-	i := uint64(0)
-
-	{
-		copy(d.Source[:], buf[i+0:])
-		i += 16
-	}
-	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
-	}
-	return i + 0, nil
-}
-
-type SetEntity struct {
+type Cast struct {
+	SkillID  [16]byte
 	Source   [16]byte
-	Type     uint8
+	Target   [16]byte
 	Position Vec3
 }
 
-func (d *SetEntity) Size() (s uint64) {
+func (d *Cast) Size() (s uint64) {
 
+	{
+		s += 16
+	}
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
 	{
 		s += d.Position.Size()
 	}
-	s += 1
 	return
 }
-func (d *SetEntity) Marshal(buf []byte) ([]byte, error) {
+func (d *Cast) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -324,53 +228,61 @@ func (d *SetEntity) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
+		copy(buf[i+0:], d.SkillID[:])
+		i += 16
+	}
+	{
 		copy(buf[i+0:], d.Source[:])
 		i += 16
 	}
 	{
-
-		buf[i+0+0] = byte(d.Type >> 0)
-
+		copy(buf[i+0:], d.Target[:])
+		i += 16
 	}
 	{
-		nbuf, err := d.Position.Marshal(buf[i+1:])
+		nbuf, err := d.Position.Marshal(buf[i+0:])
 		if err != nil {
 			return nil, err
 		}
 		i += uint64(len(nbuf))
 	}
-	return buf[:i+1], nil
+	return buf[:i+0], nil
 }
 
-func (d *SetEntity) Unmarshal(buf []byte) (uint64, error) {
+func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
+	{
+		copy(d.SkillID[:], buf[i+0:])
+		i += 16
+	}
 	{
 		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
-
-		d.Type = 0 | (uint8(buf[i+0+0]) << 0)
-
+		copy(d.Target[:], buf[i+0:])
+		i += 16
 	}
 	{
-		ni, err := d.Position.Unmarshal(buf[i+1:])
+		ni, err := d.Position.Unmarshal(buf[i+0:])
 		if err != nil {
 			return 0, err
 		}
 		i += ni
 	}
-	return i + 1, nil
+	return i + 0, nil
 }
 
 type SetPC struct {
-	Type uint8
+	Type [16]byte
 }
 
 func (d *SetPC) Size() (s uint64) {
 
-	s += 1
+	{
+		s += 16
+	}
 	return
 }
 func (d *SetPC) Marshal(buf []byte) ([]byte, error) {
@@ -385,22 +297,20 @@ func (d *SetPC) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-
-		buf[0+0] = byte(d.Type >> 0)
-
+		copy(buf[i+0:], d.Type[:])
+		i += 16
 	}
-	return buf[:i+1], nil
+	return buf[:i+0], nil
 }
 
 func (d *SetPC) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-
-		d.Type = 0 | (uint8(buf[0+0]) << 0)
-
+		copy(d.Type[:], buf[i+0:])
+		i += 16
 	}
-	return i + 1, nil
+	return i + 0, nil
 }
 
 type ConnectPC struct {
@@ -470,20 +380,14 @@ func (d *Message) Size() (s uint64) {
 		case Move:
 			v = 0 + 1
 
-		case Attack:
+		case Cast:
 			v = 1 + 1
 
-		case Heal:
+		case ConnectPC:
 			v = 2 + 1
 
-		case SetEntity:
-			v = 3 + 1
-
-		case ConnectPC:
-			v = 4 + 1
-
 		case SetPC:
-			v = 5 + 1
+			v = 3 + 1
 
 		}
 
@@ -505,19 +409,7 @@ func (d *Message) Size() (s uint64) {
 				s += tt.Size()
 			}
 
-		case Attack:
-
-			{
-				s += tt.Size()
-			}
-
-		case Heal:
-
-			{
-				s += tt.Size()
-			}
-
-		case SetEntity:
+		case Cast:
 
 			{
 				s += tt.Size()
@@ -594,20 +486,14 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case Move:
 			v = 0 + 1
 
-		case Attack:
+		case Cast:
 			v = 1 + 1
 
-		case Heal:
+		case ConnectPC:
 			v = 2 + 1
 
-		case SetEntity:
-			v = 3 + 1
-
-		case ConnectPC:
-			v = 4 + 1
-
 		case SetPC:
-			v = 5 + 1
+			v = 3 + 1
 
 		}
 
@@ -636,27 +522,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 				i += uint64(len(nbuf))
 			}
 
-		case Attack:
-
-			{
-				nbuf, err := tt.Marshal(buf[i+9:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
-
-		case Heal:
-
-			{
-				nbuf, err := tt.Marshal(buf[i+9:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
-
-		case SetEntity:
+		case Cast:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+9:])
@@ -751,7 +617,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 1 + 1:
-			var tt Attack
+			var tt Cast
 
 			{
 				ni, err := tt.Unmarshal(buf[i+9:])
@@ -764,32 +630,6 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 2 + 1:
-			var tt Heal
-
-			{
-				ni, err := tt.Unmarshal(buf[i+9:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-			d.Action = tt
-
-		case 3 + 1:
-			var tt SetEntity
-
-			{
-				ni, err := tt.Unmarshal(buf[i+9:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-
-			d.Action = tt
-
-		case 4 + 1:
 			var tt ConnectPC
 
 			{
@@ -802,7 +642,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 
 			d.Action = tt
 
-		case 5 + 1:
+		case 3 + 1:
 			var tt SetPC
 
 			{

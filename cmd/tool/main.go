@@ -1,102 +1,73 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"os"
+	"fmt"
 
-	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 
 	"github.com/elojah/game_01"
-	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/redis"
-	"github.com/elojah/services"
 )
-
-type template struct {
-	game.TemplateService
-
-	config    string
-	templates string
-}
-
-// run template tool.
-func (t *template) run(cmd *cobra.Command, args []string) {
-
-	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout})
-
-	launchers := services.Launchers{}
-
-	// redis
-	rd := redis.Service{}
-	rdl := rd.NewLauncher(redis.Namespaces{
-		Redis: "redis",
-	}, "redis")
-	launchers = append(launchers, rdl)
-	rdx := redisx.NewService(&rd)
-
-	t.TemplateService = rdx
-
-	if err := launchers.Up(t.config); err != nil {
-		logger.Error().Err(err).Str("filename", t.config).Msg("failed to start")
-		return
-	}
-
-	raw, err := ioutil.ReadFile(t.templates)
-	if err != nil {
-		logger.Error().Err(err).Str("templates", t.templates).Msg("failed to read templates file")
-		return
-	}
-	var templates []game.Template
-	if err := json.Unmarshal(raw, &templates); err != nil {
-		logger.Error().Err(err).Str("templates", t.templates).Msg("invalid JSON")
-		return
-	}
-
-	logger.Info().Int("templates", len(templates)).Msg("found")
-
-	for _, tpl := range templates {
-		if err := t.SetTemplate(tpl); err != nil {
-			logger.Error().Err(err).Str("template", tpl.ID.String()).Msg("failed to set template")
-			return
-		}
-	}
-
-	logger.Info().Msg("done")
-}
 
 func main() {
 	var t template
 
 	var root = &cobra.Command{
-		Use:   "game_tool [template]",
+		Use:   "game_tool [add-template] [show-template]",
 		Short: "game_tool for data processing",
 		Long:  "game_tool provides multiple commands/utils/helpers for data processing and ops requirement.",
+		Args:  cobra.MinimumNArgs(1),
 		Run:   func(cmd *cobra.Command, args []string) {},
 	}
 
-	var templateCmd = &cobra.Command{
-		Use:   "template [no options!]",
-		Short: "add new entity templates",
-		Long: `template creates new templates entities from a JSON file. e.g:
-			[
-			{
-				ID       : "01CDSTJRVK0HMG6TREBJR7FG1N",
-				HP       : 142,
-				MP       : 142,
-				Position : {},
-				Type     : 2
-			}
-			]
-		`,
-		Run: t.run,
-	}
-	templateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
-	templateCmd.MarkFlagRequired("config")
-	templateCmd.Flags().StringVar(&t.templates, "templates", "", "templates where templates are represented in JSON")
-	templateCmd.MarkFlagRequired("templates")
+	var addTemplateCmd = &cobra.Command{
+		Use:   "add-template --config=bin/config_core.json --skills=skills.json --entities=entities.json",
+		Short: "add new entity/skill templates",
+		Long: `add-template creates new templates from JSON files. e.g:
+			entities:
+			[{
+				"hp"       : 142,
+				"mp"       : 142,
+				"type"     : "01CDSTJRVK0HMG6TREBJR7FG1N",
+				"name"     : "scavenger"
+			}]
 
-	root.AddCommand(templateCmd)
+			skills:
+			[{
+				"type"          : "01CDSTJRVK0HMG6TREBJR7FG1N",
+				"name"          : "fireball",
+				"mp_consumption" : 30,
+				"direct_damage"  : 12,
+				"direct_heal"    : 0,
+				"cd"            : 4,
+				"current_cd"     : 0
+			}]
+		`,
+		Run: t.AddTemplates,
+	}
+	addTemplateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
+	addTemplateCmd.MarkFlagRequired("config")
+	addTemplateCmd.Flags().StringVar(&t.entities, "entities", "", "file where entities are represented in JSON")
+	addTemplateCmd.Flags().StringVar(&t.skills, "skills", "", "file where skills are represented in JSON")
+
+	var showTemplateCmd = &cobra.Command{
+		Use:   "show-template --config=bin/config_core.json [skills] [entities]",
+		Short: "show entity/skill templates",
+		Long:  `show-template list all templates defined in redis namespaces`,
+		Args:  cobra.MinimumNArgs(1),
+		Run:   t.ShowTemplates,
+	}
+	showTemplateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
+	showTemplateCmd.MarkFlagRequired("config")
+
+	var idCmd = &cobra.Command{
+		Use:   "id [no options!]",
+		Short: "returns a valid ULID",
+		Long:  `id returns a the string representation of a valid ULID set at current timestamp.`,
+		Run:   func(cmd *cobra.Command, args []string) { fmt.Println(game.NewULID().String()) },
+	}
+
+	root.AddCommand(addTemplateCmd)
+	root.AddCommand(showTemplateCmd)
+	root.AddCommand(idCmd)
 	root.Execute()
 }

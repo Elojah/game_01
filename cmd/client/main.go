@@ -34,7 +34,7 @@ func send(cfg Config) {
 				dto.Message{
 					Token: id,
 					Action: dto.SetPC{
-						Type: 2,
+						Type: id,
 					},
 					ACK: &ack,
 					TS:  time.Now().UnixNano(),

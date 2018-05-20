@@ -6,7 +6,7 @@ import (
 	"github.com/elojah/game_01"
 )
 
-func (a *app) CreatePC(event game.Event) error {
+func (a *app) CreatePC(id game.ID, event game.Event) error {
 
 	spc := event.Action.(game.SetPC)
 
@@ -31,7 +31,7 @@ func (a *app) CreatePC(event game.Event) error {
 	}
 
 	// #Retrieve template for new PC.
-	template, err := a.GetTemplate(game.TemplateSubset{Type: spc.Type.String()})
+	template, err := a.GetEntityTemplate(game.EntityTemplateSubset{Type: spc.Type})
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (a *app) CreatePC(event game.Event) error {
 }
 
 // ConnectPC creates an entity from a PC.
-func (a *app) ConnectPC(event game.Event) error {
+func (a *app) ConnectPC(id game.ID, event game.Event) error {
 
 	cpc := event.Action.(game.ConnectPC)
 
