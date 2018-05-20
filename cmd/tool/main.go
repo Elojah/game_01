@@ -12,17 +12,17 @@ func main() {
 	var t template
 
 	var root = &cobra.Command{
-		Use:   "game_tool [template]",
+		Use:   "game_tool [add-template] [show-template]",
 		Short: "game_tool for data processing",
 		Long:  "game_tool provides multiple commands/utils/helpers for data processing and ops requirement.",
 		Args:  cobra.MinimumNArgs(1),
 		Run:   func(cmd *cobra.Command, args []string) {},
 	}
 
-	var templateCmd = &cobra.Command{
-		Use:   "template --skills=skills.json --entities=entities.json",
+	var addTemplateCmd = &cobra.Command{
+		Use:   "add-template --config=bin/config_core.json --skills=skills.json --entities=entities.json",
 		Short: "add new entity/skill templates",
-		Long: `template creates new templates from JSON files. e.g:
+		Long: `add-template creates new templates from JSON files. e.g:
 			entities:
 			[{
 				"hp"       : 142,
@@ -42,12 +42,22 @@ func main() {
 				"current_cd"     : 0
 			}]
 		`,
-		Run: t.run,
+		Run: t.AddTemplates,
 	}
-	templateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
-	templateCmd.MarkFlagRequired("config")
-	templateCmd.Flags().StringVar(&t.entities, "entities", "", "file where entities are represented in JSON")
-	templateCmd.Flags().StringVar(&t.skills, "skills", "", "file where skills are represented in JSON")
+	addTemplateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
+	addTemplateCmd.MarkFlagRequired("config")
+	addTemplateCmd.Flags().StringVar(&t.entities, "entities", "", "file where entities are represented in JSON")
+	addTemplateCmd.Flags().StringVar(&t.skills, "skills", "", "file where skills are represented in JSON")
+
+	var showTemplateCmd = &cobra.Command{
+		Use:   "show-template --config=bin/config_core.json [skills] [entities]",
+		Short: "show entity/skill templates",
+		Long:  `show-template list all templates defined in redis namespaces`,
+		Args:  cobra.MinimumNArgs(1),
+		Run:   t.ShowTemplates,
+	}
+	showTemplateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
+	showTemplateCmd.MarkFlagRequired("config")
 
 	var idCmd = &cobra.Command{
 		Use:   "id [no options!]",
@@ -56,7 +66,8 @@ func main() {
 		Run:   func(cmd *cobra.Command, args []string) { fmt.Println(game.NewULID().String()) },
 	}
 
-	root.AddCommand(templateCmd)
+	root.AddCommand(addTemplateCmd)
+	root.AddCommand(showTemplateCmd)
 	root.AddCommand(idCmd)
 	root.Execute()
 }

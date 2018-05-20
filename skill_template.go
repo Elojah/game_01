@@ -8,6 +8,7 @@ type SkillTemplate Skill
 type SkillTemplateService interface {
 	SetSkillTemplate(SkillTemplate) error
 	GetSkillTemplate(SkillTemplateSubset) (SkillTemplate, error)
+	ListSkillTemplate() ([]SkillTemplate, error)
 }
 
 // SkillTemplateSubset is a subset to retrieve one template.

@@ -8,6 +8,7 @@ type EntityTemplate Entity
 type EntityTemplateService interface {
 	SetEntityTemplate(EntityTemplate) error
 	GetEntityTemplate(EntityTemplateSubset) (EntityTemplate, error)
+	ListEntityTemplate() ([]EntityTemplate, error)
 }
 
 // EntityTemplateSubset is a subset to retrieve one template.

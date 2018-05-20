@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -26,7 +27,7 @@ type template struct {
 }
 
 // run template tool.
-func (t *template) run(cmd *cobra.Command, args []string) {
+func (t *template) init() error {
 
 	t.logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout})
 
@@ -45,6 +46,61 @@ func (t *template) run(cmd *cobra.Command, args []string) {
 
 	if err := launchers.Up(t.config); err != nil {
 		t.logger.Error().Err(err).Str("filename", t.config).Msg("failed to start")
+		return err
+	}
+	return nil
+}
+
+func (t *template) ShowTemplates(cmd *cobra.Command, args []string) {
+
+	if err := t.init(); err != nil {
+		return
+	}
+
+	for _, arg := range args {
+
+		if arg == "skills" {
+			skills, err := t.ListSkillTemplate()
+			if err != nil {
+				t.logger.Error().Err(err).Msg("failed to retrieve skills")
+				return
+			}
+			t.logger.Info().Int("skills", len(skills)).Msg("found")
+			for _, skill := range skills {
+				raw, err := json.Marshal(skill)
+				if err != nil {
+					t.logger.Error().Err(err).Msg("failed to retrieve skills")
+					return
+				}
+				fmt.Println(string(raw))
+			}
+		}
+
+		if arg == "entities" {
+			entities, err := t.ListEntityTemplate()
+			if err != nil {
+				t.logger.Error().Err(err).Msg("failed to retrieve entities")
+				return
+			}
+			t.logger.Info().Int("entities", len(entities)).Msg("found")
+			for _, entity := range entities {
+				raw, err := json.Marshal(entity)
+				if err != nil {
+					t.logger.Error().Err(err).Msg("failed to retrieve entities")
+					return
+				}
+				fmt.Println(string(raw))
+			}
+		}
+
+	}
+
+	t.logger.Info().Msg("done")
+}
+
+func (t *template) AddTemplates(cmd *cobra.Command, args []string) {
+
+	if err := t.init(); err != nil {
 		return
 	}
 

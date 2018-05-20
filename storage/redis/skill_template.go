@@ -36,3 +36,26 @@ func (s *Service) SetSkillTemplate(template game.SkillTemplate) error {
 	}
 	return s.Set(skillTemplateKey+template.Type.String(), raw, 0).Err()
 }
+
+// ListSkillTemplate implemented with redis.
+func (s *Service) ListSkillTemplate() ([]game.SkillTemplate, error) {
+	keys, err := s.Keys(skillTemplateKey + "*").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	entities := make([]game.SkillTemplate, len(keys))
+	for i, key := range keys {
+		val, err := s.Get(key).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		var entity storage.Skill
+		if _, err := entity.Unmarshal([]byte(val)); err != nil {
+			return nil, err
+		}
+		entities[i] = game.SkillTemplate(entity.Domain())
+	}
+	return entities, nil
+}

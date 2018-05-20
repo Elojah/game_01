@@ -36,3 +36,26 @@ func (s *Service) SetEntityTemplate(template game.EntityTemplate) error {
 	}
 	return s.Set(entityTemplateKey+template.Type.String(), raw, 0).Err()
 }
+
+// ListEntityTemplate implemented with redis.
+func (s *Service) ListEntityTemplate() ([]game.EntityTemplate, error) {
+	keys, err := s.Keys(entityTemplateKey + "*").Result()
+	if err != nil {
+		return nil, err
+	}
+
+	entities := make([]game.EntityTemplate, len(keys))
+	for i, key := range keys {
+		val, err := s.Get(key).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		var entity storage.Entity
+		if _, err := entity.Unmarshal([]byte(val)); err != nil {
+			return nil, err
+		}
+		entities[i] = game.EntityTemplate(entity.Domain())
+	}
+	return entities, nil
+}

@@ -18,10 +18,7 @@ const (
 func (s *Service) ListPC(subset game.PCSubset) ([]game.PC, error) {
 	keys, err := s.Keys(pcKey + subset.AccountID.String() + "*").Result()
 	if err != nil {
-		if err != redis.Nil {
-			return nil, err
-		}
-		return nil, storage.ErrNotFound
+		return nil, err
 	}
 
 	pcs := make([]game.PC, len(keys))
