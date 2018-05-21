@@ -27,3 +27,12 @@ type SkillSubset struct {
 	ID       ID
 	EntityID ID
 }
+
+type SkillShock struct {
+	DamageDone float64
+	HealDone   float64
+}
+
+func (s Skill) Apply(target Entity) error {
+
+}

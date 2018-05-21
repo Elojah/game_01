@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-// Event is an entity action.
+// Event is a game event triggered by an entity or mechanic.
 type Event struct {
 	ID     ID
 	TS     time.Time

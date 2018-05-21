@@ -19,8 +19,10 @@ func (a *app) Move(id game.ID, event game.Event) error {
 }
 
 func (a *app) MoveSource(event game.Event) error {
-	// TODO check if source is not stun/slience/unable to move units.
+	// TODO
+	// check if source is not stun/slience/unable to move units.
 	// in this case cancel (what mechanism ?) the move on both source + target.
+	// And if there is some bonus for moving one, add it here.
 	return nil
 }
 
