@@ -4,8 +4,8 @@ package game
 // It represents semi static data. When creating skills, those templates are used.
 type SkillTemplate Skill
 
-// SkillTemplateService is an interface for SkillTemplate object.
-type SkillTemplateService interface {
+// SkillTemplateMapper is an interface for SkillTemplate object.
+type SkillTemplateMapper interface {
 	SetSkillTemplate(SkillTemplate) error
 	GetSkillTemplate(SkillTemplateSubset) (SkillTemplate, error)
 	ListSkillTemplate() ([]SkillTemplate, error)

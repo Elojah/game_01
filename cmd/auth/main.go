@@ -43,11 +43,11 @@ func run(prog string, filename string) {
 	}, "auth")
 	launchers = append(launchers, hl)
 
-	h.AccountService = rdx
-	h.PCLeftService = rdx
-	h.QEventService = nax
-	h.QListenerService = nax
-	h.TokenService = rdx
+	h.AccountMapper = rdx
+	h.PCLeftMapper = rdx
+	h.QEventMapper = nax
+	h.QListenerMapper = nax
+	h.TokenMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

@@ -12,13 +12,13 @@ type Event struct {
 	Action Action
 }
 
-// QEventService must be implemented by a queue.
-type QEventService interface {
+// QEventMapper must be implemented by a queue.
+type QEventMapper interface {
 	SendEvent(Event, ID) error
 }
 
-// EventService wraps action interactions.
-type EventService interface {
+// EventMapper wraps action interactions.
+type EventMapper interface {
 	SetEvent(Event, ID) error
 	ListEvent(EventSubset) ([]Event, error)
 }

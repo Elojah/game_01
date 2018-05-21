@@ -18,8 +18,8 @@ func (e *Entity) MoveTo(p Vec3) {
 	e.Position = p
 }
 
-// EntityService is an interface for Entity object.
-type EntityService interface {
+// EntityMapper is an interface for Entity object.
+type EntityMapper interface {
 	SetEntity(Entity, int64) error
 	GetEntity(EntitySubset) (Entity, error)
 }

@@ -16,8 +16,8 @@ import (
 )
 
 type template struct {
-	game.EntityTemplateService
-	game.SkillTemplateService
+	game.EntityTemplateMapper
+	game.SkillTemplateMapper
 
 	config   string
 	entities string
@@ -41,8 +41,8 @@ func (t *template) init() error {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
-	t.EntityTemplateService = rdx
-	t.SkillTemplateService = rdx
+	t.EntityTemplateMapper = rdx
+	t.SkillTemplateMapper = rdx
 
 	if err := launchers.Up(t.config); err != nil {
 		t.logger.Error().Err(err).Str("filename", t.config).Msg("failed to start")

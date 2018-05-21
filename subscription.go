@@ -10,7 +10,7 @@ type MsgHandler = nats.MsgHandler
 // Subscription alias a nats subscription.
 type Subscription = nats.Subscription
 
-// SubscriptionService creates a new subscription.
-type SubscriptionService interface {
+// SubscriptionMapper creates a new subscription.
+type SubscriptionMapper interface {
 	SetSubscription(subject string, consumer MsgHandler) (*Subscription, error)
 }

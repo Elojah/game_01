@@ -15,8 +15,8 @@ type Skill struct {
 	CurrentCD     uint32    `json:"current_cd"`
 }
 
-// SkillService is the communication interface for skills.
-type SkillService interface {
+// SkillMapper is the communication interface for skills.
+type SkillMapper interface {
 	SetSkill(Skill, ID) error
 	GetSkill(SkillSubset) (Skill, error)
 	ListSkill(SkillSubset) ([]Skill, error)

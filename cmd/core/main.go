@@ -50,18 +50,18 @@ func run(prog string, filename string) {
 
 	na.Flush()
 
-	a.EntityService = rdx
-	a.EntityTemplateService = rdx
-	a.EventService = rdx
-	a.PCService = rdx
-	a.PCLeftService = rdx
-	a.PermissionService = rdx
-	a.QEventService = nax
-	a.QListenerService = nax
-	a.SkillService = rdx
-	a.SkillTemplateService = rdx
-	a.SubscriptionService = nax
-	a.TokenService = rdx
+	a.EntityMapper = rdx
+	a.EntityTemplateMapper = rdx
+	a.EventMapper = rdx
+	a.PCMapper = rdx
+	a.PCLeftMapper = rdx
+	a.PermissionMapper = rdx
+	a.QEventMapper = nax
+	a.QListenerMapper = nax
+	a.SkillMapper = rdx
+	a.SkillTemplateMapper = rdx
+	a.SubscriptionMapper = nax
+	a.TokenMapper = rdx
 
 	go func() { a.Start() }()
 	log.Info().Msg("core up")

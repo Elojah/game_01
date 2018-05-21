@@ -4,8 +4,8 @@ package game
 // It represents semi static data. When creating PC/Entities, those templates are used.
 type EntityTemplate Entity
 
-// EntityTemplateService is an interface for EntityTemplate object.
-type EntityTemplateService interface {
+// EntityTemplateMapper is an interface for EntityTemplate object.
+type EntityTemplateMapper interface {
 	SetEntityTemplate(EntityTemplate) error
 	GetEntityTemplate(EntityTemplateSubset) (EntityTemplate, error)
 	ListEntityTemplate() ([]EntityTemplate, error)

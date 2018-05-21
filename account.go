@@ -13,8 +13,8 @@ type AccountSubset struct {
 	Password string
 }
 
-// AccountService wraps account interactions.
-type AccountService interface {
+// AccountMapper wraps account interactions.
+type AccountMapper interface {
 	SetAccount(Account) error
 	GetAccount(AccountSubset) (Account, error)
 }

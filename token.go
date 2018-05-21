@@ -11,8 +11,8 @@ type Token struct {
 	Account ID           `json:"-"`
 }
 
-// TokenService is the service gate for Token resource.
-type TokenService interface {
+// TokenMapper is the service gate for Token resource.
+type TokenMapper interface {
 	SetToken(Token) error
 	GetToken(ID) (Token, error)
 }

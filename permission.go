@@ -8,8 +8,8 @@ type Permission struct {
 	Value  int
 }
 
-// PermissionService defines Permission operations.
-type PermissionService interface {
+// PermissionMapper defines Permission operations.
+type PermissionMapper interface {
 	SetPermission(Permission) error
 	GetPermission(PermissionSubset) (Permission, error)
 }

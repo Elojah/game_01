@@ -9,18 +9,18 @@ import (
 )
 
 type app struct {
-	game.EntityService
-	game.EntityTemplateService
-	game.EventService
-	game.PCService
-	game.PCLeftService
-	game.PermissionService
-	game.QEventService
-	game.QListenerService
-	game.SkillService
-	game.SkillTemplateService
-	game.SubscriptionService
-	game.TokenService
+	game.EntityMapper
+	game.EntityTemplateMapper
+	game.EventMapper
+	game.PCMapper
+	game.PCLeftMapper
+	game.PermissionMapper
+	game.QEventMapper
+	game.QListenerMapper
+	game.SkillMapper
+	game.SkillTemplateMapper
+	game.SubscriptionMapper
+	game.TokenMapper
 
 	id game.ID
 
@@ -76,7 +76,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 	}
 	id := listenerS.Domain().ID
 
-	seq := NewSequencer(a.id, a.limit, a.EventService, a.Apply)
+	seq := NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
 	a.seqs[id] = seq
 
 	sub, err := a.SetSubscription(id.String(), seq.MsgHandler)

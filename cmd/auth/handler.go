@@ -8,11 +8,11 @@ import (
 )
 
 type handler struct {
-	game.AccountService
-	game.PCLeftService
-	game.QEventService
-	game.QListenerService
-	game.TokenService
+	game.AccountMapper
+	game.PCLeftMapper
+	game.QEventMapper
+	game.QListenerMapper
+	game.TokenMapper
 
 	srv *http.Server
 

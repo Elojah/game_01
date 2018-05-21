@@ -16,11 +16,11 @@ import (
 
 type skillWithEntity struct {
 	game.Skill
-	EntityID game.ID `entity_id`
+	EntityID game.ID `json:"entity_id"`
 }
 
 type skill struct {
-	game.SkillService
+	game.SkillMapper
 
 	config string
 	skills string
@@ -43,7 +43,7 @@ func (s *skill) init() error {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
-	s.SkillService = rdx
+	s.SkillMapper = rdx
 
 	if err := launchers.Up(s.config); err != nil {
 		s.logger.Error().Err(err).Str("filename", s.config).Msg("failed to start")

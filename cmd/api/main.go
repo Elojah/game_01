@@ -53,8 +53,8 @@ func run(prog string, filename string) {
 		return
 	}
 
-	h.QEventService = nax
-	h.TokenService = rdx
+	h.QEventMapper = nax
+	h.TokenMapper = rdx
 	h.Route(&m)
 
 	go func() { m.Listen() }()

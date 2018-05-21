@@ -8,8 +8,8 @@ const (
 // PC alias an entity.
 type PC Entity
 
-// PCService is an interface to create a new PC.
-type PCService interface {
+// PCMapper is an interface to create a new PC.
+type PCMapper interface {
 	SetPC(PC, ID) error
 	GetPC(PCSubset) (PC, error)
 	ListPC(PCSubset) ([]PC, error)
@@ -24,8 +24,8 @@ type PCSubset struct {
 // PCLeft represents the number of character an account can still create.
 type PCLeft int
 
-// PCLeftService interfaces creation/retrieval of PCLeft.
-type PCLeftService interface {
+// PCLeftMapper interfaces creation/retrieval of PCLeft.
+type PCLeftMapper interface {
 	SetPCLeft(PCLeft, ID) error
 	GetPCLeft(PCLeftSubset) (PCLeft, error)
 }
