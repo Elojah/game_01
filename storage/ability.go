@@ -4,6 +4,11 @@ import (
 	"github.com/elojah/game_01"
 )
 
+// HealDirect
+// DamageDirect
+// HealOverTime
+// DamageOverTime
+
 // NewAbility convert a game.Ability into a storage Ability.
 func NewAbility(a game.Ability) *Ability {
 	return &Ability{
