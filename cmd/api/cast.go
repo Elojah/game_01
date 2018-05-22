@@ -24,10 +24,10 @@ func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 		Source: game.ID(msg.Token),
 		TS:     time.Unix(0, msg.TS),
 		Action: game.Cast{
-			SkillID:  game.ID(a.SkillID),
-			Source:   source,
-			Target:   target,
-			Position: game.Vec3(a.Position),
+			AbilityID: game.ID(a.AbilityID),
+			Source:    source,
+			Target:    target,
+			Position:  game.Vec3(a.Position),
 		},
 	}
 

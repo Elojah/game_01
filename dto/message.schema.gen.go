@@ -194,10 +194,10 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type Cast struct {
-	SkillID  [16]byte
-	Source   [16]byte
-	Target   [16]byte
-	Position Vec3
+	AbilityID [16]byte
+	Source    [16]byte
+	Target    [16]byte
+	Position  Vec3
 }
 
 func (d *Cast) Size() (s uint64) {
@@ -228,7 +228,7 @@ func (d *Cast) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-		copy(buf[i+0:], d.SkillID[:])
+		copy(buf[i+0:], d.AbilityID[:])
 		i += 16
 	}
 	{
@@ -253,7 +253,7 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.SkillID[:], buf[i+0:])
+		copy(d.AbilityID[:], buf[i+0:])
 		i += 16
 	}
 	{

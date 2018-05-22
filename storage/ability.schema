@@ -1,4 +1,4 @@
-struct Skill {
+struct Ability {
 	ID				[16]byte
 	Type			[16]byte
 	Name			string

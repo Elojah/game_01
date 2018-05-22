@@ -11,10 +11,10 @@ struct Move {
 }
 
 struct Cast {
-	SkillID	[16]byte
-	Source	[16]byte
-	Target	[16]byte
-	Position Vec3
+	AbilityID	[16]byte
+	Source		[16]byte
+	Target		[16]byte
+	Position	Vec3
 }
 
 struct SetPC {

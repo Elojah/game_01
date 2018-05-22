@@ -26,12 +26,12 @@ type Move struct {
 	Position Vec3
 }
 
-// Cast represents a skill launch.
+// Cast represents a ability launch.
 type Cast struct {
-	SkillID  ID
-	Source   ID
-	Target   ID
-	Position Vec3
+	AbilityID ID
+	Source    ID
+	Target    ID
+	Position  Vec3
 }
 
 // SetPC is a token action to create a new PC entity.

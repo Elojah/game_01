@@ -35,8 +35,8 @@
 - [x] Add state/entity service impl + interactions
 - [x] Handle token permissions/entity actions (linked to above)
 - [x] Refacto skill mechanic to be like class definition (json template + tool)
-- [ ] Add core app handler skill
 - [ ] Cast/Skill can have multiple effects on multiple targets
+- [ ] Add core app handler skill
 - [ ] Implement SkillFeedback mechanism
 - [ ] Add sequencer cancelling mechanism (CancelEvent(id)->id(don't do me)->event...)
 - [ ] Response server to update all clients with delta compression named `sync`

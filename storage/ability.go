@@ -4,9 +4,9 @@ import (
 	"github.com/elojah/game_01"
 )
 
-// NewSkill convert a game.Skill into a storage Skill.
-func NewSkill(a game.Skill) *Skill {
-	return &Skill{
+// NewAbility convert a game.Ability into a storage Ability.
+func NewAbility(a game.Ability) *Ability {
+	return &Ability{
 		ID:            [16]byte(a.ID),
 		Type:          [16]byte(a.Type),
 		Name:          a.Name,
@@ -18,11 +18,11 @@ func NewSkill(a game.Skill) *Skill {
 	}
 }
 
-// Domain converts a storage Skill into a game Skill.
-func (a Skill) Domain() game.Skill {
-	return game.Skill{
+// Domain converts a storage Ability into a game Ability.
+func (a Ability) Domain() game.Ability {
+	return game.Ability{
 		ID:            game.ID(a.ID),
-		Type:          game.SkillType(a.Type),
+		Type:          game.AbilityType(a.Type),
 		Name:          a.Name,
 		MPConsumption: a.MPConsumption,
 		DirectDamage:  a.DirectDamage,

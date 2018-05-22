@@ -17,8 +17,8 @@ type app struct {
 	game.PermissionMapper
 	game.QEventMapper
 	game.QListenerMapper
-	game.SkillMapper
-	game.SkillTemplateMapper
+	game.AbilityMapper
+	game.AbilityTemplateMapper
 	game.SubscriptionMapper
 	game.TokenMapper
 

@@ -58,8 +58,8 @@ func run(prog string, filename string) {
 	a.PermissionMapper = rdx
 	a.QEventMapper = nax
 	a.QListenerMapper = nax
-	a.SkillMapper = rdx
-	a.SkillTemplateMapper = rdx
+	a.AbilityMapper = rdx
+	a.AbilityTemplateMapper = rdx
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 

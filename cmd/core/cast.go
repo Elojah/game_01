@@ -34,9 +34,9 @@ func (a *app) CastSource(event game.Event) error {
 		return err
 	}
 
-	// #Retrieve skill.
-	skill, err := a.GetSkill(game.SkillSubset{
-		ID:       cast.SkillID,
+	// #Retrieve ability.
+	ability, err := a.GetAbility(game.AbilitySubset{
+		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
@@ -47,7 +47,7 @@ func (a *app) CastSource(event game.Event) error {
 	}
 
 	// Check here for e.g: lifedrain, rage empowerement, etc.
-	_ = skill
+	_ = ability
 
 	return nil
 }

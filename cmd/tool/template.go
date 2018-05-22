@@ -17,11 +17,11 @@ import (
 
 type template struct {
 	game.EntityTemplateMapper
-	game.SkillTemplateMapper
+	game.AbilityTemplateMapper
 
 	config   string
 	entities string
-	skills   string
+	abilitys string
 
 	logger zerolog.Logger
 }
@@ -42,7 +42,7 @@ func (t *template) init() error {
 	rdx := redisx.NewService(&rd)
 
 	t.EntityTemplateMapper = rdx
-	t.SkillTemplateMapper = rdx
+	t.AbilityTemplateMapper = rdx
 
 	if err := launchers.Up(t.config); err != nil {
 		t.logger.Error().Err(err).Str("filename", t.config).Msg("failed to start")
@@ -59,17 +59,17 @@ func (t *template) ShowTemplates(cmd *cobra.Command, args []string) {
 
 	for _, arg := range args {
 
-		if arg == "skills" {
-			skills, err := t.ListSkillTemplate()
+		if arg == "abilitys" {
+			abilitys, err := t.ListAbilityTemplate()
 			if err != nil {
-				t.logger.Error().Err(err).Msg("failed to retrieve skills")
+				t.logger.Error().Err(err).Msg("failed to retrieve abilitys")
 				return
 			}
-			t.logger.Info().Int("skills", len(skills)).Msg("found")
-			for _, skill := range skills {
-				raw, err := json.Marshal(skill)
+			t.logger.Info().Int("abilitys", len(abilitys)).Msg("found")
+			for _, ability := range abilitys {
+				raw, err := json.Marshal(ability)
 				if err != nil {
-					t.logger.Error().Err(err).Msg("failed to retrieve skills")
+					t.logger.Error().Err(err).Msg("failed to retrieve abilitys")
 					return
 				}
 				fmt.Println(string(raw))
@@ -107,8 +107,8 @@ func (t *template) AddTemplates(cmd *cobra.Command, args []string) {
 	if t.entities != "" {
 		t.CreateEntities()
 	}
-	if t.skills != "" {
-		t.CreateSkills()
+	if t.abilitys != "" {
+		t.CreateAbilitys()
 	}
 
 	t.logger.Info().Msg("done")
@@ -137,23 +137,23 @@ func (t *template) CreateEntities() {
 	}
 }
 
-func (t *template) CreateSkills() {
+func (t *template) CreateAbilitys() {
 
-	raw, err := ioutil.ReadFile(t.skills)
+	raw, err := ioutil.ReadFile(t.abilitys)
 	if err != nil {
-		t.logger.Error().Err(err).Str("skills", t.skills).Msg("failed to read skills file")
+		t.logger.Error().Err(err).Str("abilitys", t.abilitys).Msg("failed to read abilitys file")
 		return
 	}
-	var skills []game.SkillTemplate
-	if err := json.Unmarshal(raw, &skills); err != nil {
-		t.logger.Error().Err(err).Str("skills", t.skills).Msg("invalid JSON")
+	var abilitys []game.AbilityTemplate
+	if err := json.Unmarshal(raw, &abilitys); err != nil {
+		t.logger.Error().Err(err).Str("abilitys", t.abilitys).Msg("invalid JSON")
 		return
 	}
 
-	t.logger.Info().Int("skills", len(skills)).Msg("found")
+	t.logger.Info().Int("abilitys", len(abilitys)).Msg("found")
 
-	for _, tpl := range skills {
-		if err := t.SetSkillTemplate(tpl); err != nil {
+	for _, tpl := range abilitys {
+		if err := t.SetAbilityTemplate(tpl); err != nil {
 			t.logger.Error().Err(err).Str("template", tpl.ID.String()).Msg("failed to set template")
 			return
 		}

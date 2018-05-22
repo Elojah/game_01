@@ -12,7 +12,7 @@ var (
 	_ = time.Now()
 )
 
-type Skill struct {
+type Ability struct {
 	ID            [16]byte
 	Type          [16]byte
 	Name          string
@@ -23,7 +23,7 @@ type Skill struct {
 	CurrentCD     uint32
 }
 
-func (d *Skill) Size() (s uint64) {
+func (d *Ability) Size() (s uint64) {
 
 	{
 		s += 16
@@ -49,7 +49,7 @@ func (d *Skill) Size() (s uint64) {
 	s += 32
 	return
 }
-func (d *Skill) Marshal(buf []byte) ([]byte, error) {
+func (d *Ability) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -169,7 +169,7 @@ func (d *Skill) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+32], nil
 }
 
-func (d *Skill) Unmarshal(buf []byte) (uint64, error) {
+func (d *Ability) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
