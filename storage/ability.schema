@@ -1,3 +1,27 @@
+struct HealDirect {
+	Amount			float64
+	Type			uint8
+}
+
+struct DamageDirect {
+	Amount			float64
+	Type			uint8
+}
+
+struct HealOverTime {
+	Amount			float64
+	Type			uint8
+	Frequency		uint64
+	Duration		uint64
+}
+
+struct DamageOverTime {
+	Amount			float64
+	Type			uint8
+	Frequency		uint64
+	Duration		uint64
+}
+
 struct Ability {
 	ID				[16]byte
 	Type			[16]byte
@@ -5,4 +29,10 @@ struct Ability {
 	MPConsumption	uint64
 	CD				uint32
 	CurrentCD		uint32
+	Components		[]union {
+		HealDirect
+		DamageDirect
+		HealOverTime
+		DamageOverTime
+	}
 }
