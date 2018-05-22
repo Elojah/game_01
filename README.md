@@ -37,7 +37,8 @@
 - [x] Refacto skill mechanic to be like class definition (json template + tool)
 - [ ] Add core app handler skill
 - [ ] Cast/Skill can have multiple effects on multiple targets
-- [ ] Add sequencer cancelling mechanism
+- [ ] Implement SkillFeedback mechanism
+- [ ] Add sequencer cancelling mechanism (CancelEvent(id)->id(don't do me)->event...)
 - [ ] Response server to update all clients with delta compression named `sync`
 - [ ] Add server ack sending to client (and client resend)
 - [ ] ack service
