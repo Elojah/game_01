@@ -17,8 +17,6 @@ type Ability struct {
 	Type          [16]byte
 	Name          string
 	MPConsumption uint64
-	DirectDamage  uint64
-	DirectHeal    uint64
 	CD            uint32
 	CurrentCD     uint32
 }
@@ -46,7 +44,7 @@ func (d *Ability) Size() (s uint64) {
 		}
 		s += l
 	}
-	s += 32
+	s += 16
 	return
 }
 func (d *Ability) Marshal(buf []byte) ([]byte, error) {
@@ -108,65 +106,27 @@ func (d *Ability) Marshal(buf []byte) ([]byte, error) {
 	}
 	{
 
-		buf[i+0+8] = byte(d.DirectDamage >> 0)
+		buf[i+0+8] = byte(d.CD >> 0)
 
-		buf[i+1+8] = byte(d.DirectDamage >> 8)
+		buf[i+1+8] = byte(d.CD >> 8)
 
-		buf[i+2+8] = byte(d.DirectDamage >> 16)
+		buf[i+2+8] = byte(d.CD >> 16)
 
-		buf[i+3+8] = byte(d.DirectDamage >> 24)
-
-		buf[i+4+8] = byte(d.DirectDamage >> 32)
-
-		buf[i+5+8] = byte(d.DirectDamage >> 40)
-
-		buf[i+6+8] = byte(d.DirectDamage >> 48)
-
-		buf[i+7+8] = byte(d.DirectDamage >> 56)
+		buf[i+3+8] = byte(d.CD >> 24)
 
 	}
 	{
 
-		buf[i+0+16] = byte(d.DirectHeal >> 0)
+		buf[i+0+12] = byte(d.CurrentCD >> 0)
 
-		buf[i+1+16] = byte(d.DirectHeal >> 8)
+		buf[i+1+12] = byte(d.CurrentCD >> 8)
 
-		buf[i+2+16] = byte(d.DirectHeal >> 16)
+		buf[i+2+12] = byte(d.CurrentCD >> 16)
 
-		buf[i+3+16] = byte(d.DirectHeal >> 24)
-
-		buf[i+4+16] = byte(d.DirectHeal >> 32)
-
-		buf[i+5+16] = byte(d.DirectHeal >> 40)
-
-		buf[i+6+16] = byte(d.DirectHeal >> 48)
-
-		buf[i+7+16] = byte(d.DirectHeal >> 56)
+		buf[i+3+12] = byte(d.CurrentCD >> 24)
 
 	}
-	{
-
-		buf[i+0+24] = byte(d.CD >> 0)
-
-		buf[i+1+24] = byte(d.CD >> 8)
-
-		buf[i+2+24] = byte(d.CD >> 16)
-
-		buf[i+3+24] = byte(d.CD >> 24)
-
-	}
-	{
-
-		buf[i+0+28] = byte(d.CurrentCD >> 0)
-
-		buf[i+1+28] = byte(d.CurrentCD >> 8)
-
-		buf[i+2+28] = byte(d.CurrentCD >> 16)
-
-		buf[i+3+28] = byte(d.CurrentCD >> 24)
-
-	}
-	return buf[:i+32], nil
+	return buf[:i+16], nil
 }
 
 func (d *Ability) Unmarshal(buf []byte) (uint64, error) {
@@ -207,23 +167,13 @@ func (d *Ability) Unmarshal(buf []byte) (uint64, error) {
 	}
 	{
 
-		d.DirectDamage = 0 | (uint64(buf[i+0+8]) << 0) | (uint64(buf[i+1+8]) << 8) | (uint64(buf[i+2+8]) << 16) | (uint64(buf[i+3+8]) << 24) | (uint64(buf[i+4+8]) << 32) | (uint64(buf[i+5+8]) << 40) | (uint64(buf[i+6+8]) << 48) | (uint64(buf[i+7+8]) << 56)
+		d.CD = 0 | (uint32(buf[i+0+8]) << 0) | (uint32(buf[i+1+8]) << 8) | (uint32(buf[i+2+8]) << 16) | (uint32(buf[i+3+8]) << 24)
 
 	}
 	{
 
-		d.DirectHeal = 0 | (uint64(buf[i+0+16]) << 0) | (uint64(buf[i+1+16]) << 8) | (uint64(buf[i+2+16]) << 16) | (uint64(buf[i+3+16]) << 24) | (uint64(buf[i+4+16]) << 32) | (uint64(buf[i+5+16]) << 40) | (uint64(buf[i+6+16]) << 48) | (uint64(buf[i+7+16]) << 56)
+		d.CurrentCD = 0 | (uint32(buf[i+0+12]) << 0) | (uint32(buf[i+1+12]) << 8) | (uint32(buf[i+2+12]) << 16) | (uint32(buf[i+3+12]) << 24)
 
 	}
-	{
-
-		d.CD = 0 | (uint32(buf[i+0+24]) << 0) | (uint32(buf[i+1+24]) << 8) | (uint32(buf[i+2+24]) << 16) | (uint32(buf[i+3+24]) << 24)
-
-	}
-	{
-
-		d.CurrentCD = 0 | (uint32(buf[i+0+28]) << 0) | (uint32(buf[i+1+28]) << 8) | (uint32(buf[i+2+28]) << 16) | (uint32(buf[i+3+28]) << 24)
-
-	}
-	return i + 32, nil
+	return i + 16, nil
 }

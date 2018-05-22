@@ -5,14 +5,24 @@ type AbilityType = ID
 
 // Ability represents a ability.
 type Ability struct {
-	ID            ID          `json:"id"`
-	Type          AbilityType `json:"type"`
-	Name          string      `json:"name"`
-	MPConsumption uint64      `json:"mp_consumption"`
-	DirectDamage  uint64      `json:"direct_damage"`
-	DirectHeal    uint64      `json:"direct_heal"`
-	CD            uint32      `json:"cd"`
-	CurrentCD     uint32      `json:"current_cd"`
+	ID   ID          `json:"id"`
+	Type AbilityType `json:"type"`
+	Name string      `json:"name"`
+
+	MPConsumption uint64 `json:"mp_consumption"`
+	CD            uint32 `json:"cd"`
+	CurrentCD     uint32 `json:"current_cd"`
+
+	Components []AbilityComponent `json:"components"`
+}
+
+// Apply applies ability a on target.
+func (a Ability) Apply(target Entity) AbilityFeedback {
+	var afb AbilityFeedback
+	for _, cp := range a.Components {
+		afb.Accumulate(cp.Apply(target))
+	}
+	return afb
 }
 
 // AbilityMapper is the communication interface for abilitys.
@@ -26,13 +36,4 @@ type AbilityMapper interface {
 type AbilitySubset struct {
 	ID       ID
 	EntityID ID
-}
-
-// AbilityFeedback represents the effects a ability had on a target.
-type AbilityFeedback struct {
-}
-
-// Apply applies ability s on target.
-func (s Ability) Apply(target Entity) error {
-	return nil
 }

@@ -11,8 +11,6 @@ func NewAbility(a game.Ability) *Ability {
 		Type:          [16]byte(a.Type),
 		Name:          a.Name,
 		MPConsumption: a.MPConsumption,
-		DirectDamage:  a.DirectDamage,
-		DirectHeal:    a.DirectHeal,
 		CD:            a.CD,
 		CurrentCD:     a.CurrentCD,
 	}
@@ -25,8 +23,6 @@ func (a Ability) Domain() game.Ability {
 		Type:          game.AbilityType(a.Type),
 		Name:          a.Name,
 		MPConsumption: a.MPConsumption,
-		DirectDamage:  a.DirectDamage,
-		DirectHeal:    a.DirectHeal,
 		CD:            a.CD,
 		CurrentCD:     a.CurrentCD,
 	}

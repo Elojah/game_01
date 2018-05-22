@@ -3,8 +3,6 @@ struct Ability {
 	Type			[16]byte
 	Name			string
 	MPConsumption	uint64
-	DirectDamage	uint64
-	DirectHeal		uint64
 	CD				uint32
 	CurrentCD		uint32
 }
