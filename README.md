@@ -36,6 +36,7 @@
 - [x] Handle token permissions/entity actions (linked to above)
 - [x] Refacto skill mechanic to be like class definition (json template + tool)
 - [ ] Add core app handler skill
+- [ ] Cast/Skill can have multiple effects on multiple targets
 - [ ] Add sequencer cancelling mechanism
 - [ ] Response server to update all clients with delta compression named `sync`
 - [ ] Add server ack sending to client (and client resend)

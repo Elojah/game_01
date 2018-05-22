@@ -39,8 +39,11 @@ func (a *app) CreatePC(id game.ID, event game.Event) error {
 	// #Create PC from the template.
 	pc := game.PC(template)
 	pc.ID = game.NewULID()
-	// TODO list of positions config ? Areas config + random ? Define spawn
 	pc.Position = game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()}
+	if err := pc.Check(); err != nil {
+		return err
+	}
+	// TODO list of positions config ? Areas config + random ? Define spawn
 	return a.SetPC(pc, token.Account)
 }
 

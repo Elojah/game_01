@@ -5,8 +5,26 @@ const (
 	MaxPC = 4
 )
 
+var (
+	pcNames = map[string]struct{}{
+		"trickster":  struct{}{},
+		"mesmerist":  struct{}{},
+		"inquisitor": struct{}{},
+		"totemist":   struct{}{},
+		"scavenger":  struct{}{},
+	}
+)
+
 // PC alias an entity.
 type PC Entity
+
+// Check checks if pc fields are valid.
+func (pc PC) Check() error {
+	if _, ok := pcNames[pc.Name]; !ok {
+		return ErrInvalidEntityType
+	}
+	return nil
+}
 
 // PCMapper is an interface to create a new PC.
 type PCMapper interface {

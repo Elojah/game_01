@@ -28,11 +28,13 @@ type SkillSubset struct {
 	EntityID ID
 }
 
-type SkillShock struct {
+// SkillEffect represents the effects a skill had on a target.
+type SkillEffect struct {
 	DamageDone float64
 	HealDone   float64
 }
 
+// Apply applies skill s on target.
 func (s Skill) Apply(target Entity) error {
-
+	return nil
 }

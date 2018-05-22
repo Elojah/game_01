@@ -1,8 +1,32 @@
 [
     {
-        "name": "scavenger",
-        "type": "01CDSTJRVK0HMG6TREBJR7FG1N",
+        "id": "01CE3J52MCJEBQYAXQE4V3PEAH",
+        "name": "trickster",
         "hp": 300,
         "mp": 100
+    },
+    {
+        "id": "01CE3J5ASXJSVC405QTES4M221",
+        "name": "mesmerist",
+        "hp": 150,
+        "mp": 250
+    },
+    {
+        "id": "01CE3J5M6QMP5A4C0GTTYFYANP",
+        "name": "inquisitor",
+        "hp": 100,
+        "mp": 300
+    },
+    {
+        "id": "01CE3J5SRK72BBM7MYFANYA6EE",
+        "name": "totemist",
+        "hp": 300,
+        "mp": 200
+    },
+    {
+        "id": "01CE3J622E95AQ2QS4XECMRFCV",
+        "name": "scavenger",
+        "hp": 100,
+        "mp": 400
     }
 ]

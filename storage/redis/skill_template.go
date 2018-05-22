@@ -34,7 +34,7 @@ func (s *Service) SetSkillTemplate(template game.SkillTemplate) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(skillTemplateKey+template.Type.String(), raw, 0).Err()
+	return s.Set(skillTemplateKey+template.ID.String(), raw, 0).Err()
 }
 
 // ListSkillTemplate implemented with redis.

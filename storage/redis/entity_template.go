@@ -34,7 +34,7 @@ func (s *Service) SetEntityTemplate(template game.EntityTemplate) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(entityTemplateKey+template.Type.String(), raw, 0).Err()
+	return s.Set(entityTemplateKey+template.ID.String(), raw, 0).Err()
 }
 
 // ListEntityTemplate implemented with redis.

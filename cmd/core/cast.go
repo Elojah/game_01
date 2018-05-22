@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/elojah/game_01"
-	// "github.com/elojah/game_01/storage"
+	"github.com/elojah/game_01/storage"
 )
 
 func (a *app) Cast(id game.ID, event game.Event) error {
@@ -18,7 +18,7 @@ func (a *app) Cast(id game.ID, event game.Event) error {
 	return nil
 }
 
-func (a *app) CastSource(id game.ID, event game.Event) error {
+func (a *app) CastSource(event game.Event) error {
 
 	cast := event.Action.(game.Cast)
 
@@ -46,5 +46,12 @@ func (a *app) CastSource(id game.ID, event game.Event) error {
 		return err
 	}
 
+	// Check here for e.g: lifedrain, rage empowerement, etc.
+	_ = skill
+
+	return nil
+}
+
+func (a *app) CastTarget(event game.Event) error {
 	return nil
 }
