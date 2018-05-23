@@ -12,10 +12,7 @@ func (a *app) Cast(id game.ID, event game.Event) error {
 	if id.Compare(cast.Source) == 0 {
 		return a.CastSource(event)
 	}
-	if id.Compare(cast.Target) == 0 {
-		return a.CastTarget(event)
-	}
-	return nil
+	return a.CastTarget(event)
 }
 
 func (a *app) CastSource(event game.Event) error {
@@ -46,7 +43,6 @@ func (a *app) CastSource(event game.Event) error {
 		return err
 	}
 
-	// Check here for e.g: lifedrain, rage empowerement, etc.
 	_ = ability
 
 	return nil

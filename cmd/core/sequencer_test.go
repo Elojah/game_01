@@ -16,9 +16,27 @@ import (
 func TestSequencer(t *testing.T) {
 
 	equalEvent := func(lhs game.Event, rhs game.Event) bool {
+		switch lhs.Action.(type) {
+		case game.Cast:
+			switch rhs.Action.(type) {
+			case game.Cast:
+				lhsTargets := lhs.Action.(game.Cast).Targets
+				rhsTargets := rhs.Action.(game.Cast).Targets
+				for i, target := range lhsTargets {
+					if target.Compare(rhsTargets[i]) != 0 {
+						return false
+					}
+				}
+			default:
+				return false
+			}
+		default:
+			if lhs.Action != rhs.Action {
+				return false
+			}
+		}
 		return lhs.ID.Compare(rhs.ID) == 0 &&
-			lhs.TS.Equal(rhs.TS) &&
-			lhs.Action == rhs.Action
+			lhs.TS.Equal(rhs.TS)
 	}
 
 	now := time.Now()
@@ -26,7 +44,7 @@ func TestSequencer(t *testing.T) {
 		game.Event{
 			ID:     game.NewULID(),
 			TS:     now,
-			Action: game.Cast{Source: game.NewULID()},
+			Action: game.Cast{Source: game.NewULID(), Targets: []game.ID{game.NewULID(), game.NewULID(), game.NewULID()}},
 		},
 		game.Event{
 			ID:     game.NewULID(),

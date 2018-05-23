@@ -196,7 +196,7 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 type Cast struct {
 	AbilityID [16]byte
 	Source    [16]byte
-	Target    [16]byte
+	Targets   [][16]byte
 	Position  Vec3
 }
 
@@ -209,7 +209,27 @@ func (d *Cast) Size() (s uint64) {
 		s += 16
 	}
 	{
-		s += 16
+		l := uint64(len(d.Targets))
+
+		{
+
+			t := l
+			for t >= 0x80 {
+				t >>= 7
+				s++
+			}
+			s++
+
+		}
+
+		for _ = range d.Targets {
+
+			{
+				s += 16
+			}
+
+		}
+
 	}
 	{
 		s += d.Position.Size()
@@ -236,8 +256,29 @@ func (d *Cast) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
-		copy(buf[i+0:], d.Target[:])
-		i += 16
+		l := uint64(len(d.Targets))
+
+		{
+
+			t := uint64(l)
+
+			for t >= 0x80 {
+				buf[i+0] = byte(t) | 0x80
+				t >>= 7
+				i++
+			}
+			buf[i+0] = byte(t)
+			i++
+
+		}
+		for k0 := range d.Targets {
+
+			{
+				copy(buf[i+0:], d.Targets[k0][:])
+				i += 16
+			}
+
+		}
 	}
 	{
 		nbuf, err := d.Position.Marshal(buf[i+0:])
@@ -261,8 +302,35 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	{
-		copy(d.Target[:], buf[i+0:])
-		i += 16
+		l := uint64(0)
+
+		{
+
+			bs := uint8(7)
+			t := uint64(buf[i+0] & 0x7F)
+			for buf[i+0]&0x80 == 0x80 {
+				i++
+				t |= uint64(buf[i+0]&0x7F) << bs
+				bs += 7
+			}
+			i++
+
+			l = t
+
+		}
+		if uint64(cap(d.Targets)) >= l {
+			d.Targets = d.Targets[:l]
+		} else {
+			d.Targets = make([][16]byte, l)
+		}
+		for k0 := range d.Targets {
+
+			{
+				copy(d.Targets[k0][:], buf[i+0:])
+				i += 16
+			}
+
+		}
 	}
 	{
 		ni, err := d.Position.Unmarshal(buf[i+0:])

@@ -30,7 +30,7 @@ type Move struct {
 type Cast struct {
 	AbilityID ID
 	Source    ID
-	Target    ID
+	Targets   []ID
 	Position  Vec3
 }
 

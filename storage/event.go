@@ -17,10 +17,14 @@ func NewMove(a game.Move) Move {
 
 // NewCast convert a game.Cast into a storage Cast.
 func NewCast(a game.Cast) Cast {
+	targets := make([][16]byte, len(a.Targets))
+	for i, target := range a.Targets {
+		targets[i] = [16]byte(target)
+	}
 	return Cast{
 		AbilityID: [16]byte(a.AbilityID),
 		Source:    [16]byte(a.Source),
-		Target:    [16]byte(a.Target),
+		Targets:   targets,
 		Position:  Vec3(a.Position),
 	}
 }
@@ -50,10 +54,14 @@ func (a Move) Domain() game.Move {
 
 // Domain converts a storage Cast into a game Cast.
 func (a Cast) Domain() game.Cast {
+	targets := make([]game.ID, len(a.Targets))
+	for i, target := range a.Targets {
+		targets[i] = game.ID(target)
+	}
 	return game.Cast{
 		AbilityID: game.ID(a.AbilityID),
 		Source:    game.ID(a.Source),
-		Target:    game.ID(a.Target),
+		Targets:   targets,
 		Position:  game.Vec3(a.Position),
 	}
 }

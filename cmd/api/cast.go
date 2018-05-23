@@ -17,7 +17,10 @@ func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 
 	a := msg.Action.(dto.Cast)
 	source := game.ID(a.Source)
-	target := game.ID(a.Target)
+	targets := make([]game.ID, len(a.Targets))
+	for i, target := range a.Targets {
+		targets[i] = game.ID(target)
+	}
 
 	event := game.Event{
 		ID:     game.NewULID(),
@@ -26,7 +29,7 @@ func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 		Action: game.Cast{
 			AbilityID: game.ID(a.AbilityID),
 			Source:    source,
-			Target:    target,
+			Targets:   targets,
 			Position:  game.Vec3(a.Position),
 		},
 	}
@@ -36,10 +39,12 @@ func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 			logger.Error().Err(err).Str("event", event.ID.String()).Msg("event rejected")
 		}
 	}()
-	go func() {
-		if err := h.SendEvent(event, target); err != nil {
-			logger.Error().Err(err).Str("event", event.ID.String()).Msg("event rejected")
-		}
-	}()
+	for _, target := range targets {
+		go func(target game.ID) {
+			if err := h.SendEvent(event, target); err != nil {
+				logger.Error().Err(err).Str("event", event.ID.String()).Msg("event rejected")
+			}
+		}(target)
+	}
 	return nil
 }

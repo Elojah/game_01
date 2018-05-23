@@ -13,7 +13,7 @@ struct Move {
 struct Cast {
 	AbilityID	[16]byte
 	Source		[16]byte
-	Target		[16]byte
+	Targets		[][16]byte
 	Position	Vec3
 }
 
