@@ -1,22 +1,22 @@
 struct HealDirect {
-	Amount			float64
+	Amount			uint64
 	Type			uint8
 }
 
 struct DamageDirect {
-	Amount			float64
+	Amount			uint64
 	Type			uint8
 }
 
 struct HealOverTime {
-	Amount			float64
+	Amount			uint64
 	Type			uint8
 	Frequency		uint64
 	Duration		uint64
 }
 
 struct DamageOverTime {
-	Amount			float64
+	Amount			uint64
 	Type			uint8
 	Frequency		uint64
 	Duration		uint64

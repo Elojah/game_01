@@ -13,7 +13,7 @@ var (
 )
 
 type HealDirect struct {
-	Amount float64
+	Amount uint64
 	Type   uint8
 }
 
@@ -35,23 +35,21 @@ func (d *HealDirect) Marshal(buf []byte) ([]byte, error) {
 
 	{
 
-		v := *(*uint64)(unsafe.Pointer(&(d.Amount)))
+		buf[0+0] = byte(d.Amount >> 0)
 
-		buf[0+0] = byte(v >> 0)
+		buf[1+0] = byte(d.Amount >> 8)
 
-		buf[1+0] = byte(v >> 8)
+		buf[2+0] = byte(d.Amount >> 16)
 
-		buf[2+0] = byte(v >> 16)
+		buf[3+0] = byte(d.Amount >> 24)
 
-		buf[3+0] = byte(v >> 24)
+		buf[4+0] = byte(d.Amount >> 32)
 
-		buf[4+0] = byte(v >> 32)
+		buf[5+0] = byte(d.Amount >> 40)
 
-		buf[5+0] = byte(v >> 40)
+		buf[6+0] = byte(d.Amount >> 48)
 
-		buf[6+0] = byte(v >> 48)
-
-		buf[7+0] = byte(v >> 56)
+		buf[7+0] = byte(d.Amount >> 56)
 
 	}
 	{
@@ -67,8 +65,7 @@ func (d *HealDirect) Unmarshal(buf []byte) (uint64, error) {
 
 	{
 
-		v := 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
-		d.Amount = *(*float64)(unsafe.Pointer(&v))
+		d.Amount = 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
 
 	}
 	{
@@ -80,7 +77,7 @@ func (d *HealDirect) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type DamageDirect struct {
-	Amount float64
+	Amount uint64
 	Type   uint8
 }
 
@@ -102,23 +99,21 @@ func (d *DamageDirect) Marshal(buf []byte) ([]byte, error) {
 
 	{
 
-		v := *(*uint64)(unsafe.Pointer(&(d.Amount)))
+		buf[0+0] = byte(d.Amount >> 0)
 
-		buf[0+0] = byte(v >> 0)
+		buf[1+0] = byte(d.Amount >> 8)
 
-		buf[1+0] = byte(v >> 8)
+		buf[2+0] = byte(d.Amount >> 16)
 
-		buf[2+0] = byte(v >> 16)
+		buf[3+0] = byte(d.Amount >> 24)
 
-		buf[3+0] = byte(v >> 24)
+		buf[4+0] = byte(d.Amount >> 32)
 
-		buf[4+0] = byte(v >> 32)
+		buf[5+0] = byte(d.Amount >> 40)
 
-		buf[5+0] = byte(v >> 40)
+		buf[6+0] = byte(d.Amount >> 48)
 
-		buf[6+0] = byte(v >> 48)
-
-		buf[7+0] = byte(v >> 56)
+		buf[7+0] = byte(d.Amount >> 56)
 
 	}
 	{
@@ -134,8 +129,7 @@ func (d *DamageDirect) Unmarshal(buf []byte) (uint64, error) {
 
 	{
 
-		v := 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
-		d.Amount = *(*float64)(unsafe.Pointer(&v))
+		d.Amount = 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
 
 	}
 	{
@@ -147,7 +141,7 @@ func (d *DamageDirect) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type HealOverTime struct {
-	Amount    float64
+	Amount    uint64
 	Type      uint8
 	Frequency uint64
 	Duration  uint64
@@ -171,23 +165,21 @@ func (d *HealOverTime) Marshal(buf []byte) ([]byte, error) {
 
 	{
 
-		v := *(*uint64)(unsafe.Pointer(&(d.Amount)))
+		buf[0+0] = byte(d.Amount >> 0)
 
-		buf[0+0] = byte(v >> 0)
+		buf[1+0] = byte(d.Amount >> 8)
 
-		buf[1+0] = byte(v >> 8)
+		buf[2+0] = byte(d.Amount >> 16)
 
-		buf[2+0] = byte(v >> 16)
+		buf[3+0] = byte(d.Amount >> 24)
 
-		buf[3+0] = byte(v >> 24)
+		buf[4+0] = byte(d.Amount >> 32)
 
-		buf[4+0] = byte(v >> 32)
+		buf[5+0] = byte(d.Amount >> 40)
 
-		buf[5+0] = byte(v >> 40)
+		buf[6+0] = byte(d.Amount >> 48)
 
-		buf[6+0] = byte(v >> 48)
-
-		buf[7+0] = byte(v >> 56)
+		buf[7+0] = byte(d.Amount >> 56)
 
 	}
 	{
@@ -241,8 +233,7 @@ func (d *HealOverTime) Unmarshal(buf []byte) (uint64, error) {
 
 	{
 
-		v := 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
-		d.Amount = *(*float64)(unsafe.Pointer(&v))
+		d.Amount = 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
 
 	}
 	{
@@ -264,7 +255,7 @@ func (d *HealOverTime) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type DamageOverTime struct {
-	Amount    float64
+	Amount    uint64
 	Type      uint8
 	Frequency uint64
 	Duration  uint64
@@ -288,23 +279,21 @@ func (d *DamageOverTime) Marshal(buf []byte) ([]byte, error) {
 
 	{
 
-		v := *(*uint64)(unsafe.Pointer(&(d.Amount)))
+		buf[0+0] = byte(d.Amount >> 0)
 
-		buf[0+0] = byte(v >> 0)
+		buf[1+0] = byte(d.Amount >> 8)
 
-		buf[1+0] = byte(v >> 8)
+		buf[2+0] = byte(d.Amount >> 16)
 
-		buf[2+0] = byte(v >> 16)
+		buf[3+0] = byte(d.Amount >> 24)
 
-		buf[3+0] = byte(v >> 24)
+		buf[4+0] = byte(d.Amount >> 32)
 
-		buf[4+0] = byte(v >> 32)
+		buf[5+0] = byte(d.Amount >> 40)
 
-		buf[5+0] = byte(v >> 40)
+		buf[6+0] = byte(d.Amount >> 48)
 
-		buf[6+0] = byte(v >> 48)
-
-		buf[7+0] = byte(v >> 56)
+		buf[7+0] = byte(d.Amount >> 56)
 
 	}
 	{
@@ -358,8 +347,7 @@ func (d *DamageOverTime) Unmarshal(buf []byte) (uint64, error) {
 
 	{
 
-		v := 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
-		d.Amount = *(*float64)(unsafe.Pointer(&v))
+		d.Amount = 0 | (uint64(buf[0+0]) << 0) | (uint64(buf[1+0]) << 8) | (uint64(buf[2+0]) << 16) | (uint64(buf[3+0]) << 24) | (uint64(buf[4+0]) << 32) | (uint64(buf[5+0]) << 40) | (uint64(buf[6+0]) << 48) | (uint64(buf[7+0]) << 56)
 
 	}
 	{

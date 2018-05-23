@@ -17,10 +17,11 @@ type Ability struct {
 }
 
 // Apply applies ability a on target.
-func (a Ability) Apply(target Entity) AbilityFeedback {
+func (a Ability) Apply(target *Entity) AbilityFeedback {
 	var afb AbilityFeedback
-	for _, cp := range a.Components {
-		afb.Accumulate(cp.Apply(target))
+	afb.Components = make([]AbilityComponent, len(a.Components))
+	for i, component := range a.Components {
+		afb.Components[i] = component.Apply(target)
 	}
 	return afb
 }
