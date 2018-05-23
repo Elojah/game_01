@@ -2,7 +2,7 @@ package game
 
 // AbilityComponent is a part of a skill.
 type AbilityComponent interface {
-	Apply(*Entity) AbilityFeedback
+	Affect(*Entity) AbilityFeedbackComponent
 }
 
 // HealDirect instant heals.
@@ -11,10 +11,10 @@ type HealDirect struct {
 	Type   uint8
 }
 
-// Apply a HealDirect on target.
-func (c HealDirect) Apply(target *Entity) AbilityFeedback {
+// Affect a HealDirect on target.
+func (c HealDirect) Affect(target *Entity) AbilityFeedbackComponent {
 	target.HP += c.Amount
-	return AbilityFeedback{}
+	return HealDirectFeedback{}
 }
 
 // DamageDirect instant damage.
@@ -23,14 +23,14 @@ type DamageDirect struct {
 	Type   uint8
 }
 
-// Apply a DamageDirect on target.
-func (c DamageDirect) Apply(target *Entity) AbilityFeedback {
+// Affect a DamageDirect on target.
+func (c DamageDirect) Affect(target *Entity) AbilityFeedbackComponent {
 	if c.Amount >= target.HP {
 		target.HP = 0
-		return AbilityFeedback{}
+		return DamageDirectFeedback{}
 	}
 	target.HP -= c.Amount
-	return AbilityFeedback{}
+	return DamageDirectFeedback{}
 }
 
 // HealOverTime heals per tick.
@@ -41,9 +41,9 @@ type HealOverTime struct {
 	Duration  uint64
 }
 
-// Apply a HealOverTime on target.
-func (c HealOverTime) Apply(target *Entity) AbilityFeedback {
-	return AbilityFeedback{}
+// Affect a HealOverTime on target.
+func (c HealOverTime) Affect(target *Entity) AbilityFeedbackComponent {
+	return HealOverTimeFeedback{}
 }
 
 // DamageOverTime inflicts damage per tick.
@@ -54,7 +54,7 @@ type DamageOverTime struct {
 	Duration  uint64
 }
 
-// Apply a DamageOverTime on target.
-func (c DamageOverTime) Apply(target *Entity) AbilityFeedback {
-	return AbilityFeedback{}
+// Affect a DamageOverTime on target.
+func (c DamageOverTime) Affect(target *Entity) AbilityFeedbackComponent {
+	return DamageOverTimeFeedback{}
 }
