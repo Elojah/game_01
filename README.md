@@ -36,6 +36,7 @@
 - [x] Handle token permissions/entity actions (linked to above)
 - [x] Refacto skill mechanic to be like class definition (json template + tool)
 - [x] Cast/Skill can have multiple effects on multiple targets
+- [ ] AbilityFeedback service get/set
 - [ ] Add core app handler skill
 - [ ] Implement SkillFeedback mechanism
 - [ ] Add sequencer cancelling mechanism (CancelEvent(id)->id(don't do me)->event...)
