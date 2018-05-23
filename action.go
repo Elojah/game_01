@@ -10,6 +10,8 @@ func ActionString(a Action) string {
 		return "move"
 	case Cast:
 		return "cast"
+	case Feedback:
+		return "feedback"
 	case ConnectPC:
 		return "connect_pc"
 	case SetPC:
@@ -32,6 +34,13 @@ type Cast struct {
 	Source    ID
 	Targets   []ID
 	Position  Vec3
+}
+
+// Feedback represents a ability feedback of ability run by Source on target.
+type Feedback struct {
+	AfbID  ID
+	Source ID
+	Target ID
 }
 
 // SetPC is a token action to create a new PC entity.

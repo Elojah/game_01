@@ -10,12 +10,12 @@ func (a *app) Cast(id game.ID, event game.Event) error {
 	cast := event.Action.(game.Cast)
 
 	if id.Compare(cast.Source) == 0 {
-		return a.CastSource(event)
+		return a.CastSource(id, event)
 	}
-	return a.CastTarget(event)
+	return a.CastTarget(id, event)
 }
 
-func (a *app) CastSource(event game.Event) error {
+func (a *app) CastSource(id game.ID, event game.Event) error {
 
 	cast := event.Action.(game.Cast)
 
@@ -48,6 +48,47 @@ func (a *app) CastSource(event game.Event) error {
 	return nil
 }
 
-func (a *app) CastTarget(event game.Event) error {
+func (a *app) CastTarget(id game.ID, event game.Event) error {
+
+	cast := event.Action.(game.Cast)
+
+	// #Check permission token/source.
+	permission, err := a.GetPermission(game.PermissionSubset{
+		Source: event.Source.String(),
+		Target: cast.Source.String(),
+	})
+	if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
+		return game.ErrInsufficientRights
+	}
+	if err != nil {
+		return err
+	}
+
+	// #Retrieve ability.
+	ability, err := a.GetAbility(game.AbilitySubset{
+		ID:       cast.AbilityID,
+		EntityID: cast.Source,
+	})
+	if err == storage.ErrNotFound {
+		return game.ErrInsufficientRights
+	}
+	if err != nil {
+		return err
+	}
+
+	source, err := a.GetEntity(game.EntitySubset{Key: cast.Source.String(), Max: event.TS.UnixNano()})
+	if err != nil {
+		return err
+	}
+
+	target, err := a.GetEntity(game.EntitySubset{Key: id.String(), Max: event.TS.UnixNano()})
+	if err != nil {
+		return err
+	}
+
+	// TODO add AbilityFeedback service and Get here then affect to source
+	feedback := ability.Affect(&target)
+	feedback.Affect(source)
+
 	return nil
 }

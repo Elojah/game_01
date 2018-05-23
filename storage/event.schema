@@ -17,6 +17,12 @@ struct Cast {
 	Position	Vec3
 }
 
+struct Feedback {
+	AfbID		[16]byte
+	Source		[16]byte
+	Target		[16]byte
+}
+
 struct SetPC {
 	Type	[16]byte
 }
@@ -32,6 +38,7 @@ struct Event {
 	Action union {
 		Move
 		Cast
+		Feedback
 		ConnectPC
 		SetPC
 	}

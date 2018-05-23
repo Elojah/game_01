@@ -1,0 +1,24 @@
+struct HealDirectFeedback {
+	Amount		int64
+}
+
+struct DamageDirectFeedback {
+	Amount		int64
+}
+
+struct HealOverTimeFeedback {
+}
+
+struct DamageOverTimeFeedback {
+}
+
+struct AbilityFeedback {
+	ID			[16]byte
+	AbilityID	[16]byte
+	Components	[]union {
+		HealDirectFeedback
+		DamageDirectFeedback
+		HealOverTimeFeedback
+		DamageOverTimeFeedback
+	}
+}

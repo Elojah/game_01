@@ -29,6 +29,15 @@ func NewCast(a game.Cast) Cast {
 	}
 }
 
+// NewFeedback convert a game.Feedback into a storage Feedback.
+func NewFeedback(a game.Feedback) Feedback {
+	return Feedback{
+		AfbID:  [16]byte(a.AfbID),
+		Source: [16]byte(a.Source),
+		Target: [16]byte(a.Target),
+	}
+}
+
 // NewSetPC convert a game.SetPC into a storage SetPC.
 func NewSetPC(a game.SetPC) SetPC {
 	return SetPC{
@@ -66,6 +75,15 @@ func (a Cast) Domain() game.Cast {
 	}
 }
 
+// Domain converts a storage Feedback into a game Feedback.
+func (a Feedback) Domain() game.Feedback {
+	return game.Feedback{
+		AfbID:  game.ID(a.AfbID),
+		Source: game.ID(a.Source),
+		Target: game.ID(a.Target),
+	}
+}
+
 // Domain converts a storage SetPC into a game SetPC.
 func (a SetPC) Domain() game.SetPC {
 	return game.SetPC{
@@ -92,6 +110,8 @@ func NewEvent(event game.Event) *Event {
 		e.Action = NewMove(event.Action.(game.Move))
 	case game.Cast:
 		e.Action = NewCast(event.Action.(game.Cast))
+	case game.Feedback:
+		e.Action = NewFeedback(event.Action.(game.Feedback))
 	case game.SetPC:
 		e.Action = NewSetPC(event.Action.(game.SetPC))
 	case game.ConnectPC:
@@ -112,6 +132,8 @@ func (e Event) Domain() game.Event {
 		event.Action = e.Action.(Move).Domain()
 	case Cast:
 		event.Action = e.Action.(Cast).Domain()
+	case Feedback:
+		event.Action = e.Action.(Feedback).Domain()
 	case SetPC:
 		event.Action = e.Action.(SetPC).Domain()
 	case ConnectPC:

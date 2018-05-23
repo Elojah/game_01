@@ -2,6 +2,7 @@ package game
 
 // AbilityFeedback represents the effects a ability had on a target.
 type AbilityFeedback struct {
+	ID         ID
 	AbilityID  ID
 	Components []AbilityFeedbackComponent
 }
@@ -33,7 +34,6 @@ func (fb DamageDirectFeedback) Affect(entity *Entity) {
 
 // HealOverTimeFeedback is the feedback of a HealOverTime casted by entity.
 type HealOverTimeFeedback struct {
-	Amounts chan int64
 }
 
 // Affect applies fb on entity.
@@ -43,7 +43,6 @@ func (fb HealOverTimeFeedback) Affect(entity *Entity) {
 
 // DamageOverTimeFeedback is the feedback of a DamageOverTime casted by entity.
 type DamageOverTimeFeedback struct {
-	Amounts chan int64
 }
 
 // Affect applies fb on entity.

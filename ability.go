@@ -16,8 +16,8 @@ type Ability struct {
 	Components []AbilityComponent `json:"components"`
 }
 
-// Apply applies ability a on target.
-func (a Ability) Apply(target *Entity) AbilityFeedback {
+// Affect applies ability a on target.
+func (a Ability) Affect(target *Entity) AbilityFeedback {
 	var afb AbilityFeedback
 	afb.Components = make([]AbilityFeedbackComponent, len(a.Components))
 	for i, component := range a.Components {

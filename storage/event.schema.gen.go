@@ -342,6 +342,69 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
+type Feedback struct {
+	AfbID  [16]byte
+	Source [16]byte
+	Target [16]byte
+}
+
+func (d *Feedback) Size() (s uint64) {
+
+	{
+		s += 16
+	}
+	{
+		s += 16
+	}
+	{
+		s += 16
+	}
+	return
+}
+func (d *Feedback) Marshal(buf []byte) ([]byte, error) {
+	size := d.Size()
+	{
+		if uint64(cap(buf)) >= size {
+			buf = buf[:size]
+		} else {
+			buf = make([]byte, size)
+		}
+	}
+	i := uint64(0)
+
+	{
+		copy(buf[i+0:], d.AfbID[:])
+		i += 16
+	}
+	{
+		copy(buf[i+0:], d.Source[:])
+		i += 16
+	}
+	{
+		copy(buf[i+0:], d.Target[:])
+		i += 16
+	}
+	return buf[:i+0], nil
+}
+
+func (d *Feedback) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+
+	{
+		copy(d.AfbID[:], buf[i+0:])
+		i += 16
+	}
+	{
+		copy(d.Source[:], buf[i+0:])
+		i += 16
+	}
+	{
+		copy(d.Target[:], buf[i+0:])
+		i += 16
+	}
+	return i + 0, nil
+}
+
 type SetPC struct {
 	Type [16]byte
 }
@@ -445,11 +508,14 @@ func (d *Event) Size() (s uint64) {
 		case Cast:
 			v = 1 + 1
 
-		case ConnectPC:
+		case Feedback:
 			v = 2 + 1
 
-		case SetPC:
+		case ConnectPC:
 			v = 3 + 1
+
+		case SetPC:
+			v = 4 + 1
 
 		}
 
@@ -472,6 +538,12 @@ func (d *Event) Size() (s uint64) {
 			}
 
 		case Cast:
+
+			{
+				s += tt.Size()
+			}
+
+		case Feedback:
 
 			{
 				s += tt.Size()
@@ -542,11 +614,14 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 		case Cast:
 			v = 1 + 1
 
-		case ConnectPC:
+		case Feedback:
 			v = 2 + 1
 
-		case SetPC:
+		case ConnectPC:
 			v = 3 + 1
+
+		case SetPC:
+			v = 4 + 1
 
 		}
 
@@ -576,6 +651,16 @@ func (d *Event) Marshal(buf []byte) ([]byte, error) {
 			}
 
 		case Cast:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+8:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
+		case Feedback:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
@@ -672,7 +757,7 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 2 + 1:
-			var tt ConnectPC
+			var tt Feedback
 
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
@@ -685,6 +770,19 @@ func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 
 		case 3 + 1:
+			var tt ConnectPC
+
+			{
+				ni, err := tt.Unmarshal(buf[i+8:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 4 + 1:
 			var tt SetPC
 
 			{

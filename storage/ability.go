@@ -46,7 +46,20 @@ func (c DamageOverTime) Domain() game.DamageOverTime {
 
 // NewAbility convert a game.Ability into a storage Ability.
 func NewAbility(a game.Ability) *Ability {
-	ability := Ability{
+	components := make([]interface{}, len(a.Components))
+	for i, c := range a.Components {
+		switch c.(type) {
+		case game.HealDirect:
+			components[i] = NewHealDirect(c.(game.HealDirect))
+		case game.DamageDirect:
+			components[i] = NewDamageDirect(c.(game.DamageDirect))
+		case game.HealOverTime:
+			components[i] = NewHealOverTime(c.(game.HealOverTime))
+		case game.DamageOverTime:
+			components[i] = NewDamageOverTime(c.(game.DamageOverTime))
+		}
+	}
+	return &Ability{
 		ID:            [16]byte(a.ID),
 		Type:          [16]byte(a.Type),
 		Name:          a.Name,
@@ -54,25 +67,24 @@ func NewAbility(a game.Ability) *Ability {
 		CD:            a.CD,
 		CurrentCD:     a.CurrentCD,
 	}
-	ability.Components = make([]interface{}, len(a.Components))
-	for i, c := range a.Components {
-		switch c.(type) {
-		case game.HealDirect:
-			ability.Components[i] = NewHealDirect(c.(game.HealDirect))
-		case game.DamageDirect:
-			ability.Components[i] = NewDamageDirect(c.(game.DamageDirect))
-		case game.HealOverTime:
-			ability.Components[i] = NewHealOverTime(c.(game.HealOverTime))
-		case game.DamageOverTime:
-			ability.Components[i] = NewDamageOverTime(c.(game.DamageOverTime))
-		}
-	}
-	return &ability
 }
 
 // Domain converts a storage Ability into a game Ability.
 func (a Ability) Domain() game.Ability {
-	ability := game.Ability{
+	components := make([]game.AbilityComponent, len(a.Components))
+	for i, c := range a.Components {
+		switch c.(type) {
+		case HealDirect:
+			components[i] = c.(HealDirect).Domain()
+		case DamageDirect:
+			components[i] = c.(DamageDirect).Domain()
+		case HealOverTime:
+			components[i] = c.(HealOverTime).Domain()
+		case DamageOverTime:
+			components[i] = c.(DamageOverTime).Domain()
+		}
+	}
+	return game.Ability{
 		ID:            game.ID(a.ID),
 		Type:          game.AbilityType(a.Type),
 		Name:          a.Name,
@@ -80,18 +92,4 @@ func (a Ability) Domain() game.Ability {
 		CD:            a.CD,
 		CurrentCD:     a.CurrentCD,
 	}
-	ability.Components = make([]game.AbilityComponent, len(a.Components))
-	for i, c := range a.Components {
-		switch c.(type) {
-		case HealDirect:
-			ability.Components[i] = c.(HealDirect).Domain()
-		case DamageDirect:
-			ability.Components[i] = c.(DamageDirect).Domain()
-		case HealOverTime:
-			ability.Components[i] = c.(HealOverTime).Domain()
-		case DamageOverTime:
-			ability.Components[i] = c.(DamageOverTime).Domain()
-		}
-	}
-	return ability
 }
