@@ -86,9 +86,22 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 		return err
 	}
 
-	// TODO add AbilityFeedback service and Get here then affect to source
-	feedback := ability.Affect(&target)
-	feedback.Affect(source)
+	afb := ability.Affect(&target)
+	if err := a.SetAbilityFeedback(afb); err != nil {
+		return err
+	}
+	if err := a.SendEvent(game.Event{
+		ID:     game.NewULID(),
+		TS:     event.TS,
+		Source: event.Source,
+		Action: game.Feedback{
+			AfbID:  afb.ID,
+			Source: source.ID,
+			Target: target.ID,
+		},
+	}, source.ID); err != nil {
+		return err
+	}
 
 	return nil
 }

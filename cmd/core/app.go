@@ -9,6 +9,9 @@ import (
 )
 
 type app struct {
+	game.AbilityMapper
+	game.AbilityFeedbackMapper
+	game.AbilityTemplateMapper
 	game.EntityMapper
 	game.EntityTemplateMapper
 	game.EventMapper
@@ -17,8 +20,6 @@ type app struct {
 	game.PermissionMapper
 	game.QEventMapper
 	game.QListenerMapper
-	game.AbilityMapper
-	game.AbilityTemplateMapper
 	game.SubscriptionMapper
 	game.TokenMapper
 
