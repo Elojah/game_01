@@ -5,7 +5,7 @@
 		"tolerance": "500ms"
 	},
 	"server": {
-		"address": "127.0.0.1:3400",
+		"addresses": ["127.0.0.1:3400"],
 		"middlewares": ["lz4"],
 		"packet_size": 1024,
 		"server_protocol": "udp"

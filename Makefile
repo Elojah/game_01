@@ -12,6 +12,7 @@ API       = api
 CLIENT    = client
 AUTH      = auth
 CORE      = core
+SYNC      = sync
 TOOL      = tool
 
 FBSDIR    = .
@@ -56,6 +57,14 @@ core:
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(CORE)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(CORE)_$(VERSION) bin/$(PACKAGE)_$(CORE)
+
+sync:
+	$(info $(M) building executable sync…) @ ## Build program binary
+	$Q cd cmd/$(SYNC) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(SYNC)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(SYNC)_$(VERSION) bin/$(PACKAGE)_$(SYNC)
 
 tool:
 	$(info $(M) building executable tool…) @ ## Build program binary

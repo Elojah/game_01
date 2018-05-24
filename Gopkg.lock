@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/elojah/mux"
   packages = ["."]
-  revision = "61de9b862e717b59cb9a2d6817e6fcf2b26ec18a"
+  revision = "fa76ce1b874fd12eaa48f66d1db4cd3c7a31ee4c"
 
 [[projects]]
   branch = "master"
@@ -49,8 +49,14 @@
     "internal/singleflight",
     "internal/util"
   ]
-  revision = "877867d2845fbaf86798befe410b6ceb6f5c29a3"
-  version = "v6.10.2"
+  revision = "0f9028adf0837cf93c9705817493e5f6997cf026"
+  version = "v6.11.0"
+
+[[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
 
 [[projects]]
   name = "github.com/nats-io/go-nats"
@@ -88,8 +94,8 @@
     "internal/json",
     "log"
   ]
-  revision = "05eafee0eb17d0150591a8f30f0fa592cc9b7471"
-  version = "v1.6.0"
+  revision = "fb469685aa8f19d742eff3f56a0bd51a23265829"
+  version = "v1.7.0"
 
 [[projects]]
   name = "github.com/sirupsen/logrus"
@@ -98,19 +104,20 @@
   version = "v1.0.5"
 
 [[projects]]
-  name = "github.com/stretchr/objx"
+  name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "facf9a85c22f48d2f52f2380e4efce1768749a89"
-  version = "v0.1"
+  revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
+  version = "v0.0.3"
+
+[[projects]]
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
+  version = "v1.0.1"
 
 [[projects]]
   name = "github.com/stretchr/testify"
-  packages = [
-    ".",
-    "assert",
-    "http",
-    "mock"
-  ]
+  packages = ["assert"]
   revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
   version = "v1.2.1"
 
@@ -118,7 +125,7 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "ae8bce0030810cf999bb2b9868ae5c7c58e6343b"
+  revision = "159ae71589f303f9fbfd7528413e0fe944b9c1cb"
 
 [[projects]]
   branch = "master"
@@ -127,11 +134,11 @@
     "unix",
     "windows"
   ]
-  revision = "78d5f264b493f125018180c204871ecf58a2dce1"
+  revision = "04b83988a018ef3ebffe1485df79d6499b76a4b4"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4789661771d49fa00424a4d5b4e3f3311291be856755d32cc6f55ea54ccc1663"
+  inputs-digest = "4565a6406b9f9a39c71577013c7f67ce5dcc2752341a2e852d32a839e3d8abf5"
   solver-name = "gps-cdcl"
   solver-version = 1

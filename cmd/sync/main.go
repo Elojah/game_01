@@ -42,23 +42,22 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers = append(launchers, muxl)
 
-	h := handler{}
-	hl := h.NewLauncher(Namespaces{
-		API: "api",
-	}, "api")
-	launchers = append(launchers, hl)
+	a := app{}
+	al := a.NewLauncher(Namespaces{
+		App: "app",
+	}, "app")
+	launchers = append(launchers, al)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
 
-	h.QEventMapper = nax
-	h.TokenMapper = rdx
-	h.Route(&m)
+	a.EntityMapper = rdx
+	a.QEventMapper = nax
+	a.TokenMapper = rdx
 
-	m.Listen()
-	log.Info().Msg("api up")
+	log.Info().Msg("sync up")
 	select {}
 }
 
