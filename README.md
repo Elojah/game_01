@@ -8,10 +8,13 @@
 > make auth && bin/game_auth bin/config_auth.json
 > make api && bin/game_api bin/config_api.json
 > make core && bin/game_core bin/config_core.json
+> make sync && bin/game_sync bin/config_sync.json
+
 > curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
 > curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
 {"ID":"01CD05WMYFFMTHWCNE3PZNWPVK"}
 // This token must be used as client token id
+
 > make client && bin/game_client bin/config_client.json
 ```
 
