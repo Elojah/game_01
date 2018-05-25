@@ -46,6 +46,7 @@ func (r *Recurrer) tick() {
 		case _ = <-r.done:
 			return
 		case _ = <-r.ticker.C:
+			// TODO Retrieve around entities
 		}
 	}
 }
