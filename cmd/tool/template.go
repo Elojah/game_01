@@ -19,9 +19,9 @@ type template struct {
 	game.EntityTemplateMapper
 	game.AbilityTemplateMapper
 
-	config   string
-	entities string
-	abilitys string
+	config    string
+	entities  string
+	abilities string
 
 	logger zerolog.Logger
 }
@@ -59,17 +59,17 @@ func (t *template) ShowTemplates(cmd *cobra.Command, args []string) {
 
 	for _, arg := range args {
 
-		if arg == "abilitys" {
-			abilitys, err := t.ListAbilityTemplate()
+		if arg == "abilities" {
+			abilities, err := t.ListAbilityTemplate()
 			if err != nil {
-				t.logger.Error().Err(err).Msg("failed to retrieve abilitys")
+				t.logger.Error().Err(err).Msg("failed to retrieve abilities")
 				return
 			}
-			t.logger.Info().Int("abilitys", len(abilitys)).Msg("found")
-			for _, ability := range abilitys {
+			t.logger.Info().Int("abilities", len(abilities)).Msg("found")
+			for _, ability := range abilities {
 				raw, err := json.Marshal(ability)
 				if err != nil {
-					t.logger.Error().Err(err).Msg("failed to retrieve abilitys")
+					t.logger.Error().Err(err).Msg("failed to retrieve abilities")
 					return
 				}
 				fmt.Println(string(raw))
@@ -107,8 +107,8 @@ func (t *template) AddTemplates(cmd *cobra.Command, args []string) {
 	if t.entities != "" {
 		t.CreateEntities()
 	}
-	if t.abilitys != "" {
-		t.CreateAbilitys()
+	if t.abilities != "" {
+		t.CreateAbilities()
 	}
 
 	t.logger.Info().Msg("done")
@@ -137,22 +137,22 @@ func (t *template) CreateEntities() {
 	}
 }
 
-func (t *template) CreateAbilitys() {
+func (t *template) CreateAbilities() {
 
-	raw, err := ioutil.ReadFile(t.abilitys)
+	raw, err := ioutil.ReadFile(t.abilities)
 	if err != nil {
-		t.logger.Error().Err(err).Str("abilitys", t.abilitys).Msg("failed to read abilitys file")
+		t.logger.Error().Err(err).Str("abilities", t.abilities).Msg("failed to read abilities file")
 		return
 	}
-	var abilitys []game.AbilityTemplate
-	if err := json.Unmarshal(raw, &abilitys); err != nil {
-		t.logger.Error().Err(err).Str("abilitys", t.abilitys).Msg("invalid JSON")
+	var abilities []game.AbilityTemplate
+	if err := json.Unmarshal(raw, &abilities); err != nil {
+		t.logger.Error().Err(err).Str("abilities", t.abilities).Msg("invalid JSON")
 		return
 	}
 
-	t.logger.Info().Int("abilitys", len(abilitys)).Msg("found")
+	t.logger.Info().Int("abilities", len(abilities)).Msg("found")
 
-	for _, tpl := range abilitys {
+	for _, tpl := range abilities {
 		if err := t.SetAbilityTemplate(tpl); err != nil {
 			t.logger.Error().Err(err).Str("template", tpl.ID.String()).Msg("failed to set template")
 			return

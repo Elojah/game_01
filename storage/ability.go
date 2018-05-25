@@ -66,6 +66,7 @@ func NewAbility(a game.Ability) *Ability {
 		MPConsumption: a.MPConsumption,
 		CD:            a.CD,
 		CurrentCD:     a.CurrentCD,
+		Components:    components,
 	}
 }
 
@@ -91,5 +92,6 @@ func (a Ability) Domain() game.Ability {
 		MPConsumption: a.MPConsumption,
 		CD:            a.CD,
 		CurrentCD:     a.CurrentCD,
+		Components:    components,
 	}
 }

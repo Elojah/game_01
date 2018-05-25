@@ -21,7 +21,7 @@ func main() {
 	}
 
 	var addTemplateCmd = &cobra.Command{
-		Use:   "add-template --config=bin/config_core.json --abilitys=abilitys.json --entities=entities.json",
+		Use:   "add-template --config=bin/config_core.json --abilities=abilities.json --entities=entities.json",
 		Short: "add new entity/ability templates",
 		Long: `add-template creates new templates from JSON files. e.g:
 			entities:
@@ -32,7 +32,7 @@ func main() {
 				"name"     : "scavenger"
 			}]
 
-			abilitys:
+			abilities:
 			[{
 				"type"          : "01CDSTJRVK0HMG6TREBJR7FG1N",
 				"name"          : "fireball",
@@ -48,10 +48,10 @@ func main() {
 	addTemplateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
 	addTemplateCmd.MarkFlagRequired("config")
 	addTemplateCmd.Flags().StringVar(&t.entities, "entities", "", "file where entities are represented in JSON")
-	addTemplateCmd.Flags().StringVar(&t.abilitys, "abilitys", "", "file where abilitys are represented in JSON")
+	addTemplateCmd.Flags().StringVar(&t.abilities, "abilities", "", "file where abilities are represented in JSON")
 
 	var showTemplateCmd = &cobra.Command{
-		Use:   "show-template --config=bin/config_core.json [abilitys] [entities]",
+		Use:   "show-template --config=bin/config_core.json [abilities] [entities]",
 		Short: "show entity/ability templates",
 		Long:  `show-template list all templates defined in redis namespaces`,
 		Args:  cobra.MinimumNArgs(1),
@@ -60,11 +60,11 @@ func main() {
 	showTemplateCmd.Flags().StringVar(&t.config, "config", "", "config file for DB connections")
 	showTemplateCmd.MarkFlagRequired("config")
 
-	var abilitysCmd = &cobra.Command{
-		Use:   "add-abilitys --config=bin/config_core.json --abilitys=abilitys.json",
-		Short: "add new abilitys linked to an entity",
-		Long: `add-abilitys creates new abilitys from JSON files. e.g:
-			abilitys:
+	var abilitiesCmd = &cobra.Command{
+		Use:   "add-abilities --config=bin/config_core.json --abilities=abilities.json",
+		Short: "add new abilities linked to an entity",
+		Long: `add-abilities creates new abilities from JSON files. e.g:
+			abilities:
 			[{
 				"entity_id"      : "01CDSTJRVK0HMG6TREBJR7FG1N",
 				"type"           : "01CDSTJRVK0HMG6TREBJR7FG1N",
@@ -76,11 +76,11 @@ func main() {
 				"current_cd"     : 0
 			}]
 		`,
-		Run: s.AddAbilitys,
+		Run: s.AddAbilities,
 	}
-	abilitysCmd.Flags().StringVar(&s.config, "config", "", "config file for DB connections")
-	abilitysCmd.MarkFlagRequired("config")
-	abilitysCmd.Flags().StringVar(&s.abilitys, "abilitys", "", "file where abilitys are represented in JSON")
+	abilitiesCmd.Flags().StringVar(&s.config, "config", "", "config file for DB connections")
+	abilitiesCmd.MarkFlagRequired("config")
+	abilitiesCmd.Flags().StringVar(&s.abilities, "abilities", "", "file where abilities are represented in JSON")
 
 	var idCmd = &cobra.Command{
 		Use:   "id [no options!]",
@@ -91,7 +91,7 @@ func main() {
 
 	root.AddCommand(addTemplateCmd)
 	root.AddCommand(showTemplateCmd)
-	root.AddCommand(abilitysCmd)
+	root.AddCommand(abilitiesCmd)
 	root.AddCommand(idCmd)
 	root.Execute()
 }

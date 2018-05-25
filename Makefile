@@ -83,15 +83,15 @@ gen:
 
 add-templates:
 	$(info $(M) running add-templates…) @
-	$Q make tool && ./bin/game_tool add-template --config=bin/config_core.json --skills=bin/skill_templates.json --entities=bin/entity_templates.json
+	$Q make tool && ./bin/game_tool add-template --config=bin/config_core.json --abilities=templates/ability_templates.json --entities=templates/entity_templates.json
 
 show-templates:
 	$(info $(M) running show-templates…) @
-	$Q make tool && ./bin/game_tool show-template --config=bin/config_core.json skills entities
+	$Q make tool && ./bin/game_tool show-template --config=bin/config_core.json abilities entities
 
-add-skills:
-	$(info $(M) running add-skills…) @
-	$Q make tool && ./bin/game_tool add-skills --config=bin/config_core.json --skills=bin/skill_templates.json
+add-abilities:
+	$(info $(M) running add-abilities…) @
+	$Q make tool && ./bin/game_tool add-abilities --config=bin/config_core.json --abilities=templates/ability_templates.json
 
 # Dependencies
 .PHONY: dep

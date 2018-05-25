@@ -22,8 +22,8 @@ type abilityWithEntity struct {
 type ability struct {
 	game.AbilityMapper
 
-	config   string
-	abilitys string
+	config    string
+	abilities string
 
 	logger zerolog.Logger
 }
@@ -52,33 +52,33 @@ func (a *ability) init() error {
 	return nil
 }
 
-func (a *ability) AddAbilitys(cmd *cobra.Command, args []string) {
+func (a *ability) AddAbilities(cmd *cobra.Command, args []string) {
 
 	if err := a.init(); err != nil {
 		return
 	}
 
-	a.CreateAbilitys()
+	a.CreateAbilities()
 
 	a.logger.Info().Msg("done")
 }
 
-func (a *ability) CreateAbilitys() {
+func (a *ability) CreateAbilities() {
 
-	raw, err := ioutil.ReadFile(a.abilitys)
+	raw, err := ioutil.ReadFile(a.abilities)
 	if err != nil {
-		a.logger.Error().Err(err).Str("abilitys", a.abilitys).Msg("failed to read abilitys file")
+		a.logger.Error().Err(err).Str("abilities", a.abilities).Msg("failed to read abilities file")
 		return
 	}
-	var abilitys []abilityWithEntity
-	if err := json.Unmarshal(raw, &abilitys); err != nil {
-		a.logger.Error().Err(err).Str("abilitys", a.abilitys).Msg("invalid JSON")
+	var abilities []abilityWithEntity
+	if err := json.Unmarshal(raw, &abilities); err != nil {
+		a.logger.Error().Err(err).Str("abilities", a.abilities).Msg("invalid JSON")
 		return
 	}
 
-	a.logger.Info().Int("abilitys", len(abilitys)).Msg("found")
+	a.logger.Info().Int("abilities", len(abilities)).Msg("found")
 
-	for _, sk := range abilitys {
+	for _, sk := range abilities {
 		if err := a.SetAbility(sk.Ability, sk.EntityID); err != nil {
 			a.logger.Error().Err(err).Str("ability", sk.ID.String()).Msg("failed to set ability")
 			return

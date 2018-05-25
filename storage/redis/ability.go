@@ -21,7 +21,7 @@ func (s *Service) ListAbility(subset game.AbilitySubset) ([]game.Ability, error)
 		return nil, storage.ErrNotFound
 	}
 
-	abilitys := make([]game.Ability, len(keys))
+	abilities := make([]game.Ability, len(keys))
 	for i, key := range keys {
 		val, err := s.Get(key).Result()
 		if err != nil {
@@ -32,9 +32,9 @@ func (s *Service) ListAbility(subset game.AbilitySubset) ([]game.Ability, error)
 		if _, err := ability.Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
-		abilitys[i] = ability.Domain()
+		abilities[i] = ability.Domain()
 	}
-	return abilitys, nil
+	return abilities, nil
 }
 
 // GetAbility implemented with redis.
