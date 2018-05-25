@@ -12,11 +12,11 @@ import (
 
 // Recurrer retrieves entity data associated to pc id and send it at regular ticks.
 type Recurrer struct {
-	id game.ID
+	game.EntityMapper
 
 	logger zerolog.Logger
-
-	addr *net.UDPAddr
+	id     game.ID
+	addr   *net.UDPAddr
 
 	ticker *time.Ticker
 	done   chan struct{}
@@ -25,10 +25,11 @@ type Recurrer struct {
 // NewRecurrer returns a new recurrer which sends entity data associated to pcID to addr, tick times per second.
 func NewRecurrer(id game.ID, addr *net.UDPAddr, tick uint32) *Recurrer {
 	return &Recurrer{
-		id:     id,
 		logger: log.With().Str("recurrer", id.String()).Logger(),
-		ticker: time.NewTicker(time.Second / time.Duration(tick)),
+		id:     id,
 		addr:   addr,
+
+		ticker: time.NewTicker(time.Second / time.Duration(tick)),
 		done:   make(chan struct{}),
 	}
 }
@@ -44,10 +45,7 @@ func (r *Recurrer) tick() {
 		select {
 		case _ = <-r.done:
 			return
-		case _, ok := <-r.ticker.C:
-			if !ok {
-				continue
-			}
+		case _ = <-r.ticker.C:
 		}
 	}
 }

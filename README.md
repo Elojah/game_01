@@ -42,12 +42,13 @@
 - [x] AbilityFeedback service get/set
 - [x] Add core app handler skill
 - [x] Implement SkillFeedback mechanism
+- [ ] Response server to update all clients with delta compression named `sync`
+    + [ ] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?
+    + [ ] recurrer test 100%
 - [ ] Add sequencer cancelling mechanism (CancelEvent(id)->id(don't do me)->event...)
 - [ ] Add cast time mechanic
-- [ ] Response server to update all clients with delta compression named `sync`
 - [ ] Add server ack sending to client (and client resend)
 - [ ] ack service
-- [ ] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?
 - [ ] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?* + first graphic client
 - [ ] Add context everywhere
 
