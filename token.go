@@ -9,6 +9,7 @@ type Token struct {
 	ID      ID           `json:"ID"`
 	IP      *net.UDPAddr `json:"-"`
 	Account ID           `json:"-"`
+	Ping    uint64       `json:"-"`
 }
 
 // TokenMapper is the service gate for Token resource.

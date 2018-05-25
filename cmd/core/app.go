@@ -79,6 +79,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 
 	seq := NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
 	a.seqs[id] = seq
+	seq.Start()
 
 	sub, err := a.SetSubscription(id.String(), seq.MsgHandler)
 	if err != nil {

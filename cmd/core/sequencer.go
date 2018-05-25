@@ -25,6 +25,8 @@ type Sequencer struct {
 	min       tick
 	last      tick
 	interrupt chan struct{}
+
+	callback func(game.ID, game.Event)
 }
 
 // Close kills both fetch/input goroutines.
@@ -37,7 +39,7 @@ func (s *Sequencer) Close() {
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
 func NewSequencer(id game.ID, limit int, em game.EventMapper, callback func(game.ID, game.Event)) *Sequencer {
-	s := Sequencer{
+	return &Sequencer{
 		id:          id,
 		logger:      log.With().Str("sequencer", id.String()).Logger(),
 		EventMapper: em,
@@ -49,78 +51,86 @@ func NewSequencer(id game.ID, limit int, em game.EventMapper, callback func(game
 		min:       make(tick, limit),
 		last:      make(tick, limit),
 		interrupt: make(chan struct{}, 1),
+
+		callback: callback,
 	}
+}
 
-	go func() {
-		var last int64
-		for {
-			select {
-			case t, ok := <-s.input:
-				if !ok {
-					return
-				}
-				if t < last {
-					s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
-					s.interrupt <- struct{}{}
-				}
-				s.logger.Info().Int64("current", t).Msg("fetch post events")
-				s.min <- t
-				s.fetch <- t
-			case t := <-s.last:
-				last = t
+func (s *Sequencer) listenInput() {
+	var last int64
+	for {
+		select {
+		case t, ok := <-s.input:
+			if !ok {
+				return
 			}
+			if t < last {
+				s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
+				s.interrupt <- struct{}{}
+			}
+			s.logger.Info().Int64("current", t).Msg("fetch post events")
+			s.min <- t
+			s.fetch <- t
+		case t := <-s.last:
+			last = t
 		}
-	}()
+	}
+}
 
-	go func() {
-		var min int64
-		for t := range s.fetch {
-			events, err := s.ListEvent(game.EventSubset{
-				Key: s.id.String(),
-				Min: t,
-			})
-			if err != nil {
-				s.logger.Error().Err(err).Msg("failed to fetch events")
-				continue
-			}
-			for i, event := range events {
-				select {
-				case _ = <-s.interrupt:
-					// Case where interrupt ticks at previous last run.
-					if i != 0 {
-						s.last <- 0
-						break
-					}
-				case m := <-s.min:
-					// Case where min is the tick from same event.
-					if m == t {
-						m = 0
-					}
-					if min == 0 || m < min {
-						min = m
-					}
-				default:
-				}
-				ts := event.TS.UnixNano()
-				if min != 0 && ts > min {
-					s.logger.Info().Int64("ts", ts).Int64("min", min).Msg("skip")
+func (s *Sequencer) listenFetch() {
+	var min int64
+	for t := range s.fetch {
+		events, err := s.ListEvent(game.EventSubset{
+			Key: s.id.String(),
+			Min: t,
+		})
+		if err != nil {
+			s.logger.Error().Err(err).Msg("failed to fetch events")
+			continue
+		}
+		for i, event := range events {
+			select {
+			case _ = <-s.interrupt:
+				// Case where interrupt ticks at previous last run.
+				if i != 0 {
 					s.last <- 0
 					break
 				}
-				s.last <- ts
-				s.process <- event
+			case m := <-s.min:
+				// Case where min is the tick from same event.
+				if m == t {
+					m = 0
+				}
+				if min == 0 || m < min {
+					min = m
+				}
+			default:
 			}
-			s.last <- 0
+			ts := event.TS.UnixNano()
+			if min != 0 && ts > min {
+				s.logger.Info().Int64("ts", ts).Int64("min", min).Msg("skip")
+				s.last <- 0
+				break
+			}
+			s.last <- ts
+			s.process <- event
 		}
-	}()
+		s.last <- 0
+	}
+}
 
-	go func() {
-		for event := range s.process {
-			s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
-			callback(s.id, event)
-		}
-	}()
-	return &s
+func (s *Sequencer) listenProcess() {
+	for event := range s.process {
+		s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
+		s.callback(s.id, event)
+	}
+}
+
+// Start starts the 3 goroutines to follow up events.
+func (s *Sequencer) Start() {
+	go s.listenInput()
+	go s.listenFetch()
+	go s.listenProcess()
 }
 
 // MsgHandler is the consumer function to subscribe for event ordering.

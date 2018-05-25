@@ -84,6 +84,7 @@ func TestSequencer(t *testing.T) {
 				wg.Done()
 			},
 		)
+		seq.Start()
 
 		raw, err := storage.NewEvent(eset[0]).Marshal(nil)
 		assert.NoError(t, err)
@@ -115,6 +116,7 @@ func TestSequencer(t *testing.T) {
 				wg.Done()
 			},
 		)
+		seq.Start()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
@@ -157,6 +159,7 @@ func TestSequencer(t *testing.T) {
 				}
 			},
 		)
+		seq.Start()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
@@ -200,6 +203,7 @@ func TestSequencer(t *testing.T) {
 				}
 			},
 		)
+		seq.Start()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
