@@ -1,11 +1,13 @@
 package tile38
 
 import (
+	"fmt"
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01"
 )
 
+// SetEntityPosition is the tile38 implementation of EntityPosition service,
 func (s *Service) SetEntityPosition(entity game.Entity, ts int64) error {
 	cmd := redis.NewStringCmd(
 		"SET",
@@ -18,14 +20,15 @@ func (s *Service) SetEntityPosition(entity game.Entity, ts int64) error {
 		entity.Position.X,
 		entity.Position.Y,
 	)
-	if err := client.Process(cmd); err != nil {
+	if err := s.Process(cmd); err != nil {
 		return err
 	}
 	_, err := cmd.Result()
 	return err
 }
 
-func (s *Service) ListEntityPosition(subset game.EntityPositionSubset) (game.Entity, error) {
+// ListEntityPosition is the tile38 implementation of EntityPosition service,
+func (s *Service) ListEntityPosition(subset game.EntityPositionSubset) ([]game.Entity, error) {
 	cmd := redis.NewStringCmd(
 		"NEARBY",
 		"entity",
@@ -33,9 +36,13 @@ func (s *Service) ListEntityPosition(subset game.EntityPositionSubset) (game.Ent
 		subset.Position.X,
 		subset.Position.Y,
 	)
-	if err := client.Process(cmd); err != nil {
-		return err
+	if err := s.Process(cmd); err != nil {
+		return nil, err
 	}
-	_, err := cmd.Result()
-	return err
+	val, err := cmd.Result()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(val))
+	return []game.Entity{}, nil
 }

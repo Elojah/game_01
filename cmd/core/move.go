@@ -57,7 +57,7 @@ func (a *app) MoveTarget(event game.Event) error {
 	}
 
 	// #Retrieve previous state target.
-	target, err := a.GetEntity(game.EntitySubset{Key: move.Target.String(), Max: event.TS.UnixNano()})
+	target, err := a.GetEntity(game.EntitySubset{Key: move.Target.String(), MaxTS: event.TS.UnixNano()})
 	if err != nil {
 		return err
 	}

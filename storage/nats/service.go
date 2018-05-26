@@ -1,6 +1,7 @@
 package nats
 
 import (
+	"github.com/elojah/game_01"
 	"github.com/elojah/nats"
 )
 

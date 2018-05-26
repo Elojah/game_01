@@ -76,12 +76,12 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 		return err
 	}
 
-	source, err := a.GetEntity(game.EntitySubset{Key: cast.Source.String(), Max: event.TS.UnixNano()})
+	source, err := a.GetEntity(game.EntitySubset{Key: cast.Source.String(), MaxTS: event.TS.UnixNano()})
 	if err != nil {
 		return err
 	}
 
-	target, err := a.GetEntity(game.EntitySubset{Key: id.String(), Max: event.TS.UnixNano()})
+	target, err := a.GetEntity(game.EntitySubset{Key: id.String(), MaxTS: event.TS.UnixNano()})
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 	if err := a.SetAbilityFeedback(afb); err != nil {
 		return err
 	}
-	if err := a.SendEvent(game.Event{
+	return a.SendEvent(game.Event{
 		ID:     game.NewULID(),
 		TS:     event.TS,
 		Source: event.Source,
@@ -99,9 +99,5 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 			Source: source.ID,
 			Target: target.ID,
 		},
-	}, source.ID); err != nil {
-		return err
-	}
-
-	return nil
+	}, source.ID)
 }
