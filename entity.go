@@ -27,11 +27,16 @@ type EntityMapper interface {
 // EntityPositionMapper is an interface for Entity position duplicate.
 type EntityPositionMapper interface {
 	SetEntityPosition(Entity, int64) error
-	GetEntityPosition(EntitySubset) (Entity, error)
+	ListEntityPosition(EntityPositionSubset) ([]Entity, error)
 }
 
 // EntitySubset is a subset to retrieve one entity.
 type EntitySubset struct {
-	Key string
-	Max int64
+	Key   string
+	MaxTS int64
+}
+
+// EntityPositionSubset is a subset to retrieve all entities around a position.
+type EntityPositionSubset struct {
+	Position Vec3
 }

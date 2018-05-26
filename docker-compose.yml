@@ -3,8 +3,7 @@ services:
 
   # Redis
   redis:
-    build:
-      context: docker/redis
+    build: docker/redis
     ports:
       - 6379:6379
 
@@ -14,3 +13,9 @@ services:
     ports:
       - 4222:4222
       - 8222:8222
+
+  # Tile38
+  tile38:
+    image: tile38/tile38
+    ports:
+      - 9851:9851

@@ -4,6 +4,10 @@ import (
 	"github.com/elojah/nats"
 )
 
+var _ game.QEventMapper = (*Service)(nil)
+var _ game.QListenerMapper = (*Service)(nil)
+var _ game.SubscriptionMapper = (*Service)(nil)
+
 // Service implements event.
 type Service struct {
 	*nats.Service

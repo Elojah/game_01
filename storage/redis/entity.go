@@ -35,7 +35,7 @@ func (s *Service) GetEntity(subset game.EntitySubset) (game.Entity, error) {
 		redis.ZRangeBy{
 			Count: 1,
 			Min:   "-inf",
-			Max:   strconv.FormatInt(subset.Max, 10),
+			Max:   strconv.FormatInt(subset.MaxTS, 10),
 		},
 	)
 	vals, err := cmd.Result()
