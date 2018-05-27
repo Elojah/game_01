@@ -40,4 +40,5 @@ type EntitySubset struct {
 type EntityPositionSubset struct {
 	Position Vec3
 	Radius   float64
+	Limit    uint64
 }

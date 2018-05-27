@@ -107,6 +107,7 @@ func (e *entity) ShowEntities() {
 		entities, err := e.ListEntityPosition(game.EntityPositionSubset{
 			Position: p,
 			Radius:   e.radius,
+			Limit:    1000,
 		})
 		if err != nil {
 			e.logger.Error().Err(err).Msg("failed to retrieve entities")

@@ -13,6 +13,7 @@
 	"tile38": {
 		"addr": "127.0.0.1:9851",
 		"password": "",
+		"output": "json",
 		"db": 0
 	},
 	"nats": {
