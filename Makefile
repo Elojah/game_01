@@ -89,9 +89,17 @@ show-templates:
 	$(info $(M) running show-templates…) @
 	$Q make tool && ./bin/game_tool show-template --config=bin/config_core.json abilities entities
 
-add-abilities:
-	$(info $(M) running add-abilities…) @
-	$Q make tool && ./bin/game_tool add-abilities --config=bin/config_core.json --abilities=templates/ability_templates.json
+add-ability:
+	$(info $(M) running add-ability…) @
+	$Q make tool && ./bin/game_tool add-ability --config=bin/config_core.json --abilities=templates/ability_templates.json
+
+spawn-entity:
+	$(info $(M) running spawn-entity…) @
+	$Q make tool && ./bin/game_tool spawn-entity --config=bin/config_core.json --entities=templates/entity.json
+
+show-entity:
+	$(info $(M) running show-entity…) @
+	$Q make tool && ./bin/game_tool show-entity --config=bin/config_core.json --positions=templates/position.json --radius=100
 
 # Dependencies
 .PHONY: dep

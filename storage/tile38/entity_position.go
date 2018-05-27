@@ -35,6 +35,7 @@ func (s *Service) ListEntityPosition(subset game.EntityPositionSubset) ([]game.E
 		"POINT",
 		subset.Position.X,
 		subset.Position.Y,
+		subset.Radius,
 	)
 	if err := s.Process(cmd); err != nil {
 		return nil, err

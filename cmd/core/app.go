@@ -13,6 +13,7 @@ type app struct {
 	game.AbilityFeedbackMapper
 	game.AbilityTemplateMapper
 	game.EntityMapper
+	game.EntityPositionMapper
 	game.EntityTemplateMapper
 	game.EventMapper
 	game.PCMapper

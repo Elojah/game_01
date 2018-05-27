@@ -39,4 +39,5 @@ type EntitySubset struct {
 // EntityPositionSubset is a subset to retrieve all entities around a position.
 type EntityPositionSubset struct {
 	Position Vec3
+	Radius   float64
 }
