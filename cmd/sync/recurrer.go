@@ -22,7 +22,7 @@ type Recurrer struct {
 	done   chan struct{}
 }
 
-// NewRecurrer returns a new recurrer which sends entity data associated to pcID to addr, tick times per second.
+// NewRecurrer returns a new recurrer which sends entity data associated to id to addr, tick times per second.
 func NewRecurrer(id game.ID, addr *net.UDPAddr, tick uint32) *Recurrer {
 	return &Recurrer{
 		logger: log.With().Str("recurrer", id.String()).Logger(),

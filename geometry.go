@@ -17,6 +17,23 @@ type Vec3 struct {
 	Z float64 `json:"z"`
 }
 
+// Cuboid represents a square box.
+type Cuboid struct {
+	XInf float64
+	XSup float64
+	YInf float64
+	YSup float64
+	ZInf float64
+	ZSup float64
+}
+
+// Cover returns if a point is in the Cuboid
+func (c Cuboid) Cover(point Vec3) bool {
+	return c.XInf < point.X && point.X < c.XSup &&
+		c.YInf < point.Y && point.Y < c.YSup &&
+		c.ZInf < point.Z && point.Z < c.ZSup
+}
+
 // Circle represents a area circle.
 type Circle struct {
 	Centre Vec2

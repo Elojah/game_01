@@ -11,7 +11,6 @@ import (
 
 	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
-	tile38x "github.com/elojah/game_01/storage/tile38"
 	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -30,13 +29,6 @@ func run(prog string, filename string) {
 	}, "redis")
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
-
-	t38 := redis.Service{}
-	t38l := t38.NewLauncher(redis.Namespaces{
-		Redis: "tile38",
-	}, "tile38")
-	launchers = append(launchers, t38l)
-	t38x := tile38x.NewService(&t38)
 
 	na := nats.Service{}
 	nal := na.NewLauncher(nats.Namespaces{
