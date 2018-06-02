@@ -13,14 +13,15 @@ var (
 )
 
 type Entity struct {
-	ID   [16]byte
-	Type [16]byte
-	Name string
-	HP   uint64
-	MP   uint64
-	X    float64
-	Y    float64
-	Z    float64
+	ID       [16]byte
+	Type     [16]byte
+	Name     string
+	HP       uint64
+	MP       uint64
+	SectorID [16]byte
+	X        float64
+	Y        float64
+	Z        float64
 }
 
 func (d *Entity) Size() (s uint64) {
@@ -45,6 +46,9 @@ func (d *Entity) Size() (s uint64) {
 
 		}
 		s += l
+	}
+	{
+		s += 16
 	}
 	s += 40
 	return
@@ -124,6 +128,10 @@ func (d *Entity) Marshal(buf []byte) ([]byte, error) {
 
 		buf[i+7+8] = byte(d.MP >> 56)
 
+	}
+	{
+		copy(buf[i+16:], d.SectorID[:])
+		i += 16
 	}
 	{
 
@@ -231,6 +239,10 @@ func (d *Entity) Unmarshal(buf []byte) (uint64, error) {
 
 		d.MP = 0 | (uint64(buf[i+0+8]) << 0) | (uint64(buf[i+1+8]) << 8) | (uint64(buf[i+2+8]) << 16) | (uint64(buf[i+3+8]) << 24) | (uint64(buf[i+4+8]) << 32) | (uint64(buf[i+5+8]) << 40) | (uint64(buf[i+6+8]) << 48) | (uint64(buf[i+7+8]) << 56)
 
+	}
+	{
+		copy(d.SectorID[:], buf[i+16:])
+		i += 16
 	}
 	{
 

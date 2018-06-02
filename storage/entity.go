@@ -7,14 +7,15 @@ import (
 // NewEntity convert a game.Entity into a storage Entity.
 func NewEntity(a game.Entity) *Entity {
 	return &Entity{
-		ID:   [16]byte(a.ID),
-		Type: [16]byte(a.Type),
-		Name: a.Name,
-		HP:   a.HP,
-		MP:   a.MP,
-		X:    a.Position.X,
-		Y:    a.Position.Y,
-		Z:    a.Position.Z,
+		ID:       [16]byte(a.ID),
+		Type:     [16]byte(a.Type),
+		Name:     a.Name,
+		HP:       a.HP,
+		MP:       a.MP,
+		SectorID: a.Position.SectorID,
+		X:        a.Position.Coord.X,
+		Y:        a.Position.Coord.Y,
+		Z:        a.Position.Coord.Z,
 	}
 }
 
@@ -26,10 +27,13 @@ func (a Entity) Domain() game.Entity {
 		Name: a.Name,
 		HP:   a.HP,
 		MP:   a.MP,
-		Position: game.Vec3{
-			X: a.X,
-			Y: a.Y,
-			Z: a.Z,
+		Position: game.Position{
+			SectorID: a.SectorID,
+			Coord: game.Vec3{
+				X: a.X,
+				Y: a.Y,
+				Z: a.Z,
+			},
 		},
 	}
 }

@@ -24,8 +24,8 @@ func (a *app) CastSource(id game.ID, event game.Event) error {
 		Source: event.Source.String(),
 		Target: cast.Source.String(),
 	})
-	if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
-		return game.ErrInsufficientRights
+	if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+		return game.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func (a *app) CastSource(id game.ID, event game.Event) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return game.ErrInsufficientRights
+		return game.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -57,8 +57,8 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 		Source: event.Source.String(),
 		Target: cast.Source.String(),
 	})
-	if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
-		return game.ErrInsufficientRights
+	if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+		return game.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return game.ErrInsufficientRights
+		return game.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err

@@ -1,0 +1,14 @@
+struct ExitPoint {
+	SectorID	[16]byte
+	X			float64
+	Y			float64
+	Z			float64
+}
+
+struct Sector {
+	ID			[16]byte
+	X			float64
+	Y			float64
+	Z			float64
+	ExitPoints	[26][]ExitPoint
+}

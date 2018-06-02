@@ -11,8 +11,8 @@ var (
 	ErrInvalidTS = errors.New("packet TS is out of valid range")
 	// ErrWrongCredentials is raised when user logs with invalid username/password.
 	ErrWrongCredentials = errors.New("invalid credentials")
-	// ErrInsufficientRights is raised when a user apply an action without valid rights.
-	ErrInsufficientRights = errors.New("insufficient rights")
+	// ErrInsufficientACLs is raised when a user apply an action without valid rights.
+	ErrInsufficientACLs = errors.New("insufficient rights")
 	// ErrInvalidAction is raised when an action is not possible following game rules.
 	ErrInvalidAction = errors.New("action is not possible")
 	// ErrInvalidEntityType is raised when an entity doesn't respect the correct type.

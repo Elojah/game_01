@@ -35,8 +35,8 @@ func (a *app) MoveTarget(event game.Event) error {
 		Source: event.Source.String(),
 		Target: move.Source.String(),
 	})
-	if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
-		return game.ErrInsufficientRights
+	if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+		return game.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -48,8 +48,8 @@ func (a *app) MoveTarget(event game.Event) error {
 			Source: move.Source.String(),
 			Target: move.Target.String(),
 		})
-		if err == storage.ErrNotFound || (err != nil && game.Right(permission.Value) != game.Owner) {
-			return game.ErrInsufficientRights
+		if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+			return game.ErrInsufficientACLs
 		}
 		if err != nil {
 			return err
@@ -63,12 +63,12 @@ func (a *app) MoveTarget(event game.Event) error {
 	}
 
 	// #Check if target has move in correct boundaries.
-	if game.Segment(target.Position, move.Position) > a.moveTolerance {
+	if game.Segment(target.Position.Coord, move.Position) > a.moveTolerance {
 		return game.ErrInvalidAction
 	}
 
 	// #Move target
-	target.MoveTo(move.Position)
+	target.Move(move.Position)
 
 	// #Write new target state.
 	return a.SetEntity(target, event.TS.UnixNano())

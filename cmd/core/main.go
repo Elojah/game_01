@@ -54,7 +54,6 @@ func run(prog string, filename string) {
 	a.AbilityFeedbackMapper = rdx
 	a.AbilityTemplateMapper = rdx
 	a.EntityMapper = rdx
-	a.EntityPositionMapper = t38x
 	a.EntityTemplateMapper = rdx
 	a.EventMapper = rdx
 	a.PCMapper = rdx
@@ -62,6 +61,7 @@ func run(prog string, filename string) {
 	a.PermissionMapper = rdx
 	a.QEventMapper = nax
 	a.QListenerMapper = nax
+	a.SectorMapper = rdx
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 

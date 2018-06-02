@@ -17,18 +17,11 @@ type Vec3 struct {
 	Z float64 `json:"z"`
 }
 
-// Cuboid represents a square box.
-type Cuboid struct {
-	X    int64
-	Y    int64
-	Z    int64
-	Size Vec3
-}
-
-// Circle represents a area circle.
-type Circle struct {
-	Centre Vec2
-	Radius float64
+// Add add vector coordinates to v.
+func (v *Vec3) Add(p Vec3) {
+	v.X += p.X
+	v.Y += p.Y
+	v.Z += p.Z
 }
 
 // Segment returns the distance between 2 points following XYZ axis.

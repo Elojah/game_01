@@ -3,6 +3,8 @@ package main
 import (
 	"math/rand"
 
+	"github.com/oklog/ulid"
+
 	"github.com/elojah/game_01"
 )
 
@@ -39,7 +41,10 @@ func (a *app) CreatePC(id game.ID, event game.Event) error {
 	// #Create PC from the template.
 	pc := game.PC(template)
 	pc.ID = game.NewULID()
-	pc.Position = game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()}
+	pc.Position = game.Position{
+		SectorID: ulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
+		Coord:    game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
+	}
 	if err := pc.Check(); err != nil {
 		return err
 	}

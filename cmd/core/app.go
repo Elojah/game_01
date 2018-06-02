@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/nats-io/go-nats"
+	nats "github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
@@ -13,7 +13,6 @@ type app struct {
 	game.AbilityFeedbackMapper
 	game.AbilityTemplateMapper
 	game.EntityMapper
-	game.EntityPositionMapper
 	game.EntityTemplateMapper
 	game.EventMapper
 	game.PCMapper
@@ -21,6 +20,7 @@ type app struct {
 	game.PermissionMapper
 	game.QEventMapper
 	game.QListenerMapper
+	game.SectorMapper
 	game.SubscriptionMapper
 	game.TokenMapper
 
@@ -38,7 +38,7 @@ type app struct {
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
-	a.moveTolerance = c.MoveTolerance
+	a.moveTolerance = c.Movelerance
 	a.cores = make([]game.ID, len(c.Cores))
 	copy(a.cores, c.Cores)
 
