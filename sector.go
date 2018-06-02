@@ -64,8 +64,69 @@ const (
 	UpFront Direction = 25
 )
 
+// Opposite returns the opposite direction of d.
+func (d Direction) Opposite() Direction {
+	switch d {
+	case Back:
+		return Front
+	case Down:
+		return Up
+	case DownBack:
+		return UpFront
+	case DownFront:
+		return UpBack
+	case Front:
+		return Back
+	case Left:
+		return Right
+	case LeftBack:
+		return RightFront
+	case LeftDown:
+		return RightUp
+	case LeftDownBack:
+		return RightUpFront
+	case LeftDownFront:
+		return RightUpBack
+	case LeftFront:
+		return RightBack
+	case LeftUp:
+		return RightDown
+	case LeftUpBack:
+		return RightDownFront
+	case LeftUpFront:
+		return RightDownBack
+	case Right:
+		return Left
+	case RightBack:
+		return LeftFront
+	case RightDown:
+		return LeftUp
+	case RightDownBack:
+		return LeftUpFront
+	case RightDownFront:
+		return LeftUpBack
+	case RightFront:
+		return LeftBack
+	case RightUp:
+		return LeftDown
+	case RightUpBack:
+		return LeftDownFront
+	case RightUpFront:
+		return LeftDownBack
+	case Up:
+		return Down
+	case UpBack:
+		return DownFront
+	case UpFront:
+		return DownBack
+	}
+	// Error case
+	return In
+}
+
 // ExitPoint represents a central point to another sector.
 type ExitPoint struct {
+	ID       ID
 	SectorID ID
 	Position Vec3
 }
@@ -94,8 +155,8 @@ type Sector struct {
 	ExitPoints [26][]ExitPoint
 }
 
-// Relative returns the relative position of v for sector s.
-func (s Sector) Relative(v Vec3) Direction {
+// Direction returns the relative position of v for sector s.
+func (s Sector) Direction(v Vec3) Direction {
 	deltaX := In
 	if v.X > s.Size.X {
 		deltaX = Right
@@ -185,6 +246,16 @@ func combineDirections(x Direction, y Direction, z Direction) Direction {
 		return Back
 	}
 	return In
+}
+
+// GetExitPoint returns the exit point in direction d with id id.
+func (s Sector) GetExitPoint(id ID, d Direction) ExitPoint {
+	for _, exp := range s.ExitPoints[d] {
+		if exp.ID.Compare(id) == 0 {
+			return exp
+		}
+	}
+	return ExitPoint{}
 }
 
 // SectorMapper is the service for Sector.

@@ -13,6 +13,7 @@ var (
 )
 
 type ExitPoint struct {
+	ID       [16]byte
 	SectorID [16]byte
 	X        float64
 	Y        float64
@@ -21,6 +22,9 @@ type ExitPoint struct {
 
 func (d *ExitPoint) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -38,6 +42,10 @@ func (d *ExitPoint) Marshal(buf []byte) ([]byte, error) {
 	}
 	i := uint64(0)
 
+	{
+		copy(buf[i+0:], d.ID[:])
+		i += 16
+	}
 	{
 		copy(buf[i+0:], d.SectorID[:])
 		i += 16
@@ -111,6 +119,10 @@ func (d *ExitPoint) Marshal(buf []byte) ([]byte, error) {
 func (d *ExitPoint) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
+	{
+		copy(d.ID[:], buf[i+0:])
+		i += 16
+	}
 	{
 		copy(d.SectorID[:], buf[i+0:])
 		i += 16

@@ -11,6 +11,7 @@ func (s *Sector) Domain() game.Sector {
 		eps[i] = make([]game.ExitPoint, len(s.ExitPoints[i]))
 		for j := range s.ExitPoints[i] {
 			eps[i][j] = game.ExitPoint{
+				ID:       game.ID(s.ExitPoints[i][j].ID),
 				SectorID: game.ID(s.ExitPoints[i][j].SectorID),
 				Position: game.Vec3{
 					X: s.ExitPoints[i][j].X,
@@ -38,6 +39,7 @@ func NewSector(sector game.Sector) *Sector {
 		eps[i] = make([]ExitPoint, len(sector.ExitPoints[i]))
 		for j := range sector.ExitPoints[i] {
 			eps[i][j] = ExitPoint{
+				ID:       [16]byte(sector.ExitPoints[i][j].ID),
 				SectorID: [16]byte(sector.ExitPoints[i][j].SectorID),
 				X:        sector.ExitPoints[i][j].Position.X,
 				Y:        sector.ExitPoints[i][j].Position.Y,
