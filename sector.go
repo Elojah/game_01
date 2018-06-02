@@ -4,38 +4,6 @@ import (
 	"math"
 )
 
-var (
-	// Opposite represents opposite of direction at equivalent index.
-	Opposite = []Direction{
-		Front,
-		Up,
-		UpFront,
-		UpBack,
-		Back,
-		Right,
-		RightFront,
-		RightUp,
-		RightUpFront,
-		RightUpBack,
-		RightBack,
-		RightDown,
-		RightDownFront,
-		RightDownBack,
-		Left,
-		LeftFront,
-		LeftUp,
-		LeftUpFront,
-		LeftUpBack,
-		LeftBack,
-		LeftDown,
-		LeftDownFront,
-		LeftDownBack,
-		Down,
-		DownFront,
-		DownBack,
-	}
-)
-
 // Direction represents a direction relative to a sector. Must have 26 values + 1 neutral.
 type Direction uint8
 
@@ -94,6 +62,38 @@ const (
 	UpBack Direction = 24
 	// UpFront is the up front direction relative to sector.
 	UpFront Direction = 25
+)
+
+var (
+	// Opposite represents opposite of direction at equivalent index.
+	Opposite = []Direction{
+		Front,
+		Up,
+		UpFront,
+		UpBack,
+		Back,
+		Right,
+		RightFront,
+		RightUp,
+		RightUpFront,
+		RightUpBack,
+		RightBack,
+		RightDown,
+		RightDownFront,
+		RightDownBack,
+		Left,
+		LeftFront,
+		LeftUp,
+		LeftUpFront,
+		LeftUpBack,
+		LeftBack,
+		LeftDown,
+		LeftDownFront,
+		LeftDownBack,
+		Down,
+		DownFront,
+		DownBack,
+	}
 )
 
 // ExitPoint represents a central point to another sector.
