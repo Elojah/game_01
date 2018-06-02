@@ -67,8 +67,21 @@ func (a *app) MoveTarget(event game.Event) error {
 		return game.ErrInvalidAction
 	}
 
+	// #Retrieve current sector
+	sector, err := a.GetSector(game.SectorSubset{ID: target.Position.SectorID})
+	if err != nil {
+		return err
+	}
+
 	// #Move target
 	target.Move(move.Position)
+	rel := sector.Relative(target.Position.Coord)
+	// If target is out of sector, move to next
+	if rel != game.In {
+		exp := game.ExitPoints(sector.ExitPoints[rel]).Closest(target.Position.Coord)
+		target.Position.SectorID = exp.SectorID
+		// TODO change position in its new sector
+	}
 
 	// #Write new target state.
 	return a.SetEntity(target, event.TS.UnixNano())
