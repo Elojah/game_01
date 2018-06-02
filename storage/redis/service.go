@@ -14,8 +14,9 @@ var _ game.EntityTemplateMapper = (*Service)(nil)
 var _ game.EventMapper = (*Service)(nil)
 var _ game.PCMapper = (*Service)(nil)
 var _ game.PermissionMapper = (*Service)(nil)
-var _ game.TokenMapper = (*Service)(nil)
 var _ game.SectorMapper = (*Service)(nil)
+var _ game.SectorEntitiesMapper = (*Service)(nil)
+var _ game.TokenMapper = (*Service)(nil)
 
 // Service implements token and entity.
 type Service struct {
