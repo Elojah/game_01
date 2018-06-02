@@ -83,7 +83,7 @@ func (a *app) MoveTarget(event game.Event) error {
 		if err != nil {
 			return err
 		}
-		oppExp := nextSector.GetExitPoint(exp.ID, dir.Opposite())
+		oppExp := nextSector.GetExitPoint(exp.ID, game.Opposite[dir])
 		target.Position.SectorID = nextSector.ID
 		target.Position.Coord.MoveReference(exp.Position, oppExp.Position)
 	}

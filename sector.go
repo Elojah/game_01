@@ -4,6 +4,38 @@ import (
 	"math"
 )
 
+var (
+	// Opposite represents opposite of direction at equivalent index.
+	Opposite = []Direction{
+		Front,
+		Up,
+		UpFront,
+		UpBack,
+		Back,
+		Right,
+		RightFront,
+		RightUp,
+		RightUpFront,
+		RightUpBack,
+		RightBack,
+		RightDown,
+		RightDownFront,
+		RightDownBack,
+		Left,
+		LeftFront,
+		LeftUp,
+		LeftUpFront,
+		LeftUpBack,
+		LeftBack,
+		LeftDown,
+		LeftDownFront,
+		LeftDownBack,
+		Down,
+		DownFront,
+		DownBack,
+	}
+)
+
 // Direction represents a direction relative to a sector. Must have 26 values + 1 neutral.
 type Direction uint8
 
@@ -63,66 +95,6 @@ const (
 	// UpFront is the up front direction relative to sector.
 	UpFront Direction = 25
 )
-
-// Opposite returns the opposite direction of d.
-func (d Direction) Opposite() Direction {
-	switch d {
-	case Back:
-		return Front
-	case Down:
-		return Up
-	case DownBack:
-		return UpFront
-	case DownFront:
-		return UpBack
-	case Front:
-		return Back
-	case Left:
-		return Right
-	case LeftBack:
-		return RightFront
-	case LeftDown:
-		return RightUp
-	case LeftDownBack:
-		return RightUpFront
-	case LeftDownFront:
-		return RightUpBack
-	case LeftFront:
-		return RightBack
-	case LeftUp:
-		return RightDown
-	case LeftUpBack:
-		return RightDownFront
-	case LeftUpFront:
-		return RightDownBack
-	case Right:
-		return Left
-	case RightBack:
-		return LeftFront
-	case RightDown:
-		return LeftUp
-	case RightDownBack:
-		return LeftUpFront
-	case RightDownFront:
-		return LeftUpBack
-	case RightFront:
-		return LeftBack
-	case RightUp:
-		return LeftDown
-	case RightUpBack:
-		return LeftDownFront
-	case RightUpFront:
-		return LeftDownBack
-	case Up:
-		return Down
-	case UpBack:
-		return DownFront
-	case UpFront:
-		return DownBack
-	}
-	// Error case
-	return In
-}
 
 // ExitPoint represents a central point to another sector.
 type ExitPoint struct {
