@@ -60,14 +60,20 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 		logger.Error().Err(err).Msg("failed to unmarshal recurrer")
 		return
 	}
-	id := recurrerS.Domain().ID
+	recurrer := recurrerS.Domain()
 
-	token, err := a.GetToken(id)
-	if err != nil {
-		logger.Error().Err(err).Str("id", id.String()).Msg("failed to retrieve token")
+	if recurrer.Action == game.CloseRec {
+		a.recurrers[recurrer.ID].Close()
+		delete(a.recurrers, recurrer.ID)
 		return
 	}
 
-	rec := NewRecurrer(id, a.tickRate, func(raw []byte) { a.Send(raw, token.IP) })
-	a.recurrers[id] = rec
+	token, err := a.GetToken(recurrer.ID)
+	if err != nil {
+		logger.Error().Err(err).Str("recurrer.ID", recurrer.ID.String()).Msg("failed to retrieve token")
+		return
+	}
+
+	rec := NewRecurrer(recurrer.ID, a.tickRate, func(raw []byte) { a.Send(raw, token.IP) })
+	a.recurrers[recurrer.ID] = rec
 }

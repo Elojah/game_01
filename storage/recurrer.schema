@@ -1,3 +1,4 @@
 struct Recurrer {
-	ID	[16]byte
+	ID		[16]byte
+	Action	uint8
 }
