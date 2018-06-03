@@ -53,8 +53,13 @@ func run(prog string, filename string) {
 		return
 	}
 
+	a.M = &m
 	a.EntityMapper = rdx
 	a.QEventMapper = nax
+	a.QRecurrerMapper = nax
+	a.SectorEntitiesMapper = rdx
+	a.SectorMapper = rdx
+	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 
 	log.Info().Msg("sync up")

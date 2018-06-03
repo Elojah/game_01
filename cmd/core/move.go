@@ -86,6 +86,12 @@ func (a *app) MoveTarget(event game.Event) error {
 		oppExp := nextSector.GetExitPoint(exp.ID, game.Opposite[dir])
 		target.Position.SectorID = nextSector.ID
 		target.Position.Coord.MoveReference(exp.Position, oppExp.Position)
+		if err := a.AddEntityToSector(target.ID, nextSector.ID); err != nil {
+			return err
+		}
+		if err := a.RemoveEntityToSector(target.ID, nextSector.ID); err != nil {
+			return err
+		}
 	}
 
 	// #Write new target state.

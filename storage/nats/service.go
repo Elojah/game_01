@@ -7,6 +7,7 @@ import (
 
 var _ game.QEventMapper = (*Service)(nil)
 var _ game.QListenerMapper = (*Service)(nil)
+var _ game.QRecurrerMapper = (*Service)(nil)
 var _ game.SubscriptionMapper = (*Service)(nil)
 
 // Service implements event.

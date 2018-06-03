@@ -21,6 +21,7 @@ type app struct {
 	game.QEventMapper
 	game.QListenerMapper
 	game.SectorMapper
+	game.SectorEntitiesMapper
 	game.SubscriptionMapper
 	game.TokenMapper
 

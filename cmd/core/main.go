@@ -62,6 +62,7 @@ func run(prog string, filename string) {
 	a.QEventMapper = nax
 	a.QListenerMapper = nax
 	a.SectorMapper = rdx
+	a.SectorEntitiesMapper = rdx
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 
