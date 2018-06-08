@@ -75,17 +75,16 @@ func (a *app) MoveTarget(event game.Event) error {
 
 	// #Move target
 	target.Move(move.Position)
-	dir := sector.Direction(target.Position.Coord)
 	// If target is out of sector, move to next
-	if dir != game.In {
-		exp := game.ExitPoints(sector.ExitPoints[dir]).Closest(target.Position.Coord)
-		nextSector, err := a.GetSector(game.SectorSubset{ID: exp.SectorID})
+	if sector.Out(target.Position.Coord) {
+		bp := sector.ClosestBP(target.Position.Coord)
+		nextSector, err := a.GetSector(game.SectorSubset{ID: bp.SectorID})
 		if err != nil {
 			return err
 		}
-		oppExp := nextSector.GetExitPoint(exp.ID, game.Opposite[dir])
+		oppBP := nextSector.FindBP(bp.ID)
 		target.Position.SectorID = nextSector.ID
-		target.Position.Coord.MoveReference(exp.Position, oppExp.Position)
+		target.Position.Coord.MoveReference(bp.Position, oppBP.Position)
 		if err := a.AddEntityToSector(target.ID, nextSector.ID); err != nil {
 			return err
 		}

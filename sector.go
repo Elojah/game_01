@@ -18,15 +18,21 @@ type Sector struct {
 	BondPoints []BondPoint
 }
 
+// Out returns if a position is still in the sector.
+func (s Sector) Out(position Vec3) bool {
+	return position.X < 0 ||
+		position.X > s.Size.X ||
+		position.Y < 0 ||
+		position.Y > s.Size.Y ||
+		position.Z < 0 ||
+		position.Z > s.Size.Z
+}
+
 // Adjacents returns ids of adjacent sectors.
-func (s Sector) Adjacents() []ID {
-	sectorIDsMap := make(map[ID]struct{})
+func (s Sector) Adjacents() map[ID]struct{} {
+	sectorIDs := make(map[ID]struct{})
 	for _, bp := range s.BondPoints {
-		sectorIDsMap[bp.SectorID] = struct{}{}
-	}
-	sectorIDs := make ([]ID, len(sectorIDsMap))
-	for i := range sectorIDsMap {
-		sectorIDs[i] = sectorIDsMap[i]
+		sectorIDs[bp.SectorID] = struct{}{}
 	}
 	return sectorIDs
 }
@@ -43,6 +49,16 @@ func (s Sector) ClosestBP(position Vec3) BondPoint {
 		}
 	}
 	return s.BondPoints[iMin]
+}
+
+// FindBP returns a bond point corresponding to this id for this sector.
+func (s Sector) FindBP(id ID) BondPoint {
+	for _, bp := range s.BondPoints {
+		if id == bp.ID {
+			return bp
+		}
+	}
+	return BondPoint{}
 }
 
 // SectorMapper is the service for Sector.

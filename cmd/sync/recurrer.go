@@ -52,10 +52,8 @@ func (r *Recurrer) tick() {
 			continue
 		}
 		go r.sendSector(sector.ID, t)
-		for _, exps := range sector.ExitPoints {
-			for _, exp := range exps {
-				go r.sendSector(exp.SectorID, t)
-			}
+		for id := range sector.Adjacents() {
+			go r.sendSector(id, t)
 		}
 	}
 }
