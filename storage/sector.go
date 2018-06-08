@@ -6,19 +6,16 @@ import (
 
 // Domain converts a storage sector into a domain sector.
 func (s *Sector) Domain() game.Sector {
-	eps := [26][]game.ExitPoint{}
-	for i := 0; i < 26; i++ {
-		eps[i] = make([]game.ExitPoint, len(s.ExitPoints[i]))
-		for j := range s.ExitPoints[i] {
-			eps[i][j] = game.ExitPoint{
-				ID:       game.ID(s.ExitPoints[i][j].ID),
-				SectorID: game.ID(s.ExitPoints[i][j].SectorID),
-				Position: game.Vec3{
-					X: s.ExitPoints[i][j].X,
-					Y: s.ExitPoints[i][j].Y,
-					Z: s.ExitPoints[i][j].Z,
-				},
-			}
+	bps := make([]game.BondPoint, len(s.BondPoints))
+	for i := range s.BondPoints {
+		bps[i] = game.BondPoint{
+			ID:       game.ID(s.BondPoints[i].ID),
+			SectorID: game.ID(s.BondPoints[i].SectorID),
+			Position: game.Vec3{
+				X: s.BondPoints[i].X,
+				Y: s.BondPoints[i].Y,
+				Z: s.BondPoints[i].Z,
+			},
 		}
 	}
 	return game.Sector{
@@ -28,23 +25,20 @@ func (s *Sector) Domain() game.Sector {
 			Y: s.Y,
 			Z: s.Z,
 		},
-		ExitPoints: eps,
+		BondPoints: bps,
 	}
 }
 
 // NewSector converts a domain sector into a storage sector.
 func NewSector(sector game.Sector) *Sector {
-	eps := [26][]ExitPoint{}
-	for i := 0; i < 26; i++ {
-		eps[i] = make([]ExitPoint, len(sector.ExitPoints[i]))
-		for j := range sector.ExitPoints[i] {
-			eps[i][j] = ExitPoint{
-				ID:       [16]byte(sector.ExitPoints[i][j].ID),
-				SectorID: [16]byte(sector.ExitPoints[i][j].SectorID),
-				X:        sector.ExitPoints[i][j].Position.X,
-				Y:        sector.ExitPoints[i][j].Position.Y,
-				Z:        sector.ExitPoints[i][j].Position.Z,
-			}
+	bps := make([]BondPoint, len(sector.BondPoints))
+	for i := range sector.BondPoints {
+		bps[i] = BondPoint{
+			ID:       [16]byte(sector.BondPoints[i].ID),
+			SectorID: [16]byte(sector.BondPoints[i].SectorID),
+			X:        sector.BondPoints[i].Position.X,
+			Y:        sector.BondPoints[i].Position.Y,
+			Z:        sector.BondPoints[i].Position.Z,
 		}
 	}
 	return &Sector{
@@ -52,6 +46,6 @@ func NewSector(sector game.Sector) *Sector {
 		X:          sector.Size.X,
 		Y:          sector.Size.Y,
 		Z:          sector.Size.Z,
-		ExitPoints: eps,
+		BondPoints: bps,
 	}
 }

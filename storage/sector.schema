@@ -1,4 +1,4 @@
-struct ExitPoint {
+struct BondPoint {
 	ID			[16]byte
 	SectorID	[16]byte
 	X			float64
@@ -11,5 +11,5 @@ struct Sector {
 	X			float64
 	Y			float64
 	Z			float64
-	ExitPoints	[26][]ExitPoint
+	BondPoints	[]BondPoint
 }

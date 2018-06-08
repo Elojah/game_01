@@ -12,7 +12,7 @@ var (
 	_ = time.Now()
 )
 
-type ExitPoint struct {
+type BondPoint struct {
 	ID       [16]byte
 	SectorID [16]byte
 	X        float64
@@ -20,7 +20,7 @@ type ExitPoint struct {
 	Z        float64
 }
 
-func (d *ExitPoint) Size() (s uint64) {
+func (d *BondPoint) Size() (s uint64) {
 
 	{
 		s += 16
@@ -31,7 +31,7 @@ func (d *ExitPoint) Size() (s uint64) {
 	s += 24
 	return
 }
-func (d *ExitPoint) Marshal(buf []byte) ([]byte, error) {
+func (d *BondPoint) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -116,7 +116,7 @@ func (d *ExitPoint) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+24], nil
 }
 
-func (d *ExitPoint) Unmarshal(buf []byte) (uint64, error) {
+func (d *BondPoint) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
@@ -153,7 +153,7 @@ type Sector struct {
 	X          float64
 	Y          float64
 	Z          float64
-	ExitPoints [26][]ExitPoint
+	BondPoints []BondPoint
 }
 
 func (d *Sector) Size() (s uint64) {
@@ -162,34 +162,27 @@ func (d *Sector) Size() (s uint64) {
 		s += 16
 	}
 	{
-		for k := range d.ExitPoints {
-			_ = k // make compiler happy in case k is unused
+		l := uint64(len(d.BondPoints))
+
+		{
+
+			t := l
+			for t >= 0x80 {
+				t >>= 7
+				s++
+			}
+			s++
+
+		}
+
+		for k0 := range d.BondPoints {
 
 			{
-				l := uint64(len(d.ExitPoints[k]))
-
-				{
-
-					t := l
-					for t >= 0x80 {
-						t >>= 7
-						s++
-					}
-					s++
-
-				}
-
-				for k0 := range d.ExitPoints[k] {
-
-					{
-						s += d.ExitPoints[k][k0].Size()
-					}
-
-				}
-
+				s += d.BondPoints[k0].Size()
 			}
 
 		}
+
 	}
 	s += 24
 	return
@@ -273,35 +266,29 @@ func (d *Sector) Marshal(buf []byte) ([]byte, error) {
 
 	}
 	{
-		for k := range d.ExitPoints {
+		l := uint64(len(d.BondPoints))
+
+		{
+
+			t := uint64(l)
+
+			for t >= 0x80 {
+				buf[i+24] = byte(t) | 0x80
+				t >>= 7
+				i++
+			}
+			buf[i+24] = byte(t)
+			i++
+
+		}
+		for k0 := range d.BondPoints {
 
 			{
-				l := uint64(len(d.ExitPoints[k]))
-
-				{
-
-					t := uint64(l)
-
-					for t >= 0x80 {
-						buf[i+24] = byte(t) | 0x80
-						t >>= 7
-						i++
-					}
-					buf[i+24] = byte(t)
-					i++
-
+				nbuf, err := d.BondPoints[k0].Marshal(buf[i+24:])
+				if err != nil {
+					return nil, err
 				}
-				for k0 := range d.ExitPoints[k] {
-
-					{
-						nbuf, err := d.ExitPoints[k][k0].Marshal(buf[i+24:])
-						if err != nil {
-							return nil, err
-						}
-						i += uint64(len(nbuf))
-					}
-
-				}
+				i += uint64(len(nbuf))
 			}
 
 		}
@@ -335,41 +322,35 @@ func (d *Sector) Unmarshal(buf []byte) (uint64, error) {
 
 	}
 	{
-		for k := range d.ExitPoints {
+		l := uint64(0)
+
+		{
+
+			bs := uint8(7)
+			t := uint64(buf[i+24] & 0x7F)
+			for buf[i+24]&0x80 == 0x80 {
+				i++
+				t |= uint64(buf[i+24]&0x7F) << bs
+				bs += 7
+			}
+			i++
+
+			l = t
+
+		}
+		if uint64(cap(d.BondPoints)) >= l {
+			d.BondPoints = d.BondPoints[:l]
+		} else {
+			d.BondPoints = make([]BondPoint, l)
+		}
+		for k0 := range d.BondPoints {
 
 			{
-				l := uint64(0)
-
-				{
-
-					bs := uint8(7)
-					t := uint64(buf[i+24] & 0x7F)
-					for buf[i+24]&0x80 == 0x80 {
-						i++
-						t |= uint64(buf[i+24]&0x7F) << bs
-						bs += 7
-					}
-					i++
-
-					l = t
-
+				ni, err := d.BondPoints[k0].Unmarshal(buf[i+24:])
+				if err != nil {
+					return 0, err
 				}
-				if uint64(cap(d.ExitPoints[k])) >= l {
-					d.ExitPoints[k] = d.ExitPoints[k][:l]
-				} else {
-					d.ExitPoints[k] = make([]ExitPoint, l)
-				}
-				for k0 := range d.ExitPoints[k] {
-
-					{
-						ni, err := d.ExitPoints[k][k0].Unmarshal(buf[i+24:])
-						if err != nil {
-							return 0, err
-						}
-						i += ni
-					}
-
-				}
+				i += ni
 			}
 
 		}
