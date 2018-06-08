@@ -80,7 +80,7 @@ func (r *Recurrer) sendEntity(entityID game.ID, t time.Time) {
 		r.logger.Error().Err(err).Msg("failed to retrieve marshal entity")
 		return
 	}
-	go r.callback(raw)
+	r.callback(raw)
 }
 
 // Start init a new goroutine to tick regularly.
