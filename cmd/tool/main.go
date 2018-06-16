@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
 	"github.com/rs/zerolog"
@@ -40,13 +39,6 @@ func run(prog string, filename string) {
 	h.EntityMapper = rdx
 	h.EntityTemplateMapper = rdx
 	h.SectorMapper = rdx
-
-	http.HandleFunc("/ability", h.ability)
-	http.HandleFunc("/entity", h.entity)
-	http.HandleFunc("/sector", h.sector)
-
-	http.HandleFunc("/ability/template", h.abilityTemplate)
-	http.HandleFunc("/entity/template", h.entityTemplate)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
