@@ -81,26 +81,6 @@ gen:
 	$Q cd dto && gencode go -schema=message.schema -package dto
 	$Q cd storage && ls *.schema | xargs -n1 gencode go -package storage -schema
 
-add-templates:
-	$(info $(M) running add-templates…) @
-	$Q make tool && ./bin/game_tool add-template --config=bin/config_core.json --abilities=templates/ability_templates.json --entities=templates/entity_templates.json
-
-show-templates:
-	$(info $(M) running show-templates…) @
-	$Q make tool && ./bin/game_tool show-template --config=bin/config_core.json abilities entities
-
-add-ability:
-	$(info $(M) running add-ability…) @
-	$Q make tool && ./bin/game_tool add-ability --config=bin/config_core.json --abilities=templates/ability_templates.json
-
-spawn-entity:
-	$(info $(M) running spawn-entity…) @
-	$Q make tool && ./bin/game_tool spawn-entity --config=bin/config_core.json --entities=templates/entity.json
-
-show-entity:
-	$(info $(M) running show-entity…) @
-	$Q make tool && ./bin/game_tool show-entity --config=bin/config_core.json --positions=templates/position.json --radius=100
-
 # Dependencies
 .PHONY: dep
 dep:
@@ -125,6 +105,7 @@ lint:
 					"--disable=gotype" \
 					"--disable=vetshadow" \
 					"--disable=gocyclo" \
+					"--disable=goconst" \
 					"--fast" \
 					"--json" \
 					"./..." \

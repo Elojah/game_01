@@ -1,7 +1,5 @@
 {
 	"api": {
-		"version": "0",
-		"resources": ["actor"],
 		"tolerance": "500ms"
 	},
 	"server": {

@@ -29,7 +29,7 @@
   branch = "master"
   name = "github.com/elojah/redis"
   packages = ["."]
-  revision = "7d344010d8f37b3ad666456ab9dbfd3d6deb74ac"
+  revision = "9ee006744ab567119468fcf2993f53a9cf0fb50e"
 
 [[projects]]
   branch = "master"
@@ -49,14 +49,8 @@
     "internal/singleflight",
     "internal/util"
   ]
-  revision = "0f9028adf0837cf93c9705817493e5f6997cf026"
-  version = "v6.11.0"
-
-[[projects]]
-  name = "github.com/inconshreveable/mousetrap"
-  packages = ["."]
-  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
-  version = "v1.0"
+  revision = "83fb42932f6145ce52df09860384a4653d2d332a"
+  version = "v6.12.0"
 
 [[projects]]
   name = "github.com/nats-io/go-nats"
@@ -104,28 +98,16 @@
   version = "v1.0.5"
 
 [[projects]]
-  name = "github.com/spf13/cobra"
-  packages = ["."]
-  revision = "ef82de70bb3f60c65fb8eebacbb2d122ef517385"
-  version = "v0.0.3"
-
-[[projects]]
-  name = "github.com/spf13/pflag"
-  packages = ["."]
-  revision = "583c0c0531f06d5278b7d917446061adc344b5cd"
-  version = "v1.0.1"
-
-[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
-  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
-  version = "v1.2.1"
+  revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
+  version = "v1.2.2"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "ab813273cd59e1333f7ae7bff5d027d4aadf528c"
+  revision = "a8fb68e7206f8c78be19b432c58eb52a6aa34462"
 
 [[projects]]
   branch = "master"
@@ -134,11 +116,11 @@
     "unix",
     "windows"
   ]
-  revision = "c11f84a56e43e20a78cee75a7c034031ecf57d1f"
+  revision = "6c888cc515d3ed83fc103cf1d84468aad274b0a7"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "4565a6406b9f9a39c71577013c7f67ce5dcc2752341a2e852d32a839e3d8abf5"
+  inputs-digest = "0bbbfaa1f0cbf036b5e5ddfb53e6e70759edeb8289fd621fbbe41a8f8983101c"
   solver-name = "gps-cdcl"
   solver-version = 1

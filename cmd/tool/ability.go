@@ -2,16 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
+	"net/http"
 
-	"github.com/rs/zerolog"
-	"github.com/spf13/cobra"
+	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
-	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/redis"
-	"github.com/elojah/services"
 )
 
 type abilityWithEntity struct {
@@ -19,69 +14,37 @@ type abilityWithEntity struct {
 	EntityID game.ID `json:"entity_id"`
 }
 
-type ability struct {
-	game.AbilityMapper
-
-	config    string
-	abilities string
-
-	logger zerolog.Logger
-}
-
-// run ability tool.
-func (a *ability) init() error {
-
-	a.logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout})
-
-	launchers := services.Launchers{}
-
-	// redis
-	rd := redis.Service{}
-	rdl := rd.NewLauncher(redis.Namespaces{
-		Redis: "redis",
-	}, "redis")
-	launchers = append(launchers, rdl)
-	rdx := redisx.NewService(&rd)
-
-	a.AbilityMapper = rdx
-
-	if err := launchers.Up(a.config); err != nil {
-		a.logger.Error().Err(err).Str("filename", a.config).Msg("failed to start")
-		return err
-	}
-	return nil
-}
-
-func (a *ability) AddAbilities(cmd *cobra.Command, args []string) {
-
-	if err := a.init(); err != nil {
+func (h *handler) ability(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		h.postAbilities(w, r)
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
-	a.CreateAbilities()
-
-	a.logger.Info().Msg("done")
 }
 
-func (a *ability) CreateAbilities() {
+func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 
-	raw, err := ioutil.ReadFile(a.abilities)
-	if err != nil {
-		a.logger.Error().Err(err).Str("abilities", a.abilities).Msg("failed to read abilities file")
-		return
-	}
+	logger := log.With().Str("method", "POST").Str("route", "/ability").Logger()
+
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+
 	var abilities []abilityWithEntity
-	if err := json.Unmarshal(raw, &abilities); err != nil {
-		a.logger.Error().Err(err).Str("abilities", a.abilities).Msg("invalid JSON")
+	if err := decoder.Decode(&abilities); err != nil {
+		logger.Error().Err(err).Msg("invalid JSON")
+		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
 
-	a.logger.Info().Int("abilities", len(abilities)).Msg("found")
+	logger.Info().Int("abilities", len(abilities)).Msg("found")
 
-	for _, sk := range abilities {
-		if err := a.SetAbility(sk.Ability, sk.EntityID); err != nil {
-			a.logger.Error().Err(err).Str("ability", sk.ID.String()).Msg("failed to set ability")
+	for _, a := range abilities {
+		if err := h.SetAbility(a.Ability, a.EntityID); err != nil {
+			logger.Error().Err(err).Str("ability", a.ID.String()).Msg("failed to set ability")
 			return
 		}
 	}
+	w.WriteHeader(http.StatusOK)
 }
