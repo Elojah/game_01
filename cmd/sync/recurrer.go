@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
-	"github.com/elojah/game_01/storage"
 )
 
 // Recurrer retrieves entity data associated to pc id and send it at regular ticks.
@@ -20,11 +19,11 @@ type Recurrer struct {
 	id     game.ID
 
 	ticker   *time.Ticker
-	callback func(raw []byte)
+	callback func(game.Entity)
 }
 
 // NewRecurrer returns a new recurrer which sends entity data associated to id to addr, tick times per second.
-func NewRecurrer(id game.ID, tick uint32, callback func(raw []byte)) *Recurrer {
+func NewRecurrer(id game.ID, tick uint32, callback func(game.Entity)) *Recurrer {
 	return &Recurrer{
 		logger:   log.With().Str("recurrer", id.String()).Logger(),
 		id:       id,
@@ -39,6 +38,7 @@ func (r *Recurrer) Close() {
 	r.ticker.Stop()
 }
 
+// Start starts to read the ticker and send entities.
 func (r *Recurrer) Start() {
 	for t := range r.ticker.C {
 		entity, err := r.GetEntity(game.EntitySubset{Key: r.id.String(), MaxTS: t.UnixNano()})
@@ -75,10 +75,5 @@ func (r *Recurrer) sendEntity(entityID game.ID, t time.Time) {
 		r.logger.Error().Err(err).Str("id", entityID.String()).Msg("failed to retrieve entity")
 		return
 	}
-	raw, err := storage.NewEntity(entity).Marshal(nil)
-	if err != nil {
-		r.logger.Error().Err(err).Msg("failed to retrieve marshal entity")
-		return
-	}
-	r.callback(raw)
+	r.callback(entity)
 }

@@ -36,6 +36,7 @@ type EntitySubset struct {
 	MaxTS int64
 }
 
+// Equal returns if both entities are equal.
 func (e Entity) Equal(entity Entity) bool {
 	if e.ID.Compare(entity.ID) != 0 {
 		return false

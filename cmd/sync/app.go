@@ -74,7 +74,14 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 		return
 	}
 
-	rec := NewRecurrer(recurrer.ID, a.tickRate, func(raw []byte) { a.Send(raw, token.IP) })
+	rec := NewRecurrer(recurrer.ID, a.tickRate, func(entity game.Entity) {
+		raw, err := storage.NewEntity(entity).Marshal(nil)
+		if err != nil {
+			logger.Error().Err(err).Msg("failed to retrieve marshal entity")
+			return
+		}
+		a.Send(raw, token.IP)
+	})
 	go rec.Start()
 	a.recurrers[recurrer.ID] = rec
 }

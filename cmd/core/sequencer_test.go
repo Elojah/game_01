@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nats-io/go-nats"
+	nats "github.com/nats-io/go-nats"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/elojah/game_01"
@@ -66,7 +66,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 
 		seqID := game.NewULID()
-		es := mocks.NewEventService()
+		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch es.ListEventCount {
@@ -97,7 +97,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("two", func(t *testing.T) {
 
 		seqID := game.NewULID()
-		es := mocks.NewEventService()
+		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
@@ -136,7 +136,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("cancel", func(t *testing.T) {
 
 		seqID := game.NewULID()
-		es := mocks.NewEventService()
+		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
@@ -179,7 +179,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("interrupt", func(t *testing.T) {
 
 		seqID := game.NewULID()
-		es := mocks.NewEventService()
+		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
