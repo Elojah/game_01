@@ -26,9 +26,10 @@ func (h *handler) ability(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 
-	logger := log.With().Str("method", "POST").Str("route", "/login").Logger()
+	logger := log.With().Str("method", "POST").Str("route", "/ability").Logger()
 
 	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
 
 	var abilities []abilityWithEntity
 	if err := decoder.Decode(&abilities); err != nil {

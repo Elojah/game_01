@@ -1,45 +1,43 @@
 package main
 
 import (
-	"os"
+	"encoding/json"
+	"net/http"
 
-	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
-	game "github.com/elojah/game_01"
-	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/redis"
-	"github.com/elojah/services"
+	"github.com/elojah/game_01"
 )
 
-type sector struct {
-	game.SectorMapper
-
-	config  string
-	sectors string
-
-	logger zerolog.Logger
+func (h *handler) sector(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		h.postSectors(w, r)
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 }
 
-// run sector tool.
-func (s *sector) init() error {
+func (h *handler) postSectors(w http.ResponseWriter, r *http.Request) {
+	logger := log.With().Str("method", "POST").Str("route", "/sector").Logger()
 
-	s.logger = zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout})
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
 
-	launchers := services.Launchers{}
-
-	// redis
-	rd := redis.Service{}
-	rdl := rd.NewLauncher(redis.Namespaces{
-		Redis: "redis",
-	}, "redis")
-	launchers = append(launchers, rdl)
-	rdx := redisx.NewService(&rd)
-
-	s.SectorMapper = rdx
-
-	if err := launchers.Up(s.config); err != nil {
-		s.logger.Error().Err(err).Str("filename", s.config).Msg("failed to start")
-		return err
+	var sectors []game.Sector
+	if err := decoder.Decode(&sectors); err != nil {
+		logger.Error().Err(err).Msg("invalid JSON")
+		http.Error(w, "payload invalid", http.StatusBadRequest)
+		return
 	}
-	return nil
+
+	logger.Info().Int("sectors", len(sectors)).Msg("found")
+
+	for _, sector := range sectors {
+		if err := h.SetSector(sector); err != nil {
+			logger.Error().Err(err).Str("sector", sector.ID.String()).Msg("failed to set sector")
+			return
+		}
+	}
 }

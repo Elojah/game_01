@@ -125,6 +125,7 @@ lint:
 					"--disable=gotype" \
 					"--disable=vetshadow" \
 					"--disable=gocyclo" \
+					"--disable=goconst" \
 					"--fast" \
 					"--json" \
 					"./..." \
