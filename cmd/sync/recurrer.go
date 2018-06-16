@@ -39,7 +39,7 @@ func (r *Recurrer) Close() {
 	r.ticker.Stop()
 }
 
-func (r *Recurrer) tick() {
+func (r *Recurrer) Start() {
 	for t := range r.ticker.C {
 		entity, err := r.GetEntity(game.EntitySubset{Key: r.id.String(), MaxTS: t.UnixNano()})
 		if err != nil {
@@ -81,9 +81,4 @@ func (r *Recurrer) sendEntity(entityID game.ID, t time.Time) {
 		return
 	}
 	r.callback(raw)
-}
-
-// Start init a new goroutine to tick regularly.
-func (r *Recurrer) Start() {
-	go r.tick()
 }

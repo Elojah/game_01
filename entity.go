@@ -35,3 +35,34 @@ type EntitySubset struct {
 	Key   string
 	MaxTS int64
 }
+
+func (e Entity) Equal(entity Entity) bool {
+	if e.ID.Compare(entity.ID) != 0 {
+		return false
+	}
+	if e.Type.Compare(entity.Type) != 0 {
+		return false
+	}
+	if e.Name != entity.Name {
+		return false
+	}
+	if e.HP != entity.HP {
+		return false
+	}
+	if e.MP != entity.MP {
+		return false
+	}
+	if e.Position.SectorID.Compare(entity.Position.SectorID) != 0 {
+		return false
+	}
+	if e.Position.Coord.X != entity.Position.Coord.X {
+		return false
+	}
+	if e.Position.Coord.Y != entity.Position.Coord.Y {
+		return false
+	}
+	if e.Position.Coord.Z != entity.Position.Coord.Z {
+		return false
+	}
+	return true
+}

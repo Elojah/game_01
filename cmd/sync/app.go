@@ -75,5 +75,6 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 	}
 
 	rec := NewRecurrer(recurrer.ID, a.tickRate, func(raw []byte) { a.Send(raw, token.IP) })
+	go rec.Start()
 	a.recurrers[recurrer.ID] = rec
 }
