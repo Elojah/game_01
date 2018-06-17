@@ -27,15 +27,4 @@ func BenchmarkSend(b *testing.B) {
 		logger.WithField("filename", filename).Fatal(err.Error())
 		return
 	}
-
-	logger.Info("app up")
-
-	logger.Info("start sending")
-
-	b.ResetTimer()
-	b.RunParallel(func(pb *testing.PB) {
-		for pb.Next() {
-			send(cfg)
-		}
-	})
 }
