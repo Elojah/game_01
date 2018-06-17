@@ -19,8 +19,8 @@ func BenchmarkSend(b *testing.B) {
 
 	cfg := Config{}
 	cfgl := cfg.NewLauncher(Namespaces{
-		API: "api",
-	}, "api")
+		App: "app",
+	}, "app")
 	launchers = append(launchers, cfgl)
 
 	if err := launchers.Up(filename); err != nil {
@@ -28,7 +28,7 @@ func BenchmarkSend(b *testing.B) {
 		return
 	}
 
-	logger.Info("api up")
+	logger.Info("app up")
 
 	logger.Info("start sending")
 

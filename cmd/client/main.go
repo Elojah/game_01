@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/elojah/game_01/dto"
+	"github.com/elojah/mux"
 	"github.com/elojah/services"
 )
 
@@ -67,18 +68,23 @@ func run(prog string, filename string) {
 
 	cfg := Config{}
 	cfgl := cfg.NewLauncher(Namespaces{
-		API: "api",
-	}, "api")
+		App: "app",
+	}, "app")
 	launchers = append(launchers, cfgl)
+
+	m := mux.M{}
+	muxl := m.NewLauncher(mux.Namespaces{
+		M: "server",
+	}, "server")
+	launchers = append(launchers, muxl)
 
 	if err := launchers.Up(filename); err != nil {
 		logger.WithField("filename", filename).Fatal(err.Error())
 		return
 	}
 
-	logger.Info("api up")
+	logger.Info("client up")
 
-	logger.Info("start sending")
 	send(cfg)
 }
 

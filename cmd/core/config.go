@@ -26,7 +26,7 @@ func (c Config) Equal(rhs Config) bool {
 			return false
 		}
 	}
-	return c.ID == rhs.ID &&
+	return c.ID.Compare(rhs.ID) == 0 &&
 		c.Limit == rhs.Limit &&
 		c.Movelerance == rhs.Movelerance
 }

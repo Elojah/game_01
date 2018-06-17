@@ -4,30 +4,27 @@ import (
 	"errors"
 	"sync"
 
+	game "github.com/elojah/game_01"
 	"github.com/elojah/services"
+	"github.com/oklog/ulid"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Version   string   `json:"version"`
-	Resources []string `json:"resources"`
-	TickRate  uint     `json:"tick_rate"`
+	Token    game.ID `json:"token"`
+	TickRate uint    `json:"tick_rate"`
+	Address  string  `json:"address"`
 }
 
 // Equal returns is both configs are equal.
 func (c Config) Equal(rhs Config) bool {
-	if len(c.Resources) != len(rhs.Resources) {
-		return false
-	}
-	for i := range c.Resources {
-		if c.Resources[i] != rhs.Resources[i] {
-			return false
-		}
-	}
-	if c.Version != rhs.Version {
+	if c.Token.Compare(rhs.Token) != 0 {
 		return false
 	}
 	if c.TickRate != rhs.TickRate {
+		return false
+	}
+	if c.Address != rhs.Address {
 		return false
 	}
 	return true
@@ -39,27 +36,6 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("namespace empty")
 	}
-	cVersion, ok := fconf["version"]
-	if !ok {
-		return errors.New("missing key version")
-	}
-	if c.Version, ok = cVersion.(string); !ok {
-		return errors.New("key version invalid. must be string")
-	}
-	cResource, ok := fconf["resources"]
-	if !ok {
-		return errors.New("missing key resources")
-	}
-	cResources, ok := cResource.([]interface{})
-	if !ok {
-		return errors.New("key resources invalid. must be array")
-	}
-	c.Resources = make([]string, len(cResources))
-	for i := range cResources {
-		if c.Resources[i], ok = cResources[i].(string); !ok {
-			return errors.New("key resources invalid. must be string array")
-		}
-	}
 	cTickRate, ok := fconf["tick_rate"]
 	if !ok {
 		return errors.New("missing key tick_rate")
@@ -69,12 +45,32 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("key tick_rate invalid. must be numeric")
 	}
 	c.TickRate = uint(cTickRateFloat)
+	cToken, ok := fconf["token"]
+	if !ok {
+		return errors.New("missing key token")
+	}
+	cTokenString, ok := cToken.(string)
+	if !ok {
+		return errors.New("key token invalid. must be string")
+	}
+	var err error
+	if c.Token, err = ulid.Parse(cTokenString); err != nil {
+		return errors.New("key token invalid. must be ulid")
+	}
+	cAddress, ok := fconf["address"]
+	if !ok {
+		return errors.New("missing key address")
+	}
+	c.Address, ok = cAddress.(string)
+	if !ok {
+		return errors.New("key address invalid. must be string")
+	}
 	return nil
 }
 
 // Namespaces maps configs used for api service with config file namespaces.
 type Namespaces struct {
-	API services.Namespace
+	App services.Namespace
 }
 
 // Launcher represents a api launcher.
@@ -100,7 +96,7 @@ func (l *Launcher) Up(configs services.Configs) error {
 	l.m.Lock()
 	defer l.m.Unlock()
 
-	return l.c.Dial(configs[l.ns.API])
+	return l.c.Dial(configs[l.ns.App])
 }
 
 // Down stops the couchbase service.
