@@ -421,8 +421,8 @@ func (d *ConnectPC) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type Message struct {
+	ID     [16]byte
 	Token  [16]byte
-	ACK    *[16]byte
 	TS     int64
 	Action interface{}
 }
@@ -433,13 +433,7 @@ func (d *Message) Size() (s uint64) {
 		s += 16
 	}
 	{
-		if d.ACK != nil {
-
-			{
-				s += 16
-			}
-			s += 0
-		}
+		s += 16
 	}
 	{
 		var v uint64
@@ -497,7 +491,7 @@ func (d *Message) Size() (s uint64) {
 
 		}
 	}
-	s += 9
+	s += 8
 	return
 }
 func (d *Message) Marshal(buf []byte) ([]byte, error) {
@@ -512,39 +506,30 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
+		copy(buf[i+0:], d.ID[:])
+		i += 16
+	}
+	{
 		copy(buf[i+0:], d.Token[:])
 		i += 16
 	}
 	{
-		if d.ACK == nil {
-			buf[i+0] = 0
-		} else {
-			buf[i+0] = 1
 
-			{
-				copy(buf[i+1:], (*d.ACK)[:])
-				i += 16
-			}
-			i += 0
-		}
-	}
-	{
+		buf[i+0+0] = byte(d.TS >> 0)
 
-		buf[i+0+1] = byte(d.TS >> 0)
+		buf[i+1+0] = byte(d.TS >> 8)
 
-		buf[i+1+1] = byte(d.TS >> 8)
+		buf[i+2+0] = byte(d.TS >> 16)
 
-		buf[i+2+1] = byte(d.TS >> 16)
+		buf[i+3+0] = byte(d.TS >> 24)
 
-		buf[i+3+1] = byte(d.TS >> 24)
+		buf[i+4+0] = byte(d.TS >> 32)
 
-		buf[i+4+1] = byte(d.TS >> 32)
+		buf[i+5+0] = byte(d.TS >> 40)
 
-		buf[i+5+1] = byte(d.TS >> 40)
+		buf[i+6+0] = byte(d.TS >> 48)
 
-		buf[i+6+1] = byte(d.TS >> 48)
-
-		buf[i+7+1] = byte(d.TS >> 56)
+		buf[i+7+0] = byte(d.TS >> 56)
 
 	}
 	{
@@ -570,11 +555,11 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 			t := uint64(v)
 
 			for t >= 0x80 {
-				buf[i+9] = byte(t) | 0x80
+				buf[i+8] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i+9] = byte(t)
+			buf[i+8] = byte(t)
 			i++
 
 		}
@@ -583,7 +568,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case Move:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+9:])
+				nbuf, err := tt.Marshal(buf[i+8:])
 				if err != nil {
 					return nil, err
 				}
@@ -593,7 +578,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case Cast:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+9:])
+				nbuf, err := tt.Marshal(buf[i+8:])
 				if err != nil {
 					return nil, err
 				}
@@ -603,7 +588,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case ConnectPC:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+9:])
+				nbuf, err := tt.Marshal(buf[i+8:])
 				if err != nil {
 					return nil, err
 				}
@@ -613,7 +598,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 		case SetPC:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+9:])
+				nbuf, err := tt.Marshal(buf[i+8:])
 				if err != nil {
 					return nil, err
 				}
@@ -622,34 +607,23 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 
 		}
 	}
-	return buf[:i+9], nil
+	return buf[:i+8], nil
 }
 
 func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		copy(d.ID[:], buf[i+0:])
+		i += 16
+	}
+	{
 		copy(d.Token[:], buf[i+0:])
 		i += 16
 	}
 	{
-		if buf[i+0] == 1 {
-			if d.ACK == nil {
-				d.ACK = new([16]byte)
-			}
 
-			{
-				copy((*d.ACK)[:], buf[i+1:])
-				i += 16
-			}
-			i += 0
-		} else {
-			d.ACK = nil
-		}
-	}
-	{
-
-		d.TS = 0 | (int64(buf[i+0+1]) << 0) | (int64(buf[i+1+1]) << 8) | (int64(buf[i+2+1]) << 16) | (int64(buf[i+3+1]) << 24) | (int64(buf[i+4+1]) << 32) | (int64(buf[i+5+1]) << 40) | (int64(buf[i+6+1]) << 48) | (int64(buf[i+7+1]) << 56)
+		d.TS = 0 | (int64(buf[i+0+0]) << 0) | (int64(buf[i+1+0]) << 8) | (int64(buf[i+2+0]) << 16) | (int64(buf[i+3+0]) << 24) | (int64(buf[i+4+0]) << 32) | (int64(buf[i+5+0]) << 40) | (int64(buf[i+6+0]) << 48) | (int64(buf[i+7+0]) << 56)
 
 	}
 	{
@@ -658,10 +632,10 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 		{
 
 			bs := uint8(7)
-			t := uint64(buf[i+9] & 0x7F)
-			for buf[i+9]&0x80 == 0x80 {
+			t := uint64(buf[i+8] & 0x7F)
+			for buf[i+8]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+9]&0x7F) << bs
+				t |= uint64(buf[i+8]&0x7F) << bs
 				bs += 7
 			}
 			i++
@@ -675,7 +649,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			var tt Move
 
 			{
-				ni, err := tt.Unmarshal(buf[i+9:])
+				ni, err := tt.Unmarshal(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
@@ -688,7 +662,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			var tt Cast
 
 			{
-				ni, err := tt.Unmarshal(buf[i+9:])
+				ni, err := tt.Unmarshal(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
@@ -701,7 +675,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			var tt ConnectPC
 
 			{
-				ni, err := tt.Unmarshal(buf[i+9:])
+				ni, err := tt.Unmarshal(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
@@ -714,7 +688,7 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			var tt SetPC
 
 			{
-				ni, err := tt.Unmarshal(buf[i+9:])
+				ni, err := tt.Unmarshal(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
@@ -727,5 +701,5 @@ func (d *Message) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = nil
 		}
 	}
-	return i + 9, nil
+	return i + 8, nil
 }

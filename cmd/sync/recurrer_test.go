@@ -15,13 +15,13 @@ func TestRecurrer(t *testing.T) {
 
 	entities := []game.Entity{
 		game.Entity{
-			ID:   game.NewULID(),
-			Type: game.NewULID(),
+			ID:   game.NewID(),
+			Type: game.NewID(),
 			Name: "La muerte del sol",
 			HP:   76,
 			MP:   567,
 			Position: game.Position{
-				SectorID: game.NewULID(),
+				SectorID: game.NewID(),
 				Coord:    game.Vec3{X: 53.1233, Y: 68.0706, Z: 67.0753},
 			},
 		},
@@ -54,7 +54,7 @@ func TestRecurrer(t *testing.T) {
 			assert.True(t, entities[0].Equal(entity))
 			wg.Done()
 		}
-		rec := NewRecurrer(game.NewULID(), 10, callback)
+		rec := NewRecurrer(game.NewID(), 10, callback)
 		rec.EntityMapper = entityMock
 		rec.SectorMapper = sectorMock
 		rec.SectorEntitiesMapper = sectorEntitiesMock

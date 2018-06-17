@@ -53,9 +53,9 @@ func run(prog string, filename string) {
 		return
 	}
 
+	h.M = &m
 	h.QEventMapper = nax
 	h.TokenMapper = rdx
-	h.Route(&m)
 
 	m.Listen()
 	log.Info().Msg("api up")

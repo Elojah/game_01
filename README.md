@@ -45,7 +45,6 @@
 - [x] Response server to update all clients with delta compression named `sync`
     + [x] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?
     + [x] recurrer test 100%
-- [ ] Add cast time mechanic
 - [ ] Add server ack sending to client (and client resend)
 - [ ] ack service
 - [ ] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?* + first graphic client
@@ -54,6 +53,7 @@
 
 ## TO DEBATE
 - [ ] Add sequencer cancelling mechanism (CancelEvent(id)->id(don't do me)->event...)
+- [ ] Add cast time mechanic
 
 ## RANDOM
 - [ ] `Trickster` entity can switch position with his own entities and switch them

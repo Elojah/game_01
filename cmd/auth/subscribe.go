@@ -38,7 +38,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	account.ID = game.NewULID()
+	account.ID = game.NewID()
 
 	// #Check username is unique
 	_, err = h.GetAccount(game.AccountSubset{

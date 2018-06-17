@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/cloudflare/golz4"
+	lz4 "github.com/cloudflare/golz4"
 	"github.com/oklog/ulid"
 	"github.com/sirupsen/logrus"
 
@@ -19,7 +19,7 @@ func send(cfg Config) {
 
 	id, _ := ulid.Parse("01CDW3TMMXS5CFXACGY0S52W6G")
 
-	ack := [16]byte(id)
+	packetID := [16]byte(id)
 
 	conn, err := net.Dial("udp", "127.0.0.1:3400")
 	if err != nil {
@@ -32,12 +32,12 @@ func send(cfg Config) {
 		go func() {
 			msg :=
 				dto.Message{
+					ID:    packetID,
 					Token: id,
 					Action: dto.SetPC{
 						Type: id,
 					},
-					ACK: &ack,
-					TS:  time.Now().UnixNano(),
+					TS: time.Now().UnixNano(),
 				}
 			raw, err := msg.Marshal(nil)
 			if err != nil {

@@ -18,7 +18,7 @@ func (h *handler) createPC(ctx context.Context, msg dto.Message) error {
 	a := msg.Action.(dto.SetPC)
 	token := game.ID(msg.Token)
 	event := game.Event{
-		ID:     game.NewULID(),
+		ID:     game.NewID(),
 		Source: token,
 		TS:     time.Unix(0, msg.TS),
 		Action: game.SetPC{
@@ -41,7 +41,7 @@ func (h *handler) connectPC(ctx context.Context, msg dto.Message) error {
 	a := msg.Action.(dto.ConnectPC)
 	token := game.ID(msg.Token)
 	event := game.Event{
-		ID:     game.NewULID(),
+		ID:     game.NewID(),
 		Source: token,
 		TS:     time.Unix(0, msg.TS),
 		Action: game.ConnectPC{

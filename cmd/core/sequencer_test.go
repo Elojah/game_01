@@ -42,30 +42,30 @@ func TestSequencer(t *testing.T) {
 	now := time.Now()
 	eset := []game.Event{
 		game.Event{
-			ID:     game.NewULID(),
+			ID:     game.NewID(),
 			TS:     now,
-			Action: game.Cast{Source: game.NewULID(), Targets: []game.ID{game.NewULID(), game.NewULID(), game.NewULID()}},
+			Action: game.Cast{Source: game.NewID(), Targets: []game.ID{game.NewID(), game.NewID(), game.NewID()}},
 		},
 		game.Event{
-			ID:     game.NewULID(),
+			ID:     game.NewID(),
 			TS:     now.Add(-1 * time.Second),
-			Action: game.Move{Source: game.NewULID()},
+			Action: game.Move{Source: game.NewID()},
 		},
 		game.Event{
-			ID:     game.NewULID(),
+			ID:     game.NewID(),
 			TS:     now.Add(-2 * time.Second),
-			Action: game.Move{Source: game.NewULID()},
+			Action: game.Move{Source: game.NewID()},
 		},
 		game.Event{
-			ID:     game.NewULID(),
+			ID:     game.NewID(),
 			TS:     now.Add(-3 * time.Second),
-			Action: game.Move{Source: game.NewULID()},
+			Action: game.Move{Source: game.NewID()},
 		},
 	}
 
 	t.Run("simple", func(t *testing.T) {
 
-		seqID := game.NewULID()
+		seqID := game.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
@@ -96,7 +96,7 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("two", func(t *testing.T) {
 
-		seqID := game.NewULID()
+		seqID := game.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
@@ -135,7 +135,7 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("cancel", func(t *testing.T) {
 
-		seqID := game.NewULID()
+		seqID := game.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
@@ -178,7 +178,7 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("interrupt", func(t *testing.T) {
 
-		seqID := game.NewULID()
+		seqID := game.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset game.EventSubset) ([]game.Event, error) {
 			assert.Equal(t, seqID.String(), subset.Key)

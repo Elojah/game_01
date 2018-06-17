@@ -23,7 +23,7 @@ func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 	}
 
 	event := game.Event{
-		ID:     game.NewULID(),
+		ID:     game.NewID(),
 		Source: game.ID(msg.Token),
 		TS:     time.Unix(0, msg.TS),
 		Action: game.Cast{

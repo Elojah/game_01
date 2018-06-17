@@ -91,7 +91,7 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 		return err
 	}
 	return a.SendEvent(game.Event{
-		ID:     game.NewULID(),
+		ID:     game.NewID(),
 		TS:     event.TS,
 		Source: event.Source,
 		Action: game.Feedback{

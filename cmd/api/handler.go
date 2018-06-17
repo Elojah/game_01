@@ -13,6 +13,7 @@ import (
 )
 
 type handler struct {
+	*mux.M
 	game.QEventMapper
 	game.TokenMapper
 
@@ -20,12 +21,9 @@ type handler struct {
 }
 
 func (h *handler) Dial(c Config) error {
+	h.M.Handler = h.handle
 	h.tolerance = c.Tolerance
 	return nil
-}
-
-func (h handler) Route(m *mux.M) {
-	m.Handler = h.handle
 }
 
 func (h *handler) handle(ctx context.Context, raw []byte) error {
@@ -40,12 +38,12 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 
 	// # Parse message UUID.
-	uuid := game.ID(msg.Token)
+	tokenID := game.ID(msg.Token)
 
 	// # Search message UUID in storage.
-	token, err := h.GetToken(uuid)
+	token, err := h.GetToken(tokenID)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("uuid", uuid.String()).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", tokenID.String()).Msg("packet rejected")
 		return err
 	}
 
@@ -58,6 +56,15 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		return err
 	}
 
+	id := game.ID(msg.Token)
+	ack := dto.ACK{ID: [16]byte(id)}
+	raw, err = ack.Marshal(nil)
+	if err != nil {
+		logger.Error().Err(err).Str("status", "internal").Msg("failed to marshal ack")
+		return err
+	}
+	go h.Send(raw, token.IP)
+
 	// # Check TS in tolerance range.
 	ts := time.Unix(0, msg.TS)
 	now := time.Now()
@@ -65,12 +72,6 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		err := game.ErrInvalidTS
 		logger.Error().Err(err).Str("status", "timeout").Int64("ts", ts.UnixNano()).Int64("now", now.UnixNano()).Msg("packet rejected")
 		return err
-	}
-
-	// TODO set last ack of current token/user in a ack service
-	if msg.ACK != nil {
-		go func() {
-		}()
 	}
 
 	switch msg.Action.(type) {

@@ -40,7 +40,7 @@ func (a *app) CreatePC(id game.ID, event game.Event) error {
 
 	// #Create PC from the template.
 	pc := game.PC(template)
-	pc.ID = game.NewULID()
+	pc.ID = game.NewID()
 	pc.Position = game.Position{
 		SectorID: ulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
 		Coord:    game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
@@ -73,7 +73,7 @@ func (a *app) ConnectPC(id game.ID, event game.Event) error {
 	}
 
 	entity := game.Entity(pc)
-	entity.ID = game.NewULID()
+	entity.ID = game.NewID()
 	// #Creates entity cloned from pc.
 	if err := a.SetEntity(entity, event.TS.UnixNano()); err != nil {
 		return err

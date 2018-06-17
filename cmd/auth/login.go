@@ -69,7 +69,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 
 	// Set a new token
 	token := game.Token{
-		ID:      game.NewULID(),
+		ID:      game.NewID(),
 		Account: account.ID,
 		IP:      ip,
 	}

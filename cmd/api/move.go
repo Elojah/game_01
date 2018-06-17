@@ -19,7 +19,7 @@ func (h *handler) move(ctx context.Context, msg dto.Message) error {
 	source := game.ID(a.Source)
 	target := game.ID(a.Target)
 	event := game.Event{
-		ID:     game.NewULID(),
+		ID:     game.NewID(),
 		Source: game.ID(msg.Token),
 		TS:     time.Unix(0, msg.TS),
 		Action: game.Move{
