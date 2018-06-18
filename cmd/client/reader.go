@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"net"
 	"os"
 	"time"
 
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	game "github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
@@ -15,19 +17,26 @@ import (
 
 type reader struct {
 	*mux.M
-	*json.Decoder
 
 	logger zerolog.Logger
+	*bufio.Scanner
 
 	tickRate uint
 	token    game.ID
 	addr     net.Addr
 }
 
+func newReader(m *mux.M) *reader {
+	return &reader{
+		M:       m,
+		logger:  log.With().Str("app", "reader").Logger(),
+		Scanner: bufio.NewScanner(os.Stdin),
+	}
+}
+
 // Dial initialize a reader.
-func (r reader) Dial(cfg Config) error {
+func (r *reader) Dial(cfg Config) error {
 	r.token = cfg.Token
-	r.Decoder = json.NewDecoder(os.Stdin)
 	r.tickRate = cfg.TickRate
 	var err error
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
@@ -38,9 +47,9 @@ func (r reader) Dial(cfg Config) error {
 
 // Start starts to read JSON data from stdin and sends it to API.
 func (r reader) Start() {
-	for {
+	for r.Scan() {
 		var input Input
-		if err := r.Decode(&input); err != nil {
+		if err := json.Unmarshal(r.Scanner.Bytes(), &input); err != nil {
 			r.logger.Error().Err(err).Msg("failed to decode input")
 			continue
 		}
@@ -48,7 +57,7 @@ func (r reader) Start() {
 			ID:     game.NewID(),
 			Token:  r.token,
 			TS:     time.Now().UnixNano(),
-			Action: input,
+			Action: input.Action,
 		}
 		raw, err := message.Marshal(nil)
 		if err != nil {

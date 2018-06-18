@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/sirupsen/logrus"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/mux"
 	"github.com/elojah/services"
@@ -14,16 +14,9 @@ import (
 // run services.
 func run(prog string, filename string) {
 
-	logger := logrus.NewEntry(logrus.New())
-	logger = logger.WithField("app", filepath.Base(prog))
+	zerolog.TimeFieldFormat = ""
 
 	launchers := services.Launchers{}
-
-	cfg := Config{}
-	cfgl := cfg.NewLauncher(Namespaces{
-		App: "app",
-	}, "app")
-	launchers = append(launchers, cfgl)
 
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
@@ -31,12 +24,19 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers = append(launchers, muxl)
 
+	rd := newReader(&m)
+	rdl := rd.NewLauncher(Namespaces{
+		App: "app",
+	}, "app")
+	launchers = append(launchers, rdl)
+
 	if err := launchers.Up(filename); err != nil {
-		logger.WithField("filename", filename).Fatal(err.Error())
+		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
 
-	logger.Info("client up")
+	log.Info().Msg("api up")
+	go rd.Start()
 	select {}
 }
 

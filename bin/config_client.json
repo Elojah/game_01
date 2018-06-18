@@ -1,11 +1,13 @@
 {
 	"server": {
-		"addresses": ["127.0.0.1:3400"],
+		"addresses": ["127.0.0.1:4242"],
 		"middlewares": ["lz4"],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
 	"app": {
-		"tick_rate": 10
+		"tick_rate": 10,
+		"token": "01CG92B978XHXYX4PQHXPKYJHR",
+		"address": "127.0.0.1:3400"
 	}
 }
