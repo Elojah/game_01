@@ -84,4 +84,5 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 	})
 	go rec.Start()
 	a.recurrers[recurrer.ID] = rec
+	logger.Info().Str("recurrer", recurrer.ID.String()).Msg("synchronizing")
 }

@@ -4,7 +4,7 @@
 		"tick_rate": 10
 	},
 	"server": {
-		"addresses": ["127.0.0.1:3400"],
+		"addresses": ["127.0.0.1:3401"],
 		"middlewares": ["lz4"],
 		"packet_size": 1024,
 		"server_protocol": "udp"
