@@ -15,18 +15,20 @@ type Recurrer struct {
 	game.SectorEntitiesMapper
 	game.SectorMapper
 
-	logger zerolog.Logger
-	id     game.ID
+	logger   zerolog.Logger
+	id       game.ID
+	entityID game.ID
 
 	ticker   *time.Ticker
 	callback func(game.Entity)
 }
 
 // NewRecurrer returns a new recurrer which sends entity data associated to id to addr, tick times per second.
-func NewRecurrer(id game.ID, tick uint32, callback func(game.Entity)) *Recurrer {
+func NewRecurrer(rec game.Recurrer, tick uint32, callback func(game.Entity)) *Recurrer {
 	return &Recurrer{
-		logger:   log.With().Str("recurrer", id.String()).Logger(),
-		id:       id,
+		logger:   log.With().Str("recurrer", rec.ID.String()).Logger(),
+		id:       rec.ID,
+		entityID: rec.EntityID,
 		callback: callback,
 
 		ticker: time.NewTicker(time.Second / time.Duration(tick)),
@@ -41,7 +43,7 @@ func (r *Recurrer) Close() {
 // Start starts to read the ticker and send entities.
 func (r *Recurrer) Start() {
 	for t := range r.ticker.C {
-		entity, err := r.GetEntity(game.EntitySubset{Key: r.id.String(), MaxTS: t.UnixNano()})
+		entity, err := r.GetEntity(game.EntitySubset{Key: r.entityID.String(), MaxTS: t.UnixNano()})
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve entity")
 			continue

@@ -89,9 +89,10 @@ func (a *app) ConnectPC(id game.ID, event game.Event) error {
 	// #Creates a new synchronizer for this token/entity.
 	sync := a.syncs[rand.Intn(len(a.syncs))]
 	if err := a.SendRecurrer(game.Recurrer{
-		ID:      entity.ID,
-		TokenID: token.ID,
-		Action:  game.OpenRec,
+		ID:       game.NewID(),
+		EntityID: entity.ID,
+		TokenID:  token.ID,
+		Action:   game.OpenRec,
 	}, sync); err != nil {
 		return err
 	}
