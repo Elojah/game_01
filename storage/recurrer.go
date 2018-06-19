@@ -7,15 +7,17 @@ import (
 // NewRecurrer converts a domain recurrer to a storage recurrer.
 func NewRecurrer(recurrer game.Recurrer) Recurrer {
 	return Recurrer{
-		ID:     [16]byte(recurrer.ID),
-		Action: uint8(recurrer.Action),
+		ID:      [16]byte(recurrer.ID),
+		TokenID: [16]byte(recurrer.TokenID),
+		Action:  uint8(recurrer.Action),
 	}
 }
 
 // Domain converts a storage user into a domain user.
 func (r Recurrer) Domain() game.Recurrer {
 	return game.Recurrer{
-		ID:     game.ID(r.ID),
-		Action: game.RecurrerAction(r.Action),
+		ID:      game.ID(r.ID),
+		TokenID: game.ID(r.TokenID),
+		Action:  game.RecurrerAction(r.Action),
 	}
 }

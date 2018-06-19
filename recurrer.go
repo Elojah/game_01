@@ -12,8 +12,9 @@ const (
 
 // Recurrer requires the receiver to create a new recurrer with subject ID.
 type Recurrer struct {
-	ID     ID
-	Action RecurrerAction
+	ID      ID
+	TokenID ID
+	Action  RecurrerAction
 }
 
 // QRecurrerMapper handles send/receive methods for recurrers.

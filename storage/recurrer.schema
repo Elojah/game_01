@@ -1,4 +1,5 @@
 struct Recurrer {
 	ID		[16]byte
+	TokenID	[16]byte
 	Action	uint8
 }

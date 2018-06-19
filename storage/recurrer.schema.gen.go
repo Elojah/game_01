@@ -13,12 +13,16 @@ var (
 )
 
 type Recurrer struct {
-	ID     [16]byte
-	Action uint8
+	ID      [16]byte
+	TokenID [16]byte
+	Action  uint8
 }
 
 func (d *Recurrer) Size() (s uint64) {
 
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -41,6 +45,10 @@ func (d *Recurrer) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
+		copy(buf[i+0:], d.TokenID[:])
+		i += 16
+	}
+	{
 
 		buf[i+0+0] = byte(d.Action >> 0)
 
@@ -53,6 +61,10 @@ func (d *Recurrer) Unmarshal(buf []byte) (uint64, error) {
 
 	{
 		copy(d.ID[:], buf[i+0:])
+		i += 16
+	}
+	{
+		copy(d.TokenID[:], buf[i+0:])
 		i += 16
 	}
 	{
