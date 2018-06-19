@@ -21,9 +21,8 @@ type reader struct {
 	logger zerolog.Logger
 	*bufio.Scanner
 
-	tickRate uint
-	token    game.ID
-	addr     net.Addr
+	token game.ID
+	addr  net.Addr
 }
 
 func newReader(m *mux.M) *reader {
@@ -37,7 +36,6 @@ func newReader(m *mux.M) *reader {
 // Dial initialize a reader.
 func (r *reader) Dial(cfg Config) error {
 	r.token = cfg.Token
-	r.tickRate = cfg.TickRate
 	var err error
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
 		return err

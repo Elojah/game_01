@@ -6,7 +6,6 @@
 		"server_protocol": "udp"
 	},
 	"app": {
-		"tick_rate": 10,
 		"token": "01CGBKFQMG94K1V591S35RZ4FH",
 		"address": "127.0.0.1:3400"
 	}
