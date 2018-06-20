@@ -56,6 +56,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		return err
 	}
 
+	// #Send ACK to client.
 	id := game.ID(msg.Token)
 	ack := dto.ACK{ID: [16]byte(id)}
 	raw, err = ack.Marshal(nil)
@@ -74,6 +75,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		return err
 	}
 
+	// #Dispatch on action type.
 	switch msg.Action.(type) {
 	case dto.Move:
 		go func() { _ = h.move(ctx, msg) }()

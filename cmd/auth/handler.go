@@ -24,6 +24,8 @@ func (h *handler) Dial(c Config) error {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/login", h.login)
 	mux.HandleFunc("/subscribe", h.subscribe)
+	mux.HandleFunc("/pc/create", h.pcCreate)
+	mux.HandleFunc("/pc/list", h.pcList)
 	h.srv = &http.Server{
 		Addr:    c.Address,
 		Handler: mux,

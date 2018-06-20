@@ -25,6 +25,9 @@ struct ConnectPC {
 	Target		[16]byte
 }
 
+struct ListPC {
+}
+
 struct Message {
 	ID			[16]byte
 	Token		[16]byte
@@ -34,5 +37,6 @@ struct Message {
 		Cast
 		ConnectPC
 		SetPC
+		ListPC
 	}
 }
