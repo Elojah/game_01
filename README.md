@@ -3,26 +3,32 @@
 ## How to start
 
 ```
+// Start services
 > docker-compose -d
 > make dep
-> make auth && bin/game_auth bin/config_auth.json
-> make api && bin/game_api bin/config_api.json
-> make core && bin/game_core bin/config_core.json
 > make sync && bin/game_sync bin/config_sync.json
+> make core && bin/game_core bin/config_core.json
+> make api && bin/game_api bin/config_api.json
+> make auth && bin/game_auth bin/config_auth.json
+> make tool && bin/game_tool bin/config_tool.json
 
+// Fill static data
+> curl -k -X POST https://127.0.0.1:8081/entity/template -d @templates/entity_templates.json
+> curl -k -X POST https://127.0.0.1:8081/sector -d @templates/sector.json
+
+// Obtain access token
 > curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
 > curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
 {"ID":"01CD05WMYFFMTHWCNE3PZNWPVK"}
 // This token must be used as client token id
+// Paste it in config_client.json: {... "app": {"token": 01CD05WMYFFMTHWCNE3PZNWPVK,...}}
 
 > make client && bin/game_client bin/config_client.json
-```
-
-##### Tool
-```
-> make add-templates
-> make show-templates
-> make add-skills
+> {"type":"set_pc","action":{"type":"01CE3J5ASXJSVC405QTES4M221"}}
+// FTM only way to retrieve generated pc is to check redis pc:token_id:pc_id
+> {"type":"connect_pc","action":{"target":"01CGE6MJYQWSVNS5ZNNHHASKK9"}}
+// FTM only way to retrieve generated entity is to check redis or added listener/sync
+> {"type":"move","action":{"source":"01CGE7XCYKS6PH2925H4AP91MH","target":"01CGE7XCYKS6PH2925H4AP91MH","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
 
 ## TODO
@@ -45,8 +51,8 @@
 - [x] Response server to update all clients with delta compression named `sync`
     + [x] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?
     + [x] recurrer test 100%
+- [x] ack service
 - [ ] Add server ack sending to client (and client resend)
-- [ ] ack service
 - [ ] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?* + first graphic client
 - [ ] Implement tool to generate/check/visualize sectors and entity movements
 - [ ] Add context everywhere
