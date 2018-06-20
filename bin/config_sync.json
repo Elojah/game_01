@@ -1,10 +1,13 @@
 {
 	"app": {
-		"id": "01CCS1SZ4B20G98XYMFGVC9VS4",
-		"limit": 65535,
-		"move_tolerance": 100,
-		"cores": ["01CCS1SZ4B20G98XYMFGVC9VS4"],
-		"syncs": ["01CGBKPGMC4TG961QMQ71TEV2P"]
+		"id": "01CGBKPGMC4TG961QMQ71TEV2P",
+		"tick_rate": 10
+	},
+	"server": {
+		"addresses": ["127.0.0.1:3401"],
+		"middlewares": ["lz4"],
+		"packet_size": 1024,
+		"server_protocol": "udp"
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",

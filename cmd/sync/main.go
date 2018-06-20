@@ -62,6 +62,7 @@ func run(prog string, filename string) {
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 
+	go a.Start()
 	log.Info().Msg("sync up")
 	select {}
 }

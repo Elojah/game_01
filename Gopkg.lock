@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/elojah/mux"
   packages = ["."]
-  revision = "fa76ce1b874fd12eaa48f66d1db4cd3c7a31ee4c"
+  revision = "b5ea6ef2c634a243d7d43a4dd20bbd7bfdabf1bd"
 
 [[projects]]
   branch = "master"
@@ -92,35 +92,14 @@
   version = "v1.8.0"
 
 [[projects]]
-  name = "github.com/sirupsen/logrus"
-  packages = ["."]
-  revision = "c155da19408a8799da419ed3eeb0cb5db0ad5dbc"
-  version = "v1.0.5"
-
-[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
 
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  revision = "a8fb68e7206f8c78be19b432c58eb52a6aa34462"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/sys"
-  packages = [
-    "unix",
-    "windows"
-  ]
-  revision = "6c888cc515d3ed83fc103cf1d84468aad274b0a7"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0bbbfaa1f0cbf036b5e5ddfb53e6e70759edeb8289fd621fbbe41a8f8983101c"
+  inputs-digest = "826ef39edb895a632425bb34be3c901e2081d0226ef8fa7f5114c6e000440c16"
   solver-name = "gps-cdcl"
   solver-version = 1

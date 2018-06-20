@@ -42,13 +42,13 @@ func (a *app) CreatePC(id game.ID, event game.Event) error {
 	pc := game.PC(template)
 	pc.ID = game.NewID()
 	pc.Position = game.Position{
+		// TODO list of positions config ? Areas config + random ? Define spawn
 		SectorID: ulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
 		Coord:    game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
 	}
 	if err := pc.Check(); err != nil {
 		return err
 	}
-	// TODO list of positions config ? Areas config + random ? Define spawn
 	return a.SetPC(pc, token.Account)
 }
 
@@ -72,15 +72,35 @@ func (a *app) ConnectPC(id game.ID, event game.Event) error {
 		return err
 	}
 
+	// #Creates entity cloned from pc.
 	entity := game.Entity(pc)
 	entity.ID = game.NewID()
-	// #Creates entity cloned from pc.
 	if err := a.SetEntity(entity, event.TS.UnixNano()); err != nil {
+		return err
+	}
+
+	// #Add entity to PC sector.
+	if err := a.AddEntityToSector(entity.ID, pc.Position.SectorID); err != nil {
 		return err
 	}
 
 	// #Creates a new listener for this entity.
 	core := a.cores[rand.Intn(len(a.cores))]
 	listener := game.Listener{ID: entity.ID}
-	return a.SendListener(listener, core)
+	if err := a.SendListener(listener, core); err != nil {
+		return err
+	}
+
+	// #Creates a new synchronizer for this token/entity.
+	sync := a.syncs[rand.Intn(len(a.syncs))]
+	if err := a.SendRecurrer(game.Recurrer{
+		ID:       game.NewID(),
+		EntityID: entity.ID,
+		TokenID:  token.ID,
+		Action:   game.OpenRec,
+	}, sync); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -42,7 +42,11 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers = append(launchers, muxl)
 
-	h := handler{}
+	h := handler{
+		M:            &m,
+		QEventMapper: nax,
+		TokenMapper:  rdx,
+	}
 	hl := h.NewLauncher(Namespaces{
 		API: "api",
 	}, "api")
@@ -52,10 +56,6 @@ func run(prog string, filename string) {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
-
-	h.M = &m
-	h.QEventMapper = nax
-	h.TokenMapper = rdx
 
 	m.Listen()
 	log.Info().Msg("api up")

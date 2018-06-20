@@ -20,6 +20,7 @@ type app struct {
 	game.PermissionMapper
 	game.QEventMapper
 	game.QListenerMapper
+	game.QRecurrerMapper
 	game.SectorMapper
 	game.SectorEntitiesMapper
 	game.SubscriptionMapper
@@ -34,6 +35,7 @@ type app struct {
 	moveTolerance float64
 
 	cores []game.ID
+	syncs []game.ID
 }
 
 func (a *app) Dial(c Config) error {
@@ -42,6 +44,8 @@ func (a *app) Dial(c Config) error {
 	a.moveTolerance = c.Movelerance
 	a.cores = make([]game.ID, len(c.Cores))
 	copy(a.cores, c.Cores)
+	a.syncs = make([]game.ID, len(c.Syncs))
+	copy(a.syncs, c.Syncs)
 
 	return nil
 }

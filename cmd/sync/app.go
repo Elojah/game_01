@@ -68,20 +68,33 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 		return
 	}
 
-	token, err := a.GetToken(recurrer.ID)
+	token, err := a.GetToken(recurrer.TokenID)
 	if err != nil {
-		logger.Error().Err(err).Str("recurrer.ID", recurrer.ID.String()).Msg("failed to retrieve token")
+		logger.Error().Err(err).
+			Str("id", recurrer.TokenID.String()).
+			Str("recurrer_id", recurrer.ID.String()).
+			Msg("failed to retrieve token")
 		return
 	}
 
-	rec := NewRecurrer(recurrer.ID, a.tickRate, func(entity game.Entity) {
+	rec := NewRecurrer(recurrer, a.tickRate, func(entity game.Entity) {
 		raw, err := storage.NewEntity(entity).Marshal(nil)
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to retrieve marshal entity")
 			return
 		}
+		logger.Info().Str("entity", entity.ID.String()).Str("ip", token.IP.String()).Msg("send entity to ip")
 		a.Send(raw, token.IP)
 	})
+	rec.EntityMapper = a
+	rec.SectorEntitiesMapper = a
+	rec.SectorMapper = a
+
 	go rec.Start()
 	a.recurrers[recurrer.ID] = rec
+	logger.Info().
+		Str("recurrer", recurrer.ID.String()).
+		Str("entity", recurrer.EntityID.String()).
+		Str("ip", token.IP.String()).
+		Msg("synchronizing")
 }

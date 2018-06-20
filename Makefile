@@ -23,7 +23,7 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 
 .PHONY: all
 
-all: client auth api core
+all: client auth api core sync
 
 # Executables
 client:

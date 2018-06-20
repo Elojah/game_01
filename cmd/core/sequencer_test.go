@@ -6,6 +6,7 @@ import (
 	"time"
 
 	nats "github.com/nats-io/go-nats"
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/elojah/game_01"
@@ -84,6 +85,7 @@ func TestSequencer(t *testing.T) {
 				wg.Done()
 			},
 		)
+		seq.logger = zerolog.Nop()
 		seq.Start()
 
 		raw, err := storage.NewEvent(eset[0]).Marshal(nil)
@@ -116,6 +118,7 @@ func TestSequencer(t *testing.T) {
 				wg.Done()
 			},
 		)
+		seq.logger = zerolog.Nop()
 		seq.Start()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
@@ -159,6 +162,7 @@ func TestSequencer(t *testing.T) {
 				}
 			},
 		)
+		seq.logger = zerolog.Nop()
 		seq.Start()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
@@ -203,6 +207,7 @@ func TestSequencer(t *testing.T) {
 				}
 			},
 		)
+		seq.logger = zerolog.Nop()
 		seq.Start()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)

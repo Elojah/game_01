@@ -54,7 +54,8 @@ func TestRecurrer(t *testing.T) {
 			assert.True(t, entities[0].Equal(entity))
 			wg.Done()
 		}
-		rec := NewRecurrer(game.NewID(), 10, callback)
+		r := game.Recurrer{ID: game.NewID(), EntityID: game.NewID(), TokenID: game.NewID()}
+		rec := NewRecurrer(r, 10, callback)
 		rec.EntityMapper = entityMock
 		rec.SectorMapper = sectorMock
 		rec.SectorEntitiesMapper = sectorEntitiesMock
