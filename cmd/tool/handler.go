@@ -14,6 +14,7 @@ type handler struct {
 	game.EntityMapper
 	game.EntityTemplateMapper
 	game.SectorMapper
+	game.SectorEntitiesMapper
 
 	srv *http.Server
 }
@@ -28,6 +29,8 @@ func (h *handler) Dial(c Config) error {
 
 	mux.HandleFunc("/ability/template", h.abilityTemplate)
 	mux.HandleFunc("/entity/template", h.entityTemplate)
+
+	mux.HandleFunc("/sector/entities", h.sectorEntities)
 
 	h.srv = &http.Server{
 		Addr:    c.Address,

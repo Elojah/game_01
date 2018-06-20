@@ -79,6 +79,11 @@ func (a *app) ConnectPC(id game.ID, event game.Event) error {
 		return err
 	}
 
+	// #Add entity to PC sector.
+	if err := a.AddEntityToSector(entity.ID, pc.Position.SectorID); err != nil {
+		return err
+	}
+
 	// #Creates a new listener for this entity.
 	core := a.cores[rand.Intn(len(a.cores))]
 	listener := game.Listener{ID: entity.ID}

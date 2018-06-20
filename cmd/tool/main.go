@@ -39,6 +39,7 @@ func run(prog string, filename string) {
 	h.EntityMapper = rdx
 	h.EntityTemplateMapper = rdx
 	h.SectorMapper = rdx
+	h.SectorEntitiesMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
