@@ -38,20 +38,6 @@ func NewFeedback(a game.Feedback) Feedback {
 	}
 }
 
-// NewSetPC convert a game.SetPC into a storage SetPC.
-func NewSetPC(a game.SetPC) SetPC {
-	return SetPC{
-		Type: [16]byte(a.Type),
-	}
-}
-
-// NewConnectPC convert a game.ConnectPC into a storage ConnectPC.
-func NewConnectPC(a game.ConnectPC) ConnectPC {
-	return ConnectPC{
-		Target: [16]byte(a.Target),
-	}
-}
-
 // Domain converts a storage Move into a game Move.
 func (a Move) Domain() game.Move {
 	return game.Move{
@@ -84,20 +70,6 @@ func (a Feedback) Domain() game.Feedback {
 	}
 }
 
-// Domain converts a storage SetPC into a game SetPC.
-func (a SetPC) Domain() game.SetPC {
-	return game.SetPC{
-		Type: game.EntityType(a.Type),
-	}
-}
-
-// Domain converts a storage ConnectPC into a game ConnectPC.
-func (a ConnectPC) Domain() game.ConnectPC {
-	return game.ConnectPC{
-		Target: game.ID(a.Target),
-	}
-}
-
 // NewEvent converts a domain event to a storage event.
 func NewEvent(event game.Event) *Event {
 	e := &Event{
@@ -112,10 +84,6 @@ func NewEvent(event game.Event) *Event {
 		e.Action = NewCast(event.Action.(game.Cast))
 	case game.Feedback:
 		e.Action = NewFeedback(event.Action.(game.Feedback))
-	case game.SetPC:
-		e.Action = NewSetPC(event.Action.(game.SetPC))
-	case game.ConnectPC:
-		e.Action = NewConnectPC(event.Action.(game.ConnectPC))
 	}
 	return e
 }
@@ -134,10 +102,6 @@ func (e Event) Domain() game.Event {
 		event.Action = e.Action.(Cast).Domain()
 	case Feedback:
 		event.Action = e.Action.(Feedback).Domain()
-	case SetPC:
-		event.Action = e.Action.(SetPC).Domain()
-	case ConnectPC:
-		event.Action = e.Action.(ConnectPC).Domain()
 	}
 	return event
 }

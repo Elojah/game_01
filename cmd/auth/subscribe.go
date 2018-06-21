@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/rs/zerolog/log"
@@ -22,18 +21,9 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/subscribe").Logger()
 
-	// #Read body
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		logger.Error().Err(err).Msg("payload invalid")
-		http.Error(w, "payload invalid", http.StatusBadRequest)
-		return
-	}
-
-	// #Unmarshal payload
+	// # Read body
 	var account game.Account
-	if err = json.Unmarshal(b, &account); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&account); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
@@ -41,7 +31,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	account.ID = game.NewID()
 
 	// #Check username is unique
-	_, err = h.GetAccount(game.AccountSubset{
+	_, err := h.GetAccount(game.AccountSubset{
 		Username: account.Username,
 	})
 	if err != nil && err != storage.ErrNotFound {

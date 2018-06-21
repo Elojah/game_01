@@ -17,17 +17,6 @@ struct Cast {
 	Position	Vec3
 }
 
-struct SetPC {
-	Type		[16]byte
-}
-
-struct ConnectPC {
-	Target		[16]byte
-}
-
-struct ListPC {
-}
-
 struct Message {
 	ID			[16]byte
 	Token		[16]byte
@@ -35,8 +24,5 @@ struct Message {
 	Action union {
 		Move
 		Cast
-		ConnectPC
-		SetPC
-		ListPC
 	}
 }

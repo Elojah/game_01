@@ -75,16 +75,12 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		return err
 	}
 
-	// #Dispatch on action type.
+	// #Dispatch on actin t
 	switch msg.Action.(type) {
 	case dto.Move:
 		go func() { _ = h.move(ctx, msg) }()
 	case dto.Cast:
 		go func() { _ = h.cast(ctx, msg) }()
-	case dto.ConnectPC:
-		go func() { _ = h.connectPC(ctx, msg) }()
-	case dto.SetPC:
-		go func() { _ = h.createPC(ctx, msg) }()
 	default:
 		logger.Error().Msg("unrecognized action")
 	}

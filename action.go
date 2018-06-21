@@ -12,10 +12,6 @@ func ActionString(a Action) string {
 		return "cast"
 	case Feedback:
 		return "feedback"
-	case ConnectPC:
-		return "connect_pc"
-	case SetPC:
-		return "set_pc"
 	default:
 		return "unknown"
 	}
@@ -40,15 +36,5 @@ type Cast struct {
 type Feedback struct {
 	AfbID  ID
 	Source ID
-	Target ID
-}
-
-// SetPC is a token action to create a new PC entity.
-type SetPC struct {
-	Type EntityType
-}
-
-// ConnectPC is a token action to connect to a previously created PC.
-type ConnectPC struct {
 	Target ID
 }

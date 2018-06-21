@@ -23,14 +23,6 @@ struct Feedback {
 	Target		[16]byte
 }
 
-struct SetPC {
-	Type	[16]byte
-}
-
-struct ConnectPC {
-	Target	[16]byte
-}
-
 struct Event {
 	ID		[16]byte
 	Source	[16]byte
@@ -39,7 +31,5 @@ struct Event {
 		Move
 		Cast
 		Feedback
-		ConnectPC
-		SetPC
 	}
 }

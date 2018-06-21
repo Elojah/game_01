@@ -15,12 +15,9 @@ type app struct {
 	game.EntityMapper
 	game.EntityTemplateMapper
 	game.EventMapper
-	game.PCMapper
-	game.PCLeftMapper
 	game.PermissionMapper
 	game.QEventMapper
 	game.QListenerMapper
-	game.QRecurrerMapper
 	game.SectorMapper
 	game.SectorEntitiesMapper
 	game.SubscriptionMapper
@@ -35,7 +32,6 @@ type app struct {
 	moveTolerance float64
 
 	cores []game.ID
-	syncs []game.ID
 }
 
 func (a *app) Dial(c Config) error {
@@ -44,8 +40,6 @@ func (a *app) Dial(c Config) error {
 	a.moveTolerance = c.Movelerance
 	a.cores = make([]game.ID, len(c.Cores))
 	copy(a.cores, c.Cores)
-	a.syncs = make([]game.ID, len(c.Syncs))
-	copy(a.syncs, c.Syncs)
 
 	return nil
 }
@@ -114,14 +108,6 @@ func (a *app) Apply(id game.ID, event game.Event) {
 		}
 	case game.Cast:
 		if err := a.Cast(id, event); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-	case game.ConnectPC:
-		if err := a.ConnectPC(id, event); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-	case game.SetPC:
-		if err := a.CreatePC(id, event); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	default:

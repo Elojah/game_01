@@ -56,12 +56,9 @@ func run(prog string, filename string) {
 	a.EntityMapper = rdx
 	a.EntityTemplateMapper = rdx
 	a.EventMapper = rdx
-	a.PCMapper = rdx
-	a.PCLeftMapper = rdx
 	a.PermissionMapper = rdx
 	a.QEventMapper = nax
 	a.QListenerMapper = nax
-	a.QRecurrerMapper = nax
 	a.SectorMapper = rdx
 	a.SectorEntitiesMapper = rdx
 	a.SubscriptionMapper = nax

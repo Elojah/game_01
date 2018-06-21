@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"math/rand"
 	"net"
 	"net/http"
@@ -24,18 +23,9 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/login").Logger()
 
-	// Read body
-	b, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-	if err != nil {
-		logger.Error().Err(err).Msg("payload invalid")
-		http.Error(w, "payload invalid", http.StatusBadRequest)
-		return
-	}
-
-	// Unmarshal payload
+	// # Read body
 	var accountPayload game.Account
-	if err = json.Unmarshal(b, &accountPayload); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&accountPayload); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
