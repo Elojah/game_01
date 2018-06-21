@@ -32,7 +32,7 @@ func (h *handler) Dial(c Config) error {
 	mux.HandleFunc("/subscribe", h.subscribe)
 	mux.HandleFunc("/pc/create", h.createPC)
 	mux.HandleFunc("/pc/list", h.listPC)
-	mux.HandleFunc("/pc/conenct", h.connectPC)
+	mux.HandleFunc("/pc/connect", h.connectPC)
 	h.srv = &http.Server{
 		Addr:    c.Address,
 		Handler: mux,

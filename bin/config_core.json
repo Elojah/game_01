@@ -3,8 +3,7 @@
 		"id": "01CCS1SZ4B20G98XYMFGVC9VS4",
 		"limit": 65535,
 		"move_tolerance": 100,
-		"cores": ["01CCS1SZ4B20G98XYMFGVC9VS4"],
-		"syncs": ["01CGBKPGMC4TG961QMQ71TEV2P"]
+		"cores": ["01CCS1SZ4B20G98XYMFGVC9VS4"]
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",

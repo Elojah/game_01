@@ -3,7 +3,8 @@
 		"address": "127.0.0.1:8080",
 		"cert": "bin/server.crt",
 		"key": "bin/server.key",
-		"cores": ["01CCS1SZ4B20G98XYMFGVC9VS4"]
+		"cores": ["01CCS1SZ4B20G98XYMFGVC9VS4"],
+		"syncs": ["01CGBKPGMC4TG961QMQ71TEV2P"]
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",
