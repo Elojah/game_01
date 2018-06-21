@@ -20,15 +20,17 @@
 > curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
 > curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
 {"ID":"01CD05WMYFFMTHWCNE3PZNWPVK"}
-// This token must be used as client token id
-// Paste it in config_client.json: {... "app": {"token": 01CD05WMYFFMTHWCNE3PZNWPVK,...}}
+> curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CD05WMYFFMTHWCNE3PZNWPVK","type":"01CE3J5ASXJSVC405QTES4M221"}'
+// Token is token obtained at login and type is an entity ID described in templates/entity_templates.json.
+> curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CD05WMYFFMTHWCNE3PZNWPVK"}'
+[{"id":"01CGH2J1BV9B0978WN3DS8YCCT","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
+> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CD05WMYFFMTHWCNE3PZNWPVK","target":"01CGH2J1BV9B0978WN3DS8YCCT"}'
+{"ID":"01CGH399MZYQZX71V36YH4XZEW"}
+// Target is a PC ID in /list results
 
+// Paste token in config_client.json: {... "app": {"token": 01CD05WMYFFMTHWCNE3PZNWPVK,...}}
 > make client && bin/game_client bin/config_client.json
-> {"type":"set_pc","action":{"type":"01CE3J5ASXJSVC405QTES4M221"}}
-// FTM only way to retrieve generated pc is to check redis pc:token_id:pc_id
-> {"type":"connect_pc","action":{"target":"01CGE6MJYQWSVNS5ZNNHHASKK9"}}
-// FTM only way to retrieve generated entity is to check redis or added listener/sync
-> {"type":"move","action":{"source":"01CGE7XCYKS6PH2925H4AP91MH","target":"01CGE7XCYKS6PH2925H4AP91MH","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
+> {"type":"move","action":{"source":"01CGH2J1BV9B0978WN3DS8YCCT","target":"01CGH2J1BV9B0978WN3DS8YCCT","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
 
 ## TODO
