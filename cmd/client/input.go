@@ -77,34 +77,6 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 			Targets:   targets,
 			Position:  actionAlias.Position,
 		}
-	case "connect_pc":
-		var actionAlias struct {
-			Target string
-		}
-		if err := json.Unmarshal(alias.Action, &actionAlias); err != nil {
-			return err
-		}
-		target, err := ulid.Parse(actionAlias.Target)
-		if err != nil {
-			return err
-		}
-		in.Action = dto.ConnectPC{
-			Target: [16]byte(target),
-		}
-	case "set_pc":
-		var actionAlias struct {
-			Type string
-		}
-		if err := json.Unmarshal(alias.Action, &actionAlias); err != nil {
-			return err
-		}
-		t, err := ulid.Parse(actionAlias.Type)
-		if err != nil {
-			return err
-		}
-		in.Action = dto.SetPC{
-			Type: [16]byte(t),
-		}
 	default:
 		return &json.UnsupportedValueError{Str: alias.Type}
 	}
