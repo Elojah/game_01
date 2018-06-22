@@ -22,6 +22,7 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
+	// redis
 	rd := redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
@@ -29,6 +30,15 @@ func run(prog string, filename string) {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
+	// redis-lru
+	rdlru := redis.Service{}
+	rdlrul := rdlru.NewLauncher(redis.Namespaces{
+		Redis: "redis-lru",
+	}, "redis-lru")
+	launchers = append(launchers, rdlrul)
+	rdlrux := redisx.NewService(&rdlru)
+
+	// nats
 	na := nats.Service{}
 	nal := na.NewLauncher(nats.Namespaces{
 		Nats: "nats",
@@ -36,12 +46,14 @@ func run(prog string, filename string) {
 	launchers = append(launchers, nal)
 	nax := natsx.NewService(&na)
 
+	// mux
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
 	}, "server")
 	launchers = append(launchers, muxl)
 
+	// main app
 	a := app{}
 	al := a.NewLauncher(Namespaces{
 		App: "app",
@@ -54,10 +66,10 @@ func run(prog string, filename string) {
 	}
 
 	a.M = &m
-	a.EntityMapper = rdx
+	a.EntityMapper = rdlrux
 	a.QEventMapper = nax
 	a.QRecurrerMapper = nax
-	a.SectorEntitiesMapper = rdx
+	a.SectorEntitiesMapper = rdlrux
 	a.SectorMapper = rdx
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx

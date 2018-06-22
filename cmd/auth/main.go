@@ -29,6 +29,14 @@ func run(prog string, filename string) {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
+	// redis-lru
+	rdlru := redis.Service{}
+	rdlrul := rdlru.NewLauncher(redis.Namespaces{
+		Redis: "redis-lru",
+	}, "redis-lru")
+	launchers = append(launchers, rdlrul)
+	rdlrux := redisx.NewService(&rdlru)
+
 	na := nats.Service{}
 	nal := na.NewLauncher(nats.Namespaces{
 		Nats: "nats",
@@ -44,14 +52,14 @@ func run(prog string, filename string) {
 	launchers = append(launchers, hl)
 
 	h.AccountMapper = rdx
-	h.EntityMapper = rdx
+	h.EntityMapper = rdlrux
 	h.EntityTemplateMapper = rdx
 	h.PCMapper = rdx
 	h.PCLeftMapper = rdx
 	h.QEventMapper = nax
 	h.QListenerMapper = nax
 	h.QRecurrerMapper = nax
-	h.SectorEntitiesMapper = rdx
+	h.SectorEntitiesMapper = rdlrux
 	h.TokenMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {

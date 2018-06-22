@@ -27,6 +27,14 @@ func run(prog string, filename string) {
 	launchers = append(launchers, rdl)
 	rdx := redisx.NewService(&rd)
 
+	// redis-lru
+	rdlru := redis.Service{}
+	rdlrul := rdlru.NewLauncher(redis.Namespaces{
+		Redis: "redis-lru",
+	}, "redis-lru")
+	launchers = append(launchers, rdlrul)
+	rdlrux := redisx.NewService(&rdlru)
+
 	// handler (https server)
 	h := handler{}
 	hl := h.NewLauncher(Namespaces{
@@ -36,10 +44,10 @@ func run(prog string, filename string) {
 
 	h.AbilityTemplateMapper = rdx
 	h.AccountMapper = rdx
-	h.EntityMapper = rdx
+	h.EntityMapper = rdlrux
 	h.EntityTemplateMapper = rdx
 	h.SectorMapper = rdx
-	h.SectorEntitiesMapper = rdx
+	h.SectorEntitiesMapper = rdlrux
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
