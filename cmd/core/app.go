@@ -37,7 +37,7 @@ type app struct {
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
-	a.moveTolerance = c.Movelerance
+	a.moveTolerance = c.MoveTolerance
 	a.cores = make([]game.ID, len(c.Cores))
 	copy(a.cores, c.Cores)
 

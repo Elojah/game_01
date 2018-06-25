@@ -54,9 +54,11 @@
     + [x] Think about entity interactions limit to "what's around" to scale efficiently (`tile38` Entity Service) ?
     + [x] recurrer test 100%
 - [x] ack service
-- [ ] Split auth (with set/list/connect PC) and remove all pc stuff elsewhere.
+- [x] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?* + first graphic client
+- [x] Split auth (with set/list/connect PC) and remove all pc stuff elsewhere.
+- [ ] Add token revoker after X incativity
 - [ ] Add server ack sending to client (and client resend)
-- [ ] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?* + first graphic client
+- [ ] Add minimal graphic interface to client (minimal calls and print entity states)
 - [ ] Implement tool to generate/check/visualize sectors and entity movements
 - [ ] Add context everywhere
 

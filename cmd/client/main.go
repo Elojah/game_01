@@ -35,7 +35,7 @@ func run(prog string, filename string) {
 		return
 	}
 
-	log.Info().Msg("api up")
+	log.Info().Msg("client up")
 	go rd.Start()
 	select {}
 }
