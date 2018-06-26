@@ -9,21 +9,21 @@ import (
 
 // SectorEntitiesMapper mocks sector.EntitiesMapper.
 type SectorEntitiesMapper struct {
-	GetSectorEntitiesFunc     func(sector.EntitiesSubset) (sector.Entities, error)
-	GetSectorEntitiesCount    int32
+	GetEntitiesFunc           func(sector.EntitiesSubset) (sector.Entities, error)
+	GetEntitiesCount          int32
 	AddEntityToSectorFunc     func(game.ID, game.ID) error
 	AddEntityToSectorCount    int32
 	RemoveEntityToSectorFunc  func(game.ID, game.ID) error
 	RemoveEntityToSectorCount int32
 }
 
-// GetSectorEntities mocks sector.EntitiesMapper.
-func (m *SectorEntitiesMapper) GetSectorEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
-	atomic.AddInt32(&m.GetSectorEntitiesCount, 1)
-	if m.GetSectorEntitiesFunc == nil {
+// GetEntities mocks sector.EntitiesMapper.
+func (m *SectorEntitiesMapper) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
+	atomic.AddInt32(&m.GetEntitiesCount, 1)
+	if m.GetEntitiesFunc == nil {
 		return sector.Entities{}, nil
 	}
-	return m.GetSectorEntitiesFunc(subset)
+	return m.GetEntitiesFunc(subset)
 }
 
 // AddEntityToSector mocks sector.EntitiesMapper.

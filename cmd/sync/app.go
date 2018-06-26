@@ -70,7 +70,7 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 	}
 	recurrer := recurrerS.Domain()
 
-	if recurrer.Action == game.CloseRec {
+	if recurrer.Action == event.CloseRec {
 		a.recurrers[recurrer.ID].Close()
 		delete(a.recurrers, recurrer.ID)
 		return
@@ -85,18 +85,18 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 		return
 	}
 
-	rec := NewRecurrer(recurrer, a.tickRate, func(entity game.Entity) {
-		raw, err := storage.NewEntity(entity).Marshal(nil)
+	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
+		raw, err := storage.NewEntity(e).Marshal(nil)
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to retrieve marshal entity")
 			return
 		}
-		logger.Info().Str("entity", entity.ID.String()).Str("ip", token.IP.String()).Msg("send entity to ip")
+		logger.Info().Str("entity", e.ID.String()).Str("ip", token.IP.String()).Msg("send entity to ip")
 		a.Send(raw, token.IP)
 	})
-	rec.EntityMapper = a
-	rec.SectorEntitiesMapper = a
-	rec.SectorMapper = a
+	rec.EntityMapper = a.EntityMapper
+	rec.EntitiesMapper = a.EntitiesMapper
+	rec.SectorMapper = a.SectorMapper
 
 	go rec.Start()
 	a.recurrers[recurrer.ID] = rec
