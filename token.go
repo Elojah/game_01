@@ -17,3 +17,14 @@ type TokenMapper interface {
 	SetToken(Token) error
 	GetToken(ID) (Token, error)
 }
+
+// TokenHCMapper is the service gate for Token health check.
+type TokenHCMapper interface {
+	SetTokenHC(ID, int64) error
+	ListTokenHC(TokenHCSubset) ([]ID, error)
+}
+
+// TokenHCSubset retrieves token healthchecks based on last tick.
+type TokenHCSubset struct {
+	MaxTS int64
+}

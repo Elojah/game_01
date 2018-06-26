@@ -32,8 +32,10 @@ type EntityMapper interface {
 
 // EntitySubset is a subset to retrieve one entity.
 type EntitySubset struct {
-	Key   string
-	MaxTS int64
+	Key    string
+	MaxTS  int64
+	Cursor uint64
+	Count  int64
 }
 
 // Equal returns if both entities are equal.

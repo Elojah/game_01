@@ -38,13 +38,14 @@ func run(prog string, filename string) {
 	// main app
 	a := app{}
 	al := a.NewLauncher(Namespaces{
-		Tool: "revoker",
+		Revoker: "revoker",
 	}, "revoker")
 	launchers = append(launchers, al)
 
 	a.EntityMapper = rdlrux
 	a.SectorEntitiesMapper = rdlrux
 	a.TokenMapper = rdx
+	a.TokenHCMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

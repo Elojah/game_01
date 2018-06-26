@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"time"
 
 	"github.com/elojah/game_01"
@@ -10,6 +9,7 @@ import (
 type app struct {
 	game.EntityMapper
 	game.SectorEntitiesMapper
+	game.TokenHCMapper
 	game.TokenMapper
 
 	lifespan time.Duration
@@ -23,9 +23,10 @@ func (a *app) Dial(c Config) error {
 
 // Close shutdowns the server listening.
 func (a *app) Close() error {
-	return a.srv.Shutdown(context.Background())
+	return nil
 }
 
 // Start start the revoker
 func (a *app) Start() {
+	// minTS := time.Now().Sub(a.lifespan)
 }
