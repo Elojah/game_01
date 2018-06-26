@@ -67,9 +67,9 @@ func run(prog string, filename string) {
 
 	a.M = &m
 	a.EntityMapper = rdlrux
-	a.QEventMapper = nax
+	a.QMapper = nax
 	a.QRecurrerMapper = nax
-	a.SectorEntitiesMapper = rdlrux
+	a.EntitiesMapper = rdlrux
 	a.SectorMapper = rdx
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx

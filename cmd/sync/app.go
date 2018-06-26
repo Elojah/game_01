@@ -5,23 +5,31 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/storage"
 	"github.com/elojah/mux"
 )
 
 type app struct {
-	game.EntityMapper
-	game.QEventMapper
-	game.QRecurrerMapper
-	game.SectorEntitiesMapper
-	game.SectorMapper
-	game.SubscriptionMapper
-	game.TokenMapper
+	account.TokenMapper
+
+	EntityMapper entity.Mapper
+
+	event.QMapper
+	event.QRecurrerMapper
+	event.SubscriptionMapper
+
+	sector.EntitiesMapper
+	SectorMapper sector.Mapper
+
 	*mux.M
 
 	id game.ID
 
-	sub *game.Subscription
+	sub *event.Subscription
 
 	tickRate  uint32
 	recurrers map[game.ID]*Recurrer
