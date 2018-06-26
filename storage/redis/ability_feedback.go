@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -12,24 +12,24 @@ const (
 )
 
 // GetAbilityFeedback implemented with redis.
-func (s *Service) GetAbilityFeedback(subset game.AbilityFeedbackSubset) (game.AbilityFeedback, error) {
+func (s *Service) GetAbilityFeedback(subset ability.FeedbackSubset) (ability.Feedback, error) {
 	val, err := s.Get(afbKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.AbilityFeedback{}, err
+			return ability.Feedback{}, err
 		}
-		return game.AbilityFeedback{}, storage.ErrNotFound
+		return ability.Feedback{}, storage.ErrNotFound
 	}
 
 	var afb storage.AbilityFeedback
 	if _, err := afb.Unmarshal([]byte(val)); err != nil {
-		return game.AbilityFeedback{}, err
+		return ability.Feedback{}, err
 	}
 	return afb.Domain(), nil
 }
 
 // SetAbilityFeedback implemented with redis.
-func (s *Service) SetAbilityFeedback(afb game.AbilityFeedback) error {
+func (s *Service) SetAbilityFeedback(afb ability.Feedback) error {
 	raw, err := storage.NewAbilityFeedback(afb).Marshal(nil)
 	if err != nil {
 		return err

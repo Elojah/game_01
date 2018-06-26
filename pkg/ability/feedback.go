@@ -13,8 +13,8 @@ type Feedback struct {
 
 // FeedbackMapper is the communication interface for ability feedbacks.
 type FeedbackMapper interface {
-	SetFeedback(Feedback) error
-	GetFeedback(FeedbackSubset) (Feedback, error)
+	SetAbilityFeedback(Feedback) error
+	GetAbilityFeedback(FeedbackSubset) (Feedback, error)
 }
 
 // FeedbackSubset retrieves per ID.

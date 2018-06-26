@@ -6,6 +6,7 @@ import (
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -15,48 +16,48 @@ const (
 )
 
 // ListPC implemented with redis.
-func (s *Service) ListPC(subset game.PCSubset) ([]game.PC, error) {
+func (s *Service) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
 	keys, err := s.Keys(pcKey + subset.AccountID.String() + "*").Result()
 	if err != nil {
 		return nil, err
 	}
 
-	pcs := make([]game.PC, len(keys))
+	pcs := make([]entity.PC, len(keys))
 	for i, key := range keys {
 		val, err := s.Get(key).Result()
 		if err != nil {
 			return nil, err
 		}
 
-		var entity storage.Entity
-		if _, err := entity.Unmarshal([]byte(val)); err != nil {
+		var e storage.Entity
+		if _, err := e.Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
-		pcs[i] = game.PC(entity.Domain())
+		pcs[i] = entity.PC(e.Domain())
 	}
 	return pcs, nil
 }
 
 // GetPC implemented with redis.
-func (s *Service) GetPC(subset game.PCSubset) (game.PC, error) {
+func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
 	val, err := s.Get(pcKey + subset.AccountID.String() + ":" + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.PC{}, err
+			return entity.PC{}, err
 		}
-		return game.PC{}, storage.ErrNotFound
+		return entity.PC{}, storage.ErrNotFound
 	}
 
-	var entity storage.Entity
-	if _, err := entity.Unmarshal([]byte(val)); err != nil {
-		return game.PC{}, err
+	var e storage.Entity
+	if _, err := e.Unmarshal([]byte(val)); err != nil {
+		return entity.PC{}, err
 	}
-	return game.PC(entity.Domain()), nil
+	return entity.PC(e.Domain()), nil
 }
 
 // SetPC implemented with redis.
-func (s *Service) SetPC(pc game.PC, account game.ID) error {
-	raw, err := storage.NewEntity(game.Entity(pc)).Marshal(nil)
+func (s *Service) SetPC(pc entity.PC, account game.ID) error {
+	raw, err := storage.NewEntity(entity.E(pc)).Marshal(nil)
 	if err != nil {
 		return err
 	}
@@ -64,20 +65,20 @@ func (s *Service) SetPC(pc game.PC, account game.ID) error {
 }
 
 // SetPCLeft implemented with redis.
-func (s *Service) SetPCLeft(pc game.PCLeft, account game.ID) error {
+func (s *Service) SetPCLeft(pc entity.PCLeft, account game.ID) error {
 	return s.Set(pcLeftKey+account.String(), int(pc), 0).Err()
 }
 
 // GetPCLeft implemented with redis.
-func (s *Service) GetPCLeft(subset game.PCLeftSubset) (game.PCLeft, error) {
+func (s *Service) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
 	val, err := s.Get(pcLeftKey + subset.AccountID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.PCLeft(0), err
+			return entity.PCLeft(0), err
 		}
-		return game.PCLeft(0), storage.ErrNotFound
+		return entity.PCLeft(0), storage.ErrNotFound
 	}
 
 	pcLeft, err := strconv.Atoi(val)
-	return game.PCLeft(pcLeft), err
+	return entity.PCLeft(pcLeft), err
 }

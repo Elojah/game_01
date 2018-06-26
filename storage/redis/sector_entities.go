@@ -4,19 +4,20 @@ import (
 	"github.com/oklog/ulid"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/sector"
 )
 
 const (
 	sectorEntitiesKey = "sector_entities:"
 )
 
-// GetSectorEntities implemented with redis.
-func (s *Service) GetSectorEntities(subset game.SectorEntitiesSubset) (game.SectorEntities, error) {
-	sectorEntities := game.SectorEntities{SectorID: subset.SectorID}
+// GetEntities implemented with redis.
+func (s *Service) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
+	sectorEntities := sector.Entities{SectorID: subset.SectorID}
 	cmd := s.SMembers(sectorEntitiesKey + subset.SectorID.String())
 	vals, err := cmd.Result()
 	if err != nil {
-		return game.SectorEntities{}, err
+		return sector.Entities{}, err
 	}
 	sectorEntities.EntityIDs = make([]game.ID, len(vals))
 	for i, val := range vals {

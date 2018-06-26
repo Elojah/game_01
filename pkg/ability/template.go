@@ -10,9 +10,9 @@ type Template A
 
 // TemplateMapper is an interface for Template object.
 type TemplateMapper interface {
-	SetTemplate(Template) error
-	GetTemplate(TemplateSubset) (Template, error)
-	ListTemplate() ([]Template, error)
+	SetAbilityTemplate(Template) error
+	GetAbilityTemplate(TemplateSubset) (Template, error)
+	ListAbilityTemplate() ([]Template, error)
 }
 
 // TemplateSubset is a subset to retrieve one template.

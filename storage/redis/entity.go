@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -14,13 +14,13 @@ const (
 )
 
 // SetEntity implemented with redis.
-func (s *Service) SetEntity(entity game.Entity, ts int64) error {
-	raw, err := storage.NewEntity(entity).Marshal(nil)
+func (s *Service) SetEntity(e entity.E, ts int64) error {
+	raw, err := storage.NewEntity(e).Marshal(nil)
 	if err != nil {
 		return err
 	}
 	return s.ZAddNX(
-		entityKey+entity.ID.String(),
+		entityKey+e.ID.String(),
 		redis.Z{
 			Score:  float64(ts),
 			Member: raw,
@@ -29,7 +29,7 @@ func (s *Service) SetEntity(entity game.Entity, ts int64) error {
 }
 
 // GetEntity retrieves entity in Redis using ZRangeWithScores.
-func (s *Service) GetEntity(subset game.EntitySubset) (game.Entity, error) {
+func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 	cmd := s.ZRevRangeByScore(
 		entityKey+subset.Key,
 		redis.ZRangeBy{
@@ -40,14 +40,14 @@ func (s *Service) GetEntity(subset game.EntitySubset) (game.Entity, error) {
 	)
 	vals, err := cmd.Result()
 	if err != nil {
-		return game.Entity{}, err
+		return entity.E{}, err
 	}
 	if len(vals) == 0 {
-		return game.Entity{}, storage.ErrNotFound
+		return entity.E{}, storage.ErrNotFound
 	}
 	var entityS storage.Entity
 	if _, err := entityS.Unmarshal([]byte(vals[0])); err != nil {
-		return game.Entity{}, err
+		return entity.E{}, err
 	}
 	return entityS.Domain(), nil
 }

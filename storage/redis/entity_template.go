@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -12,25 +12,25 @@ const (
 )
 
 // GetEntityTemplate implemented with redis.
-func (s *Service) GetEntityTemplate(subset game.EntityTemplateSubset) (game.EntityTemplate, error) {
+func (s *Service) GetEntityTemplate(subset entity.TemplateSubset) (entity.Template, error) {
 	val, err := s.Get(entityTemplateKey + subset.Type.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.EntityTemplate{}, err
+			return entity.Template{}, err
 		}
-		return game.EntityTemplate{}, storage.ErrNotFound
+		return entity.Template{}, storage.ErrNotFound
 	}
 
-	var entity storage.Entity
-	if _, err := entity.Unmarshal([]byte(val)); err != nil {
-		return game.EntityTemplate{}, err
+	var e storage.Entity
+	if _, err := e.Unmarshal([]byte(val)); err != nil {
+		return entity.Template{}, err
 	}
-	return game.EntityTemplate(entity.Domain()), nil
+	return entity.Template(e.Domain()), nil
 }
 
 // SetEntityTemplate implemented with redis.
-func (s *Service) SetEntityTemplate(template game.EntityTemplate) error {
-	raw, err := storage.NewEntity(game.Entity(template)).Marshal(nil)
+func (s *Service) SetEntityTemplate(template entity.Template) error {
+	raw, err := storage.NewEntity(entity.E(template)).Marshal(nil)
 	if err != nil {
 		return err
 	}
@@ -38,24 +38,24 @@ func (s *Service) SetEntityTemplate(template game.EntityTemplate) error {
 }
 
 // ListEntityTemplate implemented with redis.
-func (s *Service) ListEntityTemplate() ([]game.EntityTemplate, error) {
+func (s *Service) ListEntityTemplate() ([]entity.Template, error) {
 	keys, err := s.Keys(entityTemplateKey + "*").Result()
 	if err != nil {
 		return nil, err
 	}
 
-	entities := make([]game.EntityTemplate, len(keys))
+	entities := make([]entity.Template, len(keys))
 	for i, key := range keys {
 		val, err := s.Get(key).Result()
 		if err != nil {
 			return nil, err
 		}
 
-		var entity storage.Entity
-		if _, err := entity.Unmarshal([]byte(val)); err != nil {
+		var e storage.Entity
+		if _, err := e.Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
-		entities[i] = game.EntityTemplate(entity.Domain())
+		entities[i] = entity.Template(e.Domain())
 	}
 	return entities, nil
 }

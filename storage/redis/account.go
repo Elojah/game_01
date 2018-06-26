@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -12,27 +12,27 @@ const (
 )
 
 // GetAccount implemented with redis.
-func (s *Service) GetAccount(subset game.AccountSubset) (game.Account, error) {
+func (s *Service) GetAccount(subset account.Subset) (account.A, error) {
 	val, err := s.Get(accountKey + subset.Username).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.Account{}, err
+			return account.A{}, err
 		}
-		return game.Account{}, storage.ErrNotFound
+		return account.A{}, storage.ErrNotFound
 	}
 
-	var account storage.Account
-	if _, err := account.Unmarshal([]byte(val)); err != nil {
-		return game.Account{}, err
+	var a storage.Account
+	if _, err := a.Unmarshal([]byte(val)); err != nil {
+		return account.A{}, err
 	}
-	return account.Domain(subset.Username)
+	return a.Domain(subset.Username)
 }
 
 // SetAccount implemented with redis.
-func (s *Service) SetAccount(account game.Account) error {
-	raw, err := storage.NewAccount(account).Marshal(nil)
+func (s *Service) SetAccount(a account.A) error {
+	raw, err := storage.NewAccount(a).Marshal(nil)
 	if err != nil {
 		return err
 	}
-	return s.Set(accountKey+account.Username, raw, 0).Err()
+	return s.Set(accountKey+a.Username, raw, 0).Err()
 }

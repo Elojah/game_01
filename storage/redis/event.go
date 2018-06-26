@@ -6,6 +6,7 @@ import (
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -14,22 +15,22 @@ const (
 )
 
 // SetEvent implemented with redis.
-func (s *Service) SetEvent(event game.Event, id game.ID) error {
-	raw, err := storage.NewEvent(event).Marshal(nil)
+func (s *Service) SetEvent(e event.E, id game.ID) error {
+	raw, err := storage.NewEvent(e).Marshal(nil)
 	if err != nil {
 		return err
 	}
 	return s.ZAddNX(
 		eventKey+id.String(),
 		redis.Z{
-			Score:  float64(event.TS.UnixNano()),
+			Score:  float64(e.TS.UnixNano()),
 			Member: raw,
 		},
 	).Err()
 }
 
 // ListEvent retrieves event in Redis using ZRangeWithScores.
-func (s *Service) ListEvent(subset game.EventSubset) ([]game.Event, error) {
+func (s *Service) ListEvent(subset event.Subset) ([]event.E, error) {
 	cmd := s.ZRangeByScore(
 		eventKey+subset.Key,
 		redis.ZRangeBy{
@@ -41,7 +42,7 @@ func (s *Service) ListEvent(subset game.EventSubset) ([]game.Event, error) {
 	if err != nil {
 		return nil, err
 	}
-	events := make([]game.Event, len(vals))
+	events := make([]event.E, len(vals))
 	for i := range vals {
 		var eventS storage.Event
 		if _, err := eventS.Unmarshal([]byte(vals[i])); err != nil {

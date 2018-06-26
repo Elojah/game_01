@@ -7,6 +7,7 @@ import (
 	"github.com/oklog/ulid"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -16,24 +17,24 @@ const (
 )
 
 // GetToken redis implementation.
-func (s *Service) GetToken(id game.ID) (game.Token, error) {
+func (s *Service) GetToken(id game.ID) (account.Token, error) {
 	val, err := s.Get(tokenKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.Token{}, err
+			return account.Token{}, err
 		}
-		return game.Token{}, storage.ErrNotFound
+		return account.Token{}, storage.ErrNotFound
 	}
 
 	var token storage.Token
 	if _, err := token.Unmarshal([]byte(val)); err != nil {
-		return game.Token{}, err
+		return account.Token{}, err
 	}
 	return token.Domain(id)
 }
 
 // SetToken redis implementation.
-func (s *Service) SetToken(token game.Token) error {
+func (s *Service) SetToken(token account.Token) error {
 	raw, err := storage.NewToken(token).Marshal(nil)
 	if err != nil {
 		return err
@@ -53,7 +54,7 @@ func (s *Service) SetTokenHC(id game.ID, hc int64) error {
 }
 
 // ListTokenHC redis implementation.
-func (s *Service) ListTokenHC(subset game.TokenHCSubset) ([]game.ID, error) {
+func (s *Service) ListTokenHC(subset account.TokenHCSubset) ([]game.ID, error) {
 	cmd := s.ZRangeByScore(
 		tokenHCKey,
 		redis.ZRangeBy{

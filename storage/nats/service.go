@@ -1,14 +1,14 @@
 package nats
 
 import (
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/nats"
 )
 
-var _ game.QEventMapper = (*Service)(nil)
-var _ game.QListenerMapper = (*Service)(nil)
-var _ game.QRecurrerMapper = (*Service)(nil)
-var _ game.SubscriptionMapper = (*Service)(nil)
+var _ event.QMapper = (*Service)(nil)
+var _ event.QListenerMapper = (*Service)(nil)
+var _ event.QRecurrerMapper = (*Service)(nil)
+var _ event.SubscriptionMapper = (*Service)(nil)
 
 // Service implements event.
 type Service struct {

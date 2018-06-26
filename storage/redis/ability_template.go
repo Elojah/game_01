@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -12,25 +12,25 @@ const (
 )
 
 // GetAbilityTemplate implemented with redis.
-func (s *Service) GetAbilityTemplate(subset game.AbilityTemplateSubset) (game.AbilityTemplate, error) {
+func (s *Service) GetAbilityTemplate(subset ability.TemplateSubset) (ability.Template, error) {
 	val, err := s.Get(abilityTemplateKey + subset.Type.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return game.AbilityTemplate{}, err
+			return ability.Template{}, err
 		}
-		return game.AbilityTemplate{}, storage.ErrNotFound
+		return ability.Template{}, storage.ErrNotFound
 	}
 
-	var ability storage.Ability
-	if _, err := ability.Unmarshal([]byte(val)); err != nil {
-		return game.AbilityTemplate{}, err
+	var a storage.Ability
+	if _, err := a.Unmarshal([]byte(val)); err != nil {
+		return ability.Template{}, err
 	}
-	return game.AbilityTemplate(ability.Domain()), nil
+	return ability.Template(a.Domain()), nil
 }
 
 // SetAbilityTemplate implemented with redis.
-func (s *Service) SetAbilityTemplate(template game.AbilityTemplate) error {
-	raw, err := storage.NewAbility(game.Ability(template)).Marshal(nil)
+func (s *Service) SetAbilityTemplate(template ability.Template) error {
+	raw, err := storage.NewAbility(ability.A(template)).Marshal(nil)
 	if err != nil {
 		return err
 	}
@@ -38,13 +38,13 @@ func (s *Service) SetAbilityTemplate(template game.AbilityTemplate) error {
 }
 
 // ListAbilityTemplate implemented with redis.
-func (s *Service) ListAbilityTemplate() ([]game.AbilityTemplate, error) {
+func (s *Service) ListAbilityTemplate() ([]ability.Template, error) {
 	keys, err := s.Keys(abilityTemplateKey + "*").Result()
 	if err != nil {
 		return nil, err
 	}
 
-	entities := make([]game.AbilityTemplate, len(keys))
+	entities := make([]ability.Template, len(keys))
 	for i, key := range keys {
 		val, err := s.Get(key).Result()
 		if err != nil {
@@ -55,7 +55,7 @@ func (s *Service) ListAbilityTemplate() ([]game.AbilityTemplate, error) {
 		if _, err := entity.Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
-		entities[i] = game.AbilityTemplate(entity.Domain())
+		entities[i] = ability.Template(entity.Domain())
 	}
 	return entities, nil
 }

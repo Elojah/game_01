@@ -6,9 +6,9 @@ type Template E
 
 // TemplateMapper is an interface for Template object.
 type TemplateMapper interface {
-	SetTemplate(Template) error
-	GetTemplate(TemplateSubset) (Template, error)
-	ListTemplate() ([]Template, error)
+	SetEntityTemplate(Template) error
+	GetEntityTemplate(TemplateSubset) (Template, error)
+	ListEntityTemplate() ([]Template, error)
 }
 
 // TemplateSubset is a subset to retrieve one template.
