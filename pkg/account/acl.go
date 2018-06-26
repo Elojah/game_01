@@ -1,4 +1,4 @@
-package game
+package account
 
 // ACL is a enum for different rights between entities.
 type ACL uint8

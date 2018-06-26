@@ -4,11 +4,12 @@ import (
 	"sync/atomic"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/sector"
 )
 
-// SectorEntitiesMapper mocks game.SectorEntitiesMapper.
+// SectorEntitiesMapper mocks sector.EntitiesMapper.
 type SectorEntitiesMapper struct {
-	GetSectorEntitiesFunc     func(game.SectorEntitiesSubset) (game.SectorEntities, error)
+	GetSectorEntitiesFunc     func(sector.EntitiesSubset) (sector.Entities, error)
 	GetSectorEntitiesCount    int32
 	AddEntityToSectorFunc     func(game.ID, game.ID) error
 	AddEntityToSectorCount    int32
@@ -16,16 +17,16 @@ type SectorEntitiesMapper struct {
 	RemoveEntityToSectorCount int32
 }
 
-// GetSectorEntities mocks game.SectorEntitiesMapper.
-func (m *SectorEntitiesMapper) GetSectorEntities(subset game.SectorEntitiesSubset) (game.SectorEntities, error) {
+// GetSectorEntities mocks sector.EntitiesMapper.
+func (m *SectorEntitiesMapper) GetSectorEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
 	atomic.AddInt32(&m.GetSectorEntitiesCount, 1)
 	if m.GetSectorEntitiesFunc == nil {
-		return game.SectorEntities{}, nil
+		return sector.Entities{}, nil
 	}
 	return m.GetSectorEntitiesFunc(subset)
 }
 
-// AddEntityToSector mocks game.SectorEntitiesMapper.
+// AddEntityToSector mocks sector.EntitiesMapper.
 func (m *SectorEntitiesMapper) AddEntityToSector(entityID game.ID, sectorID game.ID) error {
 	atomic.AddInt32(&m.AddEntityToSectorCount, 1)
 	if m.AddEntityToSectorFunc == nil {
@@ -34,7 +35,7 @@ func (m *SectorEntitiesMapper) AddEntityToSector(entityID game.ID, sectorID game
 	return m.AddEntityToSectorFunc(entityID, sectorID)
 }
 
-// RemoveEntityToSector mocks game.SectorEntitiesMapper.
+// RemoveEntityToSector mocks sector.EntitiesMapper.
 func (m *SectorEntitiesMapper) RemoveEntityToSector(entityID game.ID, sectorID game.ID) error {
 	atomic.AddInt32(&m.RemoveEntityToSectorCount, 1)
 	if m.RemoveEntityToSectorFunc == nil {

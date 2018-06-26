@@ -2,37 +2,38 @@ package storage
 
 import (
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/entity"
 )
 
-// NewEntity convert a game.Entity into a storage Entity.
-func NewEntity(a game.Entity) *Entity {
+// NewEntity convert a entity.E into a storage Entity.
+func NewEntity(e entity.E) *Entity {
 	return &Entity{
-		ID:       [16]byte(a.ID),
-		Type:     [16]byte(a.Type),
-		Name:     a.Name,
-		HP:       a.HP,
-		MP:       a.MP,
-		SectorID: a.Position.SectorID,
-		X:        a.Position.Coord.X,
-		Y:        a.Position.Coord.Y,
-		Z:        a.Position.Coord.Z,
+		ID:       [16]byte(e.ID),
+		Type:     [16]byte(e.Type),
+		Name:     e.Name,
+		HP:       e.HP,
+		MP:       e.MP,
+		SectorID: e.Position.SectorID,
+		X:        e.Position.Coord.X,
+		Y:        e.Position.Coord.Y,
+		Z:        e.Position.Coord.Z,
 	}
 }
 
 // Domain converts a storage Entity into a game Entity.
-func (a Entity) Domain() game.Entity {
-	return game.Entity{
-		ID:   game.ID(a.ID),
-		Type: game.EntityType(a.Type),
-		Name: a.Name,
-		HP:   a.HP,
-		MP:   a.MP,
+func (e Entity) Domain() entity.E {
+	return entity.E{
+		ID:   game.ID(e.ID),
+		Type: entity.Type(e.Type),
+		Name: e.Name,
+		HP:   e.HP,
+		MP:   e.MP,
 		Position: game.Position{
-			SectorID: a.SectorID,
+			SectorID: e.SectorID,
 			Coord: game.Vec3{
-				X: a.X,
-				Y: a.Y,
-				Z: a.Z,
+				X: e.X,
+				Y: e.Y,
+				Z: e.Z,
 			},
 		},
 	}

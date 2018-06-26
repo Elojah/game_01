@@ -1,8 +1,12 @@
-package game
+package ability
 
-// AbilityComponent is a part of a skill.
-type AbilityComponent interface {
-	Affect(*Entity) AbilityFeedbackComponent
+import (
+	"github.com/elojah/game_01/pkg/entity"
+)
+
+// Component is a part of a skill.
+type Component interface {
+	Affect(*entity.E) FeedbackComponent
 }
 
 // HealDirect instant heals.
@@ -12,7 +16,7 @@ type HealDirect struct {
 }
 
 // Affect a HealDirect on target.
-func (c HealDirect) Affect(target *Entity) AbilityFeedbackComponent {
+func (c HealDirect) Affect(target *entity.E) FeedbackComponent {
 	target.HP += c.Amount
 	return HealDirectFeedback{}
 }
@@ -24,7 +28,7 @@ type DamageDirect struct {
 }
 
 // Affect a DamageDirect on target.
-func (c DamageDirect) Affect(target *Entity) AbilityFeedbackComponent {
+func (c DamageDirect) Affect(target *entity.E) FeedbackComponent {
 	if c.Amount >= target.HP {
 		target.HP = 0
 		return DamageDirectFeedback{}
@@ -42,7 +46,7 @@ type HealOverTime struct {
 }
 
 // Affect a HealOverTime on target.
-func (c HealOverTime) Affect(target *Entity) AbilityFeedbackComponent {
+func (c HealOverTime) Affect(target *entity.E) FeedbackComponent {
 	return HealOverTimeFeedback{}
 }
 
@@ -55,6 +59,6 @@ type DamageOverTime struct {
 }
 
 // Affect a DamageOverTime on target.
-func (c DamageOverTime) Affect(target *Entity) AbilityFeedbackComponent {
+func (c DamageOverTime) Affect(target *entity.E) FeedbackComponent {
 	return DamageOverTimeFeedback{}
 }

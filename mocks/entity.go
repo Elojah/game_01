@@ -3,36 +3,36 @@ package mocks
 import (
 	"sync/atomic"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/entity"
 )
 
-// EntityMapper mocks game.EntityMapper.
+// EntityMapper mocks entity.Mapper.
 type EntityMapper struct {
-	SetEntityFunc  func(game.Entity, int64) error
+	SetEntityFunc  func(entity.E, int64) error
 	SetEntityCount int32
-	GetEntityFunc  func(game.EntitySubset) (game.Entity, error)
+	GetEntityFunc  func(entity.Subset) (entity.E, error)
 	GetEntityCount int32
 }
 
-// SetEntity mocks game.EntityMapper.
-func (m *EntityMapper) SetEntity(event game.Entity, ts int64) error {
+// SetEntity mocks entity.Mapper.
+func (m *EntityMapper) SetEntity(e entity.E, ts int64) error {
 	atomic.AddInt32(&m.SetEntityCount, 1)
 	if m.SetEntityFunc == nil {
 		return nil
 	}
-	return m.SetEntityFunc(event, ts)
+	return m.SetEntityFunc(e, ts)
 }
 
-// GetEntity mocks game.EntityMapper.
-func (m *EntityMapper) GetEntity(subset game.EntitySubset) (game.Entity, error) {
+// GetEntity mocks entity.Mapper.
+func (m *EntityMapper) GetEntity(subset entity.Subset) (entity.E, error) {
 	atomic.AddInt32(&m.GetEntityCount, 1)
 	if m.GetEntityFunc == nil {
-		return game.Entity{}, nil
+		return entity.E{}, nil
 	}
 	return m.GetEntityFunc(subset)
 }
 
-// NewEntityMapper returns a event service mock ready for usage.
+// NewEntityMapper returns a entity service mock ready for usage.
 func NewEntityMapper() *EntityMapper {
 	return &EntityMapper{}
 }

@@ -95,9 +95,9 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 		TS:     event.TS,
 		Source: event.Source,
 		Action: game.Feedback{
-			AfbID:  afb.ID,
-			Source: source.ID,
-			Target: target.ID,
+			AbilityID: afb.ID,
+			Source:    source.ID,
+			Target:    target.ID,
 		},
 	}, source.ID)
 }

@@ -2,10 +2,11 @@ package storage
 
 import (
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/event"
 )
 
 // NewRecurrer converts a domain recurrer to a storage recurrer.
-func NewRecurrer(recurrer game.Recurrer) Recurrer {
+func NewRecurrer(recurrer event.Recurrer) Recurrer {
 	return Recurrer{
 		ID:       [16]byte(recurrer.ID),
 		EntityID: [16]byte(recurrer.EntityID),
@@ -15,11 +16,11 @@ func NewRecurrer(recurrer game.Recurrer) Recurrer {
 }
 
 // Domain converts a storage user into a domain user.
-func (r Recurrer) Domain() game.Recurrer {
-	return game.Recurrer{
+func (r Recurrer) Domain() event.Recurrer {
+	return event.Recurrer{
 		ID:       game.ID(r.ID),
 		EntityID: game.ID(r.EntityID),
 		TokenID:  game.ID(r.TokenID),
-		Action:   game.RecurrerAction(r.Action),
+		Action:   event.RecurrerAction(r.Action),
 	}
 }

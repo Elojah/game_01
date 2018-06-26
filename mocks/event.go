@@ -4,27 +4,28 @@ import (
 	"sync/atomic"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/event"
 )
 
-// EventMapper mocks game.EventMapper.
+// EventMapper mocks event.Mapper.
 type EventMapper struct {
-	SetEventFunc   func(game.Event, game.ID) error
+	SetEventFunc   func(event.E, game.ID) error
 	SetEventCount  int32
-	ListEventFunc  func(game.EventSubset) ([]game.Event, error)
+	ListEventFunc  func(event.Subset) ([]event.E, error)
 	ListEventCount int32
 }
 
-// SetEvent mocks game.EventMapper.
-func (s *EventMapper) SetEvent(event game.Event, id game.ID) error {
+// SetEvent mocks event.Mapper.
+func (s *EventMapper) SetEvent(e event.E, id game.ID) error {
 	atomic.AddInt32(&s.SetEventCount, 1)
 	if s.SetEventFunc == nil {
 		return nil
 	}
-	return s.SetEventFunc(event, id)
+	return s.SetEventFunc(e, id)
 }
 
-// ListEvent mocks game.EventMapper.
-func (s *EventMapper) ListEvent(subset game.EventSubset) ([]game.Event, error) {
+// ListEvent mocks event.Mapper.
+func (s *EventMapper) ListEvent(subset event.Subset) ([]event.E, error) {
 	atomic.AddInt32(&s.ListEventCount, 1)
 	if s.ListEventFunc == nil {
 		return nil, nil

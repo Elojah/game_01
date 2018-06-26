@@ -1,4 +1,4 @@
-package game
+package event
 
 import (
 	"github.com/nats-io/go-nats"

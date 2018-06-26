@@ -1,8 +1,12 @@
-package game
+package ability
 
-// AbilityFeedbackComponent is the feedback of AbilityComponent.
-type AbilityFeedbackComponent interface {
-	Affect(*Entity)
+import (
+	"github.com/elojah/game_01/pkg/entity"
+)
+
+// FeedbackComponent is the feedback of AbilityComponent.
+type FeedbackComponent interface {
+	Affect(*entity.E)
 }
 
 // HealDirectFeedback is the feedback of a HealDirect casted by entity.
@@ -11,7 +15,7 @@ type HealDirectFeedback struct {
 }
 
 // Affect applies fb on entity.
-func (fb HealDirectFeedback) Affect(entity *Entity) {
+func (fb HealDirectFeedback) Affect(e *entity.E) {
 
 }
 
@@ -21,7 +25,7 @@ type DamageDirectFeedback struct {
 }
 
 // Affect applies fb on entity.
-func (fb DamageDirectFeedback) Affect(entity *Entity) {
+func (fb DamageDirectFeedback) Affect(e *entity.E) {
 
 }
 
@@ -30,7 +34,7 @@ type HealOverTimeFeedback struct {
 }
 
 // Affect applies fb on entity.
-func (fb HealOverTimeFeedback) Affect(entity *Entity) {
+func (fb HealOverTimeFeedback) Affect(e *entity.E) {
 
 }
 
@@ -39,6 +43,6 @@ type DamageOverTimeFeedback struct {
 }
 
 // Affect applies fb on entity.
-func (fb DamageOverTimeFeedback) Affect(entity *Entity) {
+func (fb DamageOverTimeFeedback) Affect(e *entity.E) {
 
 }

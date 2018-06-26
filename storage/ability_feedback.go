@@ -1,62 +1,63 @@
 package storage
 
 import (
-	"github.com/elojah/game_01"
+	game "github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ability"
 )
 
 // NewHealDirectFeedback converts a game HealDirectFeedback into a storage HealDirectFeedback.
-func NewHealDirectFeedback(fb game.HealDirectFeedback) HealDirectFeedback {
+func NewHealDirectFeedback(fb ability.HealDirectFeedback) HealDirectFeedback {
 	return HealDirectFeedback(fb)
 }
 
 // NewDamageDirectFeedback converts a game DamageDirectFeedback into a storage DamageDirectFeedback.
-func NewDamageDirectFeedback(fb game.DamageDirectFeedback) DamageDirectFeedback {
+func NewDamageDirectFeedback(fb ability.DamageDirectFeedback) DamageDirectFeedback {
 	return DamageDirectFeedback(fb)
 }
 
 // NewHealOverTimeFeedback converts a game HealOverTimeFeedback into a storage HealOverTimeFeedback.
-func NewHealOverTimeFeedback(fb game.HealOverTimeFeedback) HealOverTimeFeedback {
+func NewHealOverTimeFeedback(fb ability.HealOverTimeFeedback) HealOverTimeFeedback {
 	return HealOverTimeFeedback(fb)
 }
 
 // NewDamageOverTimeFeedback converts a game DamageOverTimeFeedback into a storage DamageOverTimeFeedback.
-func NewDamageOverTimeFeedback(fb game.DamageOverTimeFeedback) DamageOverTimeFeedback {
+func NewDamageOverTimeFeedback(fb ability.DamageOverTimeFeedback) DamageOverTimeFeedback {
 	return DamageOverTimeFeedback(fb)
 }
 
 // Domain converts a HealDirectFeedback storage into a HealDirectFeedback domain.
-func (fb HealDirectFeedback) Domain() game.HealDirectFeedback {
-	return game.HealDirectFeedback(fb)
+func (fb HealDirectFeedback) Domain() ability.HealDirectFeedback {
+	return ability.HealDirectFeedback(fb)
 }
 
 // Domain converts a DamageDirectFeedback storage into a DamageDirectFeedback domain.
-func (fb DamageDirectFeedback) Domain() game.DamageDirectFeedback {
-	return game.DamageDirectFeedback(fb)
+func (fb DamageDirectFeedback) Domain() ability.DamageDirectFeedback {
+	return ability.DamageDirectFeedback(fb)
 }
 
 // Domain converts a HealOverTimeFeedback storage into a HealOverTimeFeedback domain.
-func (fb HealOverTimeFeedback) Domain() game.HealOverTimeFeedback {
-	return game.HealOverTimeFeedback(fb)
+func (fb HealOverTimeFeedback) Domain() ability.HealOverTimeFeedback {
+	return ability.HealOverTimeFeedback(fb)
 }
 
 // Domain converts a DamageOverTimeFeedback storage into a DamageOverTimeFeedback domain.
-func (fb DamageOverTimeFeedback) Domain() game.DamageOverTimeFeedback {
-	return game.DamageOverTimeFeedback(fb)
+func (fb DamageOverTimeFeedback) Domain() ability.DamageOverTimeFeedback {
+	return ability.DamageOverTimeFeedback(fb)
 }
 
 // NewAbilityFeedback converts a game AbilityFeedback into a storage AbilityFeedback.
-func NewAbilityFeedback(fb game.AbilityFeedback) *AbilityFeedback {
+func NewAbilityFeedback(fb ability.Feedback) *AbilityFeedback {
 	components := make([]interface{}, len(fb.Components))
 	for i, c := range fb.Components {
 		switch c.(type) {
-		case game.HealDirectFeedback:
-			components[i] = NewHealDirectFeedback(c.(game.HealDirectFeedback))
-		case game.DamageDirectFeedback:
-			components[i] = NewDamageDirectFeedback(c.(game.DamageDirectFeedback))
-		case game.HealOverTimeFeedback:
-			components[i] = NewHealOverTimeFeedback(c.(game.HealOverTimeFeedback))
-		case game.DamageOverTimeFeedback:
-			components[i] = NewDamageOverTimeFeedback(c.(game.DamageOverTimeFeedback))
+		case ability.HealDirectFeedback:
+			components[i] = NewHealDirectFeedback(c.(ability.HealDirectFeedback))
+		case ability.DamageDirectFeedback:
+			components[i] = NewDamageDirectFeedback(c.(ability.DamageDirectFeedback))
+		case ability.HealOverTimeFeedback:
+			components[i] = NewHealOverTimeFeedback(c.(ability.HealOverTimeFeedback))
+		case ability.DamageOverTimeFeedback:
+			components[i] = NewDamageOverTimeFeedback(c.(ability.DamageOverTimeFeedback))
 		}
 	}
 	return &AbilityFeedback{
@@ -67,8 +68,8 @@ func NewAbilityFeedback(fb game.AbilityFeedback) *AbilityFeedback {
 }
 
 // Domain converts a storage AbilityFeedback into a game AbilityFeedback.
-func (a AbilityFeedback) Domain() game.AbilityFeedback {
-	components := make([]game.AbilityFeedbackComponent, len(a.Components))
+func (a AbilityFeedback) Domain() ability.Feedback {
+	components := make([]ability.FeedbackComponent, len(a.Components))
 	for i, c := range a.Components {
 		switch c.(type) {
 		case HealDirectFeedback:
@@ -81,7 +82,7 @@ func (a AbilityFeedback) Domain() game.AbilityFeedback {
 			components[i] = c.(DamageOverTimeFeedback).Domain()
 		}
 	}
-	return game.AbilityFeedback{
+	return ability.Feedback{
 		ID:         game.ID(a.ID),
 		AbilityID:  game.ID(a.AbilityID),
 		Components: components,

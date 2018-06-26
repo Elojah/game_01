@@ -1,4 +1,8 @@
-package game
+package event
+
+import (
+	game "github.com/elojah/game_01"
+)
 
 // RecurrerAction is an action required for a recurrer.
 type RecurrerAction uint8
@@ -12,13 +16,13 @@ const (
 
 // Recurrer requires the receiver to create a new recurrer with subject ID.
 type Recurrer struct {
-	ID       ID
-	EntityID ID
-	TokenID  ID
+	ID       game.ID
+	EntityID game.ID
+	TokenID  game.ID
 	Action   RecurrerAction
 }
 
 // QRecurrerMapper handles send/receive methods for recurrers.
 type QRecurrerMapper interface {
-	SendRecurrer(Recurrer, ID) error
+	SendRecurrer(Recurrer, game.ID) error
 }

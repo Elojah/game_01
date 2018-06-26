@@ -1,37 +1,41 @@
-package game
+package entity
 
-// EntityType represents the type of an entity.
-type EntityType = ID
+import (
+	game "github.com/elojah/game_01"
+)
+
+// Type represents the type of an entity.
+type Type = game.ID
 
 // Position represents an entity position in world.
 type Position struct {
-	Coord    Vec3
-	SectorID ID
+	Coord    game.Vec3
+	SectorID game.ID
 }
 
-// Entity represents a dynamic entity.
-type Entity struct {
-	ID       ID         `json:"id"`
-	Type     EntityType `json:"type"`
-	Name     string     `json:"name"`
-	HP       uint64     `json:"hp"`
-	MP       uint64     `json:"mp"`
-	Position Position   `json:"position"`
+// E represents a dynamic entity.
+type E struct {
+	ID       game.ID  `json:"id"`
+	Type     Type     `json:"type"`
+	Name     string   `json:"name"`
+	HP       uint64   `json:"hp"`
+	MP       uint64   `json:"mp"`
+	Position Position `json:"position"`
 }
 
 // Move moves entity to position p.
-func (e *Entity) Move(p Vec3) {
+func (e *E) Move(p game.Vec3) {
 	e.Position.Coord.Add(p)
 }
 
-// EntityMapper is an interface for Entity object.
-type EntityMapper interface {
-	SetEntity(Entity, int64) error
-	GetEntity(EntitySubset) (Entity, error)
+// Mapper is an interface for E object.
+type Mapper interface {
+	SetEntity(E, int64) error
+	GetEntity(Subset) (E, error)
 }
 
-// EntitySubset is a subset to retrieve one entity.
-type EntitySubset struct {
+// Subset is a subset to retrieve one entity.
+type Subset struct {
 	Key    string
 	MaxTS  int64
 	Cursor uint64
@@ -39,7 +43,7 @@ type EntitySubset struct {
 }
 
 // Equal returns if both entities are equal.
-func (e Entity) Equal(entity Entity) bool {
+func (e E) Equal(entity E) bool {
 	if e.ID.Compare(entity.ID) != 0 {
 		return false
 	}

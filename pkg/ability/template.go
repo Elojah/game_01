@@ -1,37 +1,37 @@
-package game
+package ability
 
 import (
 	"encoding/json"
 )
 
-// AbilityTemplate alias an entity.
+// Template alias an entity.
 // It represents semi static data. When creating abilities, those templates are used.
-type AbilityTemplate Ability
+type Template A
 
-// AbilityTemplateMapper is an interface for AbilityTemplate object.
-type AbilityTemplateMapper interface {
-	SetAbilityTemplate(AbilityTemplate) error
-	GetAbilityTemplate(AbilityTemplateSubset) (AbilityTemplate, error)
-	ListAbilityTemplate() ([]AbilityTemplate, error)
+// TemplateMapper is an interface for Template object.
+type TemplateMapper interface {
+	SetTemplate(Template) error
+	GetTemplate(TemplateSubset) (Template, error)
+	ListTemplate() ([]Template, error)
 }
 
-// AbilityTemplateSubset is a subset to retrieve one template.
-type AbilityTemplateSubset struct {
-	Type AbilityType
+// TemplateSubset is a subset to retrieve one template.
+type TemplateSubset struct {
+	Type Type
 }
 
 // UnmarshalJSON adds a new field for components `struct` to determine component type.
-func (a *AbilityTemplate) UnmarshalJSON(raw []byte) error {
+func (a *Template) UnmarshalJSON(raw []byte) error {
 	var alias struct {
-		Ability
+		A
 		Components []json.RawMessage `json:"components"`
 	}
 	if err := json.Unmarshal(raw, &alias); err != nil {
 		return err
 	}
 
-	*a = AbilityTemplate(alias.Ability)
-	a.Components = make([]AbilityComponent, len(alias.Components))
+	*a = Template(alias.A)
+	a.Components = make([]Component, len(alias.Components))
 
 	for i, component := range alias.Components {
 		var componentStruct struct {

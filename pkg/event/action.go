@@ -1,4 +1,8 @@
-package game
+package event
+
+import (
+	game "github.com/elojah/game_01"
+)
 
 // Action is a client action.
 type Action interface{}
@@ -19,22 +23,22 @@ func ActionString(a Action) string {
 
 // Move represents a unit move.
 type Move struct {
-	Source   ID
-	Target   ID
-	Position Vec3
+	Source   game.ID
+	Target   game.ID
+	Position game.Vec3
 }
 
 // Cast represents a ability launch.
 type Cast struct {
-	AbilityID ID
-	Source    ID
-	Targets   []ID
-	Position  Vec3
+	AbilityID game.ID
+	Source    game.ID
+	Targets   []game.ID
+	Position  game.Vec3
 }
 
 // Feedback represents a ability feedback of ability run by Source on target.
 type Feedback struct {
-	AfbID  ID
-	Source ID
-	Target ID
+	AbilityID game.ID
+	Source    game.ID
+	Target    game.ID
 }

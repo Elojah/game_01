@@ -1,27 +1,29 @@
-package game
+package account
 
 import (
 	"net"
+
+	game "github.com/elojah/game_01"
 )
 
 // Token represents a user connection. Creation is made by secure https only.
 type Token struct {
-	ID      ID           `json:"ID"`
+	ID      game.ID      `json:"ID"`
 	IP      *net.UDPAddr `json:"-"`
-	Account ID           `json:"-"`
+	Account game.ID      `json:"-"`
 	Ping    uint64       `json:"-"`
 }
 
 // TokenMapper is the service gate for Token resource.
 type TokenMapper interface {
 	SetToken(Token) error
-	GetToken(ID) (Token, error)
+	GetToken(game.ID) (Token, error)
 }
 
 // TokenHCMapper is the service gate for Token health check.
 type TokenHCMapper interface {
-	SetTokenHC(ID, int64) error
-	ListTokenHC(TokenHCSubset) ([]ID, error)
+	SetTokenHC(game.ID, int64) error
+	ListTokenHC(TokenHCSubset) ([]game.ID, error)
 }
 
 // TokenHCSubset retrieves token healthchecks based on last tick.
