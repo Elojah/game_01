@@ -62,16 +62,16 @@ func run(prog string, filename string) {
 	na.Flush()
 
 	a.AbilityMapper = rdx
-	a.AbilityFeedbackMapper = rdx
+	a.FeedbackMapper = rdx
 	a.AbilityTemplateMapper = rdx
 	a.EntityMapper = rdlrux
 	a.EntityTemplateMapper = rdx
 	a.EventMapper = rdx
 	a.PermissionMapper = rdx
-	a.QEventMapper = nax
+	a.QMapper = nax
 	a.QListenerMapper = nax
 	a.SectorMapper = rdx
-	a.SectorEntitiesMapper = rdlrux
+	a.EntitiesMapper = rdlrux
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 

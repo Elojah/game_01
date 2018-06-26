@@ -9,13 +9,17 @@ import (
 
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/mux"
 )
 
 type handler struct {
 	*mux.M
-	game.QEventMapper
-	game.TokenMapper
+
+	event.QMapper
+
+	account.TokenMapper
 
 	tolerance time.Duration
 }

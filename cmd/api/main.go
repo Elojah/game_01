@@ -43,9 +43,9 @@ func run(prog string, filename string) {
 	launchers = append(launchers, muxl)
 
 	h := handler{
-		M:            &m,
-		QEventMapper: nax,
-		TokenMapper:  rdx,
+		M:           &m,
+		QMapper:     nax,
+		TokenMapper: rdx,
 	}
 	hl := h.NewLauncher(Namespaces{
 		API: "api",

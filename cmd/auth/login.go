@@ -9,6 +9,8 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -24,7 +26,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/login").Logger()
 
 	// # Read body
-	var accountPayload game.Account
+	var accountPayload account.A
 	if err := json.NewDecoder(r.Body).Decode(&accountPayload); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -32,7 +34,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Search account in redis
-	account, err := h.GetAccount(game.AccountSubset{
+	a, err := h.AccountMapper.GetAccount(account.Subset{
 		Username: accountPayload.Username,
 	})
 	if err != nil && err != storage.ErrNotFound {
@@ -40,7 +42,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to retrieve account", http.StatusInternalServerError)
 		return
 	}
-	if account.Password != accountPayload.Password {
+	if a.Password != accountPayload.Password {
 		err = game.ErrWrongCredentials
 	}
 	if err != nil {
@@ -58,9 +60,9 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set a new token
-	token := game.Token{
+	token := account.Token{
 		ID:      game.NewID(),
-		Account: account.ID,
+		Account: a.ID,
 		IP:      ip,
 	}
 	if err := h.SetToken(token); err != nil {
@@ -71,7 +73,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 
 	// Set a new listener for this token
 	core := h.cores[rand.Intn(len(h.cores))]
-	listener := game.Listener{ID: token.ID}
+	listener := event.Listener{ID: token.ID}
 	if err := h.SendListener(listener, core); err != nil {
 		logger.Error().Err(err).Msg("failed to create queue")
 		http.Error(w, "failed to setup token", http.StatusInternalServerError)

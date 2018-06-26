@@ -7,6 +7,8 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -22,17 +24,17 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/subscribe").Logger()
 
 	// # Read body
-	var account game.Account
-	if err := json.NewDecoder(r.Body).Decode(&account); err != nil {
+	var a account.A
+	if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	account.ID = game.NewID()
+	a.ID = game.NewID()
 
 	// #Check username is unique
-	_, err := h.GetAccount(game.AccountSubset{
-		Username: account.Username,
+	_, err := h.AccountMapper.GetAccount(account.Subset{
+		Username: a.Username,
 	})
 	if err != nil && err != storage.ErrNotFound {
 		logger.Error().Err(err).Msg("failed to get account")
@@ -46,21 +48,21 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Set account in redis
-	if err = h.SetAccount(account); err != nil {
+	if err = h.AccountMapper.SetAccount(a); err != nil {
 		logger.Error().Err(err).Msg("failed to create account")
 		http.Error(w, "failed to create account", http.StatusInternalServerError)
 		return
 	}
 
 	// #Add Permission to create X new chars.
-	if err := h.SetPCLeft(game.MaxPC, account.ID); err != nil {
+	if err := h.SetPCLeft(entity.MaxPC, a.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to set character permission")
 		http.Error(w, "failed to set permissions", http.StatusInternalServerError)
 		return
 	}
 
 	// #Marshal token for response
-	raw, err := json.Marshal(account)
+	raw, err := json.Marshal(a)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal account")
 		http.Error(w, "failed to marshal response", http.StatusInternalServerError)

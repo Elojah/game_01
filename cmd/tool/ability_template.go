@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/elojah/game_01/pkg/ability"
 	"github.com/rs/zerolog/log"
-
-	"github.com/elojah/game_01"
 )
 
 func (h *handler) abilityTemplate(w http.ResponseWriter, r *http.Request) {
@@ -25,18 +24,18 @@ func (h *handler) postAbilityTemplates(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var abilityTemplates []game.AbilityTemplate
-	if err := decoder.Decode(&abilityTemplates); err != nil {
+	var templates []ability.Template
+	if err := decoder.Decode(&templates); err != nil {
 		logger.Error().Err(err).Msg("invalid JSON")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
 
-	logger.Info().Int("ability_templates", len(abilityTemplates)).Msg("found")
+	logger.Info().Int("ability_templates", len(templates)).Msg("found")
 
-	for _, abilityTemplate := range abilityTemplates {
-		if err := h.SetAbilityTemplate(abilityTemplate); err != nil {
-			logger.Error().Err(err).Str("ability_template", abilityTemplate.ID.String()).Msg("failed to set ability_template")
+	for _, t := range templates {
+		if err := h.AbilityTemplateMapper.SetAbilityTemplate(t); err != nil {
+			logger.Error().Err(err).Str("ability_template", t.ID.String()).Msg("failed to set ability_template")
 			return
 		}
 	}

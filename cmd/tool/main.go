@@ -47,7 +47,7 @@ func run(prog string, filename string) {
 	h.EntityMapper = rdlrux
 	h.EntityTemplateMapper = rdx
 	h.SectorMapper = rdx
-	h.SectorEntitiesMapper = rdlrux
+	h.EntitiesMapper = rdlrux
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

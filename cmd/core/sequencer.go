@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -14,19 +15,19 @@ type tick chan int64
 // Sequencer is an ordering/event extractor layer between two consumers.
 type Sequencer struct {
 	id game.ID
-	game.EventMapper
+	event.Mapper
 
 	logger zerolog.Logger
 
 	input   tick
 	fetch   tick
-	process chan game.Event
+	process chan event.E
 
 	min       tick
 	last      tick
 	interrupt chan struct{}
 
-	callback func(game.ID, game.Event)
+	callback func(game.ID, event.E)
 }
 
 // Close kills both fetch/input goroutines.
@@ -38,15 +39,15 @@ func (s *Sequencer) Close() {
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
-func NewSequencer(id game.ID, limit int, em game.EventMapper, callback func(game.ID, game.Event)) *Sequencer {
+func NewSequencer(id game.ID, limit int, em event.Mapper, callback func(game.ID, event.E)) *Sequencer {
 	return &Sequencer{
-		id:          id,
-		logger:      log.With().Str("sequencer", id.String()).Logger(),
-		EventMapper: em,
+		id:     id,
+		logger: log.With().Str("sequencer", id.String()).Logger(),
+		Mapper: em,
 
 		input:   make(tick, limit),
 		fetch:   make(tick, limit),
-		process: make(chan game.Event, limit),
+		process: make(chan event.E, limit),
 
 		min:       make(tick, limit),
 		last:      make(tick, limit),
@@ -80,7 +81,7 @@ func (s *Sequencer) listenInput() {
 func (s *Sequencer) listenFetch() {
 	var min int64
 	for t := range s.fetch {
-		events, err := s.ListEvent(game.EventSubset{
+		events, err := s.ListEvent(event.Subset{
 			Key: s.id.String(),
 			Min: t,
 		})

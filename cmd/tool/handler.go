@@ -4,17 +4,23 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/sector"
 )
 
 type handler struct {
-	game.AbilityMapper
-	game.AbilityTemplateMapper
-	game.AccountMapper
-	game.EntityMapper
-	game.EntityTemplateMapper
-	game.SectorMapper
-	game.SectorEntitiesMapper
+	AbilityMapper         ability.Mapper
+	AbilityTemplateMapper ability.TemplateMapper
+
+	AccountMapper account.Mapper
+
+	EntityMapper         entity.Mapper
+	EntityTemplateMapper entity.TemplateMapper
+
+	SectorMapper sector.Mapper
+	sector.EntitiesMapper
 
 	srv *http.Server
 }

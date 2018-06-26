@@ -53,13 +53,13 @@ func run(prog string, filename string) {
 
 	h.AccountMapper = rdx
 	h.EntityMapper = rdlrux
-	h.EntityTemplateMapper = rdx
+	h.TemplateMapper = rdx
 	h.PCMapper = rdx
 	h.PCLeftMapper = rdx
-	h.QEventMapper = nax
+	h.QMapper = nax
 	h.QListenerMapper = nax
 	h.QRecurrerMapper = nax
-	h.SectorEntitiesMapper = rdlrux
+	h.EntitiesMapper = rdlrux
 	h.TokenMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {

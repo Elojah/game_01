@@ -5,19 +5,26 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/sector"
 )
 
 type handler struct {
-	game.AccountMapper
-	game.EntityMapper
-	game.EntityTemplateMapper
-	game.PCMapper
-	game.PCLeftMapper
-	game.QEventMapper
-	game.QListenerMapper
-	game.QRecurrerMapper
-	game.SectorEntitiesMapper
-	game.TokenMapper
+	account.TokenMapper
+	AccountMapper account.Mapper
+
+	entity.PCLeftMapper
+	entity.PCMapper
+	entity.TemplateMapper
+	EntityMapper entity.Mapper
+
+	event.QListenerMapper
+	event.QMapper
+	event.QRecurrerMapper
+
+	sector.EntitiesMapper
 
 	srv *http.Server
 

@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/rs/zerolog/log"
-
-	"github.com/elojah/game_01"
 )
 
 func (h *handler) entity(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +25,7 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var entities []game.Entity
+	var entities []entity.E
 	if err := decoder.Decode(&entities); err != nil {
 		logger.Error().Err(err).Msg("invalid JSON")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -35,9 +34,9 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 
 	logger.Info().Int("entities", len(entities)).Msg("found")
 
-	for _, entity := range entities {
-		if err := h.SetEntity(entity, time.Now().UnixNano()); err != nil {
-			logger.Error().Err(err).Str("entity", entity.ID.String()).Msg("failed to set entity")
+	for _, e := range entities {
+		if err := h.EntityMapper.SetEntity(e, time.Now().UnixNano()); err != nil {
+			logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to set entity")
 			return
 		}
 	}

@@ -2,23 +2,27 @@ package main
 
 import (
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/storage"
 )
 
-func (a *app) Move(id game.ID, event game.Event) error {
+func (a *app) Move(id game.ID, e event.E) error {
 
-	move := event.Action.(game.Move)
+	move := e.Action.(event.Move)
 
 	if id.Compare(move.Source) == 0 {
-		return a.MoveSource(event)
+		return a.MoveSource(e)
 	}
 	if id.Compare(move.Target) == 0 {
-		return a.MoveTarget(event)
+		return a.MoveTarget(e)
 	}
 	return nil
 }
 
-func (a *app) MoveSource(event game.Event) error {
+func (a *app) MoveSource(e event.E) error {
 	// TODO
 	// check if source is not stun/slience/unable to move units.
 	// in this case cancel (what mechanism ?) the move on both source + target.
@@ -26,16 +30,16 @@ func (a *app) MoveSource(event game.Event) error {
 	return nil
 }
 
-func (a *app) MoveTarget(event game.Event) error {
+func (a *app) MoveTarget(e event.E) error {
 
-	move := event.Action.(game.Move)
+	move := e.Action.(event.Move)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(game.PermissionSubset{
-		Source: event.Source.String(),
+		Source: e.Source.String(),
 		Target: move.Source.String(),
 	})
-	if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 		return game.ErrInsufficientACLs
 	}
 	if err != nil {
@@ -48,7 +52,7 @@ func (a *app) MoveTarget(event game.Event) error {
 			Source: move.Source.String(),
 			Target: move.Target.String(),
 		})
-		if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+		if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 			return game.ErrInsufficientACLs
 		}
 		if err != nil {
@@ -57,7 +61,7 @@ func (a *app) MoveTarget(event game.Event) error {
 	}
 
 	// #Retrieve previous state target.
-	target, err := a.GetEntity(game.EntitySubset{Key: move.Target.String(), MaxTS: event.TS.UnixNano()})
+	target, err := a.EntityMapper.GetEntity(entity.Subset{Key: move.Target.String(), MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return err
 	}
@@ -68,7 +72,7 @@ func (a *app) MoveTarget(event game.Event) error {
 	}
 
 	// #Retrieve current sector
-	sector, err := a.GetSector(game.SectorSubset{ID: target.Position.SectorID})
+	s, err := a.SectorMapper.GetSector(sector.Subset{ID: target.Position.SectorID})
 	if err != nil {
 		return err
 	}
@@ -76,23 +80,23 @@ func (a *app) MoveTarget(event game.Event) error {
 	// #Move target
 	target.Move(move.Position)
 	// If target is out of sector, move to next
-	if sector.Out(target.Position.Coord) {
-		bp := sector.ClosestBP(target.Position.Coord)
-		nextSector, err := a.GetSector(game.SectorSubset{ID: bp.SectorID})
+	if s.Out(target.Position.Coord) {
+		bp := s.ClosestBP(target.Position.Coord)
+		nextSector, err := a.SectorMapper.GetSector(sector.Subset{ID: bp.SectorID})
 		if err != nil {
 			return err
 		}
 		oppBP := nextSector.FindBP(bp.ID)
 		target.Position.SectorID = nextSector.ID
 		target.Position.Coord.MoveReference(bp.Position, oppBP.Position)
-		if err := a.AddEntityToSector(target.ID, nextSector.ID); err != nil {
+		if err := a.EntitiesMapper.AddEntityToSector(target.ID, nextSector.ID); err != nil {
 			return err
 		}
-		if err := a.RemoveEntityToSector(target.ID, nextSector.ID); err != nil {
+		if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, nextSector.ID); err != nil {
 			return err
 		}
 	}
 
 	// #Write new target state.
-	return a.SetEntity(target, event.TS.UnixNano())
+	return a.EntityMapper.SetEntity(target, e.TS.UnixNano())
 }

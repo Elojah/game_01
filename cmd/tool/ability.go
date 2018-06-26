@@ -7,10 +7,11 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ability"
 )
 
 type abilityWithEntity struct {
-	game.Ability
+	ability.A
 	EntityID game.ID `json:"entity_id"`
 }
 
@@ -41,7 +42,7 @@ func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("abilities", len(abilities)).Msg("found")
 
 	for _, a := range abilities {
-		if err := h.SetAbility(a.Ability, a.EntityID); err != nil {
+		if err := h.AbilityMapper.SetAbility(a.A, a.EntityID); err != nil {
 			logger.Error().Err(err).Str("ability", a.ID.String()).Msg("failed to set ability")
 			return
 		}

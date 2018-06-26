@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/elojah/game_01/pkg/sector"
 	"github.com/rs/zerolog/log"
-
-	"github.com/elojah/game_01"
 )
 
 func (h *handler) sectorEntities(w http.ResponseWriter, r *http.Request) {
@@ -25,20 +24,20 @@ func (h *handler) postSectorEntities(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var sectorEntities []game.SectorEntities
-	if err := decoder.Decode(&sectorEntities); err != nil {
+	var entities []sector.Entities
+	if err := decoder.Decode(&entities); err != nil {
 		logger.Error().Err(err).Msg("invalid JSON")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
 
-	logger.Info().Int("sector_entities", len(sectorEntities)).Msg("found")
+	logger.Info().Int("sector_entities", len(entities)).Msg("found")
 
-	for _, se := range sectorEntities {
-		for _, entityID := range se.EntityIDs {
-			if err := h.AddEntityToSector(entityID, se.SectorID); err != nil {
+	for _, e := range entities {
+		for _, entityID := range e.EntityIDs {
+			if err := h.AddEntityToSector(entityID, e.SectorID); err != nil {
 				logger.Error().Err(err).
-					Str("sector", se.SectorID.String()).
+					Str("sector", e.SectorID.String()).
 					Str("entity", entityID.String()).
 					Msg("failed to add entity to sector")
 				return

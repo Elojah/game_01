@@ -2,29 +2,33 @@ package main
 
 import (
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/storage"
 )
 
-func (a *app) Cast(id game.ID, event game.Event) error {
+func (a *app) Cast(id game.ID, e event.E) error {
 
-	cast := event.Action.(game.Cast)
+	cast := e.Action.(event.Cast)
 
 	if id.Compare(cast.Source) == 0 {
-		return a.CastSource(id, event)
+		return a.CastSource(id, e)
 	}
-	return a.CastTarget(id, event)
+	return a.CastTarget(id, e)
 }
 
-func (a *app) CastSource(id game.ID, event game.Event) error {
+func (a *app) CastSource(id game.ID, e event.E) error {
 
-	cast := event.Action.(game.Cast)
+	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(game.PermissionSubset{
-		Source: event.Source.String(),
+		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
-	if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 		return game.ErrInsufficientACLs
 	}
 	if err != nil {
@@ -32,7 +36,7 @@ func (a *app) CastSource(id game.ID, event game.Event) error {
 	}
 
 	// #Retrieve ability.
-	ability, err := a.GetAbility(game.AbilitySubset{
+	ability, err := a.AbilityMapper.GetAbility(ability.Subset{
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
@@ -48,16 +52,16 @@ func (a *app) CastSource(id game.ID, event game.Event) error {
 	return nil
 }
 
-func (a *app) CastTarget(id game.ID, event game.Event) error {
+func (a *app) CastTarget(id game.ID, e event.E) error {
 
-	cast := event.Action.(game.Cast)
+	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(game.PermissionSubset{
-		Source: event.Source.String(),
+		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
-	if err == storage.ErrNotFound || (err != nil && game.ACL(permission.Value) != game.Owner) {
+	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 		return game.ErrInsufficientACLs
 	}
 	if err != nil {
@@ -65,7 +69,7 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 	}
 
 	// #Retrieve ability.
-	ability, err := a.GetAbility(game.AbilitySubset{
+	ability, err := a.AbilityMapper.GetAbility(ability.Subset{
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
@@ -76,25 +80,25 @@ func (a *app) CastTarget(id game.ID, event game.Event) error {
 		return err
 	}
 
-	source, err := a.GetEntity(game.EntitySubset{Key: cast.Source.String(), MaxTS: event.TS.UnixNano()})
+	source, err := a.EntityMapper.GetEntity(entity.Subset{Key: cast.Source.String(), MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return err
 	}
 
-	target, err := a.GetEntity(game.EntitySubset{Key: id.String(), MaxTS: event.TS.UnixNano()})
+	target, err := a.EntityMapper.GetEntity(entity.Subset{Key: id.String(), MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return err
 	}
 
 	afb := ability.Affect(&target)
-	if err := a.SetAbilityFeedback(afb); err != nil {
+	if err := a.FeedbackMapper.SetAbilityFeedback(afb); err != nil {
 		return err
 	}
-	return a.SendEvent(game.Event{
+	return a.SendEvent(event.E{
 		ID:     game.NewID(),
-		TS:     event.TS,
-		Source: event.Source,
-		Action: game.Feedback{
+		TS:     e.TS,
+		Source: e.Source,
+		Action: event.Feedback{
 			AbilityID: afb.ID,
 			Source:    source.ID,
 			Target:    target.ID,

@@ -5,27 +5,37 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/storage"
 )
 
 type app struct {
-	game.AbilityMapper
-	game.AbilityFeedbackMapper
-	game.AbilityTemplateMapper
-	game.EntityMapper
-	game.EntityTemplateMapper
-	game.EventMapper
+	ability.FeedbackMapper
+	AbilityTemplateMapper ability.TemplateMapper
+	AbilityMapper         ability.Mapper
+
+	account.TokenMapper
+
+	EntityTemplateMapper entity.TemplateMapper
+	EntityMapper         entity.Mapper
+
+	event.QListenerMapper
+	event.QMapper
+	event.SubscriptionMapper
+	EventMapper event.Mapper
+
 	game.PermissionMapper
-	game.QEventMapper
-	game.QListenerMapper
-	game.SectorMapper
-	game.SectorEntitiesMapper
-	game.SubscriptionMapper
-	game.TokenMapper
+
+	sector.EntitiesMapper
+	SectorMapper sector.Mapper
 
 	id game.ID
 
-	subs map[game.ID]*game.Subscription
+	subs map[game.ID]*event.Subscription
 	seqs map[game.ID]*Sequencer
 
 	limit         int
@@ -52,7 +62,7 @@ func (a *app) Start() {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
 	}
-	a.subs = make(map[game.ID]*game.Subscription)
+	a.subs = make(map[game.ID]*event.Subscription)
 	a.subs[a.id] = sub
 
 	a.seqs = make(map[game.ID]*Sequencer)
@@ -91,23 +101,23 @@ func (a *app) AddListener(msg *nats.Msg) {
 	logger.Info().Str("listener", id.String()).Msg("listening")
 }
 
-func (a *app) Apply(id game.ID, event game.Event) {
-	ts := event.TS.UnixNano()
+func (a *app) Apply(id game.ID, e event.E) {
+	ts := e.TS.UnixNano()
 	key := id.String()
 	logger := log.With().
 		Str("event", key).
-		Str("source", event.Source.String()).
+		Str("source", e.Source.String()).
 		Int64("ts", ts).
 		Logger()
 
-	logger.Info().Str("type", game.ActionString(event.Action)).Msg("apply action")
-	switch event.Action.(type) {
-	case game.Move:
-		if err := a.Move(id, event); err != nil {
+	logger.Info().Str("type", event.ActionString(e.Action)).Msg("apply action")
+	switch e.Action.(type) {
+	case event.Move:
+		if err := a.Move(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case game.Cast:
-		if err := a.Cast(id, event); err != nil {
+	case event.Cast:
+		if err := a.Cast(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
 	default:

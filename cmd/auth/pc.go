@@ -12,6 +12,8 @@ import (
 
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
 )
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +54,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Check user permission to create h new PC.
-	left, err := h.GetPCLeft(game.PCLeftSubset{AccountID: token.Account})
+	left, err := h.GetPCLeft(entity.PCLeftSubset{AccountID: token.Account})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -73,7 +75,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve template for new PC.
-	template, err := h.GetEntityTemplate(game.EntityTemplateSubset{Type: setPC.Type})
+	template, err := h.GetEntityTemplate(entity.TemplateSubset{Type: setPC.Type})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve template")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -81,9 +83,9 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Create PC from the template.
-	pc := game.PC(template)
+	pc := entity.PC(template)
 	pc.ID = game.NewID()
-	pc.Position = game.Position{
+	pc.Position = entity.Position{
 		// TODO list of positions config ? Areas config + random ? Define spawn
 		SectorID: ulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
 		Coord:    game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
@@ -141,7 +143,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve PCs by account.
-	pcs, err := h.ListPC(game.PCSubset{AccountID: token.Account})
+	pcs, err := h.ListPC(entity.PCSubset{AccountID: token.Account})
 	if err != nil {
 		logger.Error().Err(err).Str("account", token.Account.String()).Msg("failed to retrieve PCs")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -201,7 +203,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve PC for this account.
-	pc, err := h.GetPC(game.PCSubset{
+	pc, err := h.GetPC(entity.PCSubset{
 		AccountID: token.Account,
 		ID:        connectPC.Target,
 	})
@@ -212,9 +214,9 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates entity cloned from pc.
-	entity := game.Entity(pc)
+	entity := entity.E(pc)
 	entity.ID = game.NewID()
-	if err := h.SetEntity(entity, time.Now().UnixNano()); err != nil {
+	if err := h.EntityMapper.SetEntity(entity, time.Now().UnixNano()); err != nil {
 		logger.Error().Err(err).Str("id", entity.ID.String()).Msg("failed to create entity from PC")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -229,7 +231,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates h new listener for this entity.
 	core := h.cores[rand.Intn(len(h.cores))]
-	listener := game.Listener{ID: entity.ID}
+	listener := event.Listener{ID: entity.ID}
 	if err := h.SendListener(listener, core); err != nil {
 		logger.Error().Err(err).Str("core", core.String()).Str("id", entity.ID.String()).Msg("failed to add listener to entity")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -238,11 +240,11 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates h new synchronizer for this token/entity.
 	sync := h.syncs[rand.Intn(len(h.syncs))]
-	if err := h.SendRecurrer(game.Recurrer{
+	if err := h.SendRecurrer(event.Recurrer{
 		ID:       game.NewID(),
 		EntityID: entity.ID,
 		TokenID:  token.ID,
-		Action:   game.OpenRec,
+		Action:   event.OpenRec,
 	}, sync); err != nil {
 		logger.Error().Err(err).Str("sync", sync.String()).Str("id", entity.ID.String()).Msg("failed to add sync for entity")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

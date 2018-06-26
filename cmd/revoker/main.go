@@ -42,8 +42,8 @@ func run(prog string, filename string) {
 	}, "revoker")
 	launchers = append(launchers, al)
 
-	a.EntityMapper = rdlrux
-	a.SectorEntitiesMapper = rdlrux
+	a.Mapper = rdlrux
+	a.EntitiesMapper = rdlrux
 	a.TokenMapper = rdx
 	a.TokenHCMapper = rdx
 

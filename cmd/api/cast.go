@@ -8,6 +8,7 @@ import (
 
 	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/mux"
 )
 
@@ -22,11 +23,11 @@ func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 		targets[i] = game.ID(target)
 	}
 
-	event := game.Event{
+	e := event.E{
 		ID:     game.NewID(),
 		Source: game.ID(msg.Token),
 		TS:     time.Unix(0, msg.TS),
-		Action: game.Cast{
+		Action: event.Cast{
 			AbilityID: game.ID(a.AbilityID),
 			Source:    source,
 			Targets:   targets,
@@ -35,14 +36,14 @@ func (h *handler) cast(ctx context.Context, msg dto.Message) error {
 	}
 
 	go func() {
-		if err := h.SendEvent(event, source); err != nil {
-			logger.Error().Err(err).Str("event", event.ID.String()).Msg("event rejected")
+		if err := h.SendEvent(e, source); err != nil {
+			logger.Error().Err(err).Str("event", e.ID.String()).Msg("event rejected")
 		}
 	}()
 	for _, target := range targets {
 		go func(target game.ID) {
-			if err := h.SendEvent(event, target); err != nil {
-				logger.Error().Err(err).Str("event", event.ID.String()).Msg("event rejected")
+			if err := h.SendEvent(e, target); err != nil {
+				logger.Error().Err(err).Str("event", e.ID.String()).Msg("event rejected")
 			}
 		}(target)
 	}

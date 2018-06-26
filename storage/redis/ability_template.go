@@ -44,18 +44,18 @@ func (s *Service) ListAbilityTemplate() ([]ability.Template, error) {
 		return nil, err
 	}
 
-	entities := make([]ability.Template, len(keys))
+	abilities := make([]ability.Template, len(keys))
 	for i, key := range keys {
 		val, err := s.Get(key).Result()
 		if err != nil {
 			return nil, err
 		}
 
-		var entity storage.Ability
-		if _, err := entity.Unmarshal([]byte(val)); err != nil {
+		var a storage.Ability
+		if _, err := a.Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
-		entities[i] = ability.Template(entity.Domain())
+		abilities[i] = ability.Template(a.Domain())
 	}
-	return entities, nil
+	return abilities, nil
 }

@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/rs/zerolog/log"
-
-	"github.com/elojah/game_01"
 )
 
 func (h *handler) entityTemplate(w http.ResponseWriter, r *http.Request) {
@@ -25,18 +24,18 @@ func (h *handler) postEntityTemplates(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var entityTemplates []game.EntityTemplate
-	if err := decoder.Decode(&entityTemplates); err != nil {
+	var templates []entity.Template
+	if err := decoder.Decode(&templates); err != nil {
 		logger.Error().Err(err).Msg("invalid JSON")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
 
-	logger.Info().Int("entity_templates", len(entityTemplates)).Msg("found")
+	logger.Info().Int("entity_templates", len(templates)).Msg("found")
 
-	for _, entityTemplate := range entityTemplates {
-		if err := h.SetEntityTemplate(entityTemplate); err != nil {
-			logger.Error().Err(err).Str("entity_template", entityTemplate.ID.String()).Msg("failed to set entity_template")
+	for _, t := range templates {
+		if err := h.EntityTemplateMapper.SetEntityTemplate(t); err != nil {
+			logger.Error().Err(err).Str("entity_template", t.ID.String()).Msg("failed to set entity_template")
 			return
 		}
 	}
