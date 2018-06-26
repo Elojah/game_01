@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/elojah/game_01"
+	"github.com/rs/zerolog/log"
 )
 
 type app struct {
@@ -28,5 +29,15 @@ func (a *app) Close() error {
 
 // Start start the revoker
 func (a *app) Start() {
-	// minTS := time.Now().Sub(a.lifespan)
+	logger := log.With().Str("revoker", "").Logger()
+
+	tokenIDs, err := a.ListTokenHC(game.TokenHCSubset{MaxTS: time.Now().Add(-a.lifespan).Unix()})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
+	}
+	for _, tokenID := range tokenIDs {
+		go func(tokenID game.ID) {
+
+		}(tokenID)
+	}
 }
