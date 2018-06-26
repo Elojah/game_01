@@ -28,7 +28,7 @@ func (e Entity) Domain() entity.E {
 		Name: e.Name,
 		HP:   e.HP,
 		MP:   e.MP,
-		Position: game.Position{
+		Position: entity.Position{
 			SectorID: e.SectorID,
 			Coord: game.Vec3{
 				X: e.X,

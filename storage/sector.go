@@ -7,9 +7,9 @@ import (
 
 // Domain converts a storage sector into a domain sector.
 func (s *Sector) Domain() sector.S {
-	bps := make([]game.BondPoint, len(s.BondPoints))
+	bps := make([]sector.BondPoint, len(s.BondPoints))
 	for i := range s.BondPoints {
-		bps[i] = game.BondPoint{
+		bps[i] = sector.BondPoint{
 			ID:       game.ID(s.BondPoints[i].ID),
 			SectorID: game.ID(s.BondPoints[i].SectorID),
 			Position: game.Vec3{

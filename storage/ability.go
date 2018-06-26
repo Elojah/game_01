@@ -73,7 +73,7 @@ func NewAbility(a ability.A) *Ability {
 
 // Domain converts a storage Ability into a game Ability.
 func (a Ability) Domain() ability.A {
-	components := make([]ability.AComponent, len(a.Components))
+	components := make([]ability.Component, len(a.Components))
 	for i, c := range a.Components {
 		switch c.(type) {
 		case HealDirect:

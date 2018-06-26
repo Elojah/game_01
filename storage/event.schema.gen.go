@@ -343,9 +343,9 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 }
 
 type Feedback struct {
-	AfbID  [16]byte
-	Source [16]byte
-	Target [16]byte
+	AbilityID [16]byte
+	Source    [16]byte
+	Target    [16]byte
 }
 
 func (d *Feedback) Size() (s uint64) {
@@ -373,7 +373,7 @@ func (d *Feedback) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-		copy(buf[i+0:], d.AfbID[:])
+		copy(buf[i+0:], d.AbilityID[:])
 		i += 16
 	}
 	{
@@ -391,7 +391,7 @@ func (d *Feedback) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.AfbID[:], buf[i+0:])
+		copy(d.AbilityID[:], buf[i+0:])
 		i += 16
 	}
 	{
