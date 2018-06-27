@@ -1,15 +1,16 @@
 package main
 
 import (
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/perm"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
-func (a *app) Cast(id game.ID, e event.E) error {
+func (a *app) Cast(id ulid.ID, e event.E) error {
 
 	cast := e.Action.(event.Cast)
 
@@ -19,12 +20,12 @@ func (a *app) Cast(id game.ID, e event.E) error {
 	return a.CastTarget(id, e)
 }
 
-func (a *app) CastSource(id game.ID, e event.E) error {
+func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
-	permission, err := a.GetPermission(game.PermissionSubset{
+	permission, err := a.GetPermission(perm.Subset{
 		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
@@ -52,12 +53,12 @@ func (a *app) CastSource(id game.ID, e event.E) error {
 	return nil
 }
 
-func (a *app) CastTarget(id game.ID, e event.E) error {
+func (a *app) CastTarget(id ulid.ID, e event.E) error {
 
 	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
-	permission, err := a.GetPermission(game.PermissionSubset{
+	permission, err := a.GetPermission(perm.Subset{
 		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
@@ -95,7 +96,7 @@ func (a *app) CastTarget(id game.ID, e event.E) error {
 		return err
 	}
 	return a.SendEvent(event.E{
-		ID:     game.NewID(),
+		ID:     ulid.NewID(),
 		TS:     e.TS,
 		Source: e.Source,
 		Action: event.Feedback{

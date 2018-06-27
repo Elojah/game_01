@@ -1,12 +1,10 @@
 package account
 
-import (
-	game "github.com/elojah/game_01"
-)
+import "github.com/elojah/game_01/pkg/ulid"
 
 // A A represents an user account.
 type A struct {
-	ID       game.ID
+	ID       ulid.ID
 	Username string
 	Password string `json:"-"`
 }

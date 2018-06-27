@@ -6,13 +6,13 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 type abilityWithEntity struct {
 	ability.A
-	EntityID game.ID `json:"entity_id"`
+	EntityID ulid.ID `json:"entity_id"`
 }
 
 func (h *handler) ability(w http.ResponseWriter, r *http.Request) {

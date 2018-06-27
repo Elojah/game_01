@@ -1,7 +1,8 @@
 package event
 
 import (
-	game "github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Action is a client action.
@@ -23,22 +24,22 @@ func ActionString(a Action) string {
 
 // Move represents a unit move.
 type Move struct {
-	Source   game.ID
-	Target   game.ID
-	Position game.Vec3
+	Source   ulid.ID
+	Target   ulid.ID
+	Position geometry.Vec3
 }
 
 // Cast represents a ability launch.
 type Cast struct {
-	AbilityID game.ID
-	Source    game.ID
-	Targets   []game.ID
-	Position  game.Vec3
+	AbilityID ulid.ID
+	Source    ulid.ID
+	Targets   []ulid.ID
+	Position  geometry.Vec3
 }
 
 // Feedback represents a ability feedback of ability run by Source on target.
 type Feedback struct {
-	AbilityID game.ID
-	Source    game.ID
-	Target    game.ID
+	AbilityID ulid.ID
+	Source    ulid.ID
+	Target    ulid.ID
 }

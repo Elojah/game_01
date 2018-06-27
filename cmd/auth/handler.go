@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 type handler struct {
@@ -28,8 +28,8 @@ type handler struct {
 
 	srv *http.Server
 
-	cores []game.ID
-	syncs []game.ID
+	cores []ulid.ID
+	syncs []ulid.ID
 }
 
 // Dial starts the auth server.
@@ -45,9 +45,9 @@ func (h *handler) Dial(c Config) error {
 		Handler: mux,
 	}
 	go func() { _ = h.srv.ListenAndServeTLS(c.Cert, c.Key) }()
-	h.cores = make([]game.ID, len(c.Cores))
+	h.cores = make([]ulid.ID, len(c.Cores))
 	copy(h.cores, c.Cores)
-	h.syncs = make([]game.ID, len(c.Syncs))
+	h.syncs = make([]ulid.ID, len(c.Syncs))
 	copy(h.syncs, c.Syncs)
 	return nil
 }

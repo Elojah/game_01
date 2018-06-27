@@ -1,8 +1,9 @@
 package storage
 
 import (
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Domain converts a storage sector into a domain sector.
@@ -10,9 +11,9 @@ func (s *Sector) Domain() sector.S {
 	bps := make([]sector.BondPoint, len(s.BondPoints))
 	for i := range s.BondPoints {
 		bps[i] = sector.BondPoint{
-			ID:       game.ID(s.BondPoints[i].ID),
-			SectorID: game.ID(s.BondPoints[i].SectorID),
-			Position: game.Vec3{
+			ID:       ulid.ID(s.BondPoints[i].ID),
+			SectorID: ulid.ID(s.BondPoints[i].SectorID),
+			Position: geometry.Vec3{
 				X: s.BondPoints[i].X,
 				Y: s.BondPoints[i].Y,
 				Z: s.BondPoints[i].Z,
@@ -20,8 +21,8 @@ func (s *Sector) Domain() sector.S {
 		}
 	}
 	return sector.S{
-		ID: game.ID(s.ID),
-		Size: game.Vec3{
+		ID: ulid.ID(s.ID),
+		Size: geometry.Vec3{
 			X: s.X,
 			Y: s.Y,
 			Z: s.Z,

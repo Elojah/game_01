@@ -3,8 +3,9 @@ package storage
 import (
 	"time"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // NewMove convert a event.Move into a storage Move.
@@ -42,32 +43,32 @@ func NewFeedback(fb event.Feedback) Feedback {
 // Domain converts a storage Move into a game Move.
 func (m Move) Domain() event.Move {
 	return event.Move{
-		Source:   game.ID(m.Target),
-		Target:   game.ID(m.Target),
-		Position: game.Vec3(m.Position),
+		Source:   ulid.ID(m.Target),
+		Target:   ulid.ID(m.Target),
+		Position: geometry.Vec3(m.Position),
 	}
 }
 
 // Domain converts a storage Cast into a game Cast.
 func (c Cast) Domain() event.Cast {
-	targets := make([]game.ID, len(c.Targets))
+	targets := make([]ulid.ID, len(c.Targets))
 	for i, target := range c.Targets {
-		targets[i] = game.ID(target)
+		targets[i] = ulid.ID(target)
 	}
 	return event.Cast{
-		AbilityID: game.ID(c.AbilityID),
-		Source:    game.ID(c.Source),
+		AbilityID: ulid.ID(c.AbilityID),
+		Source:    ulid.ID(c.Source),
 		Targets:   targets,
-		Position:  game.Vec3(c.Position),
+		Position:  geometry.Vec3(c.Position),
 	}
 }
 
 // Domain converts a storage Feedback into a game Feedback.
 func (fb Feedback) Domain() event.Feedback {
 	return event.Feedback{
-		AbilityID: game.ID(fb.AbilityID),
-		Source:    game.ID(fb.Source),
-		Target:    game.ID(fb.Target),
+		AbilityID: ulid.ID(fb.AbilityID),
+		Source:    ulid.ID(fb.Source),
+		Target:    ulid.ID(fb.Target),
 	}
 }
 
@@ -92,8 +93,8 @@ func NewEvent(ev event.E) *Event {
 // Domain converts a storage user into a domain user.
 func (e Event) Domain() event.E {
 	ev := event.E{
-		ID:     game.ID(e.ID),
-		Source: game.ID(e.Source),
+		ID:     ulid.ID(e.ID),
+		Source: ulid.ID(e.Source),
 		TS:     time.Unix(0, e.TS),
 	}
 	switch e.Action.(type) {

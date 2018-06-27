@@ -1,8 +1,8 @@
 package storage
 
 import (
-	game "github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // NewHealDirectFeedback converts a game HealDirectFeedback into a storage HealDirectFeedback.
@@ -83,8 +83,8 @@ func (a AbilityFeedback) Domain() ability.Feedback {
 		}
 	}
 	return ability.Feedback{
-		ID:         game.ID(a.ID),
-		AbilityID:  game.ID(a.AbilityID),
+		ID:         ulid.ID(a.ID),
+		AbilityID:  ulid.ID(a.AbilityID),
 		Components: components,
 	}
 }

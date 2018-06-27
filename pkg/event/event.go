@@ -3,25 +3,25 @@ package event
 import (
 	"time"
 
-	game "github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // E is a game event triggered by an entity or mechanic.
 type E struct {
-	ID     game.ID
+	ID     ulid.ID
 	TS     time.Time
-	Source game.ID
+	Source ulid.ID
 	Action Action
 }
 
 // QMapper must be implemented by a queue.
 type QMapper interface {
-	SendEvent(E, game.ID) error
+	SendEvent(E, ulid.ID) error
 }
 
 // Mapper wraps action interactions.
 type Mapper interface {
-	SetEvent(E, game.ID) error
+	SetEvent(E, ulid.ID) error
 	ListEvent(Subset) ([]E, error)
 }
 

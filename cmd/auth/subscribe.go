@@ -6,9 +6,9 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -30,7 +30,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	a.ID = game.NewID()
+	a.ID = ulid.NewID()
 
 	// #Check username is unique
 	_, err := h.AccountMapper.GetAccount(account.Subset{

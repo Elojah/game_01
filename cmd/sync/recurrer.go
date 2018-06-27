@@ -6,10 +6,10 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Recurrer retrieves entity data associated to pc id and send it at regular ticks.
@@ -19,8 +19,8 @@ type Recurrer struct {
 	sector.EntitiesMapper
 
 	logger   zerolog.Logger
-	id       game.ID
-	entityID game.ID
+	id       ulid.ID
+	entityID ulid.ID
 
 	ticker   *time.Ticker
 	callback func(entity.E)
@@ -63,7 +63,7 @@ func (r *Recurrer) Start() {
 	}
 }
 
-func (r *Recurrer) sendSector(sectorID game.ID, t time.Time) {
+func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
 	se, err := r.GetEntities(sector.EntitiesSubset{SectorID: sectorID})
 	if err != nil {
 		r.logger.Error().Err(err).Str("id", sectorID.String()).Msg("failed to retrieve sector")
@@ -74,7 +74,7 @@ func (r *Recurrer) sendSector(sectorID game.ID, t time.Time) {
 	}
 }
 
-func (r *Recurrer) sendEntity(entityID game.ID, t time.Time) {
+func (r *Recurrer) sendEntity(entityID ulid.ID, t time.Time) {
 	// TODO Use token ping instead of now()
 	entity, err := r.EntityMapper.GetEntity(entity.Subset{Key: entityID.String(), MaxTS: t.UnixNano()})
 	if err != nil {

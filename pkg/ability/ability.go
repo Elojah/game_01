@@ -1,16 +1,16 @@
 package ability
 
 import (
-	game "github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Type represents the ability type.
-type Type = game.ID
+type Type = ulid.ID
 
 // A A represents a ability.
 type A struct {
-	ID   game.ID `json:"id"`
+	ID   ulid.ID `json:"id"`
 	Type Type    `json:"type"`
 	Name string  `json:"name"`
 
@@ -34,13 +34,13 @@ func (a A) Affect(target *entity.E) Feedback {
 
 // Mapper is the communication interface for abilities.
 type Mapper interface {
-	SetAbility(A, game.ID) error
+	SetAbility(A, ulid.ID) error
 	GetAbility(Subset) (A, error)
 	ListAbility(Subset) ([]A, error)
 }
 
 // Subset retrieves per EntityID+ID or list per EntityID.
 type Subset struct {
-	ID       game.ID
-	EntityID game.ID
+	ID       ulid.ID
+	EntityID ulid.ID
 }

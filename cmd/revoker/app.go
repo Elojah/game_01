@@ -3,10 +3,10 @@ package main
 import (
 	"time"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -41,7 +41,7 @@ func (a *app) Start() {
 		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
 	}
 	for _, tokenID := range tokenIDs {
-		go func(tokenID game.ID) {
+		go func(tokenID ulid.ID) {
 
 		}(tokenID)
 	}

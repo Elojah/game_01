@@ -3,13 +3,12 @@ package main
 import (
 	"errors"
 
-	game "github.com/elojah/game_01"
-	"github.com/oklog/ulid"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Token   game.ID `json:"token"`
+	Token   ulid.ID `json:"token"`
 	Address string  `json:"address"`
 }
 

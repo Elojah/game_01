@@ -1,15 +1,15 @@
 package storage
 
 import (
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Domain converts a storage user into a domain user.
 func (a *Account) Domain(username string) (account.A, error) {
 	return account.A{
 		Username: username,
-		ID:       game.ID(a.ID),
+		ID:       ulid.ID(a.ID),
 		Password: a.Password,
 	}, nil
 }

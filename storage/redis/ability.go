@@ -3,8 +3,8 @@ package redis
 import (
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -56,7 +56,7 @@ func (s *Service) GetAbility(subset ability.Subset) (ability.A, error) {
 }
 
 // SetAbility implemented with redis.
-func (s *Service) SetAbility(a ability.A, entity game.ID) error {
+func (s *Service) SetAbility(a ability.A, entity ulid.ID) error {
 	raw, err := storage.NewAbility(a).Marshal(nil)
 	if err != nil {
 		return err

@@ -1,4 +1,4 @@
-package game
+package account
 
 import (
 	"errors"
@@ -15,6 +15,4 @@ var (
 	ErrInsufficientACLs = errors.New("insufficient rights")
 	// ErrInvalidAction is raised when an action is not possible following game rules.
 	ErrInvalidAction = errors.New("action is not possible")
-	// ErrInvalidEntityType is raised when an entity doesn't respect the correct type.
-	ErrInvalidEntityType = errors.New("invalid entity type")
 )

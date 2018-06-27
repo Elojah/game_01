@@ -10,8 +10,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	game "github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
 
@@ -21,7 +21,7 @@ type reader struct {
 	logger zerolog.Logger
 	*bufio.Scanner
 
-	token game.ID
+	token ulid.ID
 	addr  net.Addr
 }
 
@@ -52,7 +52,7 @@ func (r reader) Start() {
 			continue
 		}
 		message := dto.Message{
-			ID:     game.NewID(),
+			ID:     ulid.NewID(),
 			Token:  r.token,
 			TS:     time.Now().UnixNano(),
 			Action: input.Action,

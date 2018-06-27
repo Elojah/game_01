@@ -4,11 +4,11 @@ import (
 	nats "github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 	"github.com/elojah/mux"
 )
@@ -27,12 +27,12 @@ type app struct {
 
 	*mux.M
 
-	id game.ID
+	id ulid.ID
 
 	sub *event.Subscription
 
 	tickRate  uint32
-	recurrers map[game.ID]*Recurrer
+	recurrers map[ulid.ID]*Recurrer
 }
 
 func (a *app) Dial(c Config) error {
@@ -50,7 +50,7 @@ func (a *app) Start() {
 		return
 	}
 	a.sub = sub
-	a.recurrers = make(map[game.ID]*Recurrer)
+	a.recurrers = make(map[ulid.ID]*Recurrer)
 }
 
 func (a *app) Close() {

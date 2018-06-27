@@ -4,12 +4,13 @@ import (
 	nats "github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -28,27 +29,27 @@ type app struct {
 	event.SubscriptionMapper
 	EventMapper event.Mapper
 
-	game.PermissionMapper
+	perm.Mapper
 
 	sector.EntitiesMapper
 	SectorMapper sector.Mapper
 
-	id game.ID
+	id ulid.ID
 
-	subs map[game.ID]*event.Subscription
-	seqs map[game.ID]*Sequencer
+	subs map[ulid.ID]*event.Subscription
+	seqs map[ulid.ID]*Sequencer
 
 	limit         int
 	moveTolerance float64
 
-	cores []game.ID
+	cores []ulid.ID
 }
 
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
 	a.moveTolerance = c.MoveTolerance
-	a.cores = make([]game.ID, len(c.Cores))
+	a.cores = make([]ulid.ID, len(c.Cores))
 	copy(a.cores, c.Cores)
 
 	return nil
@@ -62,10 +63,10 @@ func (a *app) Start() {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
 	}
-	a.subs = make(map[game.ID]*event.Subscription)
+	a.subs = make(map[ulid.ID]*event.Subscription)
 	a.subs[a.id] = sub
 
-	a.seqs = make(map[game.ID]*Sequencer)
+	a.seqs = make(map[ulid.ID]*Sequencer)
 }
 
 func (a *app) Close() {
@@ -101,7 +102,7 @@ func (a *app) AddListener(msg *nats.Msg) {
 	logger.Info().Str("listener", id.String()).Msg("listening")
 }
 
-func (a *app) Apply(id game.ID, e event.E) {
+func (a *app) Apply(id ulid.ID, e event.E) {
 	ts := e.TS.UnixNano()
 	key := id.String()
 	logger := log.With().

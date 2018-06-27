@@ -1,8 +1,9 @@
 package storage
 
 import (
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // NewEntity convert a entity.E into a storage Entity.
@@ -23,14 +24,14 @@ func NewEntity(e entity.E) *Entity {
 // Domain converts a storage Entity into a game Entity.
 func (e Entity) Domain() entity.E {
 	return entity.E{
-		ID:   game.ID(e.ID),
+		ID:   ulid.ID(e.ID),
 		Type: entity.Type(e.Type),
 		Name: e.Name,
 		HP:   e.HP,
 		MP:   e.MP,
 		Position: entity.Position{
 			SectorID: e.SectorID,
-			Coord: game.Vec3{
+			Coord: geometry.Vec3{
 				X: e.X,
 				Y: e.Y,
 				Z: e.Z,

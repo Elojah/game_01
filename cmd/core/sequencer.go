@@ -5,8 +5,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -14,7 +14,7 @@ type tick chan int64
 
 // Sequencer is an ordering/event extractor layer between two consumers.
 type Sequencer struct {
-	id game.ID
+	id ulid.ID
 	event.Mapper
 
 	logger zerolog.Logger
@@ -27,7 +27,7 @@ type Sequencer struct {
 	last      tick
 	interrupt chan struct{}
 
-	callback func(game.ID, event.E)
+	callback func(ulid.ID, event.E)
 }
 
 // Close kills both fetch/input goroutines.
@@ -39,7 +39,7 @@ func (s *Sequencer) Close() {
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
-func NewSequencer(id game.ID, limit int, em event.Mapper, callback func(game.ID, event.E)) *Sequencer {
+func NewSequencer(id ulid.ID, limit int, em event.Mapper, callback func(ulid.ID, event.E)) *Sequencer {
 	return &Sequencer{
 		id:     id,
 		logger: log.With().Str("sequencer", id.String()).Logger(),

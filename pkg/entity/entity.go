@@ -1,21 +1,22 @@
 package entity
 
 import (
-	game "github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Type represents the type of an entity.
-type Type = game.ID
+type Type = ulid.ID
 
 // Position represents an entity position in world.
 type Position struct {
-	Coord    game.Vec3
-	SectorID game.ID
+	Coord    geometry.Vec3
+	SectorID ulid.ID
 }
 
 // E represents a dynamic entity.
 type E struct {
-	ID       game.ID  `json:"id"`
+	ID       ulid.ID  `json:"id"`
 	Type     Type     `json:"type"`
 	Name     string   `json:"name"`
 	HP       uint64   `json:"hp"`
@@ -24,7 +25,7 @@ type E struct {
 }
 
 // Move moves entity to position p.
-func (e *E) Move(p game.Vec3) {
+func (e *E) Move(p geometry.Vec3) {
 	e.Position.Coord.Add(p)
 }
 

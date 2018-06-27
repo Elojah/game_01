@@ -1,18 +1,18 @@
 package storage
 
 import (
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Domain converts a storage sector entities into a domain sector entities.
 func (se *SectorEntities) Domain() sector.Entities {
-	entityIDs := make([]game.ID, len(se.EntityIDs))
+	entityIDs := make([]ulid.ID, len(se.EntityIDs))
 	for i, entity := range se.EntityIDs {
-		entityIDs[i] = game.ID(entity)
+		entityIDs[i] = ulid.ID(entity)
 	}
 	return sector.Entities{
-		SectorID:  game.ID(se.SectorID),
+		SectorID:  ulid.ID(se.SectorID),
 		EntityIDs: entityIDs,
 	}
 }

@@ -3,9 +3,8 @@ package main
 import (
 	"errors"
 
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/oklog/ulid"
-
-	"github.com/elojah/game_01"
 )
 
 // Config is web quic server structure config.
@@ -13,8 +12,8 @@ type Config struct {
 	Address string    `json:"address"`
 	Cert    string    `json:"cert"`
 	Key     string    `json:"key"`
-	Cores   []game.ID `json:"cores"`
-	Syncs   []game.ID `json:"syncs"`
+	Cores   []ulid.ID `json:"cores"`
+	Syncs   []ulid.ID `json:"syncs"`
 }
 
 // Equal returns is both configs are equal.
@@ -79,7 +78,7 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key cores invalid. must be slice")
 	}
-	c.Cores = make([]game.ID, len(cCoresSlice))
+	c.Cores = make([]ulid.ID, len(cCoresSlice))
 	for i, core := range cCoresSlice {
 		coreString, ok := core.(string)
 		if !ok {
@@ -100,7 +99,7 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key syncs invalid. must be slice")
 	}
-	c.Syncs = make([]game.ID, len(cSyncsSlice))
+	c.Syncs = make([]ulid.ID, len(cSyncsSlice))
 	for i, sync := range cSyncsSlice {
 		syncString, ok := sync.(string)
 		if !ok {

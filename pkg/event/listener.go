@@ -1,15 +1,13 @@
 package event
 
-import (
-	game "github.com/elojah/game_01"
-)
+import "github.com/elojah/game_01/pkg/ulid"
 
 // Listener requires the receiver to create a new listener with subject ID.
 type Listener struct {
-	ID game.ID
+	ID ulid.ID
 }
 
 // QListenerMapper handles send/receive methods for listeners.
 type QListenerMapper interface {
-	SendListener(Listener, game.ID) error
+	SendListener(Listener, ulid.ID) error
 }

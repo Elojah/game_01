@@ -8,9 +8,9 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -61,7 +61,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 
 	// Set a new token
 	token := account.Token{
-		ID:      game.NewID(),
+		ID:      ulid.NewID(),
 		Account: a.ID,
 		IP:      ip,
 	}

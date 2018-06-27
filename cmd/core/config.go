@@ -3,17 +3,16 @@ package main
 import (
 	"errors"
 
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/oklog/ulid"
-
-	"github.com/elojah/game_01"
 )
 
 // Config is the udp server structure config.
 type Config struct {
-	ID            game.ID   `json:"id"`
+	ID            ulid.ID   `json:"id"`
 	Limit         int       `json:"limit"`
 	MoveTolerance float64   `json:"move_tolerance"`
-	Cores         []game.ID `json:"cores"`
+	Cores         []ulid.ID `json:"cores"`
 }
 
 // Equal returns is both configs are equal.
@@ -78,7 +77,7 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key cores invalid. must be slice")
 	}
-	c.Cores = make([]game.ID, len(cCoresSlice))
+	c.Cores = make([]ulid.ID, len(cCoresSlice))
 	for i, core := range cCoresSlice {
 		coreString, ok := core.(string)
 		if !ok {

@@ -1,13 +1,11 @@
 package ability
 
-import (
-	game "github.com/elojah/game_01"
-)
+import "github.com/elojah/game_01/pkg/ulid"
 
 // Feedback represents the effects a ability had on a target.
 type Feedback struct {
-	ID         game.ID
-	AbilityID  game.ID
+	ID         ulid.ID
+	AbilityID  ulid.ID
 	Components []FeedbackComponent
 }
 
@@ -19,5 +17,5 @@ type FeedbackMapper interface {
 
 // FeedbackSubset retrieves per ID.
 type FeedbackSubset struct {
-	ID game.ID
+	ID ulid.ID
 }

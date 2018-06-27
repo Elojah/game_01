@@ -1,7 +1,7 @@
 package entity
 
 import (
-	game "github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -25,22 +25,22 @@ type PC E
 // Check checks if pc fields are valid.
 func (pc PC) Check() error {
 	if _, ok := pcNames[pc.Name]; !ok {
-		return game.ErrInvalidEntityType
+		return ErrInvalidEntityType
 	}
 	return nil
 }
 
 // PCMapper is an interface to create a new PC.
 type PCMapper interface {
-	SetPC(PC, game.ID) error
+	SetPC(PC, ulid.ID) error
 	GetPC(PCSubset) (PC, error)
 	ListPC(PCSubset) ([]PC, error)
 }
 
 // PCSubset represents a subset of PC by account ID.
 type PCSubset struct {
-	ID        game.ID
-	AccountID game.ID
+	ID        ulid.ID
+	AccountID ulid.ID
 }
 
 // PCLeft represents the number of character an account can still create.
@@ -48,11 +48,11 @@ type PCLeft int
 
 // PCLeftMapper interfaces creation/retrieval of PCLeft.
 type PCLeftMapper interface {
-	SetPCLeft(PCLeft, game.ID) error
+	SetPCLeft(PCLeft, ulid.ID) error
 	GetPCLeft(PCLeftSubset) (PCLeft, error)
 }
 
 // PCLeftSubset represents a subset of PCLeft per account.
 type PCLeftSubset struct {
-	AccountID game.ID
+	AccountID ulid.ID
 }

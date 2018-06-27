@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -56,7 +56,7 @@ func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
 }
 
 // SetPC implemented with redis.
-func (s *Service) SetPC(pc entity.PC, account game.ID) error {
+func (s *Service) SetPC(pc entity.PC, account ulid.ID) error {
 	raw, err := storage.NewEntity(entity.E(pc)).Marshal(nil)
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func (s *Service) SetPC(pc entity.PC, account game.ID) error {
 }
 
 // SetPCLeft implemented with redis.
-func (s *Service) SetPCLeft(pc entity.PCLeft, account game.ID) error {
+func (s *Service) SetPCLeft(pc entity.PCLeft, account ulid.ID) error {
 	return s.Set(pcLeftKey+account.String(), int(pc), 0).Err()
 }
 

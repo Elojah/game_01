@@ -1,23 +1,21 @@
 package sector
 
-import (
-	game "github.com/elojah/game_01"
-)
+import "github.com/elojah/game_01/pkg/ulid"
 
 // Entities represents a entity sector in a world.
 type Entities struct {
-	SectorID  game.ID
-	EntityIDs []game.ID
+	SectorID  ulid.ID
+	EntityIDs []ulid.ID
 }
 
 // EntitiesMapper set or get sector entities. Can also add or remove individual entity to sector.
 type EntitiesMapper interface {
 	GetEntities(EntitiesSubset) (Entities, error)
-	AddEntityToSector(game.ID, game.ID) error
-	RemoveEntityToSector(game.ID, game.ID) error
+	AddEntityToSector(ulid.ID, ulid.ID) error
+	RemoveEntityToSector(ulid.ID, ulid.ID) error
 }
 
-// EntitiesSubset retrieves one Entities per sector game.ID only.
+// EntitiesSubset retrieves one Entities per sector ulid.ID only.
 type EntitiesSubset struct {
-	SectorID game.ID
+	SectorID ulid.ID
 }

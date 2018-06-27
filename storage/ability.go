@@ -1,8 +1,8 @@
 package storage
 
 import (
-	game "github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // NewHealDirect converts a domain HealDirect into a storage HealDirect.
@@ -87,7 +87,7 @@ func (a Ability) Domain() ability.A {
 		}
 	}
 	return ability.A{
-		ID:            game.ID(a.ID),
+		ID:            ulid.ID(a.ID),
 		Type:          ability.Type(a.Type),
 		Name:          a.Name,
 		MPConsumption: a.MPConsumption,

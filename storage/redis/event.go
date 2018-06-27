@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -15,7 +15,7 @@ const (
 )
 
 // SetEvent implemented with redis.
-func (s *Service) SetEvent(e event.E, id game.ID) error {
+func (s *Service) SetEvent(e event.E, id ulid.ID) error {
 	raw, err := storage.NewEvent(e).Marshal(nil)
 	if err != nil {
 		return err

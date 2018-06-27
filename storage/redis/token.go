@@ -4,10 +4,9 @@ import (
 	"strconv"
 
 	"github.com/go-redis/redis"
-	"github.com/oklog/ulid"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -17,7 +16,7 @@ const (
 )
 
 // GetToken redis implementation.
-func (s *Service) GetToken(id game.ID) (account.Token, error) {
+func (s *Service) GetToken(id ulid.ID) (account.Token, error) {
 	val, err := s.Get(tokenKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -43,7 +42,7 @@ func (s *Service) SetToken(token account.Token) error {
 }
 
 // SetTokenHC redis implementation.
-func (s *Service) SetTokenHC(id game.ID, hc int64) error {
+func (s *Service) SetTokenHC(id ulid.ID, hc int64) error {
 	return s.ZAddNX(
 		tokenHCKey,
 		redis.Z{
@@ -54,7 +53,7 @@ func (s *Service) SetTokenHC(id game.ID, hc int64) error {
 }
 
 // ListTokenHC redis implementation.
-func (s *Service) ListTokenHC(subset account.TokenHCSubset) ([]game.ID, error) {
+func (s *Service) ListTokenHC(subset account.TokenHCSubset) ([]ulid.ID, error) {
 	cmd := s.ZRangeByScore(
 		tokenHCKey,
 		redis.ZRangeBy{
@@ -66,12 +65,9 @@ func (s *Service) ListTokenHC(subset account.TokenHCSubset) ([]game.ID, error) {
 	if err != nil {
 		return nil, err
 	}
-	ids := make([]game.ID, len(vals))
+	ids := make([]ulid.ID, len(vals))
 	for i, val := range vals {
-		ids[i], err = ulid.Parse(val)
-		if err != nil {
-			return nil, err
-		}
+		ids[i] = ulid.MustParse(val)
 	}
 	return ids, nil
 }

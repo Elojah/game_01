@@ -7,10 +7,10 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
 
@@ -42,7 +42,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 
 	// # Parse message UUID.
-	tokenID := game.ID(msg.Token)
+	tokenID := ulid.ID(msg.Token)
 
 	// # Search message UUID in storage.
 	token, err := h.GetToken(tokenID)
@@ -61,7 +61,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 
 	// #Send ACK to client.
-	id := game.ID(msg.Token)
+	id := ulid.ID(msg.Token)
 	ack := dto.ACK{ID: [16]byte(id)}
 	raw, err = ack.Marshal(nil)
 	if err != nil {

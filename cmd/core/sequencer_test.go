@@ -9,9 +9,9 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/mocks"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -44,30 +44,30 @@ func TestSequencer(t *testing.T) {
 	now := time.Now()
 	eset := []event.E{
 		event.E{
-			ID:     game.NewID(),
+			ID:     ulid.NewID(),
 			TS:     now,
-			Action: event.Cast{Source: game.NewID(), Targets: []game.ID{game.NewID(), game.NewID(), game.NewID()}},
+			Action: event.Cast{Source: ulid.NewID(), Targets: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
 		},
 		event.E{
-			ID:     game.NewID(),
+			ID:     ulid.NewID(),
 			TS:     now.Add(-1 * time.Second),
-			Action: event.Move{Source: game.NewID()},
+			Action: event.Move{Source: ulid.NewID()},
 		},
 		event.E{
-			ID:     game.NewID(),
+			ID:     ulid.NewID(),
 			TS:     now.Add(-2 * time.Second),
-			Action: event.Move{Source: game.NewID()},
+			Action: event.Move{Source: ulid.NewID()},
 		},
 		event.E{
-			ID:     game.NewID(),
+			ID:     ulid.NewID(),
 			TS:     now.Add(-3 * time.Second),
-			Action: event.Move{Source: game.NewID()},
+			Action: event.Move{Source: ulid.NewID()},
 		},
 	}
 
 	t.Run("simple", func(t *testing.T) {
 
-		seqID := game.NewID()
+		seqID := ulid.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
@@ -81,7 +81,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32, es,
-			func(id game.ID, e event.E) {
+			func(id ulid.ID, e event.E) {
 				assert.True(t, equalEvent(eset[0], e))
 				wg.Done()
 			},
@@ -99,7 +99,7 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("two", func(t *testing.T) {
 
-		seqID := game.NewID()
+		seqID := ulid.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
@@ -115,7 +115,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(2)
 		seq := NewSequencer(seqID, 32, es,
-			func(id game.ID, e event.E) {
+			func(id ulid.ID, e event.E) {
 				wg.Done()
 			},
 		)
@@ -139,7 +139,7 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("cancel", func(t *testing.T) {
 
-		seqID := game.NewID()
+		seqID := ulid.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
@@ -156,7 +156,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32, es,
-			func(id game.ID, e event.E) {
+			func(id ulid.ID, e event.E) {
 				assert.False(t, equalEvent(e, eset[0]))
 				if equalEvent(e, eset[2]) {
 					wg.Done()
@@ -183,7 +183,7 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("interrupt", func(t *testing.T) {
 
-		seqID := game.NewID()
+		seqID := ulid.NewID()
 		es := mocks.NewEventMapper()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
@@ -201,7 +201,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 1, es,
-			func(id game.ID, e event.E) {
+			func(id ulid.ID, e event.E) {
 				assert.False(t, equalEvent(e, eset[0]))
 				if equalEvent(e, eset[2]) {
 					wg.Done()

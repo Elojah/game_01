@@ -3,13 +3,13 @@ package main
 import (
 	"errors"
 
-	"github.com/elojah/game_01"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/oklog/ulid"
 )
 
 // Config is the udp server structure config.
 type Config struct {
-	ID       game.ID `json:"id"`
+	ID       ulid.ID `json:"id"`
 	TickRate uint32  `json:"tick_rate"`
 }
 

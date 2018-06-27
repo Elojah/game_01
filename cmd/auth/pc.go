@@ -10,10 +10,10 @@ import (
 	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01"
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/geometry"
 )
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -84,11 +84,11 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Create PC from the template.
 	pc := entity.PC(template)
-	pc.ID = game.NewID()
+	pc.ID = ulid.NewID()
 	pc.Position = entity.Position{
 		// TODO list of positions config ? Areas config + random ? Define spawn
 		SectorID: ulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
-		Coord:    game.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
+		Coord:    geometry.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
 	}
 	if err := pc.Check(); err != nil {
 		logger.Error().Err(err).Msg("wrong pc")
@@ -215,7 +215,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates entity cloned from pc.
 	entity := entity.E(pc)
-	entity.ID = game.NewID()
+	entity.ID = ulid.NewID()
 	if err := h.EntityMapper.SetEntity(entity, time.Now().UnixNano()); err != nil {
 		logger.Error().Err(err).Str("id", entity.ID.String()).Msg("failed to create entity from PC")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -241,7 +241,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	// #Creates h new synchronizer for this token/entity.
 	sync := h.syncs[rand.Intn(len(h.syncs))]
 	if err := h.SendRecurrer(event.Recurrer{
-		ID:       game.NewID(),
+		ID:       ulid.NewID(),
 		EntityID: entity.ID,
 		TokenID:  token.ID,
 		Action:   event.OpenRec,
