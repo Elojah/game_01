@@ -8,13 +8,15 @@ import (
 // NewListener converts a domain listener to a storage listener.
 func NewListener(listener event.Listener) Listener {
 	return Listener{
-		ID: [16]byte(listener.ID),
+		ID:     [16]byte(listener.ID),
+		Action: uint8(listener.Action),
 	}
 }
 
 // Domain converts a storage user into a domain user.
 func (l Listener) Domain() event.Listener {
 	return event.Listener{
-		ID: ulid.ID(l.ID),
+		ID:     ulid.ID(l.ID),
+		Action: event.QAction(l.Action),
 	}
 }

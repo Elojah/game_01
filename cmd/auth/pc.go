@@ -232,7 +232,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates h new listener for this entity.
 	core := h.cores[rand.Intn(len(h.cores))]
-	listener := event.Listener{ID: entity.ID}
+	listener := event.Listener{ID: entity.ID, Action: event.Open}
 	if err := h.SendListener(listener, core); err != nil {
 		logger.Error().Err(err).Str("core", core.String()).Str("id", entity.ID.String()).Msg("failed to add listener to entity")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -245,7 +245,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		ID:       ulid.NewID(),
 		EntityID: entity.ID,
 		TokenID:  token.ID,
-		Action:   event.OpenRec,
+		Action:   event.Open,
 	}, sync); err != nil {
 		logger.Error().Err(err).Str("sync", sync.String()).Str("id", entity.ID.String()).Msg("failed to add sync for entity")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

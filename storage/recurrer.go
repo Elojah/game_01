@@ -21,6 +21,6 @@ func (r Recurrer) Domain() event.Recurrer {
 		ID:       ulid.ID(r.ID),
 		EntityID: ulid.ID(r.EntityID),
 		TokenID:  ulid.ID(r.TokenID),
-		Action:   event.RecurrerAction(r.Action),
+		Action:   event.QAction(r.Action),
 	}
 }

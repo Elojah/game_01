@@ -70,7 +70,7 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 	}
 	recurrer := recurrerS.Domain()
 
-	if recurrer.Action == event.CloseRec {
+	if recurrer.Action == event.Close {
 		a.recurrers[recurrer.ID].Close()
 		delete(a.recurrers, recurrer.ID)
 		return

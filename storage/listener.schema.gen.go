@@ -13,7 +13,8 @@ var (
 )
 
 type Listener struct {
-	ID [16]byte
+	ID     [16]byte
+	Action uint8
 }
 
 func (d *Listener) Size() (s uint64) {
@@ -21,6 +22,7 @@ func (d *Listener) Size() (s uint64) {
 	{
 		s += 16
 	}
+	s += 1
 	return
 }
 func (d *Listener) Marshal(buf []byte) ([]byte, error) {
@@ -38,7 +40,12 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 		copy(buf[i+0:], d.ID[:])
 		i += 16
 	}
-	return buf[:i+0], nil
+	{
+
+		buf[i+0+0] = byte(d.Action >> 0)
+
+	}
+	return buf[:i+1], nil
 }
 
 func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
@@ -48,5 +55,10 @@ func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
 		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
-	return i + 0, nil
+	{
+
+		d.Action = 0 | (uint8(buf[i+0+0]) << 0)
+
+	}
+	return i + 1, nil
 }

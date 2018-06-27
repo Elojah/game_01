@@ -58,7 +58,7 @@ func (a *app) Dial(c Config) error {
 func (a *app) Start() {
 	logger := log.With().Str("core", a.id.String()).Logger()
 
-	sub, err := a.SetSubscription(a.id.String(), a.AddListener)
+	sub, err := a.SetSubscription(a.id.String(), a.Listener)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to sub")
 		return
@@ -78,7 +78,7 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) AddListener(msg *nats.Msg) {
+func (a *app) Listener(msg *nats.Msg) {
 	logger := log.With().Str("app", a.id.String()).Logger()
 
 	var listenerS storage.Listener
@@ -86,20 +86,42 @@ func (a *app) AddListener(msg *nats.Msg) {
 		logger.Error().Err(err).Msg("failed to unmarshal listener")
 		return
 	}
-	id := listenerS.Domain().ID
+	listener := listenerS.Domain()
+	id := listener.ID.String()
 
-	seq := NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
-	a.seqs[id] = seq
-	seq.Start()
+	switch listener.Action {
+	case event.Open:
+		seq := NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
+		a.seqs[listener.ID] = seq
+		seq.Start()
 
-	sub, err := a.SetSubscription(id.String(), seq.MsgHandler)
-	if err != nil {
-		logger.Error().Err(err).Str("listener", id.String()).Msg("failed to sub")
-		return
+		sub, err := a.SetSubscription(id, seq.MsgHandler)
+		if err != nil {
+			logger.Error().Err(err).Str("listener", id).Msg("failed to sub")
+			return
+		}
+		a.subs[listener.ID] = sub
+
+		logger.Info().Str("listener", id).Msg("listening")
+	case event.Close:
+		seq, ok := a.seqs[listener.ID]
+		if !ok {
+			logger.Error().Str("listener", id).Msg("listener not found")
+			return
+		}
+		seq.Close()
+		sub, ok := a.subs[listener.ID]
+		if !ok {
+			logger.Error().Str("listener", id).Msg("subscription not found")
+			return
+		}
+		if err := sub.Unsubscribe(); err != nil {
+			logger.Error().Err(err).Str("listener", id).Msg("failed to unsubscribe")
+			return
+		}
+		delete(a.seqs, listener.ID)
+		delete(a.subs, listener.ID)
 	}
-	a.subs[id] = sub
-
-	logger.Info().Str("listener", id.String()).Msg("listening")
 }
 
 func (a *app) Apply(id ulid.ID, e event.E) {

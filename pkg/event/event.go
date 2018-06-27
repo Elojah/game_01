@@ -6,6 +6,16 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
+// QAction is an action required for a queue.
+type QAction uint8
+
+const (
+	// Open requires the queue to open.
+	Open QAction = 0
+	// Close requires the queue to close.
+	Close QAction = 1
+)
+
 // E is a game event triggered by an entity or mechanic.
 type E struct {
 	ID     ulid.ID
