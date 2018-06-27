@@ -4,6 +4,7 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -36,12 +37,12 @@ func (a *app) MoveTarget(e event.E) error {
 	move := e.Action.(event.Move)
 
 	// #Check permission token/source.
-	permission, err := a.GetPermission(perm.Subset{
+	permission, err := a.PermissionMapper.GetPermission(perm.Subset{
 		Source: e.Source.String(),
 		Target: move.Source.String(),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return game.ErrInsufficientACLs
+		return account.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -49,12 +50,12 @@ func (a *app) MoveTarget(e event.E) error {
 
 	// #Check permission source/target if source != target.
 	if move.Source != move.Target {
-		permission, err := a.GetPermission(perm.Subset{
+		permission, err := a.PermissionMapper.GetPermission(perm.Subset{
 			Source: move.Source.String(),
 			Target: move.Target.String(),
 		})
 		if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return game.ErrInsufficientACLs
+			return account.ErrInsufficientACLs
 		}
 		if err != nil {
 			return err
@@ -68,8 +69,8 @@ func (a *app) MoveTarget(e event.E) error {
 	}
 
 	// #Check if target has move in correct boundaries.
-	if game.Segment(target.Position.Coord, move.Position) > a.moveTolerance {
-		return game.ErrInvalidAction
+	if geometry.Segment(target.Position.Coord, move.Position) > a.moveTolerance {
+		return account.ErrInvalidAction
 	}
 
 	// #Retrieve current sector

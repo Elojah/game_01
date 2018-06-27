@@ -29,7 +29,7 @@ type app struct {
 	event.SubscriptionMapper
 	EventMapper event.Mapper
 
-	perm.Mapper
+	PermissionMapper perm.Mapper
 
 	sector.EntitiesMapper
 	SectorMapper sector.Mapper
