@@ -81,12 +81,12 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		return err
 	}
 
-	source, err := a.EntityMapper.GetEntity(entity.Subset{Key: cast.Source.String(), MaxTS: e.TS.UnixNano()})
+	source, err := a.EntityMapper.GetEntity(entity.Subset{ID: cast.Source, MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return err
 	}
 
-	target, err := a.EntityMapper.GetEntity(entity.Subset{Key: id.String(), MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return err
 	}

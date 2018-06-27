@@ -39,7 +39,7 @@ func (t Token) DeleteToken(id ulid.ID) error {
 		// }
 	}()
 	go func() {
-		if err := t.EntityMapper.DelEntity(entity.Subset{Key: id.String()}); err != nil {
+		if err := t.EntityMapper.DelEntity(entity.Subset{ID: id}); err != nil {
 			logger.Error().Err(err).Msg("failed to delete entity")
 		}
 	}()

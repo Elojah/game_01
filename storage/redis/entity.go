@@ -31,7 +31,7 @@ func (s *Service) SetEntity(e entity.E, ts int64) error {
 // GetEntity retrieves entity in Redis using ZRangeWithScores.
 func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 	cmd := s.ZRevRangeByScore(
-		entityKey+subset.Key,
+		entityKey+subset.ID.String(),
 		redis.ZRangeBy{
 			Count: 1,
 			Min:   "-inf",
@@ -54,5 +54,5 @@ func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 
 // DelEntity deletes entity in redis.
 func (s *Service) DelEntity(subset entity.Subset) error {
-	return s.Del(entityKey + subset.Key).Err()
+	return s.Del(entityKey + subset.ID.String()).Err()
 }

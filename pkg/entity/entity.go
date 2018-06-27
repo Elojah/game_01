@@ -38,7 +38,7 @@ type Mapper interface {
 
 // Subset is a subset to retrieve one entity.
 type Subset struct {
-	Key    string
+	ID     ulid.ID
 	MaxTS  int64
 	Cursor uint64
 	Count  int64

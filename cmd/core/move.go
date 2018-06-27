@@ -63,7 +63,7 @@ func (a *app) MoveTarget(e event.E) error {
 	}
 
 	// #Retrieve previous state target.
-	target, err := a.EntityMapper.GetEntity(entity.Subset{Key: move.Target.String(), MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: move.Target, MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return err
 	}
