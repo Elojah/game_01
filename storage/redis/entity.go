@@ -51,3 +51,8 @@ func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 	}
 	return entityS.Domain(), nil
 }
+
+// DelEntity deletes entity in redis.
+func (s *Service) DelEntity(subset entity.Subset) error {
+	return s.Del(entityKey + subset.Key).Err()
+}

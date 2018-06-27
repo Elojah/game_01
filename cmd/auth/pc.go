@@ -175,7 +175,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/list").Logger()
+	logger := log.With().Str("route", "/pc/connect").Logger()
 
 	// # Read body
 	var connectPC dto.ConnectPC

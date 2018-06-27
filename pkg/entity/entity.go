@@ -33,6 +33,7 @@ func (e *E) Move(p geometry.Vec3) {
 type Mapper interface {
 	SetEntity(E, int64) error
 	GetEntity(Subset) (E, error)
+	DelEntity(Subset) error
 }
 
 // Subset is a subset to retrieve one entity.

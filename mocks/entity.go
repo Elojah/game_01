@@ -12,6 +12,8 @@ type EntityMapper struct {
 	SetEntityCount int32
 	GetEntityFunc  func(entity.Subset) (entity.E, error)
 	GetEntityCount int32
+	DelEntityFunc  func(entity.Subset) error
+	DelEntityCount int32
 }
 
 // SetEntity mocks entity.Mapper.
@@ -30,6 +32,15 @@ func (m *EntityMapper) GetEntity(subset entity.Subset) (entity.E, error) {
 		return entity.E{}, nil
 	}
 	return m.GetEntityFunc(subset)
+}
+
+// DelEntity mocks entity.Mapper.
+func (m *EntityMapper) DelEntity(subset entity.Subset) error {
+	atomic.AddInt32(&m.DelEntityCount, 1)
+	if m.DelEntityFunc == nil {
+		return nil
+	}
+	return m.DelEntityFunc(subset)
 }
 
 // NewEntityMapper returns a entity service mock ready for usage.

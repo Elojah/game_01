@@ -56,7 +56,11 @@
 - [x] ack service
 - [x] Edit `client` to make it sensitive to `sync` calls and save in a local *rocksdb ?* + first graphic client
 - [x] Split auth (with set/list/connect PC) and remove all pc stuff elsewhere.
-- [ ] Add token revoker after X incativity
+- [x] Add token revoker after X incativity
+- [ ] Change EntitySubset key string into ID ID
+- [ ] Add redis services for core and syncs ids apps
+- [ ] Save pool ID in listeners.
+- [ ] Add use cases for entity (create/delete) and token(create/delete)
 - [ ] Add server ack sending to client (and client resend)
 - [ ] Add minimal graphic interface to client (minimal calls and print entity states)
 - [ ] Implement tool to generate/check/visualize sectors and entity movements
