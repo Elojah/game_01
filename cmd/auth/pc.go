@@ -7,13 +7,14 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/dto"
+	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +48,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
-		err := game.ErrWrongIP
+		err := account.ErrWrongIP
 		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -61,7 +62,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if left <= 0 {
-		err := game.ErrInvalidAction
+		err := account.ErrInvalidAction
 		logger.Error().Err(err).Msg("no more pc left")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -136,7 +137,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
-		err := game.ErrWrongIP
+		err := account.ErrWrongIP
 		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -196,7 +197,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
-		err := game.ErrWrongIP
+		err := account.ErrWrongIP
 		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

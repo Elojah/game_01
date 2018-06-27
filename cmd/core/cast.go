@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/elojah/game_01/pkg/ability"
-	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/perm"
-	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/storage"
+	"github.com/elojah/account_01/pkg/ability"
+	"github.com/elojah/account_01/pkg/account"
+	"github.com/elojah/account_01/pkg/entity"
+	"github.com/elojah/account_01/pkg/event"
+	"github.com/elojah/account_01/pkg/perm"
+	"github.com/elojah/account_01/pkg/ulid"
+	"github.com/elojah/account_01/storage"
 )
 
 func (a *app) Cast(id ulid.ID, e event.E) error {
@@ -30,7 +30,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		Target: cast.Source.String(),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return game.ErrInsufficientACLs
+		return account.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return game.ErrInsufficientACLs
+		return account.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		Target: cast.Source.String(),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return game.ErrInsufficientACLs
+		return account.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err
@@ -75,7 +75,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return game.ErrInsufficientACLs
+		return account.ErrInsufficientACLs
 	}
 	if err != nil {
 		return err

@@ -43,7 +43,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if a.Password != accountPayload.Password {
-		err = game.ErrWrongCredentials
+		err = account.ErrWrongCredentials
 	}
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to authenticate")

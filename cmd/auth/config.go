@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/oklog/ulid"
 )
 
 // Config is web quic server structure config.

@@ -55,7 +55,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(ctx.Value(mux.Key("addr")).(string))
 	if expected != actual {
-		err := game.ErrWrongIP
+		err := account.ErrWrongIP
 		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
 		return err
 	}
@@ -74,7 +74,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	ts := time.Unix(0, msg.TS)
 	now := time.Now()
 	if ts.After(now) || now.Sub(ts) > h.tolerance {
-		err := game.ErrInvalidTS
+		err := account.ErrInvalidTS
 		logger.Error().Err(err).Str("status", "timeout").Int64("ts", ts.UnixNano()).Int64("now", now.UnixNano()).Msg("packet rejected")
 		return err
 	}
