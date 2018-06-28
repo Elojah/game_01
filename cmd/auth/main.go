@@ -60,6 +60,7 @@ func run(prog string, filename string) {
 	h.QListenerMapper = nax
 	h.QMapper = nax
 	h.QRecurrerMapper = nax
+	h.StarterMapper = rdx
 	h.SyncMapper = rdx
 	h.TemplateMapper = rdx
 	h.TokenMapper = rdx

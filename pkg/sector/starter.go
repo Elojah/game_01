@@ -6,15 +6,14 @@ import (
 
 // Starter is a starter sector
 type Starter struct {
-	S
-	ID ulid.ID
+	SectorID ulid.ID
 }
 
-// StarterService interfaces starter data interactions.
-type StarterService interface {
-	GetStarter(StarterSubset) (Starter, error)
+// StarterMapper interfaces starter data interactions.
+type StarterMapper interface {
 	GetRandomStarter(StarterSubset) (Starter, error)
 	SetStarter(Starter) error
+	DelStarter(StarterSubset) error
 }
 
 // StarterSubset retrieves a Starter by ID.

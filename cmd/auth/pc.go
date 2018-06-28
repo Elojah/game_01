@@ -15,6 +15,7 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/infra"
+	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
@@ -85,12 +86,18 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Create PC from the template.
+	// #Create PC from the template and put it in a random starter sector.
+	start, err := h.GetRandomStarter(sector.StarterSubset{})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve starter sector")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	pc := entity.PC(template)
 	pc.ID = ulid.NewID()
 	pc.Position = entity.Position{
-		// TODO list of positions config ? Areas config + random ? Define spawn
-		SectorID: ulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
+		SectorID: start.SectorID,
 		Coord:    geometry.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
 	}
 	if err := pc.Check(); err != nil {

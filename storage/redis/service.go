@@ -24,6 +24,7 @@ var _ infra.SyncMapper = (*Service)(nil)
 var _ perm.Mapper = (*Service)(nil)
 var _ sector.Mapper = (*Service)(nil)
 var _ sector.EntitiesMapper = (*Service)(nil)
+var _ sector.StarterMapper = (*Service)(nil)
 var _ account.TokenMapper = (*Service)(nil)
 var _ account.TokenHCMapper = (*Service)(nil)
 

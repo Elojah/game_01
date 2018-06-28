@@ -28,6 +28,7 @@ type handler struct {
 	infra.SyncMapper
 
 	sector.EntitiesMapper
+	sector.StarterMapper
 
 	srv *http.Server
 }
