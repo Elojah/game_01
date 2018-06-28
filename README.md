@@ -59,7 +59,7 @@
 - [x] Add token revoker after X incativity
 - [x] Change EntitySubset key string into ID ID
 - [x] Add redis services for core and syncs ids apps
-- [ ] Add redis service for initial positions.
+- [x] Add redis service for initial positions.
 - [ ] Move all Start into Dial (for clean/up down)
 - [ ] Add up/down mechanic
 - [ ] Save pool ID in listeners.

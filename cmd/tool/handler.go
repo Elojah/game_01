@@ -21,6 +21,7 @@ type handler struct {
 
 	SectorMapper sector.Mapper
 	sector.EntitiesMapper
+	sector.StarterMapper
 
 	srv *http.Server
 }
@@ -37,6 +38,7 @@ func (h *handler) Dial(c Config) error {
 	mux.HandleFunc("/entity/template", h.entityTemplate)
 
 	mux.HandleFunc("/sector/entities", h.sectorEntities)
+	mux.HandleFunc("/sector/starters", h.sectorStarters)
 
 	h.srv = &http.Server{
 		Addr:    c.Address,
