@@ -86,19 +86,26 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Create PC from the template and put it in a random starter sector.
+	// # Retrieve a random starter sector.
 	start, err := h.GetRandomStarter(sector.StarterSubset{})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	sec, err := h.SectorMapper.GetSector(sector.Subset{ID: start.SectorID})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve starter sector")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
+	// #Create PC from the template and put it in a random starter sector.
 	pc := entity.PC(template)
 	pc.ID = ulid.NewID()
 	pc.Position = entity.Position{
-		SectorID: start.SectorID,
-		Coord:    geometry.Vec3{X: 100 * rand.Float64(), Y: 100 * rand.Float64(), Z: 100 * rand.Float64()},
+		SectorID: sec.ID,
+		Coord:    geometry.Vec3{X: sec.Size.X * rand.Float64(), Y: sec.Size.Y * rand.Float64(), Z: sec.Size.Z * rand.Float64()},
 	}
 	if err := pc.Check(); err != nil {
 		logger.Error().Err(err).Msg("wrong pc")

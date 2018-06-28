@@ -29,6 +29,7 @@ type handler struct {
 
 	sector.EntitiesMapper
 	sector.StarterMapper
+	SectorMapper sector.Mapper
 
 	srv *http.Server
 }
