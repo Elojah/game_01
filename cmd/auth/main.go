@@ -52,14 +52,16 @@ func run(prog string, filename string) {
 	launchers = append(launchers, hl)
 
 	h.AccountMapper = rdx
-	h.EntityMapper = rdlrux
-	h.TemplateMapper = rdx
-	h.PCMapper = rdx
-	h.PCLeftMapper = rdx
-	h.QMapper = nax
-	h.QListenerMapper = nax
-	h.QRecurrerMapper = nax
+	h.CoreMapper = rdx
 	h.EntitiesMapper = rdlrux
+	h.EntityMapper = rdlrux
+	h.PCLeftMapper = rdx
+	h.PCMapper = rdx
+	h.QListenerMapper = nax
+	h.QMapper = nax
+	h.QRecurrerMapper = nax
+	h.SyncMapper = rdx
+	h.TemplateMapper = rdx
 	h.TokenMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {

@@ -1,4 +1,4 @@
-package account
+package infra
 
 import (
 	"github.com/elojah/game_01/pkg/ulid"

@@ -7,6 +7,7 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
@@ -21,6 +22,8 @@ type app struct {
 	event.QMapper
 	event.QRecurrerMapper
 	event.SubscriptionMapper
+
+	infra.SyncMapper
 
 	sector.EntitiesMapper
 	SectorMapper sector.Mapper
@@ -51,6 +54,11 @@ func (a *app) Start() {
 	}
 	a.sub = sub
 	a.recurrers = make(map[ulid.ID]*Recurrer)
+
+	if err := a.SetSync(infra.Sync{ID: a.id}); err != nil {
+		logger.Error().Err(err).Msg("failed to set sync")
+		return
+	}
 }
 
 func (a *app) Close() {

@@ -8,6 +8,7 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -29,6 +30,8 @@ type app struct {
 	event.SubscriptionMapper
 	EventMapper event.Mapper
 
+	infra.CoreMapper
+
 	PermissionMapper perm.Mapper
 
 	sector.EntitiesMapper
@@ -41,16 +44,12 @@ type app struct {
 
 	limit         int
 	moveTolerance float64
-
-	cores []ulid.ID
 }
 
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
 	a.moveTolerance = c.MoveTolerance
-	a.cores = make([]ulid.ID, len(c.Cores))
-	copy(a.cores, c.Cores)
 
 	return nil
 }
@@ -67,6 +66,11 @@ func (a *app) Start() {
 	a.subs[a.id] = sub
 
 	a.seqs = make(map[ulid.ID]*Sequencer)
+
+	if err := a.SetCore(infra.Core{ID: a.id}); err != nil {
+		logger.Error().Err(err).Msg("failed to set core")
+		return
+	}
 }
 
 func (a *app) Close() {

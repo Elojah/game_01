@@ -14,7 +14,9 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/elojah/game_01/storage"
 )
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -230,24 +232,44 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Creates h new listener for this entity.
-	core := h.cores[rand.Intn(len(h.cores))]
-	listener := event.Listener{ID: entity.ID, Action: event.Open}
-	if err := h.SendListener(listener, core); err != nil {
-		logger.Error().Err(err).Str("core", core.String()).Str("id", entity.ID.String()).Msg("failed to add listener to entity")
+	// #Creates a new listener for this entity.
+	// Set a new listener for this token
+	core, err := h.GetRandomCore(infra.CoreSubset{})
+	if err != nil {
+		if err == storage.ErrNotFound {
+			logger.Error().Err(err).Msg("no core available")
+			http.Error(w, "failed to create listener", http.StatusInternalServerError)
+			return
+		}
+		logger.Error().Err(err).Msg("failed to get a core")
+		http.Error(w, "failed to create listener", http.StatusInternalServerError)
+		return
+	}
+	if err := h.SendListener(event.Listener{ID: entity.ID, Action: event.Open}, core.ID); err != nil {
+		logger.Error().Err(err).Str("core", core.ID.String()).Str("id", entity.ID.String()).Msg("failed to add listener to entity")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// #Creates h new synchronizer for this token/entity.
-	sync := h.syncs[rand.Intn(len(h.syncs))]
+	// #Creates a new synchronizer for this token/entity.
+	sync, err := h.GetRandomSync(infra.SyncSubset{})
+	if err != nil {
+		if err == storage.ErrNotFound {
+			logger.Error().Err(err).Msg("no sync available")
+			http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
+			return
+		}
+		logger.Error().Err(err).Msg("failed to get a sync")
+		http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
+		return
+	}
 	if err := h.SendRecurrer(event.Recurrer{
 		ID:       ulid.NewID(),
 		EntityID: entity.ID,
 		TokenID:  token.ID,
 		Action:   event.Open,
-	}, sync); err != nil {
-		logger.Error().Err(err).Str("sync", sync.String()).Str("id", entity.ID.String()).Msg("failed to add sync for entity")
+	}, sync.ID); err != nil {
+		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", entity.ID.String()).Msg("failed to add sync for entity")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

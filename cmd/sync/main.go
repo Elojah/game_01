@@ -72,6 +72,7 @@ func run(prog string, filename string) {
 	a.EntitiesMapper = rdlrux
 	a.SectorMapper = rdx
 	a.SubscriptionMapper = nax
+	a.SyncMapper = rdx
 	a.TokenMapper = rdx
 
 	go a.Start()

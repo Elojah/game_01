@@ -58,7 +58,10 @@
 - [x] Split auth (with set/list/connect PC) and remove all pc stuff elsewhere.
 - [x] Add token revoker after X incativity
 - [x] Change EntitySubset key string into ID ID
-- [ ] Add redis services for core and syncs ids apps
+- [x] Add redis services for core and syncs ids apps
+- [ ] Add redis service for initial positions.
+- [ ] Move all Start into Dial (for clean/up down)
+- [ ] Add up/down mechanic
 - [ ] Save pool ID in listeners.
 - [ ] Add use cases for entity (create/delete) and token(create/delete)
 - [ ] Add server ack sending to client (and client resend)

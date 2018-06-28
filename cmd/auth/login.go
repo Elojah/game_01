@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"math/rand"
 	"net"
 	"net/http"
 
@@ -10,6 +9,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
@@ -72,11 +72,20 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set a new listener for this token
-	core := h.cores[rand.Intn(len(h.cores))]
-	listener := event.Listener{ID: token.ID}
-	if err := h.SendListener(listener, core); err != nil {
-		logger.Error().Err(err).Msg("failed to create queue")
-		http.Error(w, "failed to setup token", http.StatusInternalServerError)
+	core, err := h.GetRandomCore(infra.CoreSubset{})
+	if err != nil {
+		if err == storage.ErrNotFound {
+			logger.Error().Err(err).Msg("no core available")
+			http.Error(w, "failed to create listener", http.StatusInternalServerError)
+			return
+		}
+		logger.Error().Err(err).Msg("failed to get a core")
+		http.Error(w, "failed to create listener", http.StatusInternalServerError)
+		return
+	}
+	if err := h.SendListener(event.Listener{ID: token.ID, Action: event.Open}, core.ID); err != nil {
+		logger.Error().Err(err).Str("core", core.ID.String()).Str("token", token.ID.String()).Msg("failed to add listener to token")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
