@@ -14,6 +14,7 @@ type P struct {
 type Mapper interface {
 	SetPermission(P) error
 	GetPermission(Subset) (P, error)
+	DelPermission(Subset) error
 }
 
 // Subset is the subset to retrieve a P.

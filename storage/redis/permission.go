@@ -36,3 +36,8 @@ func (s *Service) GetPermission(subset perm.Subset) (perm.P, error) {
 func (s *Service) SetPermission(permission perm.P) error {
 	return s.Set(permissionKey+permission.Source+":"+permission.Target, permission.Value, 0).Err()
 }
+
+// DelPermission implemented with redis.
+func (s *Service) DelPermission(subset perm.Subset) error {
+	return s.Del(permissionKey + subset.Source + ":" + subset.Target).Err()
+}

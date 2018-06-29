@@ -8,6 +8,7 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -21,6 +22,8 @@ type Token struct {
 
 	event.QRecurrerMapper
 	event.QListenerMapper
+
+	perm.Mapper
 
 	sector.EntitiesMapper
 }
@@ -68,6 +71,16 @@ func (t Token) Disconnect(id ulid.ID) error {
 	go func() {
 		if err := t.SendRecurrer(event.Recurrer{Action: event.Close}, token.SyncPool); err != nil {
 			logger.Error().Err(err).Msg("failed to close recurrer")
+		}
+	}()
+
+	// #Delete token permission on entity.
+	go func() {
+		if err := t.DelPermission(perm.Subset{
+			Source: token.ID.String(),
+			Target: token.Entity.String(),
+		}); err != nil {
+			logger.Error().Err(err).Msg("failed to delete entity")
 		}
 	}()
 
