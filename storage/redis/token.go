@@ -16,8 +16,8 @@ const (
 )
 
 // GetToken redis implementation.
-func (s *Service) GetToken(id ulid.ID) (account.Token, error) {
-	val, err := s.Get(tokenKey + id.String()).Result()
+func (s *Service) GetToken(subset account.TokenSubset) (account.Token, error) {
+	val, err := s.Get(tokenKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return account.Token{}, err
@@ -29,7 +29,7 @@ func (s *Service) GetToken(id ulid.ID) (account.Token, error) {
 	if _, err := token.Unmarshal([]byte(val)); err != nil {
 		return account.Token{}, err
 	}
-	return token.Domain(id)
+	return token.Domain()
 }
 
 // SetToken redis implementation.

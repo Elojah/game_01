@@ -41,7 +41,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(setPC.Token)
+	token, err := h.GetToken(account.TokenSubset{ID: setPC.Token})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", setPC.Token.String()).Msg("packet rejected")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -143,7 +143,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(listPC.Token)
+	token, err := h.GetToken(account.TokenSubset{ID: listPC.Token})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", listPC.Token.String()).Msg("packet rejected")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -203,7 +203,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(connectPC.Token)
+	token, err := h.GetToken(account.TokenSubset{ID: connectPC.Token})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", connectPC.Token.String()).Msg("packet rejected")
 		http.Error(w, "wrong token id", http.StatusBadRequest)

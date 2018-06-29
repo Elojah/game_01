@@ -30,7 +30,7 @@ func (t Token) DisconnectToken(id ulid.ID) error {
 		Logger()
 
 	// #Retrieve token
-	token, err := t.GetToken(id)
+	token, err := t.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve id")
 		return err

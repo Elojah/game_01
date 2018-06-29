@@ -1,4 +1,9 @@
 struct Token {
-	IP		string
-	Account	[16]byte
+	ID			[16]byte
+	IP			string
+	Account		[16]byte
+	Ping		uint64
+	CorePool	[16]byte
+	SyncPool	[16]byte
+	PC			[16]byte
 }

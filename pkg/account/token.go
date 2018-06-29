@@ -8,18 +8,26 @@ import (
 
 // Token represents a user connection. Creation is made by secure https only.
 type Token struct {
-	ID       ulid.ID      `json:"ID"`
-	IP       *net.UDPAddr `json:"-"`
-	Account  ulid.ID      `json:"-"`
-	Ping     uint64       `json:"-"`
-	CorePool ulid.ID      `json:"-"`
-	SyncPool ulid.ID      `json:"-"`
+	ID ulid.ID `json:"ID"`
+
+	IP      *net.UDPAddr `json:"-"`
+	Account ulid.ID      `json:"-"`
+	Ping    uint64       `json:"-"`
+
+	CorePool ulid.ID `json:"-"`
+	SyncPool ulid.ID `json:"-"`
+	PC       ulid.ID `json:"-"`
 }
 
 // TokenMapper is the service gate for Token resource.
 type TokenMapper interface {
 	SetToken(Token) error
-	GetToken(ulid.ID) (Token, error)
+	GetToken(TokenSubset) (Token, error)
+}
+
+// TokenSubset retrieves a token per ID.
+type TokenSubset struct {
+	ID ulid.ID
 }
 
 // TokenHCMapper is the service gate for Token health check.

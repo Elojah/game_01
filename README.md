@@ -63,7 +63,7 @@
 - [x] Move all Start into Dial (for clean/up down)
 - [x] Add up/down mechanic
 - [x] Save pool ID in token.
-- [ ] Delete all token-associated data.
+- [ ] Save PC + Delete all token-associated data.
 - [ ] Add use cases for entity (create/delete) and token(create/delete)
 - [ ] Add server ack sending to client (and client resend)
 - [ ] Add minimal graphic interface to client (minimal calls and print entity states)

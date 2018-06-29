@@ -85,7 +85,7 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 		return
 	}
 
-	token, err := a.GetToken(recurrer.TokenID)
+	token, err := a.GetToken(account.TokenSubset{ID: recurrer.TokenID})
 	if err != nil {
 		logger.Error().Err(err).
 			Str("id", recurrer.TokenID.String()).

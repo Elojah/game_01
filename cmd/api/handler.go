@@ -50,7 +50,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	tokenID := ulid.ID(msg.Token)
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(tokenID)
+	token, err := h.GetToken(account.TokenSubset{ID: tokenID})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", tokenID.String()).Msg("packet rejected")
 		return err
