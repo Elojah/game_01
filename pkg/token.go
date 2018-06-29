@@ -29,16 +29,23 @@ func (t Token) DisconnectToken(id ulid.ID) error {
 		Str("action", "close").
 		Logger()
 
+	// #Retrieve token
+	token, err := t.GetToken(id)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve id")
+		return err
+	}
+
 	// #Close token listener
 	go func() {
-		if err := t.SendListener(event.Listener{Action: event.Close}, id); err != nil {
+		if err := t.SendListener(event.Listener{Action: event.Close}, token.CorePool); err != nil {
 			logger.Error().Err(err).Msg("failed to close listener")
 		}
 	}()
 
 	// #Close token recurrer
 	go func() {
-		if err := t.SendRecurrer(event.Recurrer{Action: event.Close}, id); err != nil {
+		if err := t.SendRecurrer(event.Recurrer{Action: event.Close}, token.SyncPool); err != nil {
 			logger.Error().Err(err).Msg("failed to close recurrer")
 		}
 	}()
