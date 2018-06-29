@@ -24,6 +24,7 @@ type app struct {
 // Dial starts the auth server.
 func (a *app) Dial(c Config) error {
 	a.lifespan = c.Lifespan
+	go a.Start()
 	return nil
 }
 

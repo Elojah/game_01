@@ -41,6 +41,7 @@ type app struct {
 func (a *app) Dial(c Config) error {
 	a.tickRate = c.TickRate
 	a.id = c.ID
+	go a.Start()
 	return nil
 }
 

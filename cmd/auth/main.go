@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -26,7 +28,7 @@ func run(prog string, filename string) {
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
-	launchers = append(launchers, rdl)
+	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
 	// redis-lru
@@ -34,14 +36,14 @@ func run(prog string, filename string) {
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
-	launchers = append(launchers, rdlrul)
+	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
 	na := nats.Service{}
 	nal := na.NewLauncher(nats.Namespaces{
 		Nats: "nats",
 	}, "nats")
-	launchers = append(launchers, nal)
+	launchers.Add(nal)
 	nax := natsx.NewService(&na)
 
 	// handler (https server)
@@ -49,7 +51,7 @@ func run(prog string, filename string) {
 	hl := h.NewLauncher(Namespaces{
 		Auth: "auth",
 	}, "auth")
-	launchers = append(launchers, hl)
+	launchers.Add(hl)
 
 	h.AccountMapper = rdx
 	h.CoreMapper = rdx
@@ -72,7 +74,18 @@ func run(prog string, filename string) {
 	}
 
 	log.Info().Msg("auth up")
-	select {}
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP)
+	for sig := range c {
+		switch sig {
+		case syscall.SIGHUP:
+			launchers.Down()
+			launchers.Up(filename)
+		case syscall.SIGINT:
+			launchers.Down()
+			return
+		}
+	}
 }
 
 func main() {

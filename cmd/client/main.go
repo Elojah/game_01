@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -22,13 +24,13 @@ func run(prog string, filename string) {
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
 	}, "server")
-	launchers = append(launchers, muxl)
+	launchers.Add(muxl)
 
 	rd := newReader(&m)
 	rdl := rd.NewLauncher(Namespaces{
 		App: "app",
 	}, "app")
-	launchers = append(launchers, rdl)
+	launchers.Add(rdl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
@@ -36,8 +38,18 @@ func run(prog string, filename string) {
 	}
 
 	log.Info().Msg("client up")
-	go rd.Start()
-	select {}
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP)
+	for sig := range c {
+		switch sig {
+		case syscall.SIGHUP:
+			launchers.Down()
+			launchers.Up(filename)
+		case syscall.SIGINT:
+			launchers.Down()
+			return
+		}
+	}
 }
 
 func main() {

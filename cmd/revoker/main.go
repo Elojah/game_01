@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -24,7 +26,7 @@ func run(prog string, filename string) {
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
-	launchers = append(launchers, rdl)
+	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
 	// redis-lru
@@ -32,7 +34,7 @@ func run(prog string, filename string) {
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
-	launchers = append(launchers, rdlrul)
+	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
 	// main app
@@ -40,7 +42,7 @@ func run(prog string, filename string) {
 	al := a.NewLauncher(Namespaces{
 		Revoker: "revoker",
 	}, "revoker")
-	launchers = append(launchers, al)
+	launchers.Add(al)
 
 	a.Mapper = rdlrux
 	a.EntitiesMapper = rdlrux
@@ -53,7 +55,18 @@ func run(prog string, filename string) {
 	}
 
 	log.Info().Msg("revoker up")
-	select {}
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP)
+	for sig := range c {
+		switch sig {
+		case syscall.SIGHUP:
+			launchers.Down()
+			launchers.Up(filename)
+		case syscall.SIGINT:
+			launchers.Down()
+			return
+		}
+	}
 }
 
 func main() {

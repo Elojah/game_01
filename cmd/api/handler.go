@@ -27,7 +27,12 @@ type handler struct {
 func (h *handler) Dial(c Config) error {
 	h.M.Handler = h.handle
 	h.tolerance = c.Tolerance
+	h.M.Listen()
 	return nil
+}
+
+func (h *handler) Close() error {
+	return h.M.Close()
 }
 
 func (h *handler) handle(ctx context.Context, raw []byte) error {

@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -27,7 +29,7 @@ func run(prog string, filename string) {
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
-	launchers = append(launchers, rdl)
+	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
 	// redis-lru
@@ -35,7 +37,7 @@ func run(prog string, filename string) {
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
-	launchers = append(launchers, rdlrul)
+	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
 	// nats
@@ -43,7 +45,7 @@ func run(prog string, filename string) {
 	nal := na.NewLauncher(nats.Namespaces{
 		Nats: "nats",
 	}, "nats")
-	launchers = append(launchers, nal)
+	launchers.Add(nal)
 	nax := natsx.NewService(&na)
 
 	// mux
@@ -51,14 +53,14 @@ func run(prog string, filename string) {
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
 	}, "server")
-	launchers = append(launchers, muxl)
+	launchers.Add(muxl)
 
 	// main app
 	a := app{}
 	al := a.NewLauncher(Namespaces{
 		App: "app",
 	}, "app")
-	launchers = append(launchers, al)
+	launchers.Add(al)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
@@ -75,9 +77,19 @@ func run(prog string, filename string) {
 	a.SyncMapper = rdx
 	a.TokenMapper = rdx
 
-	go a.Start()
 	log.Info().Msg("sync up")
-	select {}
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP)
+	for sig := range c {
+		switch sig {
+		case syscall.SIGHUP:
+			launchers.Down()
+			launchers.Up(filename)
+		case syscall.SIGINT:
+			launchers.Down()
+			return
+		}
+	}
 }
 
 func main() {

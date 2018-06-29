@@ -28,7 +28,7 @@ func run(prog string, filename string) {
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
-	launchers = append(launchers, rdl)
+	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
 	// redis-lru
@@ -36,7 +36,7 @@ func run(prog string, filename string) {
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
-	launchers = append(launchers, rdlrul)
+	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
 	// nats
@@ -44,7 +44,7 @@ func run(prog string, filename string) {
 	nal := na.NewLauncher(nats.Namespaces{
 		Nats: "nats",
 	}, "nats")
-	launchers = append(launchers, nal)
+	launchers.Add(nal)
 	nax := natsx.NewService(&na)
 
 	// main app
@@ -52,7 +52,7 @@ func run(prog string, filename string) {
 	al := a.NewLauncher(Namespaces{
 		App: "app",
 	}, "app")
-	launchers = append(launchers, al)
+	launchers.Add(al)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
@@ -76,15 +76,16 @@ func run(prog string, filename string) {
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 
-	go func() { a.Start() }()
 	log.Info().Msg("core up")
-
-	c := make(chan os.Signal, 0)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-	for {
-		select {
-		case _ = <-c:
-			a.Close()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP)
+	for sig := range c {
+		switch sig {
+		case syscall.SIGHUP:
+			launchers.Down()
+			launchers.Up(filename)
+		case syscall.SIGINT:
+			launchers.Down()
 			return
 		}
 	}

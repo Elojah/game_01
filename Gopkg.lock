@@ -35,7 +35,7 @@
   branch = "master"
   name = "github.com/elojah/services"
   packages = ["."]
-  revision = "d9930d97b9f832fd753fd538ee6d68db5b501b51"
+  revision = "29c33644ab1f500e3795419f30c9be8aa13cef7f"
 
 [[projects]]
   name = "github.com/go-redis/redis"

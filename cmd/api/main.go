@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -26,21 +28,21 @@ func run(prog string, filename string) {
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
-	launchers = append(launchers, rdl)
+	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
 	na := nats.Service{}
 	nal := na.NewLauncher(nats.Namespaces{
 		Nats: "nats",
 	}, "nats")
-	launchers = append(launchers, nal)
+	launchers.Add(nal)
 	nax := natsx.NewService(&na)
 
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
 	}, "server")
-	launchers = append(launchers, muxl)
+	launchers.Add(muxl)
 
 	h := handler{
 		M:           &m,
@@ -50,16 +52,27 @@ func run(prog string, filename string) {
 	hl := h.NewLauncher(Namespaces{
 		API: "api",
 	}, "api")
-	launchers = append(launchers, hl)
+	launchers.Add(hl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
 
-	m.Listen()
 	log.Info().Msg("api up")
-	select {}
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, syscall.SIGHUP)
+	for sig := range c {
+		switch sig {
+		case syscall.SIGHUP:
+			launchers.Down()
+			launchers.Up(filename)
+		case syscall.SIGINT:
+			launchers.Down()
+			return
+		}
+	}
 }
 
 func main() {

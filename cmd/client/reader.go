@@ -40,6 +40,7 @@ func (r *reader) Dial(cfg Config) error {
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
 		return err
 	}
+	go r.Start()
 	return nil
 }
 

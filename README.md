@@ -60,7 +60,7 @@
 - [x] Change EntitySubset key string into ID ID
 - [x] Add redis services for core and syncs ids apps
 - [x] Add redis service for initial positions.
-- [ ] Move all Start into Dial (for clean/up down)
+- [x] Move all Start into Dial (for clean/up down)
 - [ ] Add up/down mechanic
 - [ ] Save pool ID in listeners.
 - [ ] Add use cases for entity (create/delete) and token(create/delete)
