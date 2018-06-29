@@ -61,7 +61,7 @@
 - [x] Add redis services for core and syncs ids apps
 - [x] Add redis service for initial positions.
 - [x] Move all Start into Dial (for clean/up down)
-- [ ] Add up/down mechanic
+- [x] Add up/down mechanic
 - [ ] Save pool ID in listeners.
 - [ ] Add use cases for entity (create/delete) and token(create/delete)
 - [ ] Add server ack sending to client (and client resend)

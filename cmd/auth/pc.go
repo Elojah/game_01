@@ -15,6 +15,7 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/infra"
+	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
@@ -31,7 +32,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/pc/create").Logger()
 
-	// # Read body
+	// #Read body
 	var setPC dto.SetPC
 	if err := json.NewDecoder(r.Body).Decode(&setPC); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
@@ -39,7 +40,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// # Search message UUID in storage.
+	// #Search message UUID in storage.
 	token, err := h.GetToken(setPC.Token)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", setPC.Token.String()).Msg("packet rejected")
@@ -47,7 +48,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// # Match message UUID with source IP.
+	// #Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
@@ -86,7 +87,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// # Retrieve a random starter sector.
+	// #Retrieve a random starter sector.
 	start, err := h.GetRandomStarter(sector.StarterSubset{})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
@@ -133,7 +134,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/pc/list").Logger()
 
-	// # Read body
+	// #Read body
 	var listPC dto.ListPC
 	if err := json.NewDecoder(r.Body).Decode(&listPC); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
@@ -141,7 +142,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// # Search message UUID in storage.
+	// #Search message UUID in storage.
 	token, err := h.GetToken(listPC.Token)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", listPC.Token.String()).Msg("packet rejected")
@@ -149,7 +150,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// # Match message UUID with source IP.
+	// #Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
@@ -193,7 +194,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/pc/connect").Logger()
 
-	// # Read body
+	// #Read body
 	var connectPC dto.ConnectPC
 	if err := json.NewDecoder(r.Body).Decode(&connectPC); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
@@ -201,21 +202,21 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// # Search message UUID in storage.
+	// #Search message UUID in storage.
 	token, err := h.GetToken(connectPC.Token)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", connectPC.Token.String()).Msg("packet rejected")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "wrong token id", http.StatusBadRequest)
 		return
 	}
 
-	// # Match message UUID with source IP.
+	// #Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
 		err := account.ErrWrongIP
 		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "unrecognized ip", http.StatusBadRequest)
 		return
 	}
 
@@ -226,7 +227,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		logger.Error().Err(err).Str("account", token.Account.String()).Str("id", connectPC.Target.String()).Msg("failed to retrieve PC")
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "failed to connect", http.StatusBadRequest)
 		return
 	}
 
@@ -235,14 +236,25 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	entity.ID = ulid.NewID()
 	if err := h.EntityMapper.SetEntity(entity, time.Now().UnixNano()); err != nil {
 		logger.Error().Err(err).Str("id", entity.ID.String()).Msg("failed to create entity from PC")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
 	// #Add entity to PC sector.
 	if err := h.AddEntityToSector(entity.ID, pc.Position.SectorID); err != nil {
 		logger.Error().Err(err).Str("id", entity.ID.String()).Str("sector", pc.Position.SectorID.String()).Msg("failed to add entity to sector")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
+		return
+	}
+
+	// #Add permission token/entity.
+	if err := h.PermMapper.SetPermission(perm.P{
+		ID:     ulid.NewID(),
+		Source: token.ID.String(),
+		Target: entity.ID.String(),
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to create permissions")
+		http.Error(w, "failed to create permissions", http.StatusInternalServerError)
 		return
 	}
 
@@ -261,7 +273,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := h.SendListener(event.Listener{ID: entity.ID, Action: event.Open}, core.ID); err != nil {
 		logger.Error().Err(err).Str("core", core.ID.String()).Str("id", entity.ID.String()).Msg("failed to add listener to entity")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
@@ -277,6 +289,8 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
 		return
 	}
+
+	// #Creates a new recurrer for this token/entity.
 	if err := h.SendRecurrer(event.Recurrer{
 		ID:       ulid.NewID(),
 		EntityID: entity.ID,
@@ -284,7 +298,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		Action:   event.Open,
 	}, sync.ID); err != nil {
 		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", entity.ID.String()).Msg("failed to add sync for entity")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
@@ -292,7 +306,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	raw, err := json.Marshal(dto.Entity{ID: entity.ID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal response")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 

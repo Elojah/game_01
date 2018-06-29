@@ -6,9 +6,10 @@ import "github.com/elojah/game_01/pkg/ulid"
 type Listener struct {
 	ID     ulid.ID
 	Action QAction
+	Pool   ulid.ID
 }
 
 // QListenerMapper handles send/receive methods for listeners.
 type QListenerMapper interface {
-	SendListener(Listener, ulid.ID) error
+	SendListener(Listener) error
 }

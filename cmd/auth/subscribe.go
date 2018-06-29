@@ -23,7 +23,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/subscribe").Logger()
 
-	// # Read body
+	// #Read body
 	var a account.A
 	if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")

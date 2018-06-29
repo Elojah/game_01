@@ -39,24 +39,24 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
-	// # Unmarshal message.
+	// #Unmarshal message.
 	msg := dto.Message{}
 	if _, err := msg.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
 	}
 
-	// # Parse message UUID.
+	// #Parse message UUID.
 	tokenID := ulid.ID(msg.Token)
 
-	// # Search message UUID in storage.
+	// #Search message UUID in storage.
 	token, err := h.GetToken(tokenID)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", tokenID.String()).Msg("packet rejected")
 		return err
 	}
 
-	// # Match message UUID with source IP.
+	// #Match message UUID with source IP.
 	expected, _, _ := net.SplitHostPort(token.IP.String())
 	actual, _, _ := net.SplitHostPort(ctx.Value(mux.Key("addr")).(string))
 	if expected != actual {
@@ -75,7 +75,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 	go h.Send(raw, token.IP)
 
-	// # Check TS in tolerance range.
+	// #Check TS in tolerance range.
 	ts := time.Unix(0, msg.TS)
 	now := time.Now()
 	if ts.After(now) || now.Sub(ts) > h.tolerance {

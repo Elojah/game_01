@@ -22,21 +22,25 @@ type Token struct {
 	sector.EntitiesMapper
 }
 
-// DeleteToken closes a token and all entities/listener/sync associated.
-func (t Token) DeleteToken(id ulid.ID) error {
+// DisconnectToken closes a token and all entities/listener/sync associated.
+func (t Token) DisconnectToken(id ulid.ID) error {
 	logger := log.With().
 		Str("token", id.String()).
 		Str("action", "close").
 		Logger()
+
+	// #Close token listener
 	go func() {
-		// if err := t.SendListener(event.Listener{ID: id, Action: event.Close}); err != nil {
-		// 	logger.Error().Err(err).Msg("failed to close listener")
-		// }
+		if err := t.SendListener(event.Listener{Action: event.Close}, id); err != nil {
+			logger.Error().Err(err).Msg("failed to close listener")
+		}
 	}()
+
+	// #Close token recurrer
 	go func() {
-		// if err := t.SendRecurrer(event.Recurrer{ID: id, Action: event.Close}); err != nil {
-		// 	logger.Error().Err(err).Msg("failed to close recurrer")
-		// }
+		if err := t.SendRecurrer(event.Recurrer{Action: event.Close}, id); err != nil {
+			logger.Error().Err(err).Msg("failed to close recurrer")
+		}
 	}()
 	go func() {
 		if err := t.EntityMapper.DelEntity(entity.Subset{ID: id}); err != nil {

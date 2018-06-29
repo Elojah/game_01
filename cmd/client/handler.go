@@ -18,7 +18,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
-	// # Unmarshal entity.
+	// #Unmarshal entity.
 	var entity storage.Entity
 	if _, err := entity.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")

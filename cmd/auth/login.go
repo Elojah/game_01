@@ -25,7 +25,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 
 	logger := log.With().Str("route", "/login").Logger()
 
-	// # Read body
+	// #Read body
 	var accountPayload account.A
 	if err := json.NewDecoder(r.Body).Decode(&accountPayload); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")

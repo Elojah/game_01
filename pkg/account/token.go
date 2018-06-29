@@ -8,10 +8,12 @@ import (
 
 // Token represents a user connection. Creation is made by secure https only.
 type Token struct {
-	ID      ulid.ID      `json:"ID"`
-	IP      *net.UDPAddr `json:"-"`
-	Account ulid.ID      `json:"-"`
-	Ping    uint64       `json:"-"`
+	ID           ulid.ID      `json:"ID"`
+	IP           *net.UDPAddr `json:"-"`
+	Account      ulid.ID      `json:"-"`
+	Ping         uint64       `json:"-"`
+	ListenerPool ulid.ID      `json:"-"`
+	RecurrerPool ulid.ID      `json:"-"`
 }
 
 // TokenMapper is the service gate for Token resource.
