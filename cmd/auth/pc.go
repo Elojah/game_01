@@ -278,6 +278,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates a new synchronizer for this token/entity.
+	// Set a new recurrer for this token/entity.
 	sync, err := h.GetRandomSync(infra.SyncSubset{})
 	if err != nil {
 		if err == storage.ErrNotFound {
@@ -289,8 +290,6 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
 		return
 	}
-
-	// #Creates a new recurrer for this token/entity.
 	if err := h.SendRecurrer(event.Recurrer{
 		ID:       ulid.NewID(),
 		EntityID: entity.ID,
@@ -298,6 +297,15 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		Action:   event.Open,
 	}, sync.ID); err != nil {
 		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", entity.ID.String()).Msg("failed to add sync for entity")
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
+		return
+	}
+
+	// #Update token with pool informations.
+	token.CorePool = core.ID
+	token.SyncPool = sync.ID
+	if err := h.SetToken(token); err != nil {
+		logger.Error().Err(err).Str("token", token.ID.String()).Msg("failed to update token pools")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
