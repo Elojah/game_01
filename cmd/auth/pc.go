@@ -220,6 +220,12 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if token.Entity.Time() != 0 {
+		logger.Error().Str("entity", token.Entity.String()).Str("pc", token.PC.String()).Msg("packet rejected")
+		http.Error(w, "token already in use", http.StatusBadRequest)
+		return
+	}
+
 	// #Retrieve PC for this account.
 	pc, err := h.GetPC(entity.PCSubset{
 		AccountID: token.Account,
@@ -304,6 +310,8 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	// #Update token with pool informations.
 	token.CorePool = core.ID
 	token.SyncPool = sync.ID
+	token.PC = pc.ID
+	token.Entity = entity.ID
 	if err := h.SetToken(token); err != nil {
 		logger.Error().Err(err).Str("token", token.ID.String()).Msg("failed to update token pools")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
