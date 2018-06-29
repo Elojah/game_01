@@ -20,6 +20,7 @@ type Token struct {
 	CorePool [16]byte
 	SyncPool [16]byte
 	PC       [16]byte
+	Entity   [16]byte
 }
 
 func (d *Token) Size() (s uint64) {
@@ -41,6 +42,9 @@ func (d *Token) Size() (s uint64) {
 
 		}
 		s += l
+	}
+	{
+		s += 16
 	}
 	{
 		s += 16
@@ -126,6 +130,10 @@ func (d *Token) Marshal(buf []byte) ([]byte, error) {
 		copy(buf[i+8:], d.PC[:])
 		i += 16
 	}
+	{
+		copy(buf[i+8:], d.Entity[:])
+		i += 16
+	}
 	return buf[:i+8], nil
 }
 
@@ -175,6 +183,10 @@ func (d *Token) Unmarshal(buf []byte) (uint64, error) {
 	}
 	{
 		copy(d.PC[:], buf[i+8:])
+		i += 16
+	}
+	{
+		copy(d.Entity[:], buf[i+8:])
 		i += 16
 	}
 	return i + 8, nil

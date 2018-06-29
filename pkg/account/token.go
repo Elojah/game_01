@@ -17,6 +17,7 @@ type Token struct {
 	CorePool ulid.ID `json:"-"`
 	SyncPool ulid.ID `json:"-"`
 	PC       ulid.ID `json:"-"`
+	Entity   ulid.ID `json:"-"`
 }
 
 // TokenMapper is the service gate for Token resource.

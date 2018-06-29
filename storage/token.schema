@@ -6,4 +6,5 @@ struct Token {
 	CorePool	[16]byte
 	SyncPool	[16]byte
 	PC			[16]byte
+	Entity		[16]byte
 }

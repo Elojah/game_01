@@ -21,6 +21,7 @@ func (t *Token) Domain() (account.Token, error) {
 	token.CorePool = ulid.ID(t.CorePool)
 	token.SyncPool = ulid.ID(t.SyncPool)
 	token.PC = ulid.ID(t.PC)
+	token.Entity = ulid.ID(t.Entity)
 	return token, nil
 }
 
@@ -34,5 +35,6 @@ func NewToken(token account.Token) *Token {
 		CorePool: [16]byte(token.CorePool),
 		SyncPool: [16]byte(token.SyncPool),
 		PC:       [16]byte(token.PC),
+		Entity:   [16]byte(token.Entity),
 	}
 }
