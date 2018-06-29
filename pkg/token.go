@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"time"
+
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -15,6 +17,7 @@ type Token struct {
 	account.TokenMapper
 
 	EntityMapper entity.Mapper
+	entity.PCMapper
 
 	event.QRecurrerMapper
 	event.QListenerMapper
@@ -22,8 +25,8 @@ type Token struct {
 	sector.EntitiesMapper
 }
 
-// DisconnectToken closes a token and all entities/listener/sync associated.
-func (t Token) DisconnectToken(id ulid.ID) error {
+// Disconnect closes a token and all entities/listener/sync associated.
+func (t Token) Disconnect(id ulid.ID) error {
 	logger := log.With().
 		Str("token", id.String()).
 		Str("action", "close").
@@ -32,7 +35,25 @@ func (t Token) DisconnectToken(id ulid.ID) error {
 	// #Retrieve token
 	token, err := t.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to retrieve id")
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		return err
+	}
+
+	// #Retrieve entity
+	e, err := t.EntityMapper.GetEntity(entity.Subset{
+		ID:    token.Entity,
+		MaxTS: time.Now().UnixNano(),
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve entity")
+		return err
+	}
+
+	// #Save last entity state into PC
+	pc := entity.PC(e)
+	pc.ID = token.PC
+	if err := t.SetPC(pc, token.Account); err != nil {
+		logger.Error().Err(err).Msg("failed to save pc")
 		return err
 	}
 
@@ -49,10 +70,13 @@ func (t Token) DisconnectToken(id ulid.ID) error {
 			logger.Error().Err(err).Msg("failed to close recurrer")
 		}
 	}()
+
+	// #Delete pc entity
 	go func() {
-		if err := t.EntityMapper.DelEntity(entity.Subset{ID: id}); err != nil {
+		if err := t.EntityMapper.DelEntity(entity.Subset{ID: token.Entity}); err != nil {
 			logger.Error().Err(err).Msg("failed to delete entity")
 		}
 	}()
+
 	return nil
 }
