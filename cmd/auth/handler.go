@@ -8,7 +8,6 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 )
 
@@ -28,7 +27,7 @@ type handler struct {
 	infra.CoreMapper
 	infra.SyncMapper
 
-	PermMapper perm.Mapper
+	entity.PermissionMapper
 
 	sector.EntitiesMapper
 	sector.StarterMapper

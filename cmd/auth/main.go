@@ -59,7 +59,7 @@ func run(prog string, filename string) {
 	h.EntityMapper = rdlrux
 	h.PCLeftMapper = rdx
 	h.PCMapper = rdx
-	h.PermMapper = rdx
+	h.PermissionMapper = rdx
 	h.QListenerMapper = nax
 	h.QMapper = nax
 	h.QRecurrerMapper = nax

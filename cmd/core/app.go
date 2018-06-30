@@ -9,7 +9,6 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
@@ -32,7 +31,7 @@ type app struct {
 
 	infra.CoreMapper
 
-	PermissionMapper perm.Mapper
+	entity.PermissionMapper
 
 	sector.EntitiesMapper
 	SectorMapper sector.Mapper

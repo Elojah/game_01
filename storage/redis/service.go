@@ -6,7 +6,6 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/redis"
 )
@@ -21,7 +20,7 @@ var _ event.Mapper = (*Service)(nil)
 var _ entity.PCMapper = (*Service)(nil)
 var _ infra.CoreMapper = (*Service)(nil)
 var _ infra.SyncMapper = (*Service)(nil)
-var _ perm.Mapper = (*Service)(nil)
+var _ entity.PermissionMapper = (*Service)(nil)
 var _ sector.Mapper = (*Service)(nil)
 var _ sector.EntitiesMapper = (*Service)(nil)
 var _ sector.StarterMapper = (*Service)(nil)

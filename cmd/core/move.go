@@ -5,7 +5,6 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
@@ -37,7 +36,7 @@ func (a *app) MoveTarget(e event.E) error {
 	move := e.Action.(event.Move)
 
 	// #Check permission token/source.
-	permission, err := a.PermissionMapper.GetPermission(perm.Subset{
+	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
 		Source: e.Source.String(),
 		Target: move.Source.String(),
 	})
@@ -50,7 +49,7 @@ func (a *app) MoveTarget(e event.E) error {
 
 	// #Check permission source/target if source != target.
 	if move.Source != move.Target {
-		permission, err := a.PermissionMapper.GetPermission(perm.Subset{
+		permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
 			Source: move.Source.String(),
 			Target: move.Target.String(),
 		})

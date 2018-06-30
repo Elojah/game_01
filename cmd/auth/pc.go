@@ -15,7 +15,6 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
@@ -238,26 +237,26 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates entity cloned from pc.
-	entity := entity.E(pc)
-	entity.ID = ulid.NewID()
-	if err := h.EntityMapper.SetEntity(entity, time.Now().UnixNano()); err != nil {
-		logger.Error().Err(err).Str("id", entity.ID.String()).Msg("failed to create entity from PC")
+	e := entity.E(pc)
+	e.ID = ulid.NewID()
+	if err := h.EntityMapper.SetEntity(e, time.Now().UnixNano()); err != nil {
+		logger.Error().Err(err).Str("id", e.ID.String()).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
 	// #Add entity to PC sector.
-	if err := h.AddEntityToSector(entity.ID, pc.Position.SectorID); err != nil {
-		logger.Error().Err(err).Str("id", entity.ID.String()).Str("sector", pc.Position.SectorID.String()).Msg("failed to add entity to sector")
+	if err := h.AddEntityToSector(e.ID, pc.Position.SectorID); err != nil {
+		logger.Error().Err(err).Str("id", e.ID.String()).Str("sector", pc.Position.SectorID.String()).Msg("failed to add entity to sector")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
 	// #Add permission token/entity.
-	if err := h.PermMapper.SetPermission(perm.P{
+	if err := h.SetPermission(entity.Permission{
 		ID:     ulid.NewID(),
 		Source: token.ID.String(),
-		Target: entity.ID.String(),
+		Target: e.ID.String(),
 	}); err != nil {
 		logger.Error().Err(err).Msg("failed to create permissions")
 		http.Error(w, "failed to create permissions", http.StatusInternalServerError)
@@ -277,8 +276,8 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create listener", http.StatusInternalServerError)
 		return
 	}
-	if err := h.SendListener(event.Listener{ID: entity.ID, Action: event.Open}, core.ID); err != nil {
-		logger.Error().Err(err).Str("core", core.ID.String()).Str("id", entity.ID.String()).Msg("failed to add listener to entity")
+	if err := h.SendListener(event.Listener{ID: e.ID, Action: event.Open}, core.ID); err != nil {
+		logger.Error().Err(err).Str("core", core.ID.String()).Str("id", e.ID.String()).Msg("failed to add listener to entity")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
@@ -298,11 +297,11 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := h.SendRecurrer(event.Recurrer{
 		ID:       ulid.NewID(),
-		EntityID: entity.ID,
+		EntityID: e.ID,
 		TokenID:  token.ID,
 		Action:   event.Open,
 	}, sync.ID); err != nil {
-		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", entity.ID.String()).Msg("failed to add sync for entity")
+		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", e.ID.String()).Msg("failed to add sync for entity")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
@@ -311,7 +310,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	token.CorePool = core.ID
 	token.SyncPool = sync.ID
 	token.PC = pc.ID
-	token.Entity = entity.ID
+	token.Entity = e.ID
 	if err := h.SetToken(token); err != nil {
 		logger.Error().Err(err).Str("token", token.ID.String()).Msg("failed to update token pools")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
@@ -319,7 +318,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Marshal response
-	raw, err := json.Marshal(dto.Entity{ID: entity.ID})
+	raw, err := json.Marshal(dto.Entity{ID: e.ID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal response")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)

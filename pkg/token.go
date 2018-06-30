@@ -8,7 +8,6 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -23,7 +22,7 @@ type Token struct {
 	event.QRecurrerMapper
 	event.QListenerMapper
 
-	perm.Mapper
+	entity.PermissionMapper
 
 	sector.EntitiesMapper
 }
@@ -76,7 +75,7 @@ func (t Token) Disconnect(id ulid.ID) error {
 
 	// #Delete token permission on entity.
 	go func() {
-		if err := t.DelPermission(perm.Subset{
+		if err := t.DelPermission(entity.PermissionSubset{
 			Source: token.ID.String(),
 			Target: token.Entity.String(),
 		}); err != nil {

@@ -5,7 +5,6 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/perm"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
 )
@@ -25,7 +24,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
-	permission, err := a.PermissionMapper.GetPermission(perm.Subset{
+	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
 		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
@@ -58,7 +57,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
-	permission, err := a.PermissionMapper.GetPermission(perm.Subset{
+	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
 		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
