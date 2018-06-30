@@ -5,7 +5,9 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/token"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
@@ -14,7 +16,12 @@ type app struct {
 	account.TokenHCMapper
 	account.TokenMapper
 
-	entity.Mapper
+	EntityMapper entity.Mapper
+	entity.PCMapper
+	entity.PermissionMapper
+
+	event.QRecurrerMapper
+	event.QListenerMapper
 
 	sector.EntitiesMapper
 
@@ -41,9 +48,18 @@ func (a *app) Start() {
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
 	}
+	t := token.T{
+		TokenMapper:      a.TokenMapper,
+		EntityMapper:     a.EntityMapper,
+		PCMapper:         a.PCMapper,
+		QRecurrerMapper:  a.QRecurrerMapper,
+		QListenerMapper:  a.QListenerMapper,
+		PermissionMapper: a.PermissionMapper,
+		EntitiesMapper:   a.EntitiesMapper,
+	}
 	for _, tokenID := range tokenIDs {
 		go func(tokenID ulid.ID) {
-
+			t.Disconnect(tokenID)
 		}(tokenID)
 	}
 }

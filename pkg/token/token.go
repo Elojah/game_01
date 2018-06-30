@@ -1,4 +1,4 @@
-package pkg
+package token
 
 import (
 	"time"
@@ -12,8 +12,8 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// Token wraps use cases around token object.
-type Token struct {
+// T wraps use cases around token object.
+type T struct {
 	account.TokenMapper
 
 	EntityMapper entity.Mapper
@@ -28,7 +28,7 @@ type Token struct {
 }
 
 // Disconnect closes a token and all entities/listener/sync associated.
-func (t Token) Disconnect(id ulid.ID) error {
+func (t T) Disconnect(id ulid.ID) error {
 	logger := log.With().
 		Str("token", id.String()).
 		Str("action", "close").
