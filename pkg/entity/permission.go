@@ -14,6 +14,7 @@ type Permission struct {
 type PermissionMapper interface {
 	SetPermission(Permission) error
 	GetPermission(PermissionSubset) (Permission, error)
+	ListPermission(PermissionSubset) ([]Permission, error)
 	DelPermission(PermissionSubset) error
 }
 

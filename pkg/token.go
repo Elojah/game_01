@@ -41,6 +41,20 @@ func (t Token) Disconnect(id ulid.ID) error {
 		return err
 	}
 
+	// #Close token listener
+	go func() {
+		if err := t.SendListener(event.Listener{ID: token.ID, Action: event.Close}, token.CorePool); err != nil {
+			logger.Error().Err(err).Msg("failed to close listener")
+		}
+	}()
+
+	// #Close token recurrer
+	go func() {
+		if err := t.SendRecurrer(event.Recurrer{ID: token.ID, Action: event.Close}, token.SyncPool); err != nil {
+			logger.Error().Err(err).Msg("failed to close recurrer")
+		}
+	}()
+
 	// #Retrieve entity
 	e, err := t.EntityMapper.GetEntity(entity.Subset{
 		ID:    token.Entity,
@@ -59,36 +73,47 @@ func (t Token) Disconnect(id ulid.ID) error {
 		return err
 	}
 
-	// #Close token listener
-	go func() {
-		if err := t.SendListener(event.Listener{Action: event.Close}, token.CorePool); err != nil {
-			logger.Error().Err(err).Msg("failed to close listener")
-		}
-	}()
+	// #For each entity permission
+	permissions, err := t.ListPermission(entity.PermissionSubset{Source: token.ID.String()})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve permissions")
+		return err
+	}
+	for _, permission := range permissions {
 
-	// #Close token recurrer
-	go func() {
-		if err := t.SendRecurrer(event.Recurrer{Action: event.Close}, token.SyncPool); err != nil {
-			logger.Error().Err(err).Msg("failed to close recurrer")
-		}
-	}()
+		targetID := ulid.MustParse(permission.Target)
 
-	// #Delete token permission on entity.
-	go func() {
-		if err := t.DelPermission(entity.PermissionSubset{
-			Source: token.ID.String(),
-			Target: token.Entity.String(),
-		}); err != nil {
-			logger.Error().Err(err).Msg("failed to delete entity")
-		}
-	}()
+		// #Close entity listener
+		go func() {
+			if err := t.SendListener(event.Listener{ID: targetID, Action: event.Close}, token.CorePool); err != nil {
+				logger.Error().Err(err).Msg("failed to close listener")
+			}
+		}()
 
-	// #Delete pc entity
-	go func() {
-		if err := t.EntityMapper.DelEntity(entity.Subset{ID: token.Entity}); err != nil {
-			logger.Error().Err(err).Msg("failed to delete entity")
-		}
-	}()
+		// #Close entity recurrer
+		go func() {
+			if err := t.SendRecurrer(event.Recurrer{ID: targetID, Action: event.Close}, token.SyncPool); err != nil {
+				logger.Error().Err(err).Msg("failed to close recurrer")
+			}
+		}()
+
+		// #Delete token permission on entity.
+		go func() {
+			if err := t.DelPermission(entity.PermissionSubset{
+				Source: token.ID.String(),
+				Target: targetID.String(),
+			}); err != nil {
+				logger.Error().Err(err).Msg("failed to delete entity")
+			}
+		}()
+
+		// #Delete pc entity
+		go func() {
+			if err := t.EntityMapper.DelEntity(entity.Subset{ID: targetID}); err != nil {
+				logger.Error().Err(err).Msg("failed to delete entity")
+			}
+		}()
+	}
 
 	return nil
 }

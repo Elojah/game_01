@@ -2,6 +2,7 @@ package redis
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/go-redis/redis"
 
@@ -10,7 +11,7 @@ import (
 )
 
 const (
-	permissionKey = "permission:"
+	permissionKey = "perm_entity:"
 )
 
 // GetPermission implemented with redis.
@@ -40,4 +41,20 @@ func (s *Service) SetPermission(permission entity.Permission) error {
 // DelPermission implemented with redis.
 func (s *Service) DelPermission(subset entity.PermissionSubset) error {
 	return s.Del(permissionKey + subset.Source + ":" + subset.Target).Err()
+}
+
+// ListPermission list all entity permissions of a source.
+func (s *Service) ListPermission(subset entity.PermissionSubset) ([]entity.Permission, error) {
+	vals, err := s.Keys(permissionKey + subset.Source + ":*").Result()
+	if err != nil {
+		return nil, err
+	}
+	permissions := make([]entity.Permission, len(vals))
+	for i, val := range vals {
+		permissions[i] = entity.Permission{
+			Source: subset.Source,
+			Target: strings.Split(val, ":")[2],
+		}
+	}
+	return permissions, nil
 }
