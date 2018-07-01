@@ -19,6 +19,11 @@ type ConnectPC struct {
 	Target ulid.ID
 }
 
+// DisconnectPC represents the payload to disconnect a token.
+type DisconnectPC struct {
+	Token ulid.ID
+}
+
 // Entity represents the response when connecting to an existing PC.
 type Entity struct {
 	ID ulid.ID

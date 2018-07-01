@@ -10,6 +10,7 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
+	uce "github.com/elojah/game_01/pkg/usecase/entity"
 )
 
 // T wraps use cases around token object.
@@ -35,7 +36,7 @@ func (t T) Disconnect(id ulid.ID) error {
 		Logger()
 
 	// #Retrieve token
-	token, err := t.GetToken(account.TokenSubset{ID: id})
+	tok, err := t.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		return err
@@ -43,21 +44,21 @@ func (t T) Disconnect(id ulid.ID) error {
 
 	// #Close token listener
 	go func() {
-		if err := t.SendListener(event.Listener{ID: token.ID, Action: event.Close}, token.CorePool); err != nil {
+		if err := t.SendListener(event.Listener{ID: tok.ID, Action: event.Close}, tok.CorePool); err != nil {
 			logger.Error().Err(err).Msg("failed to close listener")
 		}
 	}()
 
 	// #Close token recurrer
 	go func() {
-		if err := t.SendRecurrer(event.Recurrer{ID: token.ID, Action: event.Close}, token.SyncPool); err != nil {
+		if err := t.SendRecurrer(event.Recurrer{ID: tok.ID, Action: event.Close}, tok.SyncPool); err != nil {
 			logger.Error().Err(err).Msg("failed to close recurrer")
 		}
 	}()
 
 	// #Retrieve entity
 	e, err := t.EntityMapper.GetEntity(entity.Subset{
-		ID:    token.Entity,
+		ID:    tok.Entity,
 		MaxTS: time.Now().UnixNano(),
 	})
 	if err != nil {
@@ -67,52 +68,30 @@ func (t T) Disconnect(id ulid.ID) error {
 
 	// #Save last entity state into PC
 	pc := entity.PC(e)
-	pc.ID = token.PC
-	if err := t.SetPC(pc, token.Account); err != nil {
+	pc.ID = tok.PC
+	if err := t.SetPC(pc, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to save pc")
 		return err
 	}
 
 	// #For each entity permission
-	permissions, err := t.ListPermission(entity.PermissionSubset{Source: token.ID.String()})
+	permissions, err := t.ListPermission(entity.PermissionSubset{Source: tok.ID.String()})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve permissions")
 		return err
 	}
+	ucentity := uce.E{
+		EntityMapper:     t.EntityMapper,
+		QRecurrerMapper:  t.QRecurrerMapper,
+		QListenerMapper:  t.QListenerMapper,
+		PermissionMapper: t.PermissionMapper,
+		EntitiesMapper:   t.EntitiesMapper,
+	}
 	for _, permission := range permissions {
-
 		targetID := ulid.MustParse(permission.Target)
-
-		// #Close entity listener
-		go func() {
-			if err := t.SendListener(event.Listener{ID: targetID, Action: event.Close}, token.CorePool); err != nil {
-				logger.Error().Err(err).Msg("failed to close listener")
-			}
-		}()
-
-		// #Close entity recurrer
-		go func() {
-			if err := t.SendRecurrer(event.Recurrer{ID: targetID, Action: event.Close}, token.SyncPool); err != nil {
-				logger.Error().Err(err).Msg("failed to close recurrer")
-			}
-		}()
-
-		// #Delete token permission on entity.
-		go func() {
-			if err := t.DelPermission(entity.PermissionSubset{
-				Source: token.ID.String(),
-				Target: targetID.String(),
-			}); err != nil {
-				logger.Error().Err(err).Msg("failed to delete entity")
-			}
-		}()
-
-		// #Delete pc entity
-		go func() {
-			if err := t.EntityMapper.DelEntity(entity.Subset{ID: targetID}); err != nil {
-				logger.Error().Err(err).Msg("failed to delete entity")
-			}
-		}()
+		if err := ucentity.Disconnect(targetID, tok); err != nil {
+			logger.Error().Err(err).Str("entity", targetID.String()).Msg("failed to disconnect entity")
+		}
 	}
 
 	return nil

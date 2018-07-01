@@ -7,8 +7,8 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/token"
 	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/elojah/game_01/pkg/usecase/token"
 	"github.com/rs/zerolog/log"
 )
 

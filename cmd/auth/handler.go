@@ -44,6 +44,7 @@ func (h *handler) Dial(c Config) error {
 	mux.HandleFunc("/pc/create", h.createPC)
 	mux.HandleFunc("/pc/list", h.listPC)
 	mux.HandleFunc("/pc/connect", h.connectPC)
+	mux.HandleFunc("/pc/disconnect", h.disconnectPC)
 	h.srv = &http.Server{
 		Addr:    c.Address,
 		Handler: mux,

@@ -17,6 +17,7 @@ import (
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/elojah/game_01/pkg/usecase/token"
 	"github.com/elojah/game_01/storage"
 )
 
@@ -142,7 +143,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(account.TokenSubset{ID: listPC.Token})
+	tok, err := h.GetToken(account.TokenSubset{ID: listPC.Token})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", listPC.Token.String()).Msg("packet rejected")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -150,7 +151,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(token.IP.String())
+	expected, _, _ := net.SplitHostPort(tok.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
 		err := account.ErrWrongIP
@@ -160,9 +161,9 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve PCs by account.
-	pcs, err := h.ListPC(entity.PCSubset{AccountID: token.Account})
+	pcs, err := h.ListPC(entity.PCSubset{AccountID: tok.Account})
 	if err != nil {
-		logger.Error().Err(err).Str("account", token.Account.String()).Msg("failed to retrieve PCs")
+		logger.Error().Err(err).Str("account", tok.Account.String()).Msg("failed to retrieve PCs")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -170,7 +171,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	// #Marshal results.
 	raw, err := json.Marshal(pcs)
 	if err != nil {
-		logger.Error().Err(err).Str("account", token.Account.String()).Msg("failed to marshal PCs")
+		logger.Error().Err(err).Str("account", tok.Account.String()).Msg("failed to marshal PCs")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -202,7 +203,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(account.TokenSubset{ID: connectPC.Token})
+	tok, err := h.GetToken(account.TokenSubset{ID: connectPC.Token})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", connectPC.Token.String()).Msg("packet rejected")
 		http.Error(w, "wrong token id", http.StatusBadRequest)
@@ -210,7 +211,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(token.IP.String())
+	expected, _, _ := net.SplitHostPort(tok.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
 		err := account.ErrWrongIP
@@ -219,19 +220,19 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if token.Entity.Time() != 0 {
-		logger.Error().Str("entity", token.Entity.String()).Str("pc", token.PC.String()).Msg("packet rejected")
+	if tok.Entity.Time() != 0 {
+		logger.Error().Str("entity", tok.Entity.String()).Str("pc", tok.PC.String()).Msg("packet rejected")
 		http.Error(w, "token already in use", http.StatusBadRequest)
 		return
 	}
 
 	// #Retrieve PC for this account.
 	pc, err := h.GetPC(entity.PCSubset{
-		AccountID: token.Account,
+		AccountID: tok.Account,
 		ID:        connectPC.Target,
 	})
 	if err != nil {
-		logger.Error().Err(err).Str("account", token.Account.String()).Str("id", connectPC.Target.String()).Msg("failed to retrieve PC")
+		logger.Error().Err(err).Str("account", tok.Account.String()).Str("id", connectPC.Target.String()).Msg("failed to retrieve PC")
 		http.Error(w, "failed to connect", http.StatusBadRequest)
 		return
 	}
@@ -255,7 +256,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	// #Add permission token/entity.
 	if err := h.SetPermission(entity.Permission{
 		ID:     ulid.NewID(),
-		Source: token.ID.String(),
+		Source: tok.ID.String(),
 		Target: e.ID.String(),
 	}); err != nil {
 		logger.Error().Err(err).Msg("failed to create permissions")
@@ -298,7 +299,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	if err := h.SendRecurrer(event.Recurrer{
 		ID:       ulid.NewID(),
 		EntityID: e.ID,
-		TokenID:  token.ID,
+		TokenID:  tok.ID,
 		Action:   event.Open,
 	}, sync.ID); err != nil {
 		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", e.ID.String()).Msg("failed to add sync for entity")
@@ -307,12 +308,12 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Update token with pool informations.
-	token.CorePool = core.ID
-	token.SyncPool = sync.ID
-	token.PC = pc.ID
-	token.Entity = e.ID
-	if err := h.SetToken(token); err != nil {
-		logger.Error().Err(err).Str("token", token.ID.String()).Msg("failed to update token pools")
+	tok.CorePool = core.ID
+	tok.SyncPool = sync.ID
+	tok.PC = pc.ID
+	tok.Entity = e.ID
+	if err := h.SetToken(tok); err != nil {
+		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to update token pools")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
@@ -328,4 +329,59 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	// #Write response
 	w.WriteHeader(http.StatusOK)
 	w.Write(raw)
+}
+
+// disconnectPC disconnects a PC.
+func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
+
+	switch r.Method {
+	case "POST":
+		// continue
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	logger := log.With().Str("route", "/pc/disconnect").Logger()
+
+	// #Read body
+	var disconnectPC dto.DisconnectPC
+	if err := json.NewDecoder(r.Body).Decode(&disconnectPC); err != nil {
+		logger.Error().Err(err).Msg("payload invalid")
+		http.Error(w, "payload invalid", http.StatusBadRequest)
+		return
+	}
+
+	// #Search message UUID in storage.
+	tok, err := h.GetToken(account.TokenSubset{ID: disconnectPC.Token})
+	if err != nil {
+		logger.Error().Err(err).Str("status", "unidentified").Str("token", disconnectPC.Token.String()).Msg("packet rejected")
+		http.Error(w, "wrong token id", http.StatusBadRequest)
+		return
+	}
+
+	// #Match message UUID with source IP.
+	expected, _, _ := net.SplitHostPort(tok.IP.String())
+	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
+	if expected != actual {
+		err := account.ErrWrongIP
+		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
+		http.Error(w, "unrecognized ip", http.StatusBadRequest)
+		return
+	}
+
+	t := token.T{
+		TokenMapper:      h.TokenMapper,
+		EntityMapper:     h.EntityMapper,
+		PCMapper:         h.PCMapper,
+		QRecurrerMapper:  h.QRecurrerMapper,
+		QListenerMapper:  h.QListenerMapper,
+		PermissionMapper: h.PermissionMapper,
+		EntitiesMapper:   h.EntitiesMapper,
+	}
+	if err := t.Disconnect(tok.ID); err != nil {
+		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to disconnect")
+		http.Error(w, "failed to disconnect", http.StatusInternalServerError)
+		return
+	}
 }
