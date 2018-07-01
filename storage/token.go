@@ -9,32 +9,32 @@ import (
 
 // Domain converts a storage token into a domain token.
 func (t *Token) Domain() (account.Token, error) {
-	var token account.Token
+	var tok account.Token
 	var err error
 
-	token.ID = ulid.ID(t.ID)
-	if token.IP, err = net.ResolveUDPAddr("udp", t.IP); err != nil {
-		return token, err
+	tok.ID = ulid.ID(t.ID)
+	if tok.IP, err = net.ResolveUDPAddr("udp", t.IP); err != nil {
+		return tok, err
 	}
-	token.Account = ulid.ID(t.Account)
-	token.Ping = t.Ping
-	token.CorePool = ulid.ID(t.CorePool)
-	token.SyncPool = ulid.ID(t.SyncPool)
-	token.PC = ulid.ID(t.PC)
-	token.Entity = ulid.ID(t.Entity)
-	return token, nil
+	tok.Account = ulid.ID(t.Account)
+	tok.Ping = t.Ping
+	tok.CorePool = ulid.ID(t.CorePool)
+	tok.SyncPool = ulid.ID(t.SyncPool)
+	tok.PC = ulid.ID(t.PC)
+	tok.Entity = ulid.ID(t.Entity)
+	return tok, nil
 }
 
 // NewToken converts a domain token into a storage token.
-func NewToken(token account.Token) *Token {
+func NewToken(tok account.Token) *Token {
 	return &Token{
-		ID:       [16]byte(token.ID),
-		IP:       token.IP.String(),
-		Account:  [16]byte(token.Account),
-		Ping:     token.Ping,
-		CorePool: [16]byte(token.CorePool),
-		SyncPool: [16]byte(token.SyncPool),
-		PC:       [16]byte(token.PC),
-		Entity:   [16]byte(token.Entity),
+		ID:       [16]byte(tok.ID),
+		IP:       tok.IP.String(),
+		Account:  [16]byte(tok.Account),
+		Ping:     tok.Ping,
+		CorePool: [16]byte(tok.CorePool),
+		SyncPool: [16]byte(tok.SyncPool),
+		PC:       [16]byte(tok.PC),
+		Entity:   [16]byte(tok.Entity),
 	}
 }

@@ -50,14 +50,14 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	tokenID := ulid.ID(msg.Token)
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(account.TokenSubset{ID: tokenID})
+	tok, err := h.GetToken(account.TokenSubset{ID: tokenID})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", tokenID.String()).Msg("packet rejected")
 		return err
 	}
 
 	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(token.IP.String())
+	expected, _, _ := net.SplitHostPort(tok.IP.String())
 	actual, _, _ := net.SplitHostPort(ctx.Value(mux.Key("addr")).(string))
 	if expected != actual {
 		err := account.ErrWrongIP
@@ -73,7 +73,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		logger.Error().Err(err).Str("status", "internal").Msg("failed to marshal ack")
 		return err
 	}
-	go h.Send(raw, token.IP)
+	go h.Send(raw, tok.IP)
 
 	// #Check TS in tolerance range.
 	ts := time.Unix(0, msg.TS)

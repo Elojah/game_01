@@ -41,7 +41,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search message UUID in storage.
-	token, err := h.GetToken(account.TokenSubset{ID: setPC.Token})
+	tok, err := h.GetToken(account.TokenSubset{ID: setPC.Token})
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", setPC.Token.String()).Msg("packet rejected")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -49,7 +49,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(token.IP.String())
+	expected, _, _ := net.SplitHostPort(tok.IP.String())
 	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
 	if expected != actual {
 		err := account.ErrWrongIP
@@ -59,7 +59,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Check user permission to create h new PC.
-	left, err := h.GetPCLeft(entity.PCLeftSubset{AccountID: token.Account})
+	left, err := h.GetPCLeft(entity.PCLeftSubset{AccountID: tok.Account})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -73,7 +73,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Decrease token permission to create h new PC by 1.
-	if err := h.SetPCLeft(left-1, token.Account); err != nil {
+	if err := h.SetPCLeft(left-1, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to decrease left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -113,7 +113,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := h.SetPC(pc, token.Account); err != nil {
+	if err := h.SetPC(pc, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

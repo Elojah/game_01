@@ -85,7 +85,7 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 		return
 	}
 
-	token, err := a.GetToken(account.TokenSubset{ID: recurrer.TokenID})
+	tok, err := a.GetToken(account.TokenSubset{ID: recurrer.TokenID})
 	if err != nil {
 		logger.Error().Err(err).
 			Str("id", recurrer.TokenID.String()).
@@ -100,8 +100,8 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 			logger.Error().Err(err).Msg("failed to retrieve marshal entity")
 			return
 		}
-		logger.Info().Str("entity", e.ID.String()).Str("ip", token.IP.String()).Msg("send entity to ip")
-		a.Send(raw, token.IP)
+		logger.Info().Str("entity", e.ID.String()).Str("ip", tok.IP.String()).Msg("send entity to ip")
+		a.Send(raw, tok.IP)
 	})
 	rec.EntityMapper = a.EntityMapper
 	rec.EntitiesMapper = a.EntitiesMapper
@@ -112,6 +112,6 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 	logger.Info().
 		Str("recurrer", recurrer.ID.String()).
 		Str("entity", recurrer.EntityID.String()).
-		Str("ip", token.IP.String()).
+		Str("ip", tok.IP.String()).
 		Msg("synchronizing")
 }
