@@ -44,7 +44,7 @@ func (e E) Disconnect(id ulid.ID, tok account.Token) error {
 	}
 
 	// #Close entity recurrer
-	if err := e.SendRecurrer(event.Recurrer{ID: id, Action: event.Close}, tok.SyncPool); err != nil {
+	if err := e.PublishRecurrer(event.Recurrer{ID: id, Action: event.Close}, tok.SyncPool); err != nil {
 		logger.Error().Err(err).Msg("failed to close recurrer")
 		return err
 	}

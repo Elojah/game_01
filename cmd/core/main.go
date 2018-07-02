@@ -9,9 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -39,14 +37,6 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
-	// nats
-	na := nats.Service{}
-	nal := na.NewLauncher(nats.Namespaces{
-		Nats: "nats",
-	}, "nats")
-	launchers.Add(nal)
-	nax := natsx.NewService(&na)
-
 	// main app
 	a := app{}
 	al := a.NewLauncher(Namespaces{
@@ -59,8 +49,6 @@ func run(prog string, filename string) {
 		return
 	}
 
-	na.Flush()
-
 	a.AbilityMapper = rdx
 	a.AbilityTemplateMapper = rdx
 	a.CoreMapper = rdx
@@ -70,10 +58,9 @@ func run(prog string, filename string) {
 	a.EventMapper = rdx
 	a.FeedbackMapper = rdx
 	a.PermissionMapper = rdx
-	a.QListenerMapper = nax
+	a.QListenerMapper = rdx
 	a.QMapper = rdx
 	a.SectorMapper = rdx
-	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
 
 	log.Info().Msg("core up")

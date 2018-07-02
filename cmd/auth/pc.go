@@ -296,7 +296,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
 		return
 	}
-	if err := h.SendRecurrer(event.Recurrer{
+	if err := h.PublishRecurrer(event.Recurrer{
 		ID:       ulid.NewID(),
 		EntityID: e.ID,
 		TokenID:  tok.ID,

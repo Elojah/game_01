@@ -6,8 +6,8 @@ import (
 )
 
 // NewListener converts a domain listener to a storage listener.
-func NewListener(listener event.Listener) Listener {
-	return Listener{
+func NewListener(listener event.Listener) *Listener {
+	return &Listener{
 		ID:     [16]byte(listener.ID),
 		Action: uint8(listener.Action),
 	}

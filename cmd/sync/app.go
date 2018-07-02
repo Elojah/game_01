@@ -1,7 +1,6 @@
 package main
 
 import (
-	nats "github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -21,7 +20,6 @@ type app struct {
 
 	event.QMapper
 	event.QRecurrerMapper
-	event.SubscriptionMapper
 
 	infra.SyncMapper
 
@@ -48,12 +46,13 @@ func (a *app) Dial(c Config) error {
 func (a *app) Start() {
 	logger := log.With().Str("sync", a.id.String()).Logger()
 
-	sub, err := a.SetSubscription(a.id.String(), a.AddRecurrer)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to sub")
-		return
-	}
-	a.sub = sub
+	a.sub = a.SubscribeRecurrer(a.id)
+	go func() {
+		for msg := range a.sub.Channel() {
+			go a.AddRecurrer(msg)
+		}
+	}()
+
 	a.recurrers = make(map[ulid.ID]*Recurrer)
 
 	if err := a.SetSync(infra.Sync{ID: a.id}); err != nil {
@@ -69,11 +68,11 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) AddRecurrer(msg *nats.Msg) {
+func (a *app) AddRecurrer(msg *event.Message) {
 	logger := log.With().Str("sync", a.id.String()).Logger()
 
 	var recurrerS storage.Recurrer
-	if _, err := recurrerS.Unmarshal(msg.Data); err != nil {
+	if _, err := recurrerS.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal recurrer")
 		return
 	}

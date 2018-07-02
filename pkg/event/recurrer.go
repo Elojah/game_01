@@ -12,5 +12,6 @@ type Recurrer struct {
 
 // QRecurrerMapper handles send/receive methods for recurrers.
 type QRecurrerMapper interface {
-	SendRecurrer(Recurrer, ulid.ID) error
+	PublishRecurrer(Recurrer, ulid.ID) error
+	SubscribeRecurrer(ulid.ID) *Subscription
 }

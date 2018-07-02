@@ -51,7 +51,7 @@ func (t T) Disconnect(id ulid.ID) error {
 
 	// #Close token recurrer
 	go func() {
-		if err := t.SendRecurrer(event.Recurrer{ID: tok.ID, Action: event.Close}, tok.SyncPool); err != nil {
+		if err := t.PublishRecurrer(event.Recurrer{ID: tok.ID, Action: event.Close}, tok.SyncPool); err != nil {
 			logger.Error().Err(err).Msg("failed to close recurrer")
 		}
 	}()

@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	nats "github.com/nats-io/go-nats"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
@@ -91,8 +90,8 @@ func TestSequencer(t *testing.T) {
 
 		raw, err := storage.NewEvent(eset[0]).Marshal(nil)
 		assert.NoError(t, err)
-		msg := &nats.Msg{Data: raw}
-		seq.MsgHandler(msg)
+		msg := &event.Message{Payload: string(raw)}
+		seq.Handler(msg)
 		wg.Wait()
 		seq.Close()
 	})
@@ -124,13 +123,13 @@ func TestSequencer(t *testing.T) {
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
-		msg1 := &nats.Msg{Data: raw1}
-		seq.MsgHandler(msg1)
+		msg1 := &event.Message{Payload: string(raw1)}
+		seq.Handler(msg1)
 
 		raw0, err := storage.NewEvent(eset[0]).Marshal(nil)
 		assert.NoError(t, err)
-		msg0 := &nats.Msg{Data: raw0}
-		seq.MsgHandler(msg0)
+		msg0 := &event.Message{Payload: string(raw0)}
+		seq.Handler(msg0)
 
 		wg.Wait()
 
@@ -168,13 +167,13 @@ func TestSequencer(t *testing.T) {
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
-		msg1 := &nats.Msg{Data: raw1}
-		seq.MsgHandler(msg1)
+		msg1 := &event.Message{Payload: string(raw1)}
+		seq.Handler(msg1)
 
 		raw2, err := storage.NewEvent(eset[2]).Marshal(nil)
 		assert.NoError(t, err)
-		msg2 := &nats.Msg{Data: raw2}
-		seq.MsgHandler(msg2)
+		msg2 := &event.Message{Payload: string(raw2)}
+		seq.Handler(msg2)
 
 		wg.Wait()
 
@@ -213,15 +212,15 @@ func TestSequencer(t *testing.T) {
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
-		msg1 := &nats.Msg{Data: raw1}
-		seq.MsgHandler(msg1)
+		msg1 := &event.Message{Payload: string(raw1)}
+		seq.Handler(msg1)
 
 		time.Sleep(10*time.Millisecond + 1*time.Nanosecond)
 
 		raw2, err := storage.NewEvent(eset[2]).Marshal(nil)
 		assert.NoError(t, err)
-		msg2 := &nats.Msg{Data: raw2}
-		seq.MsgHandler(msg2)
+		msg2 := &event.Message{Payload: string(raw2)}
+		seq.Handler(msg2)
 
 		wg.Wait()
 

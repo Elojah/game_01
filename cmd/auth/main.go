@@ -9,9 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -39,13 +37,6 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
-	na := nats.Service{}
-	nal := na.NewLauncher(nats.Namespaces{
-		Nats: "nats",
-	}, "nats")
-	launchers.Add(nal)
-	nax := natsx.NewService(&na)
-
 	// handler (https server)
 	h := handler{}
 	hl := h.NewLauncher(Namespaces{
@@ -60,9 +51,9 @@ func run(prog string, filename string) {
 	h.PCLeftMapper = rdx
 	h.PCMapper = rdx
 	h.PermissionMapper = rdx
-	h.QListenerMapper = nax
-	h.QMapper = nax
-	h.QRecurrerMapper = nax
+	h.QListenerMapper = rdx
+	h.QMapper = rdx
+	h.QRecurrerMapper = rdx
 	h.SectorMapper = rdx
 	h.StarterMapper = rdx
 	h.SyncMapper = rdx

@@ -6,8 +6,8 @@ import (
 )
 
 // NewRecurrer converts a domain recurrer to a storage recurrer.
-func NewRecurrer(recurrer event.Recurrer) Recurrer {
-	return Recurrer{
+func NewRecurrer(recurrer event.Recurrer) *Recurrer {
+	return &Recurrer{
 		ID:       [16]byte(recurrer.ID),
 		EntityID: [16]byte(recurrer.EntityID),
 		TokenID:  [16]byte(recurrer.TokenID),

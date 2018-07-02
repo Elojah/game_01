@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/nats-io/go-nats"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -134,10 +133,10 @@ func (s *Sequencer) Start() {
 	go s.listenProcess()
 }
 
-// MsgHandler is the consumer function to subscribe for event ordering.
-func (s *Sequencer) MsgHandler(msg *nats.Msg) {
+// Handler is the consumer function to subscribe for event ordering.
+func (s *Sequencer) Handler(msg *event.Message) {
 	var eventS storage.Event
-	if _, err := eventS.Unmarshal(msg.Data); err != nil {
+	if _, err := eventS.Unmarshal([]byte(msg.Payload)); err != nil {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}
