@@ -44,7 +44,7 @@ func (t T) Disconnect(id ulid.ID) error {
 
 	// #Close token listener
 	go func() {
-		if err := t.SendListener(event.Listener{ID: tok.ID, Action: event.Close}, tok.CorePool); err != nil {
+		if err := t.PublishListener(event.Listener{ID: tok.ID, Action: event.Close}, tok.CorePool); err != nil {
 			logger.Error().Err(err).Msg("failed to close listener")
 		}
 	}()

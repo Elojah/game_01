@@ -83,7 +83,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create listener", http.StatusInternalServerError)
 		return
 	}
-	if err := h.SendListener(event.Listener{ID: token.ID, Action: event.Open}, core.ID); err != nil {
+	if err := h.PublishListener(event.Listener{ID: token.ID, Action: event.Open}, core.ID); err != nil {
 		logger.Error().Err(err).Str("core", core.ID.String()).Str("token", token.ID.String()).Msg("failed to add listener to token")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

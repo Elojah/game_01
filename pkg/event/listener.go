@@ -11,5 +11,5 @@ type Listener struct {
 
 // QListenerMapper handles send/receive methods for listeners.
 type QListenerMapper interface {
-	SendListener(Listener, ulid.ID) error
+	PublishListener(Listener, ulid.ID) error
 }

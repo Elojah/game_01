@@ -277,7 +277,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to create listener", http.StatusInternalServerError)
 		return
 	}
-	if err := h.SendListener(event.Listener{ID: e.ID, Action: event.Open}, core.ID); err != nil {
+	if err := h.PublishListener(event.Listener{ID: e.ID, Action: event.Open}, core.ID); err != nil {
 		logger.Error().Err(err).Str("core", core.ID.String()).Str("id", e.ID.String()).Msg("failed to add listener to entity")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return

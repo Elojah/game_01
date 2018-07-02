@@ -6,8 +6,8 @@ import (
 	"github.com/elojah/game_01/storage"
 )
 
-// SendListener implemented by NATS queue messaging.
-func (s *Service) SendListener(listener event.Listener, target ulid.ID) error {
+// PublishListener implemented by NATS queue messaging.
+func (s *Service) PublishListener(listener event.Listener, target ulid.ID) error {
 	l := storage.NewListener(listener)
 	raw, err := l.Marshal(nil)
 	if err != nil {

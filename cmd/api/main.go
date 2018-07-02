@@ -9,10 +9,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	natsx "github.com/elojah/game_01/storage/nats"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/mux"
-	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -31,13 +29,6 @@ func run(prog string, filename string) {
 	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
-	na := nats.Service{}
-	nal := na.NewLauncher(nats.Namespaces{
-		Nats: "nats",
-	}, "nats")
-	launchers.Add(nal)
-	nax := natsx.NewService(&na)
-
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
@@ -46,7 +37,7 @@ func run(prog string, filename string) {
 
 	h := handler{
 		M:           &m,
-		QMapper:     nax,
+		QMapper:     rdx,
 		TokenMapper: rdx,
 	}
 	hl := h.NewLauncher(Namespaces{

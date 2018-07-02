@@ -94,7 +94,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 	if err := a.FeedbackMapper.SetAbilityFeedback(afb); err != nil {
 		return err
 	}
-	return a.SendEvent(event.E{
+	return a.PublishEvent(event.E{
 		ID:     ulid.NewID(),
 		TS:     e.TS,
 		Source: e.Source,

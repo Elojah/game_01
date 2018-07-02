@@ -5,7 +5,6 @@ import (
 	"github.com/elojah/nats"
 )
 
-var _ event.QMapper = (*Service)(nil)
 var _ event.QListenerMapper = (*Service)(nil)
 var _ event.QRecurrerMapper = (*Service)(nil)
 var _ event.SubscriptionMapper = (*Service)(nil)

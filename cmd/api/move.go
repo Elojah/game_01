@@ -32,13 +32,13 @@ func (h *handler) move(ctx context.Context, msg dto.Message) error {
 	}
 
 	go func() {
-		if err := h.SendEvent(e, source); err != nil {
+		if err := h.PublishEvent(e, source); err != nil {
 			logger.Error().Err(err).Str("event", e.ID.String()).Msg("event rejected")
 		}
 	}()
 
 	go func() {
-		if err := h.SendEvent(e, target); err != nil {
+		if err := h.PublishEvent(e, target); err != nil {
 			logger.Error().Err(err).Str("event", e.ID.String()).Msg("event rejected")
 		}
 	}()

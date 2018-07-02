@@ -38,7 +38,7 @@ func (e E) Disconnect(id ulid.ID, tok account.Token) error {
 	}
 
 	// #Close entity listener
-	if err := e.SendListener(event.Listener{ID: id, Action: event.Close}, tok.CorePool); err != nil {
+	if err := e.PublishListener(event.Listener{ID: id, Action: event.Close}, tok.CorePool); err != nil {
 		logger.Error().Err(err).Msg("failed to close listener")
 		return err
 	}

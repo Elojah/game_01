@@ -71,7 +71,7 @@ func run(prog string, filename string) {
 	a.FeedbackMapper = rdx
 	a.PermissionMapper = rdx
 	a.QListenerMapper = nax
-	a.QMapper = nax
+	a.QMapper = rdx
 	a.SectorMapper = rdx
 	a.SubscriptionMapper = nax
 	a.TokenMapper = rdx
