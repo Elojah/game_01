@@ -16,6 +16,7 @@ import (
 
 type handler struct {
 	*mux.M
+	*mux.Client
 
 	event.QMapper
 
@@ -32,7 +33,10 @@ func (h *handler) Dial(c Config) error {
 }
 
 func (h *handler) Close() error {
-	return h.M.Close()
+	if err := h.M.Close(); err != nil {
+		return err
+	}
+	return h.Client.Close()
 }
 
 func (h *handler) handle(ctx context.Context, raw []byte) error {

@@ -16,7 +16,7 @@ import (
 )
 
 type reader struct {
-	*mux.M
+	*mux.Client
 
 	logger zerolog.Logger
 	*bufio.Scanner
@@ -25,9 +25,9 @@ type reader struct {
 	addr  net.Addr
 }
 
-func newReader(m *mux.M) *reader {
+func newReader(c *mux.Client) *reader {
 	return &reader{
-		M:       m,
+		Client:  c,
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 	}

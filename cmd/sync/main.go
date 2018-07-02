@@ -38,12 +38,12 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
-	// mux
-	m := mux.M{}
-	muxl := m.NewLauncher(mux.Namespaces{
-		M: "server",
-	}, "server")
-	launchers.Add(muxl)
+	// client
+	c := mux.Client{}
+	cl := c.NewLauncher(mux.ClientNamespaces{
+		Client: "client",
+	}, "client")
+	launchers.Add(cl)
 
 	// main app
 	a := app{}
@@ -57,7 +57,7 @@ func run(prog string, filename string) {
 		return
 	}
 
-	a.M = &m
+	a.Client = &c
 	a.EntityMapper = rdlrux
 	a.QMapper = rdx
 	a.QRecurrerMapper = rdx
@@ -67,9 +67,9 @@ func run(prog string, filename string) {
 	a.TokenMapper = rdx
 
 	log.Info().Msg("sync up")
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGHUP)
-	for sig := range c {
+	cs := make(chan os.Signal, 1)
+	signal.Notify(cs, syscall.SIGHUP)
+	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
 			launchers.Down()

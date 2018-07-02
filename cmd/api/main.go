@@ -35,8 +35,15 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers.Add(muxl)
 
+	c := mux.Client{}
+	cl := c.NewLauncher(mux.ClientNamespaces{
+		Client: "client",
+	}, "client")
+	launchers.Add(cl)
+
 	h := handler{
 		M:           &m,
+		Client:      &c,
 		QMapper:     rdx,
 		TokenMapper: rdx,
 	}
@@ -52,9 +59,9 @@ func run(prog string, filename string) {
 
 	log.Info().Msg("api up")
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGHUP)
-	for sig := range c {
+	cs := make(chan os.Signal, 1)
+	signal.Notify(cs, syscall.SIGHUP)
+	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
 			launchers.Down()

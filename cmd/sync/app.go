@@ -26,7 +26,7 @@ type app struct {
 	sector.EntitiesMapper
 	SectorMapper sector.Mapper
 
-	*mux.M
+	*mux.Client
 
 	id ulid.ID
 

@@ -18,11 +18,5 @@
 		"addr": "127.0.0.1:6380",
 		"password": "secret",
 		"db": 0
-	},
-	"nats": {
-		"address": "nats://127.0.0.1:4222",
-		"max_reconnect": 3,
-		"reconnect_wait": "2s",
-		"timeout": "1s"
 	}
 }

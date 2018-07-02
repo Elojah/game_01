@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/elojah/mux"
   packages = ["."]
-  revision = "b5ea6ef2c634a243d7d43a4dd20bbd7bfdabf1bd"
+  revision = "d1e72d905f41f6da8711c7d17b122d16c0e2b409"
 
 [[projects]]
   branch = "master"

@@ -26,7 +26,13 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers.Add(muxl)
 
-	rd := newReader(&m)
+	c := mux.Client{}
+	cl := c.NewLauncher(mux.ClientNamespaces{
+		Client: "client",
+	}, "client")
+	launchers.Add(cl)
+
+	rd := newReader(&c)
 	rdl := rd.NewLauncher(Namespaces{
 		App: "app",
 	}, "app")
@@ -38,9 +44,9 @@ func run(prog string, filename string) {
 	}
 
 	log.Info().Msg("client up")
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGHUP)
-	for sig := range c {
+	cs := make(chan os.Signal, 1)
+	signal.Notify(cs, syscall.SIGHUP)
+	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
 			launchers.Down()
