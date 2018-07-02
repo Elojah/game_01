@@ -21,12 +21,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/elojah/nats"
-  packages = ["."]
-  revision = "e9958c1d6736e17a391d7593661b44bcfc48d1c5"
-
-[[projects]]
-  branch = "master"
   name = "github.com/elojah/redis"
   packages = ["."]
   revision = "9ee006744ab567119468fcf2993f53a9cf0fb50e"
@@ -51,22 +45,6 @@
   ]
   revision = "83fb42932f6145ce52df09860384a4653d2d332a"
   version = "v6.12.0"
-
-[[projects]]
-  name = "github.com/nats-io/go-nats"
-  packages = [
-    ".",
-    "encoders/builtin",
-    "util"
-  ]
-  revision = "062418ea1c2181f52dc0f954f6204370519a868b"
-  version = "v1.5.0"
-
-[[projects]]
-  name = "github.com/nats-io/nuid"
-  packages = ["."]
-  revision = "289cccf02c178dc782430d534e3c1f5b72af807f"
-  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/oklog/ulid"
@@ -100,6 +78,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "826ef39edb895a632425bb34be3c901e2081d0226ef8fa7f5114c6e000440c16"
+  inputs-digest = "d555691aafbc6687019424598fe775954f4615868dbf051318092bc5a391b431"
   solver-name = "gps-cdcl"
   solver-version = 1

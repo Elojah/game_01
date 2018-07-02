@@ -16,10 +16,3 @@ services:
       - ./docker/redis/redis-lru.conf:/usr/local/etc/redis/redis.conf
     ports:
       - 6380:6380
-
-  # NATS
-  nats:
-    image: nats
-    ports:
-      - 4222:4222
-      - 8222:8222

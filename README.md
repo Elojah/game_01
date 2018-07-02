@@ -65,8 +65,8 @@
 - [x] Save pool ID in token.
 - [x] Save PC + Delete all token-associated data.
 - [x] Add use cases for entity (create/delete) and token(create/delete)
+- [x] Switch nats to redis pub/sub
 - [ ] Add CorePool for entities
-- [ ] Switch nats to redis pub/sub
 - [ ] Add server ack sending to client (and client resend)
 - [ ] Add minimal graphic interface to client (minimal calls and print entity states)
 - [ ] Implement tool to generate/check/visualize sectors and entity movements
