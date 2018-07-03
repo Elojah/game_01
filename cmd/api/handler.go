@@ -12,11 +12,12 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
+	"github.com/elojah/mux/client"
 )
 
 type handler struct {
 	*mux.M
-	*mux.Client
+	*client.C
 
 	event.QMapper
 
@@ -36,7 +37,7 @@ func (h *handler) Close() error {
 	if err := h.M.Close(); err != nil {
 		return err
 	}
-	return h.Client.Close()
+	return h.C.Close()
 }
 
 func (h *handler) handle(ctx context.Context, raw []byte) error {

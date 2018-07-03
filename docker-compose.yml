@@ -15,4 +15,4 @@ services:
     volumes:
       - ./docker/redis/redis-lru.conf:/usr/local/etc/redis/redis.conf
     ports:
-      - 6380:6380
+      - 6380:6379

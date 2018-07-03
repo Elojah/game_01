@@ -16,8 +16,11 @@
 [[projects]]
   branch = "master"
   name = "github.com/elojah/mux"
-  packages = ["."]
-  revision = "d1e72d905f41f6da8711c7d17b122d16c0e2b409"
+  packages = [
+    ".",
+    "client"
+  ]
+  revision = "5b6d44854550ecdf3611a01f4aa8ada9080fc23e"
 
 [[projects]]
   branch = "master"
@@ -78,6 +81,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d555691aafbc6687019424598fe775954f4615868dbf051318092bc5a391b431"
+  inputs-digest = "0c556777d5ddc2499d940516738558103255bc01730265878a07b1ebbab5d0d0"
   solver-name = "gps-cdcl"
   solver-version = 1

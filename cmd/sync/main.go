@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/mux"
+	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -39,8 +39,8 @@ func run(prog string, filename string) {
 	rdlrux := redisx.NewService(&rdlru)
 
 	// client
-	c := mux.Client{}
-	cl := c.NewLauncher(mux.ClientNamespaces{
+	c := client.C{}
+	cl := c.NewLauncher(client.Namespaces{
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)
@@ -57,7 +57,7 @@ func run(prog string, filename string) {
 		return
 	}
 
-	a.Client = &c
+	a.C = &c
 	a.EntityMapper = rdlrux
 	a.QMapper = rdx
 	a.QRecurrerMapper = rdx

@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/mux"
+	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
 )
 
@@ -26,8 +27,8 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers.Add(muxl)
 
-	c := mux.Client{}
-	cl := c.NewLauncher(mux.ClientNamespaces{
+	c := client.C{}
+	cl := c.NewLauncher(client.Namespaces{
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)

@@ -12,11 +12,11 @@ import (
 
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/mux"
+	"github.com/elojah/mux/client"
 )
 
 type reader struct {
-	*mux.Client
+	*client.C
 
 	logger zerolog.Logger
 	*bufio.Scanner
@@ -25,9 +25,9 @@ type reader struct {
 	addr  net.Addr
 }
 
-func newReader(c *mux.Client) *reader {
+func newReader(c *client.C) *reader {
 	return &reader{
-		Client:  c,
+		C:       c,
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 	}
