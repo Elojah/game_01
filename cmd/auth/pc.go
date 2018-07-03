@@ -90,7 +90,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	// #Retrieve a random starter sector.
 	start, err := h.GetRandomStarter(sector.StarterSubset{})
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to retrieve starter sector")
+		logger.Error().Err(err).Msg("failed to pick random starter")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

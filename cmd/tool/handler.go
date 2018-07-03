@@ -30,15 +30,15 @@ type handler struct {
 func (h *handler) Dial(c Config) error {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/ability", h.ability)
-	mux.HandleFunc("/entity", h.entity)
-	mux.HandleFunc("/sector", h.sector)
-
 	mux.HandleFunc("/ability/template", h.abilityTemplate)
 	mux.HandleFunc("/entity/template", h.entityTemplate)
 
 	mux.HandleFunc("/sector/entities", h.sectorEntities)
-	mux.HandleFunc("/sector/starters", h.sectorStarters)
+	mux.HandleFunc("/sector/starter", h.sectorStarter)
+
+	mux.HandleFunc("/ability", h.ability)
+	mux.HandleFunc("/entity", h.entity)
+	mux.HandleFunc("/sector", h.sector)
 
 	h.srv = &http.Server{
 		Addr:    c.Address,

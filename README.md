@@ -15,22 +15,23 @@
 // Fill static data
 > curl -k -X POST https://127.0.0.1:8081/entity/template -d @templates/entity_templates.json
 > curl -k -X POST https://127.0.0.1:8081/sector -d @templates/sector.json
+> curl -k -X POST https://127.0.0.1:8081/sector/starter -d @templates/sector_starter.json
 
 // Obtain access token
 > curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
 > curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
-{"ID":"01CHG4NR8HPA4BD7DRKGK50PE4"}
-> curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHG4NR8HPA4BD7DRKGK50PE4","type":"01CE3J5ASXJSVC405QTES4M221"}'
+{"ID":"01CHG96N2V2BX461AJXN43529X"}
+> curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHG96N2V2BX461AJXN43529X","type":"01CE3J5ASXJSVC405QTES4M221"}'
 // Token is token obtained at login and type is an entity ID described in templates/entity_templates.json.
-> curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHG4NR8HPA4BD7DRKGK50PE4"}'
-[{"id":"01CGH6VKAKN4BQRQWF5NX6ZNS2","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHG4NR8HPA4BD7DRKGK50PE4","target":"01CGH6VKAKN4BQRQWF5NX6ZNS2"}'
+> curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHG96N2V2BX461AJXN43529X"}'
+[{"id":"01CHG6HM06J495RKSEDCZQ3916","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
+> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHG96N2V2BX461AJXN43529X","target":"01CHG6HM06J495RKSEDCZQ3916"}'
 {"ID":"01CGH399MZYQZX71V36YH4XZEW"}
 // Target is a PC ID in /list results
 
-// Paste token in config_client.json: {... "app": {"token": 01CHG4NR8HPA4BD7DRKGK50PE4,...}}
+// Paste token in config_client.json: {... "app": {"token": 01CHG96N2V2BX461AJXN43529X,...}}
 > make client && bin/game_client bin/config_client.json
-> {"type":"move","action":{"source":"01CGH6VKAKN4BQRQWF5NX6ZNS2","target":"01CGH6VKAKN4BQRQWF5NX6ZNS2","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
+> {"type":"move","action":{"source":"01CHG6HM06J495RKSEDCZQ3916","target":"01CHG6HM06J495RKSEDCZQ3916","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
 
 ## TODO

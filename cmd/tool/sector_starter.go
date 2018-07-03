@@ -8,18 +8,18 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) sectorStarters(w http.ResponseWriter, r *http.Request) {
+func (h *handler) sectorStarter(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
-		h.postSectors(w, r)
+		h.postSectorsStarter(w, r)
 	default:
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 }
 
-func (h *handler) postSectorsStarters(w http.ResponseWriter, r *http.Request) {
-	logger := log.With().Str("method", "POST").Str("route", "/sector/starters").Logger()
+func (h *handler) postSectorsStarter(w http.ResponseWriter, r *http.Request) {
+	logger := log.With().Str("method", "POST").Str("route", "/sector/starter").Logger()
 
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()

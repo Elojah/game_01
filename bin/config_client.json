@@ -1,12 +1,16 @@
 {
 	"server": {
-		"addresses": ["127.0.0.1:4242"],
+		"addresses": ["127.0.0.1:54152"],
 		"middlewares": ["lz4"],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
+	"client": {
+		"middlewares": ["lz4"],
+		"packet_size": 1024
+	},
 	"app": {
-		"token": "01CGH2DDHSBFY0GKT3AXHEHXEK",
-		"address": "127.0.0.1:61209"
+		"token": "01CHG4NR8HPA4BD7DRKGK50PE4",
+		"address": "127.0.0.1:3400"
 	}
 }
