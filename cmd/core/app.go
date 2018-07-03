@@ -97,11 +97,11 @@ func (a *app) AddListener(msg *event.Message) {
 		seq.Start()
 
 		a.subs[listener.ID] = a.SubscribeListener(a.id)
-		go func() {
+		go func(seq *Sequencer) {
 			for msg := range a.subs[listener.ID].Channel() {
-				go seq.Handler(msg)
+				seq.Handler(msg)
 			}
-		}()
+		}(seq)
 
 		logger.Info().Str("listener", id).Msg("listening")
 	case event.Close:
