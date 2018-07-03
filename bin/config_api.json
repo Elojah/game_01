@@ -9,7 +9,8 @@
 		"server_protocol": "udp"
 	},
 	"client": {
-		"middlewares": ["lz4"]
+		"middlewares": ["lz4"],
+		"packet_size": 1024
 	},
 	"redis": {
 		"addr" : "127.0.0.1:6379",
