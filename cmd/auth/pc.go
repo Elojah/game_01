@@ -265,7 +265,6 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates a new listener for this entity.
-	// Set a new listener for this token
 	listener, err := h.L.New(e.ID)
 	if err != nil {
 		logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to create entity listener")

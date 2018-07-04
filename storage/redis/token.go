@@ -41,6 +41,11 @@ func (s *Service) SetToken(token account.Token) error {
 	return s.Set(tokenKey+token.ID.String(), raw, 0).Err()
 }
 
+// DelToken redis implementation.
+func (s *Service) DelToken(subset account.TokenSubset) error {
+	return s.Del(tokenKey + subset.ID.String()).Err()
+}
+
 // SetTokenHC redis implementation.
 func (s *Service) SetTokenHC(id ulid.ID, hc int64) error {
 	return s.ZAddNX(

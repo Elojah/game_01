@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/token"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -54,6 +55,7 @@ func run(prog string, filename string) {
 		QListenerMapper: rdx,
 		CoreMapper:      rdx,
 	}
+	h.T = token.T{}
 	h.SectorMapper = rdx
 	h.StarterMapper = rdx
 	h.EntitiesMapper = rdlrux

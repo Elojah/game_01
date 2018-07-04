@@ -24,6 +24,7 @@ type Token struct {
 type TokenMapper interface {
 	SetToken(Token) error
 	GetToken(TokenSubset) (Token, error)
+	DelToken(TokenSubset) error
 }
 
 // TokenSubset retrieves a token per ID.

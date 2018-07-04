@@ -12,6 +12,7 @@ func NewRecurrer(recurrer event.Recurrer) *Recurrer {
 		EntityID: [16]byte(recurrer.EntityID),
 		TokenID:  [16]byte(recurrer.TokenID),
 		Action:   uint8(recurrer.Action),
+		Pool:     [16]byte(recurrer.Pool),
 	}
 }
 
@@ -22,5 +23,6 @@ func (r Recurrer) Domain() event.Recurrer {
 		EntityID: ulid.ID(r.EntityID),
 		TokenID:  ulid.ID(r.TokenID),
 		Action:   event.QAction(r.Action),
+		Pool:     ulid.ID(r.Pool),
 	}
 }

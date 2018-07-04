@@ -3,4 +3,5 @@ struct Recurrer {
 	EntityID	[16]byte
 	TokenID		[16]byte
 	Action		uint8
+	Pool		[16]byte
 }
