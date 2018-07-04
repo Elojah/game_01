@@ -88,6 +88,7 @@ func (a *app) AddListener(msg *event.Message) {
 		return
 	}
 	listener := listenerS.Domain()
+	listener.Pool = a.id
 	id := listener.ID.String()
 
 	switch listener.Action {

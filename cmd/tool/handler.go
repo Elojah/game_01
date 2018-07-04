@@ -7,6 +7,7 @@ import (
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
 )
 
@@ -18,6 +19,9 @@ type handler struct {
 
 	EntityMapper         entity.Mapper
 	EntityTemplateMapper entity.TemplateMapper
+
+	event.ListenerMapper
+	event.QListenerMapper
 
 	SectorMapper sector.Mapper
 	sector.EntitiesMapper

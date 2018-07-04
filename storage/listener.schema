@@ -1,4 +1,5 @@
 struct Listener {
 	ID		[16]byte
 	Action	uint8
+	Pool	[16]byte
 }

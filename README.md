@@ -67,7 +67,10 @@
 - [x] Save PC + Delete all token-associated data.
 - [x] Add use cases for entity (create/delete) and token(create/delete)
 - [x] Switch nats to redis pub/sub
-- [ ] Add CorePool for entities
+- [ ] Add Pool for listeners + ListenerMapper Set/Get
+- [ ] Del for everything
+- [ ] Integration test binary with correct set
+- [ ] Put everything as usecase and use (almost) only them in controllers
 - [ ] Add server ack sending to client (and client resend)
 - [ ] Add minimal graphic interface to client (minimal calls and print entity states)
 - [ ] Implement tool to generate/check/visualize sectors and entity movements

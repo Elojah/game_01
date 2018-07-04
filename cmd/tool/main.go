@@ -48,6 +48,8 @@ func run(prog string, filename string) {
 	h.AccountMapper = rdx
 	h.EntityMapper = rdlrux
 	h.EntityTemplateMapper = rdx
+	h.ListenerMapper = rdx
+	h.QListenerMapper = rdx
 	h.SectorMapper = rdx
 	h.StarterMapper = rdx
 	h.EntitiesMapper = rdlrux

@@ -10,6 +10,7 @@ func NewListener(listener event.Listener) *Listener {
 	return &Listener{
 		ID:     [16]byte(listener.ID),
 		Action: uint8(listener.Action),
+		Pool:   [16]byte(listener.Pool),
 	}
 }
 
@@ -18,5 +19,6 @@ func (l Listener) Domain() event.Listener {
 	return event.Listener{
 		ID:     ulid.ID(l.ID),
 		Action: event.QAction(l.Action),
+		Pool:   ulid.ID(l.Pool),
 	}
 }
