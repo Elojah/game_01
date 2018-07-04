@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/usecase/listener"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -48,6 +49,11 @@ func run(prog string, filename string) {
 	h.CoreMapper = rdx
 	h.EntitiesMapper = rdlrux
 	h.EntityMapper = rdlrux
+	h.L = listener.L{
+		ListenerMapper:  rdx,
+		QListenerMapper: rdx,
+		CoreMapper:      rdx,
+	}
 	h.PCLeftMapper = rdx
 	h.PCMapper = rdx
 	h.PermissionMapper = rdx

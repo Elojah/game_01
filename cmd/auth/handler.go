@@ -9,6 +9,7 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/usecase/listener"
 )
 
 type handler struct {
@@ -20,11 +21,11 @@ type handler struct {
 	entity.TemplateMapper
 	EntityMapper entity.Mapper
 
-	event.QListenerMapper
 	event.QMapper
 	event.QRecurrerMapper
 
-	infra.CoreMapper
+	listener.L
+
 	infra.SyncMapper
 
 	entity.PermissionMapper

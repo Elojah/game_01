@@ -266,21 +266,10 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates a new listener for this entity.
 	// Set a new listener for this token
-	core, err := h.GetRandomCore(infra.CoreSubset{})
+	listener, err := h.L.New(e.ID)
 	if err != nil {
-		if err == storage.ErrNotFound {
-			logger.Error().Err(err).Msg("no core available")
-			http.Error(w, "failed to create listener", http.StatusInternalServerError)
-			return
-		}
-		logger.Error().Err(err).Msg("failed to get a core")
-		http.Error(w, "failed to create listener", http.StatusInternalServerError)
-		return
-	}
-	if err := h.PublishListener(event.Listener{ID: e.ID, Action: event.Open}, core.ID); err != nil {
-		logger.Error().Err(err).Str("core", core.ID.String()).Str("id", e.ID.String()).Msg("failed to add listener to entity")
+		logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to create entity listener")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
-		return
 	}
 
 	// #Creates a new synchronizer for this token/entity.
@@ -308,7 +297,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Update token with pool informations.
-	tok.CorePool = core.ID
+	tok.CorePool = listener.Pool
 	tok.SyncPool = sync.ID
 	tok.PC = pc.ID
 	tok.Entity = e.ID
