@@ -92,10 +92,10 @@ func (a *app) AddListener(msg *event.Message) {
 
 	switch listener.Action {
 	case event.Open:
-		a.seqs[listener.ID] = NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
+		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventMapper, a.Apply)
 		a.seqs[listener.ID].Start()
 
-		a.subs[listener.ID] = a.SubscribeEvent(a.id)
+		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)
 
 		go func(seq *Sequencer, sub *event.Subscription) {
 			for msg := range sub.Channel() {

@@ -24,14 +24,14 @@
 > curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHJ7W8NX97R1F887YM3NZSTA","type":"01CE3J5ASXJSVC405QTES4M221"}'
 // Token is token obtained at login and type is an entity ID described in templates/entity_templates.json.
 > curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHJ7W8NX97R1F887YM3NZSTA"}'
-[{"id":"01CHJ7X170GM6CQRD4P37T0JS2","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHJ7W8NX97R1F887YM3NZSTA","target":"01CHJ7X170GM6CQRD4P37T0JS2"}'
+[{"id":"01CHJ8PAG2V98ZW1GEF4NP12F2","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
+> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHJ7W8NX97R1F887YM3NZSTA","target":"01CHJ8PAG2V98ZW1GEF4NP12F2"}'
 {"ID":"01CGH399MZYQZX71V36YH4XZEW"}
 // Target is a PC ID in /list results
 
 // Paste token in config_client.json: {... "app": {"token": 01CHJ7W8NX97R1F887YM3NZSTA,...}}
 > make client && bin/game_client bin/config_client.json
-> {"type":"move","action":{"source":"01CHJ7X170GM6CQRD4P37T0JS2","target":"01CHJ7X170GM6CQRD4P37T0JS2","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
+> {"type":"move","action":{"source":"01CHJ93AHTD22MA09SQJXXP5JX","target":"01CHJ93AHTD22MA09SQJXXP5JX","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
 
 ## TODO
