@@ -56,11 +56,11 @@ func (a *app) Start() {
 
 	a.subs = make(map[ulid.ID]*event.Subscription)
 	a.subs[a.id] = a.SubscribeListener(a.id)
-	go func() {
-		for msg := range a.subs[a.id].Channel() {
+	go func(sub *event.Subscription) {
+		for msg := range sub.Channel() {
 			go a.AddListener(msg)
 		}
-	}()
+	}(a.subs[a.id])
 
 	a.seqs = make(map[ulid.ID]*Sequencer)
 
@@ -92,16 +92,16 @@ func (a *app) AddListener(msg *event.Message) {
 
 	switch listener.Action {
 	case event.Open:
-		seq := NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
-		a.seqs[listener.ID] = seq
-		seq.Start()
+		a.seqs[listener.ID] = NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
+		a.seqs[listener.ID].Start()
 
-		a.subs[listener.ID] = a.SubscribeListener(a.id)
-		go func(seq *Sequencer) {
-			for msg := range a.subs[listener.ID].Channel() {
+		a.subs[listener.ID] = a.SubscribeEvent(a.id)
+
+		go func(seq *Sequencer, sub *event.Subscription) {
+			for msg := range sub.Channel() {
 				seq.Handler(msg)
 			}
-		}(seq)
+		}(a.seqs[listener.ID], a.subs[listener.ID])
 
 		logger.Info().Str("listener", id).Msg("listening")
 	case event.Close:
