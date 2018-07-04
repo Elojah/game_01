@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -53,6 +54,11 @@ func run(prog string, filename string) {
 		ListenerMapper:  rdx,
 		QListenerMapper: rdx,
 		CoreMapper:      rdx,
+	}
+	h.R = recurrer.R{
+		QRecurrerMapper: rdx,
+		RecurrerMapper:  rdx,
+		SyncMapper:      rdx,
 	}
 	h.PCLeftMapper = rdx
 	h.PCMapper = rdx

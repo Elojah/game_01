@@ -8,11 +8,11 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	uce "github.com/elojah/game_01/pkg/usecase/entity"
 	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
 )
 
 // T wraps use cases around token object.
@@ -24,12 +24,14 @@ type T struct {
 	entity.PCMapper
 
 	listener.L
+	recurrer.R
 
 	entity.PermissionMapper
 
 	sector.EntitiesMapper
 }
 
+// New creates a new token from account payload A. Returns an error if the account is invalid.
 func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 
 	logger := log.With().
@@ -79,6 +81,13 @@ func (t T) Disconnect(id ulid.ID) error {
 		Str("action", "disconnect").
 		Logger()
 
+		// #Retrieve token
+	tok, err := t.GetToken(account.TokenSubset{ID: id})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to close listener")
+		return err
+	}
+
 	// #Close token listener
 	go func() {
 		if err := t.L.Delete(id); err != nil {
@@ -88,8 +97,8 @@ func (t T) Disconnect(id ulid.ID) error {
 
 	// #Close token recurrer
 	go func() {
-		if err := t.PublishRecurrer(event.Recurrer{ID: tok.ID, Action: event.Close}, tok.SyncPool); err != nil {
-			logger.Error().Err(err).Msg("failed to close recurrer")
+		if err := t.R.Delete(id); err != nil {
+			logger.Error().Err(err).Msg("failed to close listener")
 		}
 	}()
 
@@ -119,10 +128,9 @@ func (t T) Disconnect(id ulid.ID) error {
 	}
 	ucentity := uce.E{
 		EntityMapper:     t.EntityMapper,
-		QRecurrerMapper:  t.QRecurrerMapper,
-		QListenerMapper:  t.QListenerMapper,
 		PermissionMapper: t.PermissionMapper,
 		EntitiesMapper:   t.EntitiesMapper,
+		L:                t.L,
 	}
 	for _, permission := range permissions {
 		targetID := ulid.MustParse(permission.Target)

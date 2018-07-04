@@ -10,7 +10,6 @@ import (
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/pkg/usecase/listener"
-	"github.com/elojah/game_01/pkg/usecase/recurrer"
 )
 
 // E represents use cases for entity.
@@ -20,7 +19,6 @@ type E struct {
 	entity.PermissionMapper
 
 	listener.L
-	recurrer.R
 
 	sector.EntitiesMapper
 }
@@ -41,12 +39,6 @@ func (e E) Disconnect(id ulid.ID, tok account.Token) error {
 	// #Close entity listener
 	if err := e.L.Delete(id); err != nil {
 		logger.Error().Err(err).Msg("failed to close listener")
-		return err
-	}
-
-	// #Close entity recurrer
-	if err := e.R.Delete(id); err != nil {
-		logger.Error().Err(err).Msg("failed to close recurrer")
 		return err
 	}
 

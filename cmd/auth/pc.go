@@ -12,13 +12,10 @@ import (
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/pkg/usecase/token"
-	"github.com/elojah/game_01/storage"
 )
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -271,33 +268,16 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 	}
 
-	// #Creates a new synchronizer for this token/entity.
-	// Set a new recurrer for this token/entity.
-	sync, err := h.GetRandomSync(infra.SyncSubset{})
+	// #Creates a new recurrer for this token/entity.
+	recurrer, err := h.R.New(e.ID, tok.ID)
 	if err != nil {
-		if err == storage.ErrNotFound {
-			logger.Error().Err(err).Msg("no sync available")
-			http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
-			return
-		}
-		logger.Error().Err(err).Msg("failed to get a sync")
-		http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
-		return
-	}
-	if err := h.PublishRecurrer(event.Recurrer{
-		ID:       ulid.NewID(),
-		EntityID: e.ID,
-		TokenID:  tok.ID,
-		Action:   event.Open,
-	}, sync.ID); err != nil {
-		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", e.ID.String()).Msg("failed to add sync for entity")
+		logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to create entity recurrer")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
-		return
 	}
 
 	// #Update token with pool informations.
 	tok.CorePool = listener.Pool
-	tok.SyncPool = sync.ID
+	tok.SyncPool = recurrer.Pool
 	tok.PC = pc.ID
 	tok.Entity = e.ID
 	if err := h.SetToken(tok); err != nil {
@@ -362,9 +342,9 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		TokenMapper:      h.TokenMapper,
 		EntityMapper:     h.EntityMapper,
 		PCMapper:         h.PCMapper,
-		QRecurrerMapper:  h.QRecurrerMapper,
-		QListenerMapper:  h.QListenerMapper,
 		PermissionMapper: h.PermissionMapper,
+		L:                h.L,
+		R:                h.R,
 		EntitiesMapper:   h.EntitiesMapper,
 	}
 	if err := t.Disconnect(tok.ID); err != nil {

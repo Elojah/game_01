@@ -4,7 +4,7 @@ import "github.com/elojah/game_01/pkg/ulid"
 
 // Listener requires the receiver to create a new listener with subject ID.
 type Listener struct {
-	ID     ulid.ID
+	ID     ulid.ID // ID aliases a token ID OR an entity ID
 	Action QAction
 	Pool   ulid.ID
 }

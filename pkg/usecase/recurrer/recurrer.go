@@ -16,9 +16,11 @@ type R struct {
 }
 
 // New creates a new recurrer on a random sync for id id.
-func (r *R) New(id ulid.ID, entityID ulid.ID, tokenID ulid.ID) (event.Recurrer, error) {
+func (r *R) New(entityID ulid.ID, tokenID ulid.ID) (event.Recurrer, error) {
 	logger := log.With().
-		Str("recurrer", id.String()).
+		Str("recurrer", "").
+		Str("entity", entityID.String()).
+		Str("token", tokenID.String()).
 		Str("action", "new").
 		Logger()
 
@@ -28,12 +30,12 @@ func (r *R) New(id ulid.ID, entityID ulid.ID, tokenID ulid.ID) (event.Recurrer, 
 		return event.Recurrer{}, err
 	}
 	recurrer := event.Recurrer{
-		ID:       id,
 		EntityID: entityID,
 		TokenID:  tokenID,
 		Action:   event.Open,
 		Pool:     sync.ID,
 	}
+	logger = logger.With().Str("recurrer", recurrer.TokenID.String()).Logger()
 	if err := r.PublishRecurrer(recurrer, sync.ID); err != nil {
 		logger.Error().Err(err).Str("sync", sync.ID.String()).Msg("failed to publish recurrer")
 		return event.Recurrer{}, err
@@ -51,7 +53,7 @@ func (r *R) Delete(id ulid.ID) error {
 		Str("recurrer", id.String()).
 		Str("action", "delete").
 		Logger()
-	recurrer, err := r.GetRecurrer(event.RecurrerSubset{ID: id})
+	recurrer, err := r.GetRecurrer(event.RecurrerSubset{TokenID: id})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to get recurrer")
 		return err
@@ -61,7 +63,7 @@ func (r *R) Delete(id ulid.ID) error {
 		logger.Error().Err(err).Msg("failed to publish recurrer")
 		return err
 	}
-	if err := r.DelRecurrer(recurrer.ID); err != nil {
+	if err := r.DelRecurrer(event.RecurrerSubset{TokenID: recurrer.TokenID}); err != nil {
 		logger.Error().Err(err).Msg("failed to delete recurrer")
 		return err
 	}

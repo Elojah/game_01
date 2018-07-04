@@ -79,8 +79,8 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	recurrer := recurrerS.Domain()
 
 	if recurrer.Action == event.Close {
-		a.recurrers[recurrer.ID].Close()
-		delete(a.recurrers, recurrer.ID)
+		a.recurrers[recurrer.TokenID].Close()
+		delete(a.recurrers, recurrer.TokenID)
 		return
 	}
 
@@ -88,7 +88,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	if err != nil {
 		logger.Error().Err(err).
 			Str("id", recurrer.TokenID.String()).
-			Str("recurrer_id", recurrer.ID.String()).
+			Str("recurrer_id", recurrer.TokenID.String()).
 			Msg("failed to retrieve token")
 		return
 	}
@@ -107,9 +107,9 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	rec.SectorMapper = a.SectorMapper
 
 	go rec.Start()
-	a.recurrers[recurrer.ID] = rec
+	a.recurrers[recurrer.TokenID] = rec
 	logger.Info().
-		Str("recurrer", recurrer.ID.String()).
+		Str("recurrer", recurrer.TokenID.String()).
 		Str("entity", recurrer.EntityID.String()).
 		Str("ip", tok.IP.String()).
 		Msg("synchronizing")

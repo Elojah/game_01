@@ -55,7 +55,7 @@ func (l *L) Delete(id ulid.ID) error {
 		logger.Error().Err(err).Msg("failed to publish listener")
 		return err
 	}
-	if err := l.DelListener(listener.ID); err != nil {
+	if err := l.DelListener(event.ListenerSubset{ID: listener.ID}); err != nil {
 		logger.Error().Err(err).Msg("failed to delete listener")
 		return err
 	}

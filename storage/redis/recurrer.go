@@ -13,7 +13,7 @@ const (
 
 // GetRecurrer redis implementation.
 func (s *Service) GetRecurrer(subset event.RecurrerSubset) (event.Recurrer, error) {
-	val, err := s.Get(recurrerKey + subset.ID.String()).Result()
+	val, err := s.Get(recurrerKey + subset.TokenID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return event.Recurrer{}, err
@@ -34,10 +34,10 @@ func (s *Service) SetRecurrer(recurrer event.Recurrer) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(recurrerKey+recurrer.ID.String(), raw, 0).Err()
+	return s.Set(recurrerKey+recurrer.TokenID.String(), raw, 0).Err()
 }
 
 // DelRecurrer deletes recurrer in redis.
 func (s *Service) DelRecurrer(subset event.RecurrerSubset) error {
-	return s.Del(recurrerKey + subset.ID.String()).Err()
+	return s.Del(recurrerKey + subset.TokenID.String()).Err()
 }

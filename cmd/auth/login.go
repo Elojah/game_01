@@ -39,12 +39,12 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	// #Set a new listener for this token
 	listener, err := h.L.New(token.ID)
 	if err != nil {
-		logger.Error().Err(err).Str("token", token.ID.String()).Msg("failed to create token listener")
+		logger.Error().Err(err).Str("listener", listener.ID.String()).Msg("failed to create token listener")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
-	// Marshal token for response
+	// #Marshal token for response
 	raw, err := json.Marshal(token)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal token")
@@ -52,7 +52,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Write response
+	// #Write response
 	w.WriteHeader(http.StatusOK)
 	w.Write(raw)
 }
