@@ -37,25 +37,15 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: setPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(setPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", setPC.Token.String()).Msg("packet rejected")
+		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// #Check user permission to create h new PC.
+	// #Check user permission to create a new PC.
 	left, err := h.GetPCLeft(entity.PCLeftSubset{AccountID: tok.Account})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve left pc")
@@ -69,7 +59,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Decrease token permission to create h new PC by 1.
+	// #Decrease token permission to create a new PC by 1.
 	if err := h.SetPCLeft(left-1, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to decrease left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)

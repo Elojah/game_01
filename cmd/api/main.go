@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/usecase/token"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
@@ -43,10 +44,10 @@ func run(prog string, filename string) {
 	launchers.Add(cl)
 
 	h := handler{
-		M:           &m,
-		C:           &c,
-		QMapper:     rdx,
-		TokenMapper: rdx,
+		M:       &m,
+		C:       &c,
+		QMapper: rdx,
+		T:       token.T{},
 	}
 	hl := h.NewLauncher(Namespaces{
 		API: "api",

@@ -31,12 +31,39 @@ type T struct {
 	sector.EntitiesMapper
 }
 
+// Get retrieves a token and check IP validity.
+func (t T) Get(id ulid.ID, addr string) (account.Token, error) {
+
+	logger := log.With().
+		Str("token", id.String()).
+		Str("addr", addr).
+		Str("usecase", "get").
+		Logger()
+
+	// #Search message UUID in storage.
+	tok, err := t.GetToken(account.TokenSubset{ID: id})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		return account.Token{}, err
+	}
+
+	// #Match message UUID with source IP.
+	expected, _, _ := net.SplitHostPort(tok.IP.String())
+	actual, _, _ := net.SplitHostPort(addr)
+	if expected != actual {
+		err := account.ErrWrongIP
+		logger.Error().Err(err).Str("expected", expected).Str("actual", actual).Msg("invalid IP")
+		return account.Token{}, err
+	}
+	return tok, nil
+}
+
 // New creates a new token from account payload A. Returns an error if the account is invalid.
 func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 
 	logger := log.With().
 		Str("account", accountPayload.ID.String()).
-		Str("action", "token").
+		Str("action", "new").
 		Logger()
 
 	// #Search account in redis
