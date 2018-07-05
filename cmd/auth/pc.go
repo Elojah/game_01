@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"math/rand"
-	"net"
 	"net/http"
 	"time"
 
@@ -15,7 +14,6 @@ import (
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/pkg/usecase/token"
 )
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -129,20 +127,10 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: listPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(listPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", listPC.Token.String()).Msg("packet rejected")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
+		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -189,21 +177,11 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: connectPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(connectPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", connectPC.Token.String()).Msg("packet rejected")
-		http.Error(w, "wrong token id", http.StatusBadRequest)
-		return
-	}
-
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
-		http.Error(w, "unrecognized ip", http.StatusBadRequest)
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -310,34 +288,15 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: disconnectPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(disconnectPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", disconnectPC.Token.String()).Msg("packet rejected")
-		http.Error(w, "wrong token id", http.StatusBadRequest)
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
-		http.Error(w, "unrecognized ip", http.StatusBadRequest)
-		return
-	}
-
-	t := token.T{
-		TokenMapper:      h.TokenMapper,
-		EntityMapper:     h.EntityMapper,
-		PCMapper:         h.PCMapper,
-		PermissionMapper: h.PermissionMapper,
-		L:                h.L,
-		R:                h.R,
-		EntitiesMapper:   h.EntitiesMapper,
-	}
-	if err := t.Disconnect(tok.ID); err != nil {
+	if err := h.T.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to disconnect")
 		http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 		return
