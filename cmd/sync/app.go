@@ -1,7 +1,6 @@
 package main
 
 import (
-	nats "github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -11,7 +10,7 @@ import (
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/storage"
-	"github.com/elojah/mux"
+	"github.com/elojah/mux/client"
 )
 
 type app struct {
@@ -21,14 +20,13 @@ type app struct {
 
 	event.QMapper
 	event.QRecurrerMapper
-	event.SubscriptionMapper
 
 	infra.SyncMapper
 
 	sector.EntitiesMapper
 	SectorMapper sector.Mapper
 
-	*mux.M
+	*client.C
 
 	id ulid.ID
 
@@ -48,12 +46,13 @@ func (a *app) Dial(c Config) error {
 func (a *app) Start() {
 	logger := log.With().Str("sync", a.id.String()).Logger()
 
-	sub, err := a.SetSubscription(a.id.String(), a.AddRecurrer)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to sub")
-		return
-	}
-	a.sub = sub
+	a.sub = a.SubscribeRecurrer(a.id)
+	go func() {
+		for msg := range a.sub.Channel() {
+			go a.AddRecurrer(msg)
+		}
+	}()
+
 	a.recurrers = make(map[ulid.ID]*Recurrer)
 
 	if err := a.SetSync(infra.Sync{ID: a.id}); err != nil {
@@ -69,19 +68,19 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) AddRecurrer(msg *nats.Msg) {
+func (a *app) AddRecurrer(msg *event.Message) {
 	logger := log.With().Str("sync", a.id.String()).Logger()
 
 	var recurrerS storage.Recurrer
-	if _, err := recurrerS.Unmarshal(msg.Data); err != nil {
+	if _, err := recurrerS.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal recurrer")
 		return
 	}
 	recurrer := recurrerS.Domain()
 
 	if recurrer.Action == event.Close {
-		a.recurrers[recurrer.ID].Close()
-		delete(a.recurrers, recurrer.ID)
+		a.recurrers[recurrer.TokenID].Close()
+		delete(a.recurrers, recurrer.TokenID)
 		return
 	}
 
@@ -89,7 +88,7 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 	if err != nil {
 		logger.Error().Err(err).
 			Str("id", recurrer.TokenID.String()).
-			Str("recurrer_id", recurrer.ID.String()).
+			Str("recurrer_id", recurrer.TokenID.String()).
 			Msg("failed to retrieve token")
 		return
 	}
@@ -108,9 +107,9 @@ func (a *app) AddRecurrer(msg *nats.Msg) {
 	rec.SectorMapper = a.SectorMapper
 
 	go rec.Start()
-	a.recurrers[recurrer.ID] = rec
+	a.recurrers[recurrer.TokenID] = rec
 	logger.Info().
-		Str("recurrer", recurrer.ID.String()).
+		Str("recurrer", recurrer.TokenID.String()).
 		Str("entity", recurrer.EntityID.String()).
 		Str("ip", tok.IP.String()).
 		Msg("synchronizing")

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"net"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -11,15 +10,18 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/elojah/game_01/pkg/usecase/token"
 	"github.com/elojah/mux"
+	"github.com/elojah/mux/client"
 )
 
 type handler struct {
 	*mux.M
+	*client.C
 
 	event.QMapper
 
-	account.TokenMapper
+	token.T
 
 	tolerance time.Duration
 }
@@ -32,7 +34,10 @@ func (h *handler) Dial(c Config) error {
 }
 
 func (h *handler) Close() error {
-	return h.M.Close()
+	if err := h.M.Close(); err != nil {
+		return err
+	}
+	return h.C.Close()
 }
 
 func (h *handler) handle(ctx context.Context, raw []byte) error {
@@ -49,19 +54,10 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	// #Parse message UUID.
 	tokenID := ulid.ID(msg.Token)
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: tokenID})
+	// #Get and check token.
+	tok, err := h.T.Get(tokenID, ctx.Value(mux.Key("addr")).(string))
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", tokenID.String()).Msg("packet rejected")
-		return err
-	}
-
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(ctx.Value(mux.Key("addr")).(string))
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", tokenID.String()).Msg("failed to identify")
 		return err
 	}
 

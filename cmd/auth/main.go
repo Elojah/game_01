@@ -9,9 +9,10 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	natsx "github.com/elojah/game_01/storage/nats"
+	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
+	"github.com/elojah/game_01/pkg/usecase/token"
 	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -39,13 +40,6 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
-	na := nats.Service{}
-	nal := na.NewLauncher(nats.Namespaces{
-		Nats: "nats",
-	}, "nats")
-	launchers.Add(nal)
-	nax := natsx.NewService(&na)
-
 	// handler (https server)
 	h := handler{}
 	hl := h.NewLauncher(Namespaces{
@@ -53,21 +47,36 @@ func run(prog string, filename string) {
 	}, "auth")
 	launchers.Add(hl)
 
-	h.AccountMapper = rdx
-	h.CoreMapper = rdx
+	lis := listener.L{
+		QListenerMapper: rdx,
+		ListenerMapper:  rdx,
+		CoreMapper:      rdx,
+	}
+	rec := recurrer.R{
+		QRecurrerMapper: rdx,
+		RecurrerMapper:  rdx,
+		SyncMapper:      rdx,
+	}
+	h.L = lis
+	h.R = rec
+	h.T = token.T{
+		L:                lis,
+		R:                rec,
+		AccountMapper:    rdx,
+		EntityMapper:     rdlrux,
+		TokenMapper:      rdx,
+		PCMapper:         rdx,
+		PermissionMapper: rdx,
+		EntitiesMapper:   rdlrux,
+	}
+
 	h.EntitiesMapper = rdlrux
-	h.EntityMapper = rdlrux
 	h.PCLeftMapper = rdx
-	h.PCMapper = rdx
 	h.PermissionMapper = rdx
-	h.QListenerMapper = nax
-	h.QMapper = nax
-	h.QRecurrerMapper = nax
+	h.QMapper = rdx
 	h.SectorMapper = rdx
 	h.StarterMapper = rdx
-	h.SyncMapper = rdx
 	h.TemplateMapper = rdx
-	h.TokenMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

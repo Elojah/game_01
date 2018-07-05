@@ -8,6 +8,7 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/usecase/listener"
 )
 
 type handler struct {
@@ -18,6 +19,8 @@ type handler struct {
 
 	EntityMapper         entity.Mapper
 	EntityTemplateMapper entity.TemplateMapper
+
+	listener.L
 
 	SectorMapper sector.Mapper
 	sector.EntitiesMapper
@@ -30,15 +33,17 @@ type handler struct {
 func (h *handler) Dial(c Config) error {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/ability", h.ability)
-	mux.HandleFunc("/entity", h.entity)
-	mux.HandleFunc("/sector", h.sector)
-
 	mux.HandleFunc("/ability/template", h.abilityTemplate)
 	mux.HandleFunc("/entity/template", h.entityTemplate)
 
 	mux.HandleFunc("/sector/entities", h.sectorEntities)
-	mux.HandleFunc("/sector/starters", h.sectorStarters)
+	mux.HandleFunc("/sector/starter", h.sectorStarter)
+
+	mux.HandleFunc("/ability", h.ability)
+	mux.HandleFunc("/entity", h.entity)
+	mux.HandleFunc("/sector", h.sector)
+
+	mux.HandleFunc("/listener", h.listener)
 
 	h.srv = &http.Server{
 		Addr:    c.Address,

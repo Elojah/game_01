@@ -29,8 +29,8 @@ type Recurrer struct {
 // NewRecurrer returns a new recurrer which sends entity data associated to id to addr, tick times per second.
 func NewRecurrer(rec event.Recurrer, tick uint32, callback func(entity.E)) *Recurrer {
 	return &Recurrer{
-		logger:   log.With().Str("recurrer", rec.ID.String()).Logger(),
-		id:       rec.ID,
+		logger:   log.With().Str("recurrer", rec.TokenID.String()).Logger(),
+		id:       rec.TokenID,
 		entityID: rec.EntityID,
 		callback: callback,
 

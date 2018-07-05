@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"math/rand"
-	"net"
 	"net/http"
 	"time"
 
@@ -12,13 +11,9 @@ import (
 	"github.com/elojah/game_01/dto"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/pkg/usecase/token"
-	"github.com/elojah/game_01/storage"
 )
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -40,25 +35,15 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: setPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(setPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", setPC.Token.String()).Msg("packet rejected")
+		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// #Check user permission to create h new PC.
+	// #Check user permission to create a new PC.
 	left, err := h.GetPCLeft(entity.PCLeftSubset{AccountID: tok.Account})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve left pc")
@@ -72,7 +57,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Decrease token permission to create h new PC by 1.
+	// #Decrease token permission to create a new PC by 1.
 	if err := h.SetPCLeft(left-1, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to decrease left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -90,7 +75,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	// #Retrieve a random starter sector.
 	start, err := h.GetRandomStarter(sector.StarterSubset{})
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to retrieve starter sector")
+		logger.Error().Err(err).Msg("failed to pick random starter")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -142,20 +127,10 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: listPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(listPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", listPC.Token.String()).Msg("packet rejected")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
+		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -202,21 +177,11 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: connectPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(connectPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", connectPC.Token.String()).Msg("packet rejected")
-		http.Error(w, "wrong token id", http.StatusBadRequest)
-		return
-	}
-
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
-		http.Error(w, "unrecognized ip", http.StatusBadRequest)
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -265,51 +230,22 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates a new listener for this entity.
-	// Set a new listener for this token
-	core, err := h.GetRandomCore(infra.CoreSubset{})
+	listener, err := h.L.New(e.ID)
 	if err != nil {
-		if err == storage.ErrNotFound {
-			logger.Error().Err(err).Msg("no core available")
-			http.Error(w, "failed to create listener", http.StatusInternalServerError)
-			return
-		}
-		logger.Error().Err(err).Msg("failed to get a core")
-		http.Error(w, "failed to create listener", http.StatusInternalServerError)
-		return
-	}
-	if err := h.SendListener(event.Listener{ID: e.ID, Action: event.Open}, core.ID); err != nil {
-		logger.Error().Err(err).Str("core", core.ID.String()).Str("id", e.ID.String()).Msg("failed to add listener to entity")
+		logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to create entity listener")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
-		return
 	}
 
-	// #Creates a new synchronizer for this token/entity.
-	// Set a new recurrer for this token/entity.
-	sync, err := h.GetRandomSync(infra.SyncSubset{})
+	// #Creates a new recurrer for this token/entity.
+	recurrer, err := h.R.New(e.ID, tok.ID)
 	if err != nil {
-		if err == storage.ErrNotFound {
-			logger.Error().Err(err).Msg("no sync available")
-			http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
-			return
-		}
-		logger.Error().Err(err).Msg("failed to get a sync")
-		http.Error(w, "failed to create recurrer", http.StatusInternalServerError)
-		return
-	}
-	if err := h.SendRecurrer(event.Recurrer{
-		ID:       ulid.NewID(),
-		EntityID: e.ID,
-		TokenID:  tok.ID,
-		Action:   event.Open,
-	}, sync.ID); err != nil {
-		logger.Error().Err(err).Str("sync", sync.ID.String()).Str("id", e.ID.String()).Msg("failed to add sync for entity")
+		logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to create entity recurrer")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
-		return
 	}
 
 	// #Update token with pool informations.
-	tok.CorePool = core.ID
-	tok.SyncPool = sync.ID
+	tok.CorePool = listener.Pool
+	tok.SyncPool = recurrer.Pool
 	tok.PC = pc.ID
 	tok.Entity = e.ID
 	if err := h.SetToken(tok); err != nil {
@@ -352,34 +288,15 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Search message UUID in storage.
-	tok, err := h.GetToken(account.TokenSubset{ID: disconnectPC.Token})
+	// #Get and check token.
+	tok, err := h.T.Get(disconnectPC.Token, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("token", disconnectPC.Token.String()).Msg("packet rejected")
-		http.Error(w, "wrong token id", http.StatusBadRequest)
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// #Match message UUID with source IP.
-	expected, _, _ := net.SplitHostPort(tok.IP.String())
-	actual, _, _ := net.SplitHostPort(r.RemoteAddr)
-	if expected != actual {
-		err := account.ErrWrongIP
-		logger.Error().Err(err).Str("status", "hijacked").Str("expected", expected).Str("actual", actual).Msg("packet rejected")
-		http.Error(w, "unrecognized ip", http.StatusBadRequest)
-		return
-	}
-
-	t := token.T{
-		TokenMapper:      h.TokenMapper,
-		EntityMapper:     h.EntityMapper,
-		PCMapper:         h.PCMapper,
-		QRecurrerMapper:  h.QRecurrerMapper,
-		QListenerMapper:  h.QListenerMapper,
-		PermissionMapper: h.PermissionMapper,
-		EntitiesMapper:   h.EntitiesMapper,
-	}
-	if err := t.Disconnect(tok.ID); err != nil {
+	if err := h.T.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to disconnect")
 		http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 		return

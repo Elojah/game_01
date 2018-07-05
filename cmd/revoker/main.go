@@ -9,9 +9,9 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	natsx "github.com/elojah/game_01/storage/nats"
+	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
 	redisx "github.com/elojah/game_01/storage/redis"
-	"github.com/elojah/nats"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -39,14 +39,6 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 	rdlrux := redisx.NewService(&rdlru)
 
-	// nats
-	na := nats.Service{}
-	nal := na.NewLauncher(nats.Namespaces{
-		Nats: "nats",
-	}, "nats")
-	launchers.Add(nal)
-	nax := natsx.NewService(&na)
-
 	// main app
 	a := app{}
 	al := a.NewLauncher(Namespaces{
@@ -59,9 +51,19 @@ func run(prog string, filename string) {
 	a.EntityMapper = rdlrux
 	a.PCMapper = rdx
 	a.PermissionMapper = rdx
-	a.QRecurrerMapper = nax
-	a.QListenerMapper = nax
+	a.QRecurrerMapper = rdx
+	a.QListenerMapper = rdx
 	a.EntitiesMapper = rdlrux
+	a.L = listener.L{
+		QListenerMapper: rdx,
+		ListenerMapper:  rdx,
+		CoreMapper:      rdx,
+	}
+	a.R = recurrer.R{
+		QRecurrerMapper: rdx,
+		RecurrerMapper:  rdx,
+		SyncMapper:      rdx,
+	}
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

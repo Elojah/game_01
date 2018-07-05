@@ -9,10 +9,12 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	natsx "github.com/elojah/game_01/storage/nats"
+	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
+	"github.com/elojah/game_01/pkg/usecase/token"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/mux"
-	"github.com/elojah/nats"
+	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -31,12 +33,13 @@ func run(prog string, filename string) {
 	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
-	na := nats.Service{}
-	nal := na.NewLauncher(nats.Namespaces{
-		Nats: "nats",
-	}, "nats")
-	launchers.Add(nal)
-	nax := natsx.NewService(&na)
+	// redis-lru
+	rdlru := redis.Service{}
+	rdlrul := rdlru.NewLauncher(redis.Namespaces{
+		Redis: "redis-lru",
+	}, "redis-lru")
+	launchers.Add(rdlrul)
+	rdlrux := redisx.NewService(&rdlru)
 
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
@@ -44,10 +47,34 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers.Add(muxl)
 
+	c := client.C{}
+	cl := c.NewLauncher(client.Namespaces{
+		Client: "client",
+	}, "client")
+	launchers.Add(cl)
+
 	h := handler{
-		M:           &m,
-		QMapper:     nax,
-		TokenMapper: rdx,
+		M:       &m,
+		C:       &c,
+		QMapper: rdx,
+		T: token.T{
+			AccountMapper: rdx,
+			TokenMapper:   rdx,
+			EntityMapper:  rdlrux,
+			PCMapper:      rdx,
+			L: listener.L{
+				QListenerMapper: rdx,
+				ListenerMapper:  rdx,
+				CoreMapper:      rdx,
+			},
+			R: recurrer.R{
+				QRecurrerMapper: rdx,
+				RecurrerMapper:  rdx,
+				SyncMapper:      rdx,
+			},
+			PermissionMapper: rdx,
+			EntitiesMapper:   rdlrux,
+		},
 	}
 	hl := h.NewLauncher(Namespaces{
 		API: "api",
@@ -61,9 +88,9 @@ func run(prog string, filename string) {
 
 	log.Info().Msg("api up")
 
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGHUP)
-	for sig := range c {
+	cs := make(chan os.Signal, 1)
+	signal.Notify(cs, syscall.SIGHUP)
+	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
 			launchers.Down()

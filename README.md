@@ -15,22 +15,23 @@
 // Fill static data
 > curl -k -X POST https://127.0.0.1:8081/entity/template -d @templates/entity_templates.json
 > curl -k -X POST https://127.0.0.1:8081/sector -d @templates/sector.json
+> curl -k -X POST https://127.0.0.1:8081/sector/starter -d @templates/sector_starter.json
 
 // Obtain access token
 > curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
 > curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
-{"ID":"01CGH6TXS6PAXHWY79KCGKVZGV"}
-> curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CGH6TXS6PAXHWY79KCGKVZGV","type":"01CE3J5ASXJSVC405QTES4M221"}'
+{"ID":"01CHNKE1NZERJ37PHVAQ0STBWQ"}
+> curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","type":"01CE3J5ASXJSVC405QTES4M221"}'
 // Token is token obtained at login and type is an entity ID described in templates/entity_templates.json.
-> curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CGH6TXS6PAXHWY79KCGKVZGV"}'
-[{"id":"01CGH6VKAKN4BQRQWF5NX6ZNS2","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CGH6TXS6PAXHWY79KCGKVZGV","target":"01CGH6VKAKN4BQRQWF5NX6ZNS2"}'
-{"ID":"01CGH399MZYQZX71V36YH4XZEW"}
+> curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ"}'
+[{"id":"01CHNKEKCWT34W50C2JY18YJYE","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
+> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","target":"01CHNKEKCWT34W50C2JY18YJYE"}'
+{"ID":"01CHNKFCTJWZ4PV3BJGFZ1QY4R"}
 // Target is a PC ID in /list results
 
-// Paste token in config_client.json: {... "app": {"token": 01CGH6TXS6PAXHWY79KCGKVZGV,...}}
+// Paste token in config_client.json: {... "app": {"token": 01CHNKE1NZERJ37PHVAQ0STBWQ,...}}
 > make client && bin/game_client bin/config_client.json
-> {"type":"move","action":{"source":"01CGH6VKAKN4BQRQWF5NX6ZNS2","target":"01CGH6VKAKN4BQRQWF5NX6ZNS2","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
+> {"type":"move","action":{"source":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","target":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
 
 ## TODO
@@ -65,7 +66,11 @@
 - [x] Save pool ID in token.
 - [x] Save PC + Delete all token-associated data.
 - [x] Add use cases for entity (create/delete) and token(create/delete)
-- [ ] Add CorePool for entities
+- [x] Switch nats to redis pub/sub
+- [x] Add Pool for listeners + ListenerMapper Set/Get
+- [x] Del for everything (not yet but token/entity ok)
+- [x] Put everything as usecase and use (almost) only them in controllers (not yet but entity/token ok)
+- [ ] Integration test binary with correct set
 - [ ] Add server ack sending to client (and client resend)
 - [ ] Add minimal graphic interface to client (minimal calls and print entity states)
 - [ ] Implement tool to generate/check/visualize sectors and entity movements

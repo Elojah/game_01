@@ -26,7 +26,8 @@ type E struct {
 
 // QMapper must be implemented by a queue.
 type QMapper interface {
-	SendEvent(E, ulid.ID) error
+	PublishEvent(E, ulid.ID) error
+	SubscribeEvent(ulid.ID) *Subscription
 }
 
 // Mapper wraps action interactions.

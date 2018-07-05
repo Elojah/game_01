@@ -1,58 +1,131 @@
 package token
 
 import (
+	"net"
 	"time"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	uce "github.com/elojah/game_01/pkg/usecase/entity"
+	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
 )
 
 // T wraps use cases around token object.
 type T struct {
+	AccountMapper account.Mapper
 	account.TokenMapper
 
 	EntityMapper entity.Mapper
 	entity.PCMapper
 
-	event.QRecurrerMapper
-	event.QListenerMapper
+	listener.L
+	recurrer.R
 
 	entity.PermissionMapper
 
 	sector.EntitiesMapper
 }
 
+// Get retrieves a token and check IP validity.
+func (t T) Get(id ulid.ID, addr string) (account.Token, error) {
+
+	logger := log.With().
+		Str("token", id.String()).
+		Str("addr", addr).
+		Str("usecase", "get").
+		Logger()
+
+	// #Search message UUID in storage.
+	tok, err := t.GetToken(account.TokenSubset{ID: id})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		return account.Token{}, err
+	}
+
+	// #Match message UUID with source IP.
+	expected, _, _ := net.SplitHostPort(tok.IP.String())
+	actual, _, _ := net.SplitHostPort(addr)
+	if expected != actual {
+		err := account.ErrWrongIP
+		logger.Error().Err(err).Str("expected", expected).Str("actual", actual).Msg("invalid IP")
+		return account.Token{}, err
+	}
+	return tok, nil
+}
+
+// New creates a new token from account payload A. Returns an error if the account is invalid.
+func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
+
+	logger := log.With().
+		Str("account", accountPayload.ID.String()).
+		Str("action", "new").
+		Logger()
+
+	// #Search account in redis
+	a, err := t.AccountMapper.GetAccount(account.Subset{
+		Username: accountPayload.Username,
+	})
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to get account")
+		return account.Token{}, err
+	}
+	if a.Password != accountPayload.Password {
+		err := account.ErrWrongCredentials
+		logger.Error().Err(err).Msg("failed to authenticate")
+		return account.Token{}, err
+	}
+
+	// #Identify origin IP
+	ip, err := net.ResolveUDPAddr("udp", addr)
+	if err != nil {
+		logger.Error().Err(err).Str("address", addr).Msg("failed to get valid IP")
+		return account.Token{}, err
+	}
+
+	// #Set a new token
+	token := account.Token{
+		ID:      ulid.NewID(),
+		Account: a.ID,
+		IP:      ip,
+	}
+	if err := t.SetToken(token); err != nil {
+		logger.Error().Err(err).Msg("failed to create token")
+		return account.Token{}, err
+	}
+
+	return token, nil
+}
+
 // Disconnect closes a token and all entities/listener/sync associated.
 func (t T) Disconnect(id ulid.ID) error {
 	logger := log.With().
 		Str("token", id.String()).
-		Str("action", "close").
+		Str("action", "disconnect").
 		Logger()
 
-	// #Retrieve token
+		// #Retrieve token
 	tok, err := t.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to retrieve token")
+		logger.Error().Err(err).Msg("failed to close listener")
 		return err
 	}
 
 	// #Close token listener
 	go func() {
-		if err := t.SendListener(event.Listener{ID: tok.ID, Action: event.Close}, tok.CorePool); err != nil {
+		if err := t.L.Delete(id); err != nil {
 			logger.Error().Err(err).Msg("failed to close listener")
 		}
 	}()
 
 	// #Close token recurrer
 	go func() {
-		if err := t.SendRecurrer(event.Recurrer{ID: tok.ID, Action: event.Close}, tok.SyncPool); err != nil {
-			logger.Error().Err(err).Msg("failed to close recurrer")
+		if err := t.R.Delete(id); err != nil {
+			logger.Error().Err(err).Msg("failed to close listener")
 		}
 	}()
 
@@ -82,16 +155,20 @@ func (t T) Disconnect(id ulid.ID) error {
 	}
 	ucentity := uce.E{
 		EntityMapper:     t.EntityMapper,
-		QRecurrerMapper:  t.QRecurrerMapper,
-		QListenerMapper:  t.QListenerMapper,
 		PermissionMapper: t.PermissionMapper,
 		EntitiesMapper:   t.EntitiesMapper,
+		L:                t.L,
 	}
 	for _, permission := range permissions {
 		targetID := ulid.MustParse(permission.Target)
 		if err := ucentity.Disconnect(targetID, tok); err != nil {
 			logger.Error().Err(err).Str("entity", targetID.String()).Msg("failed to disconnect entity")
 		}
+	}
+
+	if err := t.DelToken(account.TokenSubset{ID: id}); err != nil {
+		logger.Error().Err(err).Str("token", id.String()).Msg("failed to delete token")
+		return err
 	}
 
 	return nil

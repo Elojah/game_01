@@ -36,7 +36,6 @@ func (l *Launcher) Up(configs services.Configs) error {
 
 	sconfig := Config{}
 	if err := sconfig.Dial(configs[l.ns.Revoker]); err != nil {
-		// Add namespace key when returning error with logrus
 		return err
 	}
 	return l.a.Dial(sconfig)

@@ -4,27 +4,22 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/token"
 )
 
 type handler struct {
-	account.TokenMapper
-	AccountMapper account.Mapper
-
 	entity.PCLeftMapper
-	entity.PCMapper
 	entity.TemplateMapper
-	EntityMapper entity.Mapper
 
-	event.QListenerMapper
 	event.QMapper
-	event.QRecurrerMapper
 
-	infra.CoreMapper
+	listener.L
+
 	infra.SyncMapper
 
 	entity.PermissionMapper
@@ -32,6 +27,8 @@ type handler struct {
 	sector.EntitiesMapper
 	sector.StarterMapper
 	SectorMapper sector.Mapper
+
+	token.T
 
 	srv *http.Server
 }

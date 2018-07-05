@@ -1,7 +1,6 @@
 package main
 
 import (
-	nats "github.com/nats-io/go-nats"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/ability"
@@ -26,7 +25,6 @@ type app struct {
 
 	event.QListenerMapper
 	event.QMapper
-	event.SubscriptionMapper
 	EventMapper event.Mapper
 
 	infra.CoreMapper
@@ -56,13 +54,13 @@ func (a *app) Dial(c Config) error {
 func (a *app) Start() {
 	logger := log.With().Str("core", a.id.String()).Logger()
 
-	sub, err := a.SetSubscription(a.id.String(), a.Listener)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to sub")
-		return
-	}
 	a.subs = make(map[ulid.ID]*event.Subscription)
-	a.subs[a.id] = sub
+	a.subs[a.id] = a.SubscribeListener(a.id)
+	go func(sub *event.Subscription) {
+		for msg := range sub.Channel() {
+			go a.AddListener(msg)
+		}
+	}(a.subs[a.id])
 
 	a.seqs = make(map[ulid.ID]*Sequencer)
 
@@ -81,11 +79,11 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) Listener(msg *nats.Msg) {
+func (a *app) AddListener(msg *event.Message) {
 	logger := log.With().Str("app", a.id.String()).Logger()
 
 	var listenerS storage.Listener
-	if _, err := listenerS.Unmarshal(msg.Data); err != nil {
+	if _, err := listenerS.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal listener")
 		return
 	}
@@ -94,16 +92,16 @@ func (a *app) Listener(msg *nats.Msg) {
 
 	switch listener.Action {
 	case event.Open:
-		seq := NewSequencer(a.id, a.limit, a.EventMapper, a.Apply)
-		a.seqs[listener.ID] = seq
-		seq.Start()
+		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventMapper, a.Apply)
+		a.seqs[listener.ID].Start()
 
-		sub, err := a.SetSubscription(id, seq.MsgHandler)
-		if err != nil {
-			logger.Error().Err(err).Str("listener", id).Msg("failed to sub")
-			return
-		}
-		a.subs[listener.ID] = sub
+		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)
+
+		go func(seq *Sequencer, sub *event.Subscription) {
+			for msg := range sub.Channel() {
+				seq.Handler(msg)
+			}
+		}(a.seqs[listener.ID], a.subs[listener.ID])
 
 		logger.Info().Str("listener", id).Msg("listening")
 	case event.Close:

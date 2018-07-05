@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/mux"
+	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
 )
 
@@ -26,7 +27,13 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers.Add(muxl)
 
-	rd := newReader(&m)
+	c := client.C{}
+	cl := c.NewLauncher(client.Namespaces{
+		Client: "client",
+	}, "client")
+	launchers.Add(cl)
+
+	rd := newReader(&c)
 	rdl := rd.NewLauncher(Namespaces{
 		App: "app",
 	}, "app")
@@ -38,9 +45,9 @@ func run(prog string, filename string) {
 	}
 
 	log.Info().Msg("client up")
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGHUP)
-	for sig := range c {
+	cs := make(chan os.Signal, 1)
+	signal.Notify(cs, syscall.SIGHUP)
+	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
 			launchers.Down()

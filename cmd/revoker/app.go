@@ -8,6 +8,8 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
 	"github.com/elojah/game_01/pkg/usecase/token"
 	"github.com/rs/zerolog/log"
 )
@@ -22,6 +24,9 @@ type app struct {
 
 	event.QRecurrerMapper
 	event.QListenerMapper
+
+	listener.L
+	recurrer.R
 
 	sector.EntitiesMapper
 
@@ -52,8 +57,8 @@ func (a *app) Start() {
 		TokenMapper:      a.TokenMapper,
 		EntityMapper:     a.EntityMapper,
 		PCMapper:         a.PCMapper,
-		QRecurrerMapper:  a.QRecurrerMapper,
-		QListenerMapper:  a.QListenerMapper,
+		L:                a.L,
+		R:                a.R,
 		PermissionMapper: a.PermissionMapper,
 		EntitiesMapper:   a.EntitiesMapper,
 	}

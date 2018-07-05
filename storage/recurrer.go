@@ -6,21 +6,21 @@ import (
 )
 
 // NewRecurrer converts a domain recurrer to a storage recurrer.
-func NewRecurrer(recurrer event.Recurrer) Recurrer {
-	return Recurrer{
-		ID:       [16]byte(recurrer.ID),
+func NewRecurrer(recurrer event.Recurrer) *Recurrer {
+	return &Recurrer{
 		EntityID: [16]byte(recurrer.EntityID),
 		TokenID:  [16]byte(recurrer.TokenID),
 		Action:   uint8(recurrer.Action),
+		Pool:     [16]byte(recurrer.Pool),
 	}
 }
 
 // Domain converts a storage user into a domain user.
 func (r Recurrer) Domain() event.Recurrer {
 	return event.Recurrer{
-		ID:       ulid.ID(r.ID),
 		EntityID: ulid.ID(r.EntityID),
 		TokenID:  ulid.ID(r.TokenID),
 		Action:   event.QAction(r.Action),
+		Pool:     ulid.ID(r.Pool),
 	}
 }
