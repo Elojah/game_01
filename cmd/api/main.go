@@ -9,6 +9,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/usecase/listener"
+	"github.com/elojah/game_01/pkg/usecase/recurrer"
 	"github.com/elojah/game_01/pkg/usecase/token"
 	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/mux"
@@ -31,6 +33,14 @@ func run(prog string, filename string) {
 	launchers.Add(rdl)
 	rdx := redisx.NewService(&rd)
 
+	// redis-lru
+	rdlru := redis.Service{}
+	rdlrul := rdlru.NewLauncher(redis.Namespaces{
+		Redis: "redis-lru",
+	}, "redis-lru")
+	launchers.Add(rdlrul)
+	rdlrux := redisx.NewService(&rdlru)
+
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
@@ -47,7 +57,24 @@ func run(prog string, filename string) {
 		M:       &m,
 		C:       &c,
 		QMapper: rdx,
-		T:       token.T{},
+		T: token.T{
+			AccountMapper: rdx,
+			TokenMapper:   rdx,
+			EntityMapper:  rdlrux,
+			PCMapper:      rdx,
+			L: listener.L{
+				QListenerMapper: rdx,
+				ListenerMapper:  rdx,
+				CoreMapper:      rdx,
+			},
+			R: recurrer.R{
+				QRecurrerMapper: rdx,
+				RecurrerMapper:  rdx,
+				SyncMapper:      rdx,
+			},
+			PermissionMapper: rdx,
+			EntitiesMapper:   rdlrux,
+		},
 	}
 	hl := h.NewLauncher(Namespaces{
 		API: "api",

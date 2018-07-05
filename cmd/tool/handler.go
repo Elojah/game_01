@@ -43,6 +43,8 @@ func (h *handler) Dial(c Config) error {
 	mux.HandleFunc("/entity", h.entity)
 	mux.HandleFunc("/sector", h.sector)
 
+	mux.HandleFunc("/listener", h.listener)
+
 	h.srv = &http.Server{
 		Addr:    c.Address,
 		Handler: mux,
