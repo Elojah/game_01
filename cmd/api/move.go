@@ -15,7 +15,10 @@ import (
 
 func (h *handler) move(ctx context.Context, msg dto.Message) error {
 
-	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
+	logger := log.With().
+		Str("packet", ctx.Value(mux.Key("packet")).(string)).
+		Str("action", "move").
+		Logger()
 
 	a := msg.Action.(dto.Move)
 	source := ulid.ID(a.Source)
@@ -31,16 +34,20 @@ func (h *handler) move(ctx context.Context, msg dto.Message) error {
 		},
 	}
 
+	logger = log.With().Str("event", e.ID.String()).Logger()
+
 	go func() {
 		if err := h.PublishEvent(e, source); err != nil {
-			logger.Error().Err(err).Str("event", e.ID.String()).Msg("event rejected")
+			logger.Error().Err(err).Msg("event rejected")
 		}
+		logger.Info().Str("source", source.String()).Msg("send event")
 	}()
 
 	go func() {
 		if err := h.PublishEvent(e, target); err != nil {
-			logger.Error().Err(err).Str("event", e.ID.String()).Msg("event rejected")
+			logger.Error().Err(err).Msg("event rejected")
 		}
+		logger.Info().Str("target", target.String()).Msg("send event")
 	}()
 
 	return nil

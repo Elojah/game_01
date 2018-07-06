@@ -18,7 +18,7 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/login").Logger()
+	logger := log.With().Str("route", "/login").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var accountPayload account.A
@@ -28,10 +28,12 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger = logger.With().Str("account", accountPayload.ID.String()).Logger()
+
 	// #Create token from account
 	token, err := h.T.New(accountPayload, r.RemoteAddr)
 	if err != nil {
-		logger.Error().Err(err).Str("account", accountPayload.ID.String()).Msg("failed to create token from account")
+		logger.Error().Err(err).Msg("failed to create token from account")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
