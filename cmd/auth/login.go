@@ -38,10 +38,12 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger = logger.With().Str("listener", listener.ID.String()).Logger()
+
 	// #Set a new listener for this token
 	listener, err := h.L.New(token.ID)
 	if err != nil {
-		logger.Error().Err(err).Str("listener", listener.ID.String()).Msg("failed to create token listener")
+		logger.Error().Err(err).Msg("failed to create token listener")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
@@ -53,6 +55,8 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
+
+	logger.Info().Msg("login successed")
 
 	// #Write response
 	w.WriteHeader(http.StatusOK)

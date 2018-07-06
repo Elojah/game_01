@@ -25,7 +25,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/create").Logger()
+	logger := log.With().Str("route", "/pc/create").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var setPC dto.SetPC
@@ -34,6 +34,8 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+
+	logger = log.With().Str("token", setPC.Token.String()).Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(setPC.Token, r.RemoteAddr)
@@ -64,6 +66,8 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger = log.With().Str("template", setPC.Type.String()).Logger()
+
 	// #Retrieve template for new PC.
 	template, err := h.GetEntityTemplate(entity.TemplateSubset{Type: setPC.Type})
 	if err != nil {
@@ -79,6 +83,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	logger = log.With().Str("sector", start.SectorID.String()).Logger()
 	sec, err := h.SectorMapper.GetSector(sector.Subset{ID: start.SectorID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
@@ -89,6 +94,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	// #Create PC from the template and put it in a random starter sector.
 	pc := entity.PC(template)
 	pc.ID = ulid.NewID()
+	logger = log.With().Str("pc", pc.ID.String()).Logger()
 	pc.Position = entity.Position{
 		SectorID: sec.ID,
 		Coord:    geometry.Vec3{X: sec.Size.X * rand.Float64(), Y: sec.Size.Y * rand.Float64(), Z: sec.Size.Z * rand.Float64()},
@@ -104,6 +110,8 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info().Msg("pc creation success")
+
 	// Write response
 	w.WriteHeader(http.StatusOK)
 }
@@ -117,7 +125,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/list").Logger()
+	logger := log.With().Str("route", "/pc/list").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var listPC dto.ListPC
@@ -127,6 +135,8 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger = log.With().Str("token", listPC.Token.String()).Logger()
+
 	// #Get and check token.
 	tok, err := h.T.Get(listPC.Token, r.RemoteAddr)
 	if err != nil {
@@ -135,10 +145,12 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger = log.With().Str("account", tok.Account.String()).Logger()
+
 	// #Retrieve PCs by account.
 	pcs, err := h.ListPC(entity.PCSubset{AccountID: tok.Account})
 	if err != nil {
-		logger.Error().Err(err).Str("account", tok.Account.String()).Msg("failed to retrieve PCs")
+		logger.Error().Err(err).Msg("failed to retrieve PCs")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -146,10 +158,12 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	// #Marshal results.
 	raw, err := json.Marshal(pcs)
 	if err != nil {
-		logger.Error().Err(err).Str("account", tok.Account.String()).Msg("failed to marshal PCs")
+		logger.Error().Err(err).Msg("failed to marshal PCs")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	logger.Info().Msg("pc list success")
 
 	// #Write response
 	w.WriteHeader(http.StatusOK)
