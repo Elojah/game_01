@@ -1,38 +1,88 @@
-# game_01
+# GAME_01
+> GAME_01 is a multi services scalable MMORPG server
 
-## How to start
-
+GAME_01 is an UDP client/server with its own ACK protocol. Client writes user action and send them to API while receiving world data from sync. Core establish world rules and events order.
 ```
-// Start services
-> docker-compose -d
-> make dep
-> make sync && bin/game_sync bin/config_sync.json
-> make core && bin/game_core bin/config_core.json
-> make api && bin/game_api bin/config_api.json
-> make auth && bin/game_auth bin/config_auth.json
-> make tool && bin/game_tool bin/config_tool.json
+client <-> api -> core -> redis-lru
+redis-lru -> sync -> client
+```
+Authentication and char creation/connect is handled by auth and associate a session token at each login.
+Revoker regularly revokes unused tokens.
+GAME_01 also comes with a Tool API to create world data like entities/abilities/sectors.
 
+## Installation
+
+OS X & Linux & Windows:
+
+```sh
+go get -u github.com/elojah/game_01
+```
+
+## Usage example
+
+```sh
 // Fill static data
-> curl -k -X POST https://127.0.0.1:8081/entity/template -d @templates/entity_templates.json
-> curl -k -X POST https://127.0.0.1:8081/sector -d @templates/sector.json
-> curl -k -X POST https://127.0.0.1:8081/sector/starter -d @templates/sector_starter.json
+curl -k -X POST https://127.0.0.1:8081/entity/template -d @templates/entity_templates.json
+curl -k -X POST https://127.0.0.1:8081/sector -d @templates/sector.json
+curl -k -X POST https://127.0.0.1:8081/sector/starter -d @templates/sector_starter.json
 
 // Obtain access token
-> curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
-> curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
+curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
+curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
 {"ID":"01CHNKE1NZERJ37PHVAQ0STBWQ"}
-> curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","type":"01CE3J5ASXJSVC405QTES4M221"}'
+curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","type":"01CE3J5ASXJSVC405QTES4M221"}'
 // Token is token obtained at login and type is an entity ID described in templates/entity_templates.json.
-> curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ"}'
+curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ"}'
 [{"id":"01CHNKEKCWT34W50C2JY18YJYE","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-> curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","target":"01CHNKEKCWT34W50C2JY18YJYE"}'
+curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","target":"01CHNKEKCWT34W50C2JY18YJYE"}'
 {"ID":"01CHNKFCTJWZ4PV3BJGFZ1QY4R"}
 // Target is a PC ID in /list results
 
 // Paste token in config_client.json: {... "app": {"token": 01CHNKE1NZERJ37PHVAQ0STBWQ,...}}
-> make client && bin/game_client bin/config_client.json
-> {"type":"move","action":{"source":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","target":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
+make client && bin/game_client bin/config_client.json
+{"type":"move","action":{"source":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","target":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
+
+_For more examples and usage, please refer to the [Wiki][wiki]._
+
+## Development setup
+
+```sh
+// Start services
+docker-compose -d
+make dep
+make sync && bin/game_sync bin/config_sync.json
+make core && bin/game_core bin/config_core.json
+make api && bin/game_api bin/config_api.json
+make auth && bin/game_auth bin/config_auth.json
+make tool && bin/game_tool bin/config_tool.json
+```
+
+## Release History
+
+* 0.0.1
+    * Work in progress
+
+## Meta
+
+Elojah – swingcastor@gmail.com
+
+Distributed under the GNU AFFERO GENERAL PUBLIC license. See ``LICENSE`` for more information.
+
+https://github.com/elojah/
+
+## Contributing
+
+1. Fork it (<https://github.com/yourname/yourproject/fork>)
+2. Create your feature branch (`git checkout -b feature/fooBar`)
+3. Commit your changes (`git commit -am 'Add some fooBar'`)
+4. Push to the branch (`git push origin feature/fooBar`)
+5. Create a new Pull Request
+
+<!-- Markdown link & img dfn's -->
+[travis-image]: __
+[travis-url]: __
+[wiki]: https://github.com/yourname/yourproject/wiki
 
 ## TODO
 - [x] Remove NATS streaming
