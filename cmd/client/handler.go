@@ -14,6 +14,12 @@ type handler struct {
 	*mux.M
 }
 
+func (h *handler) Dial() error {
+	h.M.Handler = h.handle
+	h.M.Listen()
+	return nil
+}
+
 func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()

@@ -34,10 +34,18 @@ func run(prog string, filename string) {
 	launchers.Add(cl)
 
 	rd := newReader(&c)
-	rdl := rd.NewLauncher(Namespaces{
-		App: "app",
-	}, "app")
+	rdl := rd.NewLauncher(NamespacesReader{
+		Reader: "reader",
+	}, "reader")
 	launchers.Add(rdl)
+
+	h := handler{
+		M: &m,
+	}
+	hl := h.NewLauncher(NamespacesHandler{
+		Handler: "handler",
+	}, "handler")
+	launchers.Add(hl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

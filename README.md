@@ -29,18 +29,18 @@ curl -k -X POST https://127.0.0.1:8081/sector/starter -d @templates/sector_start
 // Obtain access token
 curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
 curl -k -X POST https://127.0.0.1:8080/login -d '{"username": "test", "password": "test"}'
-{"ID":"01CHNKE1NZERJ37PHVAQ0STBWQ"}
-curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","type":"01CE3J5ASXJSVC405QTES4M221"}'
+{"ID":"01CHTCY2K1DXYS1DM1ZQWQ47K7"}
+curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CHTCY2K1DXYS1DM1ZQWQ47K7","type":"01CE3J5ASXJSVC405QTES4M221"}'
 // Token is token obtained at login and type is an entity ID described in templates/entity_templates.json.
-curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ"}'
-[{"id":"01CHNKEKCWT34W50C2JY18YJYE","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHNKE1NZERJ37PHVAQ0STBWQ","target":"01CHNKEKCWT34W50C2JY18YJYE"}'
-{"ID":"01CHNKFCTJWZ4PV3BJGFZ1QY4R"}
+curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CHTCY2K1DXYS1DM1ZQWQ47K7"}'
+[{"id":"01CHTBM97AKRCPH7PBTBV61PPW","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
+curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHTCY2K1DXYS1DM1ZQWQ47K7","target":"01CHTBM97AKRCPH7PBTBV61PPW"}'
+{"ID":"01CHTBNJ1YGPW8DWAR1BTWNJ9K"}
 // Target is a PC ID in /list results
 
-// Paste token in config_client.json: {... "app": {"token": 01CHNKE1NZERJ37PHVAQ0STBWQ,...}}
+// Paste token in config_client.json: {... "app": {"token": 01CHTCY2K1DXYS1DM1ZQWQ47K7,...}}
 make client && bin/game_client bin/config_client.json
-{"type":"move","action":{"source":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","target":"01CHNKFCTJWZ4PV3BJGFZ1QY4R","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
+{"type":"move","action":{"source":"01CHTBNJ1YGPW8DWAR1BTWNJ9K","target":"01CHTBNJ1YGPW8DWAR1BTWNJ9K","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
 
 _For more examples and usage, please refer to the [Wiki][wiki]._
@@ -120,6 +120,7 @@ https://github.com/elojah/
 - [x] Add Pool for listeners + ListenerMapper Set/Get
 - [x] Del for everything (not yet but token/entity ok)
 - [x] Put everything as usecase and use (almost) only them in controllers (not yet but entity/token ok)
+- [ ] Prevent multiple /login -> retrieve multiple tokens
 - [ ] Integration test binary with correct set
 - [ ] Add server ack sending to client (and client resend)
 - [ ] Add minimal graphic interface to client (minimal calls and print entity states)
