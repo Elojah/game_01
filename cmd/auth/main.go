@@ -47,21 +47,25 @@ func run(prog string, filename string) {
 	}, "auth")
 	launchers.Add(hl)
 
-	lis := listener.L{
+	l := listener.L{
 		QListenerMapper: rdx,
 		ListenerMapper:  rdx,
 		CoreMapper:      rdx,
 	}
-	rec := recurrer.R{
-		QRecurrerMapper: rdx,
-		RecurrerMapper:  rdx,
-		SyncMapper:      rdx,
-	}
-	h.L = lis
-	h.R = rec
+	h.EntitiesMapper = rdlrux
+	h.PCLeftMapper = rdx
+	h.PermissionMapper = rdx
+	h.L = l
+	h.QMapper = rdx
+	h.SectorMapper = rdx
+	h.StarterMapper = rdx
 	h.T = token.T{
-		L:                lis,
-		R:                rec,
+		L: l,
+		R: recurrer.R{
+			QRecurrerMapper: rdx,
+			RecurrerMapper:  rdx,
+			SyncMapper:      rdx,
+		},
 		AccountMapper:    rdx,
 		EntityMapper:     rdlrux,
 		TokenMapper:      rdx,
@@ -69,13 +73,6 @@ func run(prog string, filename string) {
 		PermissionMapper: rdx,
 		EntitiesMapper:   rdlrux,
 	}
-
-	h.EntitiesMapper = rdlrux
-	h.PCLeftMapper = rdx
-	h.PermissionMapper = rdx
-	h.QMapper = rdx
-	h.SectorMapper = rdx
-	h.StarterMapper = rdx
 	h.TemplateMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {

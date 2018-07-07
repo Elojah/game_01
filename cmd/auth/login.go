@@ -31,32 +31,34 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("account", accountPayload.ID.String()).Logger()
 
 	// #Create token from account
-	token, err := h.T.New(accountPayload, r.RemoteAddr)
+	tok, err := h.T.New(accountPayload, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token from account")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
-	logger = logger.With().Str("listener", listener.ID.String()).Logger()
+	logger = logger.With().Str("token", tok.ID.String()).Logger()
 
 	// #Set a new listener for this token
-	listener, err := h.L.New(token.ID)
+	listener, err := h.L.New(tok.ID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token listener")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
+	logger = logger.With().Str("listener", listener.ID.String()).Logger()
+
 	// #Marshal token for response
-	raw, err := json.Marshal(token)
+	raw, err := json.Marshal(tok)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal token")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
-	logger.Info().Msg("login successed")
+	logger.Info().Msg("login success")
 
 	// #Write response
 	w.WriteHeader(http.StatusOK)

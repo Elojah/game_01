@@ -181,7 +181,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/connect").Logger()
+	logger := log.With().Str("route", "/pc/connect").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var connectPC dto.ConnectPC
@@ -190,6 +190,9 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+
+	logger = log.With().Str("token", connectPC.Token.String()).Logger()
+	logger = log.With().Str("pc", connectPC.Target.String()).Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(connectPC.Token, r.RemoteAddr)
@@ -200,7 +203,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if tok.Entity.Time() != 0 {
-		logger.Error().Str("entity", tok.Entity.String()).Str("pc", tok.PC.String()).Msg("packet rejected")
+		logger.Error().Msg("packet rejected")
 		http.Error(w, "token already in use", http.StatusBadRequest)
 		return
 	}
@@ -211,7 +214,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		ID:        connectPC.Target,
 	})
 	if err != nil {
-		logger.Error().Err(err).Str("account", tok.Account.String()).Str("id", connectPC.Target.String()).Msg("failed to retrieve PC")
+		logger.Error().Err(err).Msg("failed to retrieve PC")
 		http.Error(w, "failed to connect", http.StatusBadRequest)
 		return
 	}
@@ -219,15 +222,17 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	// #Creates entity cloned from pc.
 	e := entity.E(pc)
 	e.ID = ulid.NewID()
+	logger = log.With().Str("entity", e.ID.String()).Logger()
 	if err := h.EntityMapper.SetEntity(e, time.Now().UnixNano()); err != nil {
-		logger.Error().Err(err).Str("id", e.ID.String()).Msg("failed to create entity from PC")
+		logger.Error().Err(err).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
+	logger = log.With().Str("sector", pc.Position.SectorID.String()).Logger()
 	// #Add entity to PC sector.
 	if err := h.AddEntityToSector(e.ID, pc.Position.SectorID); err != nil {
-		logger.Error().Err(err).Str("id", e.ID.String()).Str("sector", pc.Position.SectorID.String()).Msg("failed to add entity to sector")
+		logger.Error().Err(err).Msg("failed to add entity to sector")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
@@ -245,15 +250,16 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates a new listener for this entity.
 	listener, err := h.L.New(e.ID)
+	logger = log.With().Str("listener", listener.ID.String()).Logger()
 	if err != nil {
-		logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to create entity listener")
+		logger.Error().Err(err).Msg("failed to create entity listener")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 	}
 
 	// #Creates a new recurrer for this token/entity.
 	recurrer, err := h.R.New(e.ID, tok.ID)
 	if err != nil {
-		logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to create entity recurrer")
+		logger.Error().Err(err).Msg("failed to create entity recurrer")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 	}
 
@@ -276,6 +282,8 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info().Msg("login success")
+
 	// #Write response
 	w.WriteHeader(http.StatusOK)
 	w.Write(raw)
@@ -292,7 +300,7 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/disconnect").Logger()
+	logger := log.With().Str("route", "/pc/disconnect").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var disconnectPC dto.DisconnectPC
@@ -301,6 +309,8 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+
+	logger = log.With().Str("token", disconnectPC.Token.String()).Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(disconnectPC.Token, r.RemoteAddr)
@@ -315,4 +325,9 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 		return
 	}
+
+	logger.Info().Msg("disconnect success")
+
+	// #Write response
+	w.WriteHeader(http.StatusOK)
 }

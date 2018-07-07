@@ -76,6 +76,7 @@ func run(prog string, filename string) {
 			EntitiesMapper:   rdlrux,
 		},
 	}
+
 	hl := h.NewLauncher(Namespaces{
 		API: "api",
 	}, "api")

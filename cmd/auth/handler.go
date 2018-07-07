@@ -14,15 +14,14 @@ import (
 
 type handler struct {
 	entity.PCLeftMapper
+	entity.PermissionMapper
 	entity.TemplateMapper
 
 	event.QMapper
 
-	listener.L
-
 	infra.SyncMapper
 
-	entity.PermissionMapper
+	listener.L
 
 	sector.EntitiesMapper
 	sector.StarterMapper

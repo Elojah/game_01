@@ -21,7 +21,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/subscribe").Logger()
+	logger := log.With().Str("route", "/subscribe").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var a account.A
@@ -31,6 +31,8 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	a.ID = ulid.NewID()
+
+	logger = log.With().Str("account", a.ID.String()).Logger()
 
 	// #Check username is unique
 	_, err := h.AccountMapper.GetAccount(account.Subset{
@@ -68,6 +70,8 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to marshal response", http.StatusInternalServerError)
 		return
 	}
+
+	logger.Info().Msg("subscribe success")
 
 	// #Write response
 	w.WriteHeader(http.StatusOK)
