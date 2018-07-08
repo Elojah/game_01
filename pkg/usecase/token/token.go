@@ -92,6 +92,8 @@ func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 // Disconnect closes a token and all entities/listener/sync associated.
 func (t T) Disconnect(id ulid.ID) error {
 
+	var softErr error
+
 	// #Retrieve token
 	tok, err := t.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
@@ -100,21 +102,28 @@ func (t T) Disconnect(id ulid.ID) error {
 
 	// #Close token listener
 	if err := t.L.Delete(id); err != nil {
-		return errors.Wrap(err, "disconnect")
+		softErr = errors.Wrap(err, "disconnect")
 	}
 
 	// #Close token recurrer
 	if err := t.R.Delete(id); err != nil {
-		return errors.Wrap(err, "disconnect")
+		softErr = errors.Wrap(err, "disconnect")
+	}
+
+	// #Reset token entity.
+	tokEntity := tok.Entity
+	tok.Entity = ulid.ID{}
+	if err := t.SetToken(tok); err != nil {
+		softErr = err
 	}
 
 	// #Retrieve entity
 	e, err := t.EntityMapper.GetEntity(entity.Subset{
-		ID:    tok.Entity,
+		ID:    tokEntity,
 		MaxTS: time.Now().UnixNano(),
 	})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s", tok.Entity.String())
+		return errors.Wrapf(err, "get entity %s", tokEntity.String())
 	}
 
 	// #Save last entity state into PC
@@ -138,13 +147,9 @@ func (t T) Disconnect(id ulid.ID) error {
 	for _, permission := range permissions {
 		targetID := ulid.MustParse(permission.Target)
 		if err := ucentity.Disconnect(targetID, tok); err != nil {
-			return errors.Wrapf(err, "disconnect entity %s from token %s", targetID.String(), tok.ID.String())
+			softErr = errors.Wrapf(err, "disconnect entity %s from token %s", targetID.String(), tok.ID.String())
 		}
 	}
 
-	if err := t.DelToken(account.TokenSubset{ID: id}); err != nil {
-		return errors.Wrapf(err, "delete token %s", id.String())
-	}
-
-	return nil
+	return softErr
 }

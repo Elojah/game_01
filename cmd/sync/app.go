@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -67,7 +69,9 @@ func (a *app) Start() {
 func (a *app) Close() {
 	a.sub.Unsubscribe()
 	for _, r := range a.recurrers {
-		r.Close()
+		if r != nil {
+			r.Close()
+		}
 	}
 }
 
@@ -84,7 +88,10 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	logger = logger.With().Str("recurrer", recurrer.TokenID.String()).Logger()
 
 	if recurrer.Action == event.Close {
-		a.recurrers[recurrer.TokenID].Close()
+		rec := a.recurrers[recurrer.TokenID]
+		if rec != nil {
+			rec.Close()
+		}
 		delete(a.recurrers, recurrer.TokenID)
 		return
 	}
@@ -95,10 +102,9 @@ func (a *app) AddRecurrer(msg *event.Message) {
 		return
 	}
 
-	logger = logger.With().Str("ip", tok.IP.String()).Logger()
-
 	address := *tok.IP
 	address.Port = int(a.port)
+	logger = logger.With().Str("address", address.String()).Logger()
 	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
 		raw, err := dto.NewEntity(e).Marshal(nil)
 		if err != nil {
@@ -106,6 +112,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 			return
 		}
 		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
+		fmt.Println(e)
 		a.Send(raw, &address)
 	})
 	rec.EntityMapper = a.EntityMapper

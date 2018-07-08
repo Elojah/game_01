@@ -31,17 +31,15 @@ func (h *handler) handleEntity(ctx context.Context, raw []byte) error {
 		return err
 	}
 
-	raw, err := json.Marshal(e)
+	raw, err := json.Marshal(e.Domain())
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
 	}
-	n, err := os.Stdout.Write(raw)
-	if err != nil {
+	if _, err = os.Stdout.Write(append(raw, '\n')); err != nil {
 		logger.Error().Err(err).Str("status", "unwritable").Msg("packet rejected")
 		return err
 	}
-	logger.Info().Int("chars", n).Msg("packet rejected")
 	return nil
 }
 
@@ -61,11 +59,9 @@ func (h *handler) handleACK(ctx context.Context, raw []byte) error {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
 	}
-	n, err := os.Stdout.Write(raw)
-	if err != nil {
+	if _, err = os.Stdout.Write(append(raw, '\n')); err != nil {
 		logger.Error().Err(err).Str("status", "unwritable").Msg("packet rejected")
 		return err
 	}
-	logger.Info().Int("chars", n).Msg("packet rejected")
 	return nil
 }

@@ -34,7 +34,7 @@ func (h *handler) move(ctx context.Context, msg dto.Event) error {
 		},
 	}
 
-	logger = log.With().Str("event", e.ID.String()).Logger()
+	logger = logger.With().Str("event", e.ID.String()).Logger()
 
 	go func() {
 		if err := h.PublishEvent(e, source); err != nil {

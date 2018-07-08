@@ -32,7 +32,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 	a.ID = ulid.NewID()
 
-	logger = log.With().Str("account", a.ID.String()).Logger()
+	logger = logger.With().Str("account", a.ID.String()).Logger()
 
 	// #Check username is unique
 	_, err := h.AccountMapper.GetAccount(account.Subset{

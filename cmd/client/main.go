@@ -23,8 +23,8 @@ func run(prog string, filename string) {
 
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
-		M: "server",
-	}, "server")
+		M: "entity",
+	}, "entity")
 	launchers.Add(muxl)
 
 	ma := mux.M{}
@@ -55,9 +55,9 @@ func run(prog string, filename string) {
 	h.M.Handler = h.handleEntity
 
 	ha := handler{
-		M: &m,
+		M: &ma,
 	}
-	hal := h.NewLauncher(NamespacesHandler{
+	hal := ha.NewLauncher(NamespacesHandler{
 		Handler: "handler",
 	}, "handler")
 	launchers.Add(hal)

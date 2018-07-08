@@ -89,7 +89,7 @@ func (a *app) AddListener(msg *event.Message) {
 	}
 	listener := listenerS.Domain()
 	id := listener.ID.String()
-	logger = log.With().Str("listener", id).Uint8("action", uint8(listener.Action)).Logger()
+	logger = logger.With().Str("listener", id).Uint8("action", uint8(listener.Action)).Logger()
 
 	switch listener.Action {
 	case event.Open:

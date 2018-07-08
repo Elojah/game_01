@@ -35,7 +35,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = log.With().Str("token", setPC.Token.String()).Logger()
+	logger = logger.With().Str("token", setPC.Token.String()).Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(setPC.Token, r.RemoteAddr)
@@ -66,7 +66,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = log.With().Str("template", setPC.Type.String()).Logger()
+	logger = logger.With().Str("template", setPC.Type.String()).Logger()
 
 	// #Retrieve template for new PC.
 	template, err := h.GetEntityTemplate(entity.TemplateSubset{Type: setPC.Type})
@@ -83,7 +83,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	logger = log.With().Str("sector", start.SectorID.String()).Logger()
+	logger = logger.With().Str("sector", start.SectorID.String()).Logger()
 	sec, err := h.SectorMapper.GetSector(sector.Subset{ID: start.SectorID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
@@ -93,8 +93,9 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Create PC from the template and put it in a random starter sector.
 	pc := entity.PC(template)
+	pc.Type = pc.ID
 	pc.ID = ulid.NewID()
-	logger = log.With().Str("pc", pc.ID.String()).Logger()
+	logger = logger.With().Str("pc", pc.ID.String()).Logger()
 	pc.Position = entity.Position{
 		SectorID: sec.ID,
 		Coord:    geometry.Vec3{X: sec.Size.X * rand.Float64(), Y: sec.Size.Y * rand.Float64(), Z: sec.Size.Z * rand.Float64()},
@@ -135,7 +136,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = log.With().Str("token", listPC.Token.String()).Logger()
+	logger = logger.With().Str("token", listPC.Token.String()).Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(listPC.Token, r.RemoteAddr)
@@ -145,7 +146,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = log.With().Str("account", tok.Account.String()).Logger()
+	logger = logger.With().Str("account", tok.Account.String()).Logger()
 
 	// #Retrieve PCs by account.
 	pcs, err := h.ListPC(entity.PCSubset{AccountID: tok.Account})
@@ -191,8 +192,8 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = log.With().Str("token", connectPC.Token.String()).Logger()
-	logger = log.With().Str("pc", connectPC.Target.String()).Logger()
+	logger = logger.With().Str("token", connectPC.Token.String()).Logger()
+	logger = logger.With().Str("pc", connectPC.Target.String()).Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(connectPC.Token, r.RemoteAddr)
@@ -222,14 +223,14 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	// #Creates entity cloned from pc.
 	e := entity.E(pc)
 	e.ID = ulid.NewID()
-	logger = log.With().Str("entity", e.ID.String()).Logger()
+	logger = logger.With().Str("entity", e.ID.String()).Logger()
 	if err := h.EntityMapper.SetEntity(e, time.Now().UnixNano()); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
-	logger = log.With().Str("sector", pc.Position.SectorID.String()).Logger()
+	logger = logger.With().Str("sector", pc.Position.SectorID.String()).Logger()
 	// #Add entity to PC sector.
 	if err := h.AddEntityToSector(e.ID, pc.Position.SectorID); err != nil {
 		logger.Error().Err(err).Msg("failed to add entity to sector")
@@ -250,7 +251,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates a new listener for this entity.
 	listener, err := h.L.New(e.ID)
-	logger = log.With().Str("listener", listener.ID.String()).Logger()
+	logger = logger.With().Str("listener", listener.ID.String()).Logger()
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create entity listener")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
@@ -310,7 +311,7 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = log.With().Str("token", disconnectPC.Token.String()).Logger()
+	logger = logger.With().Str("token", disconnectPC.Token.String()).Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(disconnectPC.Token, r.RemoteAddr)

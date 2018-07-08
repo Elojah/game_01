@@ -28,8 +28,6 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = logger.With().Str("account", accountPayload.ID.String()).Logger()
-
 	// #Create token from account
 	tok, err := h.T.New(accountPayload, r.RemoteAddr)
 	if err != nil {
