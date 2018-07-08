@@ -1,8 +1,8 @@
 {
 	"auth": {
 		"address": "127.0.0.1:8080",
-		"cert": "bin/server.crt",
-		"key": "bin/server.key"
+		"cert": "configs/server.crt",
+		"key": "configs/server.key"
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",

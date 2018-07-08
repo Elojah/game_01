@@ -39,7 +39,7 @@ curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CHTCY2K1DXYS1D
 // Target is a PC ID in /list results
 
 // Paste token in config_client.json: {... "app": {"token": 01CHTCY2K1DXYS1DM1ZQWQ47K7,...}}
-make client && bin/game_client bin/config_client.json
+make client && bin/game_client configs/config_client.json
 {"type":"move","action":{"source":"01CHTBNJ1YGPW8DWAR1BTWNJ9K","target":"01CHTBNJ1YGPW8DWAR1BTWNJ9K","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ```
 
@@ -51,11 +51,11 @@ _For more examples and usage, please refer to the [Wiki][wiki]._
 // Start services
 docker-compose -d
 make dep
-make sync && bin/game_sync bin/config_sync.json
-make core && bin/game_core bin/config_core.json
-make api && bin/game_api bin/config_api.json
-make auth && bin/game_auth bin/config_auth.json
-make tool && bin/game_tool bin/config_tool.json
+make sync && bin/game_sync configs/config_sync.json
+make core && bin/game_core configs/config_core.json
+make api && bin/game_api configs/config_api.json
+make auth && bin/game_auth configs/config_auth.json
+make tool && bin/game_tool configs/config_tool.json
 ```
 
 ## Release History
