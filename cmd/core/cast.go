@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/pkg/errors"
+
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
@@ -29,10 +31,10 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		Target: cast.Source.String(),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return account.ErrInsufficientACLs
+		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
 	}
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
 	}
 
 	// #Retrieve ability.
@@ -41,10 +43,10 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return account.ErrInsufficientACLs
+		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 
 	_ = ability
@@ -62,10 +64,10 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		Target: cast.Source.String(),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return account.ErrInsufficientACLs
+		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
 	}
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
 	}
 
 	// #Retrieve ability.
@@ -74,27 +76,27 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return account.ErrInsufficientACLs
+		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 
 	source, err := a.EntityMapper.GetEntity(entity.Subset{ID: cast.Source, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), e.TS.UnixNano())
 	}
 
 	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
 	}
 
 	afb := ability.Affect(&target)
 	if err := a.FeedbackMapper.SetAbilityFeedback(afb); err != nil {
-		return err
+		return errors.Wrapf(err, "set ability feedback %s", afb.ID.String())
 	}
-	return a.PublishEvent(event.E{
+	fb := event.E{
 		ID:     ulid.NewID(),
 		TS:     e.TS,
 		Source: e.Source,
@@ -103,5 +105,6 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 			Source:    source.ID,
 			Target:    target.ID,
 		},
-	}, source.ID)
+	}
+	return errors.Wrapf(a.PublishEvent(fb, source.ID), "publish event %s to %s", fb.ID.String(), e.Source.String())
 }

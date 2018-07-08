@@ -4,6 +4,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/sector"
@@ -11,7 +13,6 @@ import (
 	uce "github.com/elojah/game_01/pkg/usecase/entity"
 	"github.com/elojah/game_01/pkg/usecase/listener"
 	"github.com/elojah/game_01/pkg/usecase/recurrer"
-	"github.com/pkg/errors"
 )
 
 // T wraps use cases around token object.
@@ -43,8 +44,7 @@ func (t T) Get(id ulid.ID, addr string) (account.Token, error) {
 	expected, _, ee := net.SplitHostPort(tok.IP.String())
 	actual, _, ea := net.SplitHostPort(addr)
 	if expected != actual || ee != nil || ea != nil {
-		err := account.ErrWrongIP
-		return account.Token{}, errors.Wrapf(err, "different ips %s != %s", expected, actual)
+		return account.Token{}, errors.Wrapf(account.ErrWrongIP, "different ips %s != %s", expected, actual)
 	}
 	return tok, nil
 }
@@ -60,8 +60,10 @@ func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 		return account.Token{}, errors.Wrapf(err, "get account with username %s", accountPayload.Username)
 	}
 	if a.Password != accountPayload.Password {
-		err := account.ErrWrongCredentials
-		return account.Token{}, errors.Wrap(err, "passwords don't match")
+		return account.Token{}, errors.Wrap(account.ErrWrongCredentials, "compare passwords")
+	}
+	if a.Token.Time() != 0 {
+		return account.Token{}, errors.Wrap(account.ErrMultipleLogin, "check account state")
 	}
 
 	// #Identify origin IP
@@ -78,6 +80,10 @@ func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 	}
 	if err := t.SetToken(token); err != nil {
 		return account.Token{}, errors.Wrapf(err, "set token %s", token.ID.String())
+	}
+	a.Token = token.ID
+	if err := t.AccountMapper.SetAccount(a); err != nil {
+		return account.Token{}, errors.Wrapf(err, "set account %s with token %s", a.ID.String(), token.ID.String())
 	}
 
 	return token, nil

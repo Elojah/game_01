@@ -8,9 +8,10 @@ import (
 // Domain converts a storage user into a domain user.
 func (a *Account) Domain(username string) (account.A, error) {
 	return account.A{
-		Username: username,
 		ID:       ulid.ID(a.ID),
+		Username: username,
 		Password: a.Password,
+		Token:    ulid.ID(a.Token),
 	}, nil
 }
 
@@ -18,6 +19,8 @@ func (a *Account) Domain(username string) (account.A, error) {
 func NewAccount(a account.A) *Account {
 	return &Account{
 		ID:       [16]byte(a.ID),
+		Username: a.Username,
 		Password: a.Password,
+		Token:    [16]byte(a.Token),
 	}
 }

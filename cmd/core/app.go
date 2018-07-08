@@ -80,7 +80,7 @@ func (a *app) Close() {
 }
 
 func (a *app) AddListener(msg *event.Message) {
-	logger := log.With().Str("app", a.id.String()).Logger()
+	logger := log.With().Str("core", a.id.String()).Logger()
 
 	var listenerS storage.Listener
 	if _, err := listenerS.Unmarshal([]byte(msg.Payload)); err != nil {
@@ -89,6 +89,7 @@ func (a *app) AddListener(msg *event.Message) {
 	}
 	listener := listenerS.Domain()
 	id := listener.ID.String()
+	logger = log.With().Str("listener", id).Uint8("action", uint8(listener.Action)).Logger()
 
 	switch listener.Action {
 	case event.Open:
@@ -103,21 +104,21 @@ func (a *app) AddListener(msg *event.Message) {
 			}
 		}(a.seqs[listener.ID], a.subs[listener.ID])
 
-		logger.Info().Str("listener", id).Msg("listening")
+		logger.Info().Msg("listening")
 	case event.Close:
 		seq, ok := a.seqs[listener.ID]
 		if !ok {
-			logger.Error().Str("listener", id).Msg("listener not found")
+			logger.Error().Msg("listener not found")
 			return
 		}
 		seq.Close()
 		sub, ok := a.subs[listener.ID]
 		if !ok {
-			logger.Error().Str("listener", id).Msg("subscription not found")
+			logger.Error().Msg("subscription not found")
 			return
 		}
 		if err := sub.Unsubscribe(); err != nil {
-			logger.Error().Err(err).Str("listener", id).Msg("failed to unsubscribe")
+			logger.Error().Err(err).Msg("failed to unsubscribe")
 			return
 		}
 		delete(a.seqs, listener.ID)
@@ -126,15 +127,13 @@ func (a *app) AddListener(msg *event.Message) {
 }
 
 func (a *app) Apply(id ulid.ID, e event.E) {
-	ts := e.TS.UnixNano()
-	key := id.String()
 	logger := log.With().
-		Str("event", key).
-		Str("source", e.Source.String()).
-		Int64("ts", ts).
+		Str("core", a.id.String()).
+		Str("listener", id.String()).
+		Int64("ts", e.TS.UnixNano()).
+		Str("type", event.ActionString(e.Action)).
 		Logger()
 
-	logger.Info().Str("type", event.ActionString(e.Action)).Msg("apply action")
 	switch e.Action.(type) {
 	case event.Move:
 		if err := a.Move(id, e); err != nil {
@@ -147,4 +146,5 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 	default:
 		logger.Error().Msg("unrecognized action")
 	}
+	logger.Info().Msg("event applied")
 }

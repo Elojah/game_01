@@ -120,9 +120,9 @@ https://github.com/elojah/
 - [x] Add Pool for listeners + ListenerMapper Set/Get
 - [x] Del for everything (not yet but token/entity ok)
 - [x] Put everything as usecase and use (almost) only them in controllers (not yet but entity/token ok)
-- [ ] Prevent multiple /login -> retrieve multiple tokens
-- [ ] Integration test binary with correct set
+- [x] Prevent multiple /login -> retrieve multiple tokens
 - [ ] Add server ack sending to client (and client resend)
+- [ ] Integration test binary with correct set
 - [ ] Add minimal graphic interface to client (minimal calls and print entity states)
 - [ ] Implement tool to generate/check/visualize sectors and entity movements
 - [ ] Add context everywhere

@@ -6,7 +6,8 @@ import "github.com/elojah/game_01/pkg/ulid"
 type A struct {
 	ID       ulid.ID
 	Username string
-	Password string `json:"-"`
+	Password string  `json:"-"`
+	Token    ulid.ID `json:"-"`
 }
 
 // Subset is the subset to retrieve an account.

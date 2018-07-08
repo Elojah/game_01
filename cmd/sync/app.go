@@ -78,6 +78,8 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	}
 	recurrer := recurrerS.Domain()
 
+	logger = logger.With().Str("recurrer", recurrer.TokenID.String()).Logger()
+
 	if recurrer.Action == event.Close {
 		a.recurrers[recurrer.TokenID].Close()
 		delete(a.recurrers, recurrer.TokenID)
@@ -86,12 +88,11 @@ func (a *app) AddRecurrer(msg *event.Message) {
 
 	tok, err := a.GetToken(account.TokenSubset{ID: recurrer.TokenID})
 	if err != nil {
-		logger.Error().Err(err).
-			Str("id", recurrer.TokenID.String()).
-			Str("recurrer_id", recurrer.TokenID.String()).
-			Msg("failed to retrieve token")
+		logger.Error().Err(err).Msg("failed to retrieve token")
 		return
 	}
+
+	logger = logger.With().Str("ip", tok.IP.String()).Logger()
 
 	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
 		raw, err := storage.NewEntity(e).Marshal(nil)
@@ -99,7 +100,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 			logger.Error().Err(err).Msg("failed to retrieve marshal entity")
 			return
 		}
-		logger.Info().Str("entity", e.ID.String()).Str("ip", tok.IP.String()).Msg("send entity to ip")
+		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
 		a.Send(raw, tok.IP)
 	})
 	rec.EntityMapper = a.EntityMapper
@@ -108,9 +109,5 @@ func (a *app) AddRecurrer(msg *event.Message) {
 
 	go rec.Start()
 	a.recurrers[recurrer.TokenID] = rec
-	logger.Info().
-		Str("recurrer", recurrer.TokenID.String()).
-		Str("entity", recurrer.EntityID.String()).
-		Str("ip", tok.IP.String()).
-		Msg("synchronizing")
+	logger.Info().Msg("sync up")
 }

@@ -15,4 +15,6 @@ var (
 	ErrInsufficientACLs = errors.New("insufficient rights")
 	// ErrInvalidAction is raised when an action is not possible following game rules.
 	ErrInvalidAction = errors.New("action is not possible")
+	// ErrMultipleLogin is raised zhen an account is already logged.
+	ErrMultipleLogin = errors.New("account already logged")
 )
