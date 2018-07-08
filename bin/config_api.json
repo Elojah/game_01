@@ -1,6 +1,7 @@
 {
 	"api": {
-		"tolerance": "500ms"
+		"tolerance": "500ms",
+		"ack_port": 42001
 	},
 	"server": {
 		"addresses": ["127.0.0.1:3400"],

@@ -27,6 +27,12 @@ func run(prog string, filename string) {
 	}, "server")
 	launchers.Add(muxl)
 
+	ma := mux.M{}
+	mauxl := ma.NewLauncher(mux.Namespaces{
+		M: "ack",
+	}, "ack")
+	launchers.Add(mauxl)
+
 	c := client.C{}
 	cl := c.NewLauncher(client.Namespaces{
 		Client: "client",
@@ -46,6 +52,16 @@ func run(prog string, filename string) {
 		Handler: "handler",
 	}, "handler")
 	launchers.Add(hl)
+	h.M.Handler = h.handleEntity
+
+	ha := handler{
+		M: &m,
+	}
+	hal := h.NewLauncher(NamespacesHandler{
+		Handler: "handler",
+	}, "handler")
+	launchers.Add(hal)
+	ha.M.Handler = ha.handleACK
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

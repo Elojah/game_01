@@ -33,11 +33,13 @@ type app struct {
 
 	sub *event.Subscription
 
+	port      uint
 	tickRate  uint32
 	recurrers map[ulid.ID]*Recurrer
 }
 
 func (a *app) Dial(c Config) error {
+	a.port = c.EntityPort
 	a.tickRate = c.TickRate
 	a.id = c.ID
 	go a.Start()
@@ -95,6 +97,8 @@ func (a *app) AddRecurrer(msg *event.Message) {
 
 	logger = logger.With().Str("ip", tok.IP.String()).Logger()
 
+	address := *tok.IP
+	address.Port = int(a.port)
 	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
 		raw, err := dto.NewEntity(e).Marshal(nil)
 		if err != nil {
@@ -102,7 +106,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 			return
 		}
 		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
-		a.Send(raw, tok.IP)
+		a.Send(raw, &address)
 	})
 	rec.EntityMapper = a.EntityMapper
 	rec.EntitiesMapper = a.EntitiesMapper

@@ -23,11 +23,13 @@ type handler struct {
 
 	token.T
 
+	port      uint
 	tolerance time.Duration
 }
 
 func (h *handler) Dial(c Config) error {
 	h.M.Handler = h.handle
+	h.port = c.ACKPort
 	h.tolerance = c.Tolerance
 	h.M.Listen()
 	return nil
@@ -69,7 +71,9 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		logger.Error().Err(err).Str("status", "internal").Msg("failed to marshal ack")
 		return err
 	}
-	go h.Send(raw, tok.IP)
+	address := *tok.IP
+	address.Port = int(h.port)
+	go h.Send(raw, &address)
 
 	// #Check TS in tolerance range.
 	ts := time.Unix(0, msg.TS)

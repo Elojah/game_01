@@ -48,8 +48,8 @@ func run(prog string, filename string) {
 	// main app
 	a := app{}
 	al := a.NewLauncher(Namespaces{
-		App: "app",
-	}, "app")
+		App: "sync",
+	}, "sync")
 	launchers.Add(al)
 
 	if err := launchers.Up(filename); err != nil {

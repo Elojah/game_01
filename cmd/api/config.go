@@ -8,6 +8,7 @@ import (
 // Config is the udp server structure config.
 type Config struct {
 	Tolerance time.Duration `json:"tolerance"`
+	ACKPort   uint          `json:"ack_port"`
 }
 
 // Equal returns is both configs are equal.
@@ -34,5 +35,16 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if err != nil {
 		return err
 	}
+
+	cACKPort, ok := fconf["ack_port"]
+	if !ok {
+		return errors.New("missing key ack_port")
+	}
+	cACKPortFloat64, ok := cACKPort.(float64)
+	if !ok {
+		return errors.New("key ack_port invalid. must be numeric")
+	}
+	c.ACKPort = uint(cACKPortFloat64)
+
 	return nil
 }

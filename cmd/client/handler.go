@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/elojah/game_01/pkg/storage"
-	"github.com/elojah/mux"
 	"github.com/rs/zerolog/log"
+
+	"github.com/elojah/game_01/pkg/dto"
+	"github.com/elojah/mux"
 )
 
 type handler struct {
@@ -15,23 +16,47 @@ type handler struct {
 }
 
 func (h *handler) Dial() error {
-	h.M.Handler = h.handle
 	h.M.Listen()
 	return nil
 }
 
-func (h *handler) handle(ctx context.Context, raw []byte) error {
+func (h *handler) handleEntity(ctx context.Context, raw []byte) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	// #Unmarshal entity.
-	var entity storage.Entity
-	if _, err := entity.Unmarshal(raw); err != nil {
+	var e dto.Entity
+	if _, err := e.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
 		return err
 	}
 
-	raw, err := json.Marshal(entity)
+	raw, err := json.Marshal(e)
+	if err != nil {
+		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
+		return err
+	}
+	n, err := os.Stdout.Write(raw)
+	if err != nil {
+		logger.Error().Err(err).Str("status", "unwritable").Msg("packet rejected")
+		return err
+	}
+	logger.Info().Int("chars", n).Msg("packet rejected")
+	return nil
+}
+
+func (h *handler) handleACK(ctx context.Context, raw []byte) error {
+
+	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
+
+	// #Unmarshal entity.
+	var ack dto.ACK
+	if _, err := ack.Unmarshal(raw); err != nil {
+		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
+		return err
+	}
+
+	raw, err := json.Marshal(ack)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
