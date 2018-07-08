@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/elojah/game_01/storage"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/mux"
 	"github.com/rs/zerolog/log"
 )

@@ -6,8 +6,8 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/storage"
 )
 
 func (a *app) Move(id ulid.ID, e event.E) error {

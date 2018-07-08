@@ -9,9 +9,9 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	redisx "github.com/elojah/game_01/pkg/storage/redis"
 	"github.com/elojah/game_01/pkg/usecase/listener"
 	"github.com/elojah/game_01/pkg/usecase/recurrer"
-	redisx "github.com/elojah/game_01/storage/redis"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )

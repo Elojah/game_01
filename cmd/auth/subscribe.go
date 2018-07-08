@@ -8,8 +8,8 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/storage"
 )
 
 func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {

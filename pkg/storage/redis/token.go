@@ -6,8 +6,8 @@ import (
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/storage"
 )
 
 const (

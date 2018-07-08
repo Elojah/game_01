@@ -4,7 +4,7 @@ import (
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01/pkg/ability"
-	"github.com/elojah/game_01/storage"
+	"github.com/elojah/game_01/pkg/storage"
 )
 
 const (

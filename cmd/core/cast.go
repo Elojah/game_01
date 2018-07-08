@@ -5,8 +5,8 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/storage"
 )
 
 func (a *app) Cast(id ulid.ID, e event.E) error {

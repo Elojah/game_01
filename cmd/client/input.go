@@ -5,7 +5,7 @@ import (
 
 	"github.com/oklog/ulid"
 
-	"github.com/elojah/game_01/dto"
+	"github.com/elojah/game_01/pkg/dto"
 )
 
 // Input represents a game action sent by player to be send to server.

@@ -5,8 +5,8 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/storage"
 )
 
 type tick chan int64

@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01/dto"
+	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux/client"
 )

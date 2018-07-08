@@ -2,8 +2,8 @@ package redis
 
 import (
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/storage"
 )
 
 const (
