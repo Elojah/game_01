@@ -97,16 +97,17 @@ func (r reader) HandleACK() {
 		case <-r.ticker.C:
 			now := time.Now()
 			for _, e := range r.events {
-				if now.Sub(time.Unix(0, e.TS)) > r.tolerance {
-					go func(e dto.Event) {
-						raw, err := e.Marshal(nil)
-						if err != nil {
-							r.logger.Error().Err(err).Msg("failed to marshal action")
-							return
-						}
-						r.Send(raw, r.addr)
-					}(e)
+				if now.Sub(time.Unix(0, e.TS)) < r.tolerance {
+					continue
 				}
+				go func(e dto.Event) {
+					raw, err := e.Marshal(nil)
+					if err != nil {
+						r.logger.Error().Err(err).Msg("failed to marshal action")
+						return
+					}
+					r.Send(raw, r.addr)
+				}(e)
 			}
 		case e := <-r.event:
 			r.events[e.ID] = e
