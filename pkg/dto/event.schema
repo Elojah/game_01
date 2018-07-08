@@ -17,7 +17,7 @@ struct Cast {
 	Position	Vec3
 }
 
-struct Message {
+struct Event {
 	ID			[16]byte
 	Token		[16]byte
 	TS			int64

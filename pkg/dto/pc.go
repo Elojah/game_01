@@ -24,7 +24,7 @@ type DisconnectPC struct {
 	Token ulid.ID
 }
 
-// Entity represents the response when connecting to an existing PC.
-type Entity struct {
+// EntityPC represents the response when connecting to an existing PC.
+type EntityPC struct {
 	ID ulid.ID
 }

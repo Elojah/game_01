@@ -13,7 +13,7 @@ import (
 	"github.com/elojah/mux"
 )
 
-func (h *handler) move(ctx context.Context, msg dto.Message) error {
+func (h *handler) move(ctx context.Context, msg dto.Event) error {
 
 	logger := log.With().
 		Str("packet", ctx.Value(mux.Key("packet")).(string)).

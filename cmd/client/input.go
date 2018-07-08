@@ -10,7 +10,7 @@ import (
 
 // Input represents a game action sent by player to be send to server.
 type Input struct {
-	dto.Message
+	dto.Event
 }
 
 // UnmarshalJSON unmarshal a game action depending on input type.

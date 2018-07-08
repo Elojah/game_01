@@ -52,7 +52,7 @@ func (r reader) Start() {
 			r.logger.Error().Err(err).Msg("failed to decode input")
 			continue
 		}
-		message := dto.Message{
+		message := dto.Event{
 			ID:     ulid.NewID(),
 			Token:  r.token,
 			TS:     time.Now().UnixNano(),

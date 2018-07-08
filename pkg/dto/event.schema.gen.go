@@ -342,14 +342,14 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
-type Message struct {
+type Event struct {
 	ID     [16]byte
 	Token  [16]byte
 	TS     int64
 	Action interface{}
 }
 
-func (d *Message) Size() (s uint64) {
+func (d *Event) Size() (s uint64) {
 
 	{
 		s += 16
@@ -398,7 +398,7 @@ func (d *Message) Size() (s uint64) {
 	s += 8
 	return
 }
-func (d *Message) Marshal(buf []byte) ([]byte, error) {
+func (d *Event) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -488,7 +488,7 @@ func (d *Message) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+8], nil
 }
 
-func (d *Message) Unmarshal(buf []byte) (uint64, error) {
+func (d *Event) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{

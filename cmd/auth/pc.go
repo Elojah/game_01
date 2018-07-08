@@ -275,7 +275,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Marshal response
-	raw, err := json.Marshal(dto.Entity{ID: e.ID})
+	raw, err := json.Marshal(dto.EntityPC{ID: e.ID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal response")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)

@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
@@ -95,9 +96,9 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	logger = logger.With().Str("ip", tok.IP.String()).Logger()
 
 	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
-		raw, err := storage.NewEntity(e).Marshal(nil)
+		raw, err := dto.NewEntity(e).Marshal(nil)
 		if err != nil {
-			logger.Error().Err(err).Msg("failed to retrieve marshal entity")
+			logger.Error().Err(err).Msg("failed to marshal entity")
 			return
 		}
 		logger.Info().Str("entity", e.ID.String()).Msg("send entity")

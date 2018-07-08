@@ -45,7 +45,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	// #Unmarshal message.
-	msg := dto.Message{}
+	msg := dto.Event{}
 	if _, err := msg.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
