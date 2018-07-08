@@ -2,14 +2,16 @@ package main
 
 import (
 	"errors"
+	"time"
 
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Token   ulid.ID `json:"token"`
-	Address string  `json:"address"`
+	Token     ulid.ID       `json:"token"`
+	Address   string        `json:"address"`
+	Tolerance time.Duration `json:"tolerance"`
 }
 
 // Equal returns is both configs are equal.
@@ -17,10 +19,8 @@ func (c Config) Equal(rhs Config) bool {
 	if c.Token.Compare(rhs.Token) != 0 {
 		return false
 	}
-	if c.Address != rhs.Address {
-		return false
-	}
-	return true
+	return (c.Address != rhs.Address &&
+		c.Tolerance == rhs.Tolerance)
 }
 
 // Dial set the config from a config namespace.
@@ -49,5 +49,19 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key address invalid. must be string")
 	}
+
+	cTolerance, ok := fconf["tolerance"]
+	if !ok {
+		return errors.New("missing key tolerance")
+	}
+	cToleranceString, ok := cTolerance.(string)
+	if !ok {
+		return errors.New("key tolerance invalid. must be string")
+	}
+	c.Tolerance, err = time.ParseDuration(cToleranceString)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

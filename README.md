@@ -121,7 +121,7 @@ https://github.com/elojah/
 - [x] Del for everything (not yet but token/entity ok)
 - [x] Put everything as usecase and use (almost) only them in controllers (not yet but entity/token ok)
 - [x] Prevent multiple /login -> retrieve multiple tokens
-- [ ] Add server ack sending to client (and client resend)
+- [x] Add server ack sending to client _<-done_ and client resend
 - [ ] Add Name at create PC
 - [ ] Add account disconnect /account/disconnect -d {"username"} (disconnect token + delete token + reset account.Token)
 - [ ] Integration test binary with correct set

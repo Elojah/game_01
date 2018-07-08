@@ -23,24 +23,46 @@ type reader struct {
 
 	token ulid.ID
 	addr  net.Addr
+
+	ticker    *time.Ticker
+	tolerance time.Duration
+
+	events map[ulid.ID]dto.Event
+	ack    <-chan ulid.ID
+	event  chan dto.Event
 }
 
-func newReader(c *client.C) *reader {
+func newReader(c *client.C, ack <-chan ulid.ID) *reader {
 	return &reader{
 		C:       c,
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
+		event:   make(chan dto.Event),
+		ack:     ack,
 	}
+}
+
+func (r *reader) Close() error {
+	if err := r.C.Close(); err != nil {
+		return err
+	}
+	close(r.event)
+	r.ticker.Stop()
+	return nil
 }
 
 // Dial initialize a reader.
 func (r *reader) Dial(cfg Config) error {
 	r.token = cfg.Token
+	r.tolerance = cfg.Tolerance
 	var err error
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
 		return err
 	}
+
+	r.ticker = time.NewTicker(r.tolerance)
 	go r.Start()
+	go r.HandleACK()
 	return nil
 }
 
@@ -52,17 +74,44 @@ func (r reader) Start() {
 			r.logger.Error().Err(err).Msg("failed to decode input")
 			continue
 		}
-		message := dto.Event{
+		e := dto.Event{
 			ID:     ulid.NewID(),
 			Token:  r.token,
 			TS:     time.Now().UnixNano(),
 			Action: input.Action,
 		}
-		raw, err := message.Marshal(nil)
+		raw, err := e.Marshal(nil)
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to marshal action")
 			continue
 		}
+		r.event <- e
 		go r.Send(raw, r.addr)
+	}
+}
+
+// HandleACK handles events sending and received acks.
+func (r reader) HandleACK() {
+	for {
+		select {
+		case <-r.ticker.C:
+			now := time.Now()
+			for _, e := range r.events {
+				if now.Sub(time.Unix(0, e.TS)) > r.tolerance {
+					go func(e dto.Event) {
+						raw, err := e.Marshal(nil)
+						if err != nil {
+							r.logger.Error().Err(err).Msg("failed to marshal action")
+							return
+						}
+						r.Send(raw, r.addr)
+					}(e)
+				}
+			}
+		case e := <-r.event:
+			r.events[e.ID] = e
+		case id := <-r.ack:
+			delete(r.events, id)
+		}
 	}
 }

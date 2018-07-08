@@ -39,12 +39,6 @@ func run(prog string, filename string) {
 	}, "client")
 	launchers.Add(cl)
 
-	rd := newReader(&c)
-	rdl := rd.NewLauncher(NamespacesReader{
-		Reader: "reader",
-	}, "reader")
-	launchers.Add(rdl)
-
 	h := handler{
 		M: &m,
 	}
@@ -62,6 +56,12 @@ func run(prog string, filename string) {
 	}, "handler")
 	launchers.Add(hal)
 	ha.M.Handler = ha.handleACK
+
+	rd := newReader(&c, ha.ACK)
+	rdl := rd.NewLauncher(NamespacesReader{
+		Reader: "reader",
+	}, "reader")
+	launchers.Add(rdl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

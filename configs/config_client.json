@@ -17,7 +17,8 @@
 	},
 	"reader": {
 		"token": "01CHX2397HA9269NPH95ERTKC3",
-		"address": "127.0.0.1:3400"
+		"address": "127.0.0.1:3400",
+		"tolerance": "500ms"
 	},
 	"handler": {}
 }
