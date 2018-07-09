@@ -34,6 +34,11 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+	if err := setPC.Check(); err != nil {
+		logger.Error().Err(err).Msg("name invalid")
+		http.Error(w, "name invalid", http.StatusBadRequest)
+		return
+	}
 
 	logger = logger.With().Str("token", setPC.Token.String()).Logger()
 
@@ -95,6 +100,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	pc := entity.PC(template)
 	pc.Type = pc.ID
 	pc.ID = ulid.NewID()
+	pc.Name = setPC.Name
 	logger = logger.With().Str("pc", pc.ID.String()).Logger()
 	pc.Position = entity.Position{
 		SectorID: sec.ID,
