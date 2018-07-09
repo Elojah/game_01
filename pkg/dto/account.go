@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // Account represents the payload to create a new account via subscribe.
@@ -36,4 +37,10 @@ func (a Account) Check() error {
 		return errors.New("invalid account")
 	}
 	return nil
+}
+
+// SignoutAccount represents the payload to create a new account via subscribe.
+type SignoutAccount struct {
+	Username string
+	Token    ulid.ID
 }
