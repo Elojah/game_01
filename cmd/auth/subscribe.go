@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -24,12 +25,18 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/subscribe").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var a account.A
-	if err := json.NewDecoder(r.Body).Decode(&a); err != nil {
+	var adto dto.Account
+	if err := json.NewDecoder(r.Body).Decode(&adto); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+	if err := adto.Check(); err != nil {
+		logger.Error().Err(err).Msg("account invalid")
+		http.Error(w, "account invalid", http.StatusBadRequest)
+		return
+	}
+	a := adto.Domain()
 	a.ID = ulid.NewID()
 
 	logger = logger.With().Str("account", a.ID.String()).Logger()

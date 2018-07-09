@@ -6,10 +6,10 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/dto"
 )
 
-func (h *handler) login(w http.ResponseWriter, r *http.Request) {
+func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		// continue
@@ -18,18 +18,24 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/login").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/signin").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var accountPayload account.A
-	if err := json.NewDecoder(r.Body).Decode(&accountPayload); err != nil {
+	var adto dto.Account
+	if err := json.NewDecoder(r.Body).Decode(&adto); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+	if err := adto.Check(); err != nil {
+		logger.Error().Err(err).Msg("account invalid")
+		http.Error(w, "account invalid", http.StatusBadRequest)
+		return
+	}
+	a := adto.Domain()
 
 	// #Create token from account
-	tok, err := h.T.New(accountPayload, r.RemoteAddr)
+	tok, err := h.T.New(a, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token from account")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
@@ -56,9 +62,19 @@ func (h *handler) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("login success")
+	logger.Info().Msg("signin success")
 
 	// #Write response
 	w.WriteHeader(http.StatusOK)
 	w.Write(raw)
+}
+
+func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "POST":
+		// continue
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
 }

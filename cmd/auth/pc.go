@@ -289,7 +289,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("login success")
+	logger.Info().Msg("signin success")
 
 	// #Write response
 	w.WriteHeader(http.StatusOK)

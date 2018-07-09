@@ -35,7 +35,8 @@ type handler struct {
 // Dial starts the auth server.
 func (h *handler) Dial(c Config) error {
 	mux := http.NewServeMux()
-	mux.HandleFunc("/login", h.login)
+	mux.HandleFunc("/signin", h.signin)
+	mux.HandleFunc("/signout", h.signout)
 	mux.HandleFunc("/subscribe", h.subscribe)
 	mux.HandleFunc("/pc/create", h.createPC)
 	mux.HandleFunc("/pc/list", h.listPC)
