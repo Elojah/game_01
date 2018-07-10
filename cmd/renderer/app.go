@@ -5,15 +5,18 @@ import (
 
 	"golang.org/x/image/colornames"
 
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/faiface/pixel"
+	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
 )
 
 type app struct {
 	config Config
 
-	win    *pixelgl.Window
-	ticker *time.Ticker
+	win     *pixelgl.Window
+	ticker  *time.Ticker
+	entityC <-chan entity.E
 }
 
 func (a *app) Dial(c Config) error {
@@ -40,6 +43,11 @@ func (a *app) Start() {
 	for !a.win.Closed() {
 		select {
 		case <-a.ticker.C:
+		case e := <-a.entityC:
+			imd := imdraw.New(nil)
+			imd.Color = pixel.RGB(255, 0, 0)
+			imd.Push(pixel.V(e.Position.Coord.X, e.Position.Coord.Y))
+			imd.Circle(40, 0)
 		}
 		a.win.Update()
 	}
