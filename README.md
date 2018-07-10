@@ -104,7 +104,9 @@ _For more examples and usage, please refer to the [Wiki][wiki]._
 ## Release History
 
 * 0.0.1
-    * Work in progress
+    * Achilles - Work in progress
+* 0.0.2
+    * Agni - Basic features
 
 ## Meta
 
