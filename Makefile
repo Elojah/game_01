@@ -14,6 +14,7 @@ AUTH      = auth
 CORE      = core
 SYNC      = sync
 TOOL      = tool
+RENDERER  = renderer
 
 FBSDIR    = .
 
@@ -23,7 +24,7 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 
 .PHONY: all
 
-all: client auth api core sync
+all: client auth api core sync revoker renderer tool
 
 # Executables
 client:
@@ -65,6 +66,14 @@ sync:
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(SYNC)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(SYNC)_$(VERSION) bin/$(PACKAGE)_$(SYNC)
+
+renderer:
+	$(info $(M) building executable renderer…) @ ## Build program binary
+	$Q cd cmd/$(RENDERER) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(RENDERER)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(RENDERER)_$(VERSION) bin/$(PACKAGE)_$(RENDERER)
 
 tool:
 	$(info $(M) building executable tool…) @ ## Build program binary
