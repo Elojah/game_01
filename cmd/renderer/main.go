@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/faiface/pixel/pixelgl"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -31,6 +32,7 @@ func run(prog string, filename string) {
 	}
 
 	log.Info().Msg("renderer up")
+	pixelgl.Run(a.Start)
 
 	cs := make(chan os.Signal, 1)
 	signal.Notify(cs, syscall.SIGHUP)
