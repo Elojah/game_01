@@ -112,8 +112,17 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Reset account token
+	tokID := a.Token
+	a.Token = ulid.ID{}
+	if err := h.AccountMapper.SetAccount(a); err != nil {
+		logger.Error().Err(err).Msg("failed to set account")
+		http.Error(w, "failed to reset account token", http.StatusInternalServerError)
+		return
+	}
+
 	// #Retrieve account token
-	tok, err := h.T.Get(a.Token, r.RemoteAddr)
+	tok, err := h.T.Get(tokID, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -124,14 +133,6 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	if err := h.T.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to disconnect token")
 		http.Error(w, "failed to disconnect token", http.StatusInternalServerError)
-		return
-	}
-
-	// #Reset account token
-	a.Token = ulid.ID{}
-	if err := h.AccountMapper.SetAccount(a); err != nil {
-		logger.Error().Err(err).Msg("failed to set account")
-		http.Error(w, "failed to reset account token", http.StatusInternalServerError)
 		return
 	}
 

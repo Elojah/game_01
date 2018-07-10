@@ -9,6 +9,7 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 	uce "github.com/elojah/game_01/pkg/usecase/entity"
 	"github.com/elojah/game_01/pkg/usecase/listener"
@@ -123,6 +124,9 @@ func (t T) Disconnect(id ulid.ID) error {
 		MaxTS: time.Now().UnixNano(),
 	})
 	if err != nil {
+		if err == storage.ErrNotFound {
+			return nil
+		}
 		return errors.Wrapf(err, "get entity %s", tokEntity.String())
 	}
 
