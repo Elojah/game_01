@@ -8,6 +8,8 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/dto"
+	"github.com/elojah/game_01/pkg/storage"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
@@ -89,9 +91,12 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account, err := h.GetAccount(account.Subset{Username: adto.Username})
+	logger = logger.With().Str("username", adto.Username).Logger()
+
+	// #Retrieve account by username.
+	a, err := h.AccountMapper.GetAccount(account.Subset{Username: adto.Username})
 	if err != nil {
-		if err == storage.NotFoundErr {
+		if err == storage.ErrNotFound {
 			logger.Error().Err(err).Msg("invalid username")
 			http.Error(w, "invalid username", http.StatusBadRequest)
 			return
@@ -100,10 +105,43 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to signout", http.StatusInternalServerError)
 		return
 	}
-	if account.Token.Compare(adto.Token) != 0 {
+	logger = logger.With().Str("account", a.ID.String()).Str("token", a.Token.String()).Logger()
+	if a.Token.Compare(adto.Token) != 0 {
 		logger.Error().Err(err).Msg("invalid token")
 		http.Error(w, "invalid token", http.StatusBadRequest)
 		return
 	}
 
+	// #Retrieve account token
+	tok, err := h.T.Get(a.Token, r.RemoteAddr)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// #Disconnect token
+	if err := h.T.Disconnect(tok.ID); err != nil {
+		logger.Error().Err(err).Msg("failed to disconnect token")
+		http.Error(w, "failed to disconnect token", http.StatusInternalServerError)
+		return
+	}
+
+	// #Reset account token
+	a.Token = ulid.ID{}
+	if err := h.AccountMapper.SetAccount(a); err != nil {
+		logger.Error().Err(err).Msg("failed to set account")
+		http.Error(w, "failed to reset account token", http.StatusInternalServerError)
+		return
+	}
+
+	// #Delete token
+	if err := h.DelToken(account.TokenSubset{ID: tok.ID}); err != nil {
+		logger.Error().Err(err).Msg("failed to delete token")
+		http.Error(w, "failed to delete token", http.StatusInternalServerError)
+		return
+	}
+
+	// #Write response
+	w.WriteHeader(http.StatusOK)
 }
