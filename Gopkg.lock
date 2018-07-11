@@ -125,6 +125,12 @@
   version = "v1.2.2"
 
 [[projects]]
+  name = "github.com/veandco/go-sdl2"
+  packages = ["sdl"]
+  revision = "271d2ec43388932fd2a80f4c2e81021734685a62"
+  version = "v0.3"
+
+[[projects]]
   branch = "master"
   name = "golang.org/x/image"
   packages = [
@@ -145,6 +151,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "54ce67ae87532579a4a10a2587a1d741e2f22ded9922147ffcad5eeafa4d260d"
+  inputs-digest = "cf5ad88afc584d02a78f2fddb3c17beed6eaacc50b0533e2ade21eb02f75c01f"
   solver-name = "gps-cdcl"
   solver-version = 1
