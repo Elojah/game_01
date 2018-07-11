@@ -42,9 +42,9 @@ func (a *app) Start(entityC <-chan entity.E) {
 	if err != nil {
 		return
 	}
-	a.win.Clear(colornames.Black)
 	imd := imdraw.New(nil)
 	for !a.win.Closed() {
+		a.win.Clear(colornames.Black)
 		select {
 		case <-a.ticker.C:
 			for _, es := range a.entities {
