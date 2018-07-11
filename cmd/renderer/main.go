@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -10,6 +12,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/services"
 )
 
@@ -31,8 +34,21 @@ func run(prog string, filename string) {
 		return
 	}
 
+	entityC := make(chan entity.E, 0)
+	go func() {
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			var e entity.E
+			if err := json.Unmarshal(scanner.Bytes(), &e); err != nil {
+				log.Error().Err(err).Msg("failed to decode entity")
+				continue
+			}
+			entityC <- e
+		}
+	}()
+
 	log.Info().Msg("renderer up")
-	pixelgl.Run(a.Start)
+	pixelgl.Run(func() { a.Start(entityC) })
 
 	cs := make(chan os.Signal, 1)
 	signal.Notify(cs, syscall.SIGHUP)

@@ -6,6 +6,7 @@ import (
 	"golang.org/x/image/colornames"
 
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
 	"github.com/faiface/pixel/pixelgl"
@@ -14,18 +15,20 @@ import (
 type app struct {
 	config Config
 
-	win     *pixelgl.Window
-	ticker  *time.Ticker
-	entityC <-chan entity.E
+	entities map[ulid.ID]Entity
+
+	win    *pixelgl.Window
+	ticker *time.Ticker
 }
 
 func (a *app) Dial(c Config) error {
 	a.config = c
 	a.ticker = time.NewTicker(time.Second / time.Duration(c.TickRate))
+	a.entities = make(map[ulid.ID]Entity)
 	return nil
 }
 
-func (a *app) Start() {
+func (a *app) Start(entityC <-chan entity.E) {
 	var err error
 	a.win, err = pixelgl.NewWindow(pixelgl.WindowConfig{
 		Title:  a.config.Title,
@@ -39,15 +42,15 @@ func (a *app) Start() {
 	if err != nil {
 		return
 	}
-	a.win.Clear(colornames.Black)
 	for !a.win.Closed() {
 		select {
 		case <-a.ticker.C:
-		case e := <-a.entityC:
-			imd := imdraw.New(nil)
-			imd.Color = pixel.RGB(255, 0, 0)
-			imd.Push(pixel.V(e.Position.Coord.X, e.Position.Coord.Y))
-			imd.Circle(40, 0)
+			a.win.Clear(colornames.Black)
+			for _, es := range a.entities {
+				es.Draw(imdraw.New(nil))
+			}
+		case e := <-entityC:
+			a.entities[e.ID] = NewEntity(e)
 		}
 		a.win.Update()
 	}
