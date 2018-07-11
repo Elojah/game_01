@@ -42,13 +42,16 @@ func (a *app) Start(entityC <-chan entity.E) {
 	if err != nil {
 		return
 	}
+	a.win.Clear(colornames.Black)
+	imd := imdraw.New(nil)
 	for !a.win.Closed() {
 		select {
 		case <-a.ticker.C:
-			a.win.Clear(colornames.Black)
 			for _, es := range a.entities {
-				es.Draw(imdraw.New(nil))
+				es.Draw(imd)
 			}
+			imd.Draw(a.win)
+			imd.Clear()
 		case e := <-entityC:
 			a.entities[e.ID] = NewEntity(e)
 		}

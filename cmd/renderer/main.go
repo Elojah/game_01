@@ -43,6 +43,7 @@ func run(prog string, filename string) {
 				log.Error().Err(err).Msg("failed to decode entity")
 				continue
 			}
+			log.Info().Str("entity", e.ID.String()).Msg("received entity")
 			entityC <- e
 		}
 	}()

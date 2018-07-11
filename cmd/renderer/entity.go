@@ -20,5 +20,5 @@ func NewEntity(e entity.E) Entity {
 func (e Entity) Draw(imd *imdraw.IMDraw) {
 	imd.Color = pixel.RGB(255, 0, 0)
 	imd.Push(pixel.V(e.Position.Coord.X, e.Position.Coord.Y))
-	imd.Circle(15, 0)
+	imd.Circle(150, 100)
 }
