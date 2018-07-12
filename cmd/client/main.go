@@ -11,6 +11,7 @@ import (
 
 	"github.com/elojah/game_01/cmd/client/handler"
 	"github.com/elojah/game_01/cmd/client/reader"
+	"github.com/elojah/game_01/cmd/client/renderer"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
@@ -41,14 +42,14 @@ func run(prog string, filename string) {
 	}, "client")
 	launchers.Add(cl)
 
-	h := handler.H{
+	he := handler.H{
 		M: &m,
 	}
-	hl := h.NewLauncher(handler.Namespaces{
+	hel := he.NewLauncher(handler.Namespaces{
 		Handler: "handler",
 	}, "handler")
-	launchers.Add(hl)
-	h.M.Handler = h.HandleEntity
+	launchers.Add(hel)
+	he.M.Handler = he.HandleEntity
 
 	ha := handler.H{
 		M: &ma,
@@ -59,11 +60,11 @@ func run(prog string, filename string) {
 	launchers.Add(hal)
 	ha.M.Handler = ha.HandleACK
 
-	rd := reader.NewReader(&c, ha.ACK)
-	rdl := rd.NewLauncher(reader.Namespaces{
+	r := renderer.NewRenderer(&c, nil, ha.ACK, he.Entity)
+	rl := r.NewLauncher(reader.Namespaces{
 		Reader: "reader",
 	}, "reader")
-	launchers.Add(rdl)
+	launchers.Add(rl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

@@ -2,26 +2,27 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
-	"os"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/dto"
-	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/mux"
 )
 
 // H is a handler to handle entities updates or ACK.
 type H struct {
 	*mux.M
-	ACK chan ulid.ID
+	ACK    chan infra.ACK
+	Entity chan entity.E
 }
 
 // Dial starts handler listening.
 func (h *H) Dial() error {
 	h.M.Listen()
-	h.ACK = make(chan ulid.ID)
+	h.ACK = make(chan infra.ACK, 100)
+	h.Entity = make(chan entity.E, 1000)
 	return nil
 }
 
@@ -31,6 +32,7 @@ func (h *H) Close() error {
 		return err
 	}
 	close(h.ACK)
+	close(h.Entity)
 	return nil
 }
 
@@ -46,15 +48,7 @@ func (h *H) HandleEntity(ctx context.Context, raw []byte) error {
 		return err
 	}
 
-	raw, err := json.Marshal(e.Domain())
-	if err != nil {
-		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
-		return err
-	}
-	if _, err = os.Stdout.Write(append(raw, '\n')); err != nil {
-		logger.Error().Err(err).Str("status", "unwritable").Msg("packet rejected")
-		return err
-	}
+	h.Entity <- e.Domain()
 	return nil
 }
 
@@ -70,6 +64,6 @@ func (h *H) HandleACK(ctx context.Context, raw []byte) error {
 		return err
 	}
 
-	h.ACK <- ack.ID
+	h.ACK <- ack.Domain()
 	return nil
 }
