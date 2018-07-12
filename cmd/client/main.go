@@ -9,6 +9,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/cmd/client/handler"
+	"github.com/elojah/game_01/cmd/client/reader"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
@@ -39,26 +41,26 @@ func run(prog string, filename string) {
 	}, "client")
 	launchers.Add(cl)
 
-	h := handler{
+	h := handler.H{
 		M: &m,
 	}
-	hl := h.NewLauncher(NamespacesHandler{
+	hl := h.NewLauncher(handler.Namespaces{
 		Handler: "handler",
 	}, "handler")
 	launchers.Add(hl)
-	h.M.Handler = h.handleEntity
+	h.M.Handler = h.HandleEntity
 
-	ha := handler{
+	ha := handler.H{
 		M: &ma,
 	}
-	hal := ha.NewLauncher(NamespacesHandler{
+	hal := ha.NewLauncher(handler.Namespaces{
 		Handler: "handler",
 	}, "handler")
 	launchers.Add(hal)
-	ha.M.Handler = ha.handleACK
+	ha.M.Handler = ha.HandleACK
 
-	rd := newReader(&c, ha.ACK)
-	rdl := rd.NewLauncher(NamespacesReader{
+	rd := reader.NewReader(&c, ha.ACK)
+	rdl := rd.NewLauncher(reader.Namespaces{
 		Reader: "reader",
 	}, "reader")
 	launchers.Add(rdl)

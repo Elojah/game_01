@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"context"
@@ -12,18 +12,21 @@ import (
 	"github.com/elojah/mux"
 )
 
-type handler struct {
+// H is a handler to handle entities updates or ACK.
+type H struct {
 	*mux.M
 	ACK chan ulid.ID
 }
 
-func (h *handler) Dial() error {
+// Dial starts handler listening.
+func (h *H) Dial() error {
 	h.M.Listen()
 	h.ACK = make(chan ulid.ID)
 	return nil
 }
 
-func (h *handler) Close() error {
+// Close closes the handler and ACK chan.
+func (h *H) Close() error {
 	if err := h.M.Close(); err != nil {
 		return err
 	}
@@ -31,7 +34,8 @@ func (h *handler) Close() error {
 	return nil
 }
 
-func (h *handler) handleEntity(ctx context.Context, raw []byte) error {
+// HandleEntity is the handler for entities updates from sync server.
+func (h *H) HandleEntity(ctx context.Context, raw []byte) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
@@ -54,7 +58,8 @@ func (h *handler) handleEntity(ctx context.Context, raw []byte) error {
 	return nil
 }
 
-func (h *handler) handleACK(ctx context.Context, raw []byte) error {
+// HandleACK is the handler for ack packets from api server.
+func (h *H) HandleACK(ctx context.Context, raw []byte) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 

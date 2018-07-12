@@ -1,4 +1,4 @@
-package main
+package reader
 
 import (
 	"bufio"
@@ -15,7 +15,8 @@ import (
 	"github.com/elojah/mux/client"
 )
 
-type reader struct {
+// R is a json reader to interpret user input.
+type R struct {
 	*client.C
 
 	logger zerolog.Logger
@@ -32,8 +33,9 @@ type reader struct {
 	event  chan dto.Event
 }
 
-func newReader(c *client.C, ack <-chan ulid.ID) *reader {
-	return &reader{
+// NewReader returns a new reader.
+func NewReader(c *client.C, ack <-chan ulid.ID) *R {
+	return &R{
 		C:       c,
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
@@ -42,7 +44,8 @@ func newReader(c *client.C, ack <-chan ulid.ID) *reader {
 	}
 }
 
-func (r *reader) Close() error {
+// Close closes reader.
+func (r *R) Close() error {
 	if err := r.C.Close(); err != nil {
 		return err
 	}
@@ -52,7 +55,7 @@ func (r *reader) Close() error {
 }
 
 // Dial initialize a reader.
-func (r *reader) Dial(cfg Config) error {
+func (r *R) Dial(cfg Config) error {
 	r.token = cfg.Token
 	r.tolerance = cfg.Tolerance
 	var err error
@@ -67,7 +70,7 @@ func (r *reader) Dial(cfg Config) error {
 }
 
 // Start starts to read JSON data from stdin and sends it to API.
-func (r reader) Start() {
+func (r R) Start() {
 	for r.Scan() {
 		var input Input
 		if err := json.Unmarshal(r.Scanner.Bytes(), &input); err != nil {
@@ -91,7 +94,7 @@ func (r reader) Start() {
 }
 
 // HandleACK handles events sending and received acks.
-func (r reader) HandleACK() {
+func (r R) HandleACK() {
 	for {
 		select {
 		case <-r.ticker.C:
