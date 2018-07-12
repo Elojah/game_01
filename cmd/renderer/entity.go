@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math/rand"
+
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/faiface/pixel"
 	"github.com/faiface/pixel/imdraw"
@@ -17,9 +19,9 @@ func NewEntity(e entity.E) Entity {
 	return Entity{
 		Position: e.Position,
 		color: pixel.RGB(
-			math.Rand()%255,
-			math.Rand()%255,
-			math.Rand()%255,
+			float64(rand.Int()%255),
+			float64(rand.Int()%255),
+			float64(rand.Int()%255),
 		),
 	}
 }
