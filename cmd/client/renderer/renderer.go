@@ -19,7 +19,8 @@ type R struct {
 	logger zerolog.Logger
 
 	*client.C
-	window *sdl.Window
+	window   *sdl.Window
+	renderer *sdl.Renderer
 
 	token     ulid.ID
 	addr      net.Addr
@@ -56,16 +57,34 @@ func (r *R) Dial(cfg Config) error {
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
 		return err
 	}
-	r.ticker = time.NewTicker(r.tolerance)
+	r.ticker = time.NewTicker(cfg.Tolerance)
 	go r.UnstackEntities()
 	go r.UnstackACK()
 	go r.ResendEvent()
+	sdl.Do(func() {
+		r.window, err = sdl.CreateWindow(cfg.Title, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, cfg.Width, cfg.Height, sdl.WINDOW_OPENGL)
+		if err != nil {
+			return
+		}
+		r.renderer, err = sdl.CreateRenderer(r.window, -1, sdl.RENDERER_ACCELERATED)
+		if err != nil {
+			return
+		}
+		r.renderer.Clear()
+	})
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 // Close closes the render window.
 func (r *R) Close() error {
 	r.ticker.Stop()
+	sdl.Do(func() {
+		r.window.Destroy()
+		r.renderer.Destroy()
+	})
 	if err := r.C.Close(); err != nil {
 		return err
 	}
@@ -103,9 +122,8 @@ func (r *R) SendEvent() {
 // ResendEvent send an event again if no ack has been received since tolerance.
 func (r *R) ResendEvent() {
 	for t := range r.ticker.C {
-		now := time.Now()
 		for _, e := range r.inputs {
-			if now.Sub(time.Unix(0, e.TS)) < r.tolerance {
+			if t.Sub(time.Unix(0, e.TS)) < r.tolerance {
 				continue
 			}
 			go func(e dto.Event) {

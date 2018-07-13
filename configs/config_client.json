@@ -15,10 +15,18 @@
 		"middlewares": ["lz4"],
 		"packet_size": 1024
 	},
-	"reader": {
+	"renderer": {
 		"token": "01CHX2397HA9269NPH95ERTKC3",
 		"address": "127.0.0.1:3400",
-		"tolerance": "500ms"
+		"tolerance": "500ms",
+		"title": "game_01",
+		"width": 620,
+		"height": 480,
+		"full_screen": false,
+		"resizable": false,
+		"undecorated": true,
+		"v_sync": true,
+		"tick_rate": 30
 	},
 	"handler": {}
 }

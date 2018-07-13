@@ -8,9 +8,9 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/veandco/go-sdl2/sdl"
 
 	"github.com/elojah/game_01/cmd/client/handler"
-	"github.com/elojah/game_01/cmd/client/reader"
 	"github.com/elojah/game_01/cmd/client/renderer"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
@@ -61,16 +61,17 @@ func run(prog string, filename string) {
 	ha.M.Handler = ha.HandleACK
 
 	r := renderer.NewRenderer(&c, nil, ha.ACK, he.Entity)
-	rl := r.NewLauncher(reader.Namespaces{
-		Reader: "reader",
-	}, "reader")
+	rl := r.NewLauncher(renderer.Namespaces{
+		Renderer: "renderer",
+	}, "renderer")
 	launchers.Add(rl)
 
-	if err := launchers.Up(filename); err != nil {
-		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
-		return
-	}
-
+	sdl.Main(func() {
+		if err := launchers.Up(filename); err != nil {
+			log.Error().Err(err).Str("filename", filename).Msg("failed to start")
+			return
+		}
+	})
 	log.Info().Msg("client up")
 	cs := make(chan os.Signal, 1)
 	signal.Notify(cs, syscall.SIGHUP)
