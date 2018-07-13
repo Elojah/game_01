@@ -25,25 +25,26 @@ type R struct {
 	token     ulid.ID
 	addr      net.Addr
 	tolerance time.Duration
+	tickrate  uint32
 
 	ticker    *time.Ticker
-	inputC    <-chan dto.Event
+	exitC     chan<- struct{}
 	ackC      <-chan infra.ACK
 	entitiesC <-chan entity.E
-	inputs    map[ulid.ID]dto.Event
+	events    map[ulid.ID]dto.Event
 	entities  map[ulid.ID]entity.E
 }
 
 // NewRenderer returns a valid renderer.
 func NewRenderer(
 	c *client.C,
-	inputC <-chan dto.Event,
+	exitC chan<- struct{},
 	ackC <-chan infra.ACK,
 	entitiesC <-chan entity.E,
 ) *R {
 	return &R{
 		C:         c,
-		inputC:    inputC,
+		exitC:     exitC,
 		ackC:      ackC,
 		entitiesC: entitiesC,
 	}
@@ -54,13 +55,14 @@ func (r *R) Dial(cfg Config) error {
 	var err error
 
 	r.token = cfg.Token
+	r.tickrate = cfg.TickRate
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
 		return err
 	}
 	r.ticker = time.NewTicker(cfg.Tolerance)
-	go r.UnstackEntities()
-	go r.UnstackACK()
-	go r.ResendEvent()
+	go r.unstackEntities()
+	go r.unstackACK()
+	go r.resendEvent()
 	sdl.Do(func() {
 		r.window, err = sdl.CreateWindow(cfg.Title, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, cfg.Width, cfg.Height, sdl.WINDOW_OPENGL)
 		if err != nil {
@@ -75,6 +77,7 @@ func (r *R) Dial(cfg Config) error {
 	if err != nil {
 		return err
 	}
+	sdl.Do(func() { go r.render() })
 	return nil
 }
 
@@ -91,38 +94,43 @@ func (r *R) Close() error {
 	return nil
 }
 
-// UnstackEntities read entities from chan and add them to render map.
-func (r *R) UnstackEntities() {
+// unstackEvent sends and event to server.
+func (r *R) unstackEvent() {
+	for e := sdl.PollEvent(); e != nil; e = sdl.PollEvent() {
+		switch e.(type) {
+		case *sdl.QuitEvent:
+			r.exitC <- struct{}{}
+		}
+		// r.events[e.ID] = e
+		// go func(e dto.Event) {
+		// 	raw, err := e.Marshal(nil)
+		// 	if err != nil {
+		// 		r.logger.Error().Err(err).Msg("failed to marshal action")
+		// 		return
+		// 	}
+		// 	r.Send(raw, r.addr)
+		// }(e)
+	}
+}
+
+// unstackEntities read entities from chan and add them to render map.
+func (r *R) unstackEntities() {
 	for e := range r.entitiesC {
 		r.entities[e.ID] = e
 	}
 }
 
-// UnstackACK read acks from chan and remove corresponding inputs.
-func (r *R) UnstackACK() {
+// unstackACK read acks from chan and remove corresponding events.
+func (r *R) unstackACK() {
 	for ack := range r.ackC {
-		delete(r.inputs, ack.ID)
+		delete(r.events, ack.ID)
 	}
 }
 
-// SendEvent sends and event to server.
-func (r *R) SendEvent() {
-	for e := range r.inputC {
-		go func(e dto.Event) {
-			raw, err := e.Marshal(nil)
-			if err != nil {
-				r.logger.Error().Err(err).Msg("failed to marshal action")
-				return
-			}
-			r.Send(raw, r.addr)
-		}(e)
-	}
-}
-
-// ResendEvent send an event again if no ack has been received since tolerance.
-func (r *R) ResendEvent() {
+// resendEvent send an event again if no ack has been received since tolerance.
+func (r *R) resendEvent() {
 	for t := range r.ticker.C {
-		for _, e := range r.inputs {
+		for _, e := range r.events {
 			if t.Sub(time.Unix(0, e.TS)) < r.tolerance {
 				continue
 			}
@@ -135,5 +143,13 @@ func (r *R) ResendEvent() {
 				r.Send(raw, r.addr)
 			}(e)
 		}
+	}
+}
+
+// render is an sdl dependant function to render current frame.
+func (r *R) render() {
+	for {
+		r.renderer.Present()
+		sdl.Delay(1000 / r.tickrate)
 	}
 }
