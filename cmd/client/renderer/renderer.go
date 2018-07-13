@@ -100,14 +100,6 @@ func (r *R) UnstackEvent() {
 				return
 			}
 			// r.events[e.ID] = e
-			// go func(e dto.Event) {
-			// 	raw, err := e.Marshal(nil)
-			// 	if err != nil {
-			// 		r.logger.Error().Err(err).Msg("failed to marshal action")
-			// 		return
-			// 	}
-			// 	r.Send(raw, r.addr)
-			// }(e)
 		}
 	}
 }
@@ -133,10 +125,12 @@ func (r *R) resendEvent() {
 			if t.Sub(time.Unix(0, e.TS)) < r.tolerance {
 				continue
 			}
+			logger := r.logger.With().Str("event", string(e.ID[:])).Logger()
+			logger.Info().Msg("resend event")
 			go func(e dto.Event) {
 				raw, err := e.Marshal(nil)
 				if err != nil {
-					r.logger.Error().Err(err).Msg("failed to marshal action")
+					logger.Error().Err(err).Msg("failed to marshal action")
 					return
 				}
 				r.Send(raw, r.addr)
