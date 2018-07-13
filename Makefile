@@ -8,13 +8,13 @@ GODOC     = godoc
 GOFMT     = gofmt
 GOLINT    = gometalinter
 
-API       = api
 CLIENT    = client
 AUTH      = auth
+API       = api
 CORE      = core
 SYNC      = sync
+REVOKER   = revoker
 TOOL      = tool
-RENDERER  = renderer
 
 FBSDIR    = .
 
@@ -24,7 +24,7 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 
 .PHONY: all
 
-all: client auth api core sync revoker renderer tool
+all: client auth api core sync revoker tool
 
 # Executables
 client:
@@ -67,13 +67,13 @@ sync:
 		-o ../../bin/$(PACKAGE)_$(SYNC)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(SYNC)_$(VERSION) bin/$(PACKAGE)_$(SYNC)
 
-renderer:
-	$(info $(M) building executable renderer…) @ ## Build program binary
-	$Q cd cmd/$(RENDERER) &&  $(GO) build \
+revoker:
+	$(info $(M) building executable revoker…) @ ## Build program binary
+	$Q cd cmd/$(REVOKER) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
-		-o ../../bin/$(PACKAGE)_$(RENDERER)_$(VERSION)
-	$Q cp bin/$(PACKAGE)_$(RENDERER)_$(VERSION) bin/$(PACKAGE)_$(RENDERER)
+		-o ../../bin/$(PACKAGE)_$(REVOKER)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(REVOKER)_$(VERSION) bin/$(PACKAGE)_$(REVOKER)
 
 tool:
 	$(info $(M) building executable tool…) @ ## Build program binary
