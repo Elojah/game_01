@@ -3,8 +3,6 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -60,8 +58,7 @@ func run(prog string, filename string) {
 	launchers.Add(hal)
 	ha.M.Handler = ha.HandleACK
 
-	exitC := make(chan struct{}, 0)
-	r := renderer.NewRenderer(&c, exitC, ha.ACK, he.Entity)
+	r := renderer.NewRenderer(&c, ha.ACK, he.Entity)
 	rl := r.NewLauncher(renderer.Namespaces{
 		Renderer: "renderer",
 	}, "renderer")
@@ -72,27 +69,10 @@ func run(prog string, filename string) {
 			log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 			return
 		}
+		log.Info().Msg("client up")
+		sdl.Do(func() { r.UnstackEvent() })
+		launchers.Down()
 	})
-
-	log.Info().Msg("client up")
-	cs := make(chan os.Signal, 1)
-	signal.Notify(cs, syscall.SIGHUP)
-	for {
-		select {
-		case <-exitC:
-			launchers.Down()
-			return
-		case sig := <-cs:
-			switch sig {
-			case syscall.SIGHUP:
-				launchers.Down()
-				launchers.Up(filename)
-			case syscall.SIGINT:
-				launchers.Down()
-				return
-			}
-		}
-	}
 }
 
 func main() {

@@ -81,6 +81,18 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Create PC from the template.
+	pc := entity.PC(template)
+	pc.Type = pc.ID
+	pc.ID = ulid.NewID()
+	logger = logger.With().Str("pc", pc.ID.String()).Logger()
+	if err := pc.Check(); err != nil {
+		logger.Error().Err(err).Msg("wrong pc")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	pc.Name = setPC.Name
+
 	// #Retrieve a random starter sector.
 	start, err := h.GetRandomStarter(sector.StarterSubset{})
 	if err != nil {
@@ -96,20 +108,10 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Create PC from the template and put it in a random starter sector.
-	pc := entity.PC(template)
-	pc.Type = pc.ID
-	pc.ID = ulid.NewID()
-	pc.Name = setPC.Name
-	logger = logger.With().Str("pc", pc.ID.String()).Logger()
+	// #Assign new position to PC and set it.
 	pc.Position = entity.Position{
 		SectorID: sec.ID,
 		Coord:    geometry.Vec3{X: sec.Size.X * rand.Float64(), Y: sec.Size.Y * rand.Float64(), Z: sec.Size.Z * rand.Float64()},
-	}
-	if err := pc.Check(); err != nil {
-		logger.Error().Err(err).Msg("wrong pc")
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
 	}
 	if err := h.SetPC(pc, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")

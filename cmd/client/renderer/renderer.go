@@ -28,7 +28,6 @@ type R struct {
 	tickrate  uint32
 
 	ticker    *time.Ticker
-	exitC     chan<- struct{}
 	ackC      <-chan infra.ACK
 	entitiesC <-chan entity.E
 	events    map[ulid.ID]dto.Event
@@ -38,13 +37,11 @@ type R struct {
 // NewRenderer returns a valid renderer.
 func NewRenderer(
 	c *client.C,
-	exitC chan<- struct{},
 	ackC <-chan infra.ACK,
 	entitiesC <-chan entity.E,
 ) *R {
 	return &R{
 		C:         c,
-		exitC:     exitC,
 		ackC:      ackC,
 		entitiesC: entitiesC,
 	}
@@ -94,22 +91,24 @@ func (r *R) Close() error {
 	return nil
 }
 
-// unstackEvent sends and event to server.
-func (r *R) unstackEvent() {
-	for e := sdl.PollEvent(); e != nil; e = sdl.PollEvent() {
-		switch e.(type) {
-		case *sdl.QuitEvent:
-			r.exitC <- struct{}{}
+// UnstackEvent sends and event to server.
+func (r *R) UnstackEvent() {
+	for {
+		for e := sdl.PollEvent(); e != nil; e = sdl.PollEvent() {
+			switch e.(type) {
+			case *sdl.QuitEvent:
+				return
+			}
+			// r.events[e.ID] = e
+			// go func(e dto.Event) {
+			// 	raw, err := e.Marshal(nil)
+			// 	if err != nil {
+			// 		r.logger.Error().Err(err).Msg("failed to marshal action")
+			// 		return
+			// 	}
+			// 	r.Send(raw, r.addr)
+			// }(e)
 		}
-		// r.events[e.ID] = e
-		// go func(e dto.Event) {
-		// 	raw, err := e.Marshal(nil)
-		// 	if err != nil {
-		// 		r.logger.Error().Err(err).Msg("failed to marshal action")
-		// 		return
-		// 	}
-		// 	r.Send(raw, r.addr)
-		// }(e)
 	}
 }
 
@@ -149,7 +148,12 @@ func (r *R) resendEvent() {
 // render is an sdl dependant function to render current frame.
 func (r *R) render() {
 	for {
+		for _, e := range r.entities {
+			r.renderer.SetDrawColor(0, 0, 0, 0x20)
+			r.renderer.FillRect(&sdl.Rect{0, 0, int32(e.Position.Coord.X), int32(e.Position.Coord.Y)})
+		}
 		r.renderer.Present()
+		r.renderer.Clear()
 		sdl.Delay(1000 / r.tickrate)
 	}
 }
