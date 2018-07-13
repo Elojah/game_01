@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog"
+	"github.com/veandco/go-sdl2/gfx"
 	"github.com/veandco/go-sdl2/sdl"
 
 	"github.com/elojah/game_01/pkg/dto"
@@ -143,8 +144,7 @@ func (r *R) resendEvent() {
 func (r *R) render() {
 	for {
 		for _, e := range r.entities {
-			r.renderer.SetDrawColor(0, 0, 0, 0x20)
-			r.renderer.FillRect(&sdl.Rect{0, 0, int32(e.Position.Coord.X), int32(e.Position.Coord.Y)})
+			gfx.CircleColor(r.renderer, int32(e.Position.Coord.X), int32(e.Position.Coord.Y), 21, sdl.Color{R: 255, G: 255, B: 255, A: 123})
 		}
 		r.renderer.Present()
 		r.renderer.Clear()
