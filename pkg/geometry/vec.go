@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"fmt"
 	"math"
 )
 
@@ -15,6 +16,10 @@ type Vec3 struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 	Z float64 `json:"z"`
+}
+
+func (v Vec3) String() string {
+	return fmt.Sprintf("%f|%f|%f", v.X, v.Y, v.Z)
 }
 
 // Add add vector coordinates to v.

@@ -22,11 +22,24 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
-	m := mux.M{}
-	muxl := m.NewLauncher(mux.Namespaces{
+	c := client.C{}
+	cl := c.NewLauncher(client.Namespaces{
+		Client: "client",
+	}, "client")
+	launchers.Add(cl)
+
+	me := mux.M{}
+	meuxl := me.NewLauncher(mux.Namespaces{
 		M: "entity",
 	}, "entity")
-	launchers.Add(muxl)
+	launchers.Add(meuxl)
+
+	he := handler.NewHandler(&me)
+	hel := he.NewLauncher(handler.Namespaces{
+		Handler: "handler",
+	}, "handler")
+	launchers.Add(hel)
+	he.M.Handler = he.HandleEntity
 
 	ma := mux.M{}
 	mauxl := ma.NewLauncher(mux.Namespaces{
@@ -34,24 +47,7 @@ func run(prog string, filename string) {
 	}, "ack")
 	launchers.Add(mauxl)
 
-	c := client.C{}
-	cl := c.NewLauncher(client.Namespaces{
-		Client: "client",
-	}, "client")
-	launchers.Add(cl)
-
-	he := handler.H{
-		M: &m,
-	}
-	hel := he.NewLauncher(handler.Namespaces{
-		Handler: "handler",
-	}, "handler")
-	launchers.Add(hel)
-	he.M.Handler = he.HandleEntity
-
-	ha := handler.H{
-		M: &ma,
-	}
+	ha := handler.NewHandler(&ma)
 	hal := ha.NewLauncher(handler.Namespaces{
 		Handler: "handler",
 	}, "handler")

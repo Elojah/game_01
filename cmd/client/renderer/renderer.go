@@ -45,6 +45,8 @@ func NewRenderer(
 		C:         c,
 		ackC:      ackC,
 		entitiesC: entitiesC,
+		events:    make(map[ulid.ID]dto.Event, 1000),
+		entities:  make(map[ulid.ID]entity.E, 1000),
 	}
 }
 
@@ -144,10 +146,9 @@ func (r *R) resendEvent() {
 func (r *R) render() {
 	for {
 		for _, e := range r.entities {
-			gfx.CircleColor(r.renderer, int32(e.Position.Coord.X), int32(e.Position.Coord.Y), 21, sdl.Color{R: 255, G: 255, B: 255, A: 123})
+			gfx.CircleColor(r.renderer, int32(e.Position.Coord.X), int32(e.Position.Coord.Y), 20, sdl.Color{R: 255, G: 0, B: 125, A: 123})
 		}
 		r.renderer.Present()
-		r.renderer.Clear()
 		sdl.Delay(1000 / r.tickrate)
 	}
 }

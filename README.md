@@ -76,26 +76,26 @@ curl -k -X POST https://127.0.0.1:8081/sector -d @templates/sector.json
 curl -k -X POST https://127.0.0.1:8081/sector/starter -d @templates/sector_starter.json
 
 # Obtain access token
-curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "test"}'
+curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "testtest"}'
 curl -k -X POST https://127.0.0.1:8080/signin -d '{"username": "test", "password": "testtest"}'
-{"ID":"01CJ9WDGGFQBNYWF514C6R6CQ6"}
-curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CJ9WDGGFQBNYWF514C6R6CQ6","type":"01CE3J5ASXJSVC405QTES4M221", "name": "roger_lemour"}'
+{"ID":"01CJCTVBKP5QW557C31TDDPQ7N"}
+curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CJCTVBKP5QW557C31TDDPQ7N","type":"01CE3J5ASXJSVC405QTES4M221", "name": "roger_lomour"}'
 # Token is token obtained at signin and type is an entity ID described in templates/entity_templates.json.
-curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CJ9WDGGFQBNYWF514C6R6CQ6"}'
-[{"id":"01CJ9Y4S1PNSZ81NS8T3SR2DY6","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CJ9WDGGFQBNYWF514C6R6CQ6","target":"01CJ9Y4S1PNSZ81NS8T3SR2DY6"}'
+curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CJCTVBKP5QW557C31TDDPQ7N"}'
+[{"id":"01CJCVMQZ4A7PM5QSRR14YGJEW","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
+curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CJCTVBKP5QW557C31TDDPQ7N","target":"01CJCVMQZ4A7PM5QSRR14YGJEW"}'
 {"ID":"01CJ9Y88P37R7A6KY83AP7ZP77"}
 # Target is a PC ID in /list results
 
-# Paste token in config_client.json: {... "app": {"token": 01CJ9WDGGFQBNYWF514C6R6CQ6,...}}
+# Paste token in config_client.json: {... "app": {"token": 01CJCTVBKP5QW557C31TDDPQ7N,...}}
 make client && bin/game_client configs/config_client.json
 {"type":"move","action":{"source":"01CJ9Y88P37R7A6KY83AP7ZP77","target":"01CJ9Y88P37R7A6KY83AP7ZP77","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ...
 
 # Disconnect PC only (may reconnect with same token)
-curl -k -X POST https://127.0.0.1:8080/pc/disconnect -d '{"token": "01CJ9WDGGFQBNYWF514C6R6CQ6"}'
+curl -k -X POST https://127.0.0.1:8080/pc/disconnect -d '{"token": "01CJCTVBKP5QW557C31TDDPQ7N"}'
 # Signout
-curl -k -X POST https://127.0.0.1:8080/signout -d '{"username": "test", "token": "01CJ9WDGGFQBNYWF514C6R6CQ6"}'
+curl -k -X POST https://127.0.0.1:8080/signout -d '{"username": "test", "token": "01CJCTVBKP5QW557C31TDDPQ7N"}'
 
 ```
 

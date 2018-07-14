@@ -113,6 +113,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		SectorID: sec.ID,
 		Coord:    geometry.Vec3{X: sec.Size.X * rand.Float64(), Y: sec.Size.Y * rand.Float64(), Z: sec.Size.Z * rand.Float64()},
 	}
+	logger.Debug().Str("position", pc.Position.Coord.String()).Msg("set pc position")
 	if err := h.SetPC(pc, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)

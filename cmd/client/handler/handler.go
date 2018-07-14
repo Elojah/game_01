@@ -18,11 +18,17 @@ type H struct {
 	Entity chan entity.E
 }
 
+func NewHandler(m *mux.M) *H {
+	return &H{
+		M:      m,
+		ACK:    make(chan infra.ACK, 100),
+		Entity: make(chan entity.E, 1000),
+	}
+}
+
 // Dial starts handler listening.
 func (h *H) Dial() error {
 	h.M.Listen()
-	h.ACK = make(chan infra.ACK, 100)
-	h.Entity = make(chan entity.E, 1000)
 	return nil
 }
 
@@ -48,6 +54,7 @@ func (h *H) HandleEntity(ctx context.Context, raw []byte) error {
 		return err
 	}
 
+	logger.Debug().Str("entity", string(e.ID[:])).Msg("received")
 	h.Entity <- e.Domain()
 	return nil
 }
@@ -64,6 +71,7 @@ func (h *H) HandleACK(ctx context.Context, raw []byte) error {
 		return err
 	}
 
+	logger.Debug().Str("ack", string(ack.ID[:])).Msg("received")
 	h.ACK <- ack.Domain()
 	return nil
 }
