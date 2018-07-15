@@ -28,5 +28,18 @@
 		"v_sync": true,
 		"tick_rate": 30
 	},
+	"booter": {
+		"address": "127.0.0.1:8080",
+		"tolerance": "5s",
+		"title": "game_01 launcher",
+		"background": "assets/booter_background.jpg",
+		"width": 960,
+		"height": 480,
+		"full_screen": false,
+		"resizable": false,
+		"undecorated": true,
+		"v_sync": true,
+		"tick_rate": 30
+	},
 	"handler": {}
 }

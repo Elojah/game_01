@@ -88,7 +88,9 @@
   name = "github.com/veandco/go-sdl2"
   packages = [
     "gfx",
-    "sdl"
+    "img",
+    "sdl",
+    "ttf"
   ]
   revision = "271d2ec43388932fd2a80f4c2e81021734685a62"
   version = "v0.3"
@@ -96,6 +98,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "e30ceaf5999cebf1809dc52b9166ef336b6f3bedd42a9ecd8a147375e6cc3092"
+  inputs-digest = "d608d9f8aeaf1a615f01d503d8f680382c09f5e76bb7bd02cec92a22f67e2f1c"
   solver-name = "gps-cdcl"
   solver-version = 1

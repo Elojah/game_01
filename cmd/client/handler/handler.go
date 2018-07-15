@@ -18,6 +18,7 @@ type H struct {
 	Entity chan entity.E
 }
 
+// NewHandler returns a handler following udp data into channels.
 func NewHandler(m *mux.M) *H {
 	return &H{
 		M:      m,

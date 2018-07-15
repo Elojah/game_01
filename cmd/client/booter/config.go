@@ -17,6 +17,9 @@ type Config struct {
 	Resizable   bool   `json:"resizable"`
 	Undecorated bool   `json:"undecorated"`
 	VSync       bool   `json:"v_sync"`
+	TickRate    uint32 `json:"tick_rate"`
+
+	Background string `json:"background"`
 }
 
 // Equal returns is both configs are equal.
@@ -117,6 +120,25 @@ func (c *Config) Dial(fileconf interface{}) error {
 	c.VSync, ok = cVSync.(bool)
 	if !ok {
 		return errors.New("key v_sync invalid. must be string")
+	}
+
+	cTickRate, ok := fconf["tick_rate"]
+	if !ok {
+		return errors.New("missing key tick_rate")
+	}
+	cTickRateFloat64, ok := cTickRate.(float64)
+	if !ok {
+		return errors.New("key tick_rate invalid. must be numeric")
+	}
+	c.TickRate = uint32(cTickRateFloat64)
+
+	cBackground, ok := fconf["background"]
+	if !ok {
+		return errors.New("missing key background")
+	}
+	c.Background, ok = cBackground.(string)
+	if !ok {
+		return errors.New("key background invalid. must be string")
 	}
 
 	return nil
