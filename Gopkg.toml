@@ -9,3 +9,7 @@
   [[prune.project]]
     name = "github.com/go-gl/glfw"
     unused-packages = false
+
+  [[prune.project]]
+    name = "github.com/sciter-sdk/go-sciter"
+    unused-packages = false

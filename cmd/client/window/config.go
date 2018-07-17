@@ -1,15 +1,11 @@
-package booter
+package window
 
 import (
 	"errors"
-	"time"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Address   string        `json:"address"`
-	Tolerance time.Duration `json:"tolerance"`
-
 	Title       string `json:"title"`
 	Width       int32  `json:"width"`
 	Height      int32  `json:"height"`
@@ -17,9 +13,6 @@ type Config struct {
 	Resizable   bool   `json:"resizable"`
 	Undecorated bool   `json:"undecorated"`
 	VSync       bool   `json:"v_sync"`
-	TickRate    uint32 `json:"tick_rate"`
-
-	Background string `json:"background"`
 }
 
 // Equal returns is both configs are equal.
@@ -29,32 +22,9 @@ func (c Config) Equal(rhs Config) bool {
 
 // Dial set the config from a config namespace.
 func (c *Config) Dial(fileconf interface{}) error {
-	var err error
 	fconf, ok := fileconf.(map[string]interface{})
 	if !ok {
 		return errors.New("namespace empty")
-	}
-
-	cAddress, ok := fconf["address"]
-	if !ok {
-		return errors.New("missing key address")
-	}
-	c.Address, ok = cAddress.(string)
-	if !ok {
-		return errors.New("key address invalid. must be string")
-	}
-
-	cTolerance, ok := fconf["tolerance"]
-	if !ok {
-		return errors.New("missing key tolerance")
-	}
-	cToleranceString, ok := cTolerance.(string)
-	if !ok {
-		return errors.New("key tolerance invalid. must be string")
-	}
-	c.Tolerance, err = time.ParseDuration(cToleranceString)
-	if err != nil {
-		return err
 	}
 
 	cTitle, ok := fconf["title"]
@@ -120,25 +90,6 @@ func (c *Config) Dial(fileconf interface{}) error {
 	c.VSync, ok = cVSync.(bool)
 	if !ok {
 		return errors.New("key v_sync invalid. must be string")
-	}
-
-	cTickRate, ok := fconf["tick_rate"]
-	if !ok {
-		return errors.New("missing key tick_rate")
-	}
-	cTickRateFloat64, ok := cTickRate.(float64)
-	if !ok {
-		return errors.New("key tick_rate invalid. must be numeric")
-	}
-	c.TickRate = uint32(cTickRateFloat64)
-
-	cBackground, ok := fconf["background"]
-	if !ok {
-		return errors.New("missing key background")
-	}
-	c.Background, ok = cBackground.(string)
-	if !ok {
-		return errors.New("key background invalid. must be string")
 	}
 
 	return nil

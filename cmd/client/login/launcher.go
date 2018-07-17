@@ -1,4 +1,4 @@
-package booter
+package login
 
 import (
 	"sync"
@@ -8,7 +8,7 @@ import (
 
 // Namespaces maps configs used for auth server.
 type Namespaces struct {
-	Booter services.Namespace
+	Renderer services.Namespace
 }
 
 // Launcher represents a auth server launcher.
@@ -16,15 +16,15 @@ type Launcher struct {
 	*services.Configs
 	ns Namespaces
 
-	b *B
+	r *Renderer
 	m sync.Mutex
 }
 
 // NewLauncher returns a new auth server Launcher.
-func (b *B) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
+func (r *Renderer) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
 	return &Launcher{
 		Configs: services.NewConfigs(nsRead...),
-		b:       b,
+		r:       r,
 		ns:      ns,
 	}
 }
@@ -35,10 +35,10 @@ func (l *Launcher) Up(configs services.Configs) error {
 	defer l.m.Unlock()
 
 	sconfig := Config{}
-	if err := sconfig.Dial(configs[l.ns.Booter]); err != nil {
+	if err := sconfig.Dial(configs[l.ns.Renderer]); err != nil {
 		return err
 	}
-	return l.b.Dial(sconfig)
+	return l.r.Dial(sconfig)
 }
 
 // Down stops the auth server service.
@@ -46,5 +46,5 @@ func (l *Launcher) Down(configs services.Configs) error {
 	l.m.Lock()
 	defer l.m.Unlock()
 
-	return l.b.Close()
+	return l.r.Close()
 }

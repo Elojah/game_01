@@ -8,6 +8,7 @@ GODOC     = godoc
 GOFMT     = gofmt
 GOLINT    = gometalinter
 
+BOOTER    = booter
 CLIENT    = client
 AUTH      = auth
 API       = api
@@ -27,6 +28,14 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 all: client auth api core sync revoker tool
 
 # Executables
+booter:
+	$(info $(M) building executable booter…) @ ## Build program binary
+	$Q cd cmd/$(BOOTER) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(BOOTER)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(BOOTER)_$(VERSION) bin/$(PACKAGE)_$(BOOTER)
+
 client:
 	$(info $(M) building executable client…) @ ## Build program binary
 	$Q cd cmd/$(CLIENT) &&  $(GO) build \
