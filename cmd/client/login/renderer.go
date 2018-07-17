@@ -4,8 +4,8 @@ import (
 	"net"
 	"time"
 
+	"github.com/elojah/game_01/pkg/graphics"
 	"github.com/rs/zerolog"
-	"github.com/veandco/go-sdl2/img"
 	"github.com/veandco/go-sdl2/sdl"
 	"github.com/veandco/go-sdl2/ttf"
 )
@@ -16,20 +16,14 @@ type Renderer struct {
 
 	renderer *sdl.Renderer
 
-	background *sdl.Surface
-	texture    *sdl.Texture
-	font       *ttf.Font
+	backgroundImg *graphics.Image
 
-	logFont *ttf.Font
+	skorzhenFont *ttf.Font
+	loginText    *graphics.Text
+	passwordText *graphics.Text
 
-	loginSurf *sdl.Surface
-	loginText *sdl.Texture
-
-	passwordSurf *sdl.Surface
-	passwordText *sdl.Texture
-
-	titleSurf *sdl.Surface
-	titleText *sdl.Texture
+	geosteamFont *ttf.Font
+	titleText    *graphics.Text
 
 	signinURL net.Addr
 	tolerance time.Duration
@@ -45,98 +39,77 @@ func (r *Renderer) Dial(cfg Config) error {
 	var err error
 
 	sdl.Do(func() {
-		if err != nil {
+		if r.backgroundImg, err = graphics.NewImage(cfg.Background); err != nil {
 			return
 		}
-		r.width, r.height = r.window.GetSize()
-		r.renderer, err = sdl.CreateRenderer(r.window, -1, sdl.RENDERER_ACCELERATED)
-		if err != nil {
-			return
-		}
-		r.renderer.Clear()
-		r.background, err = img.Load(cfg.Background)
-		if err != nil {
-			return
-		}
-		r.texture, err = r.renderer.CreateTextureFromSurface(r.background)
-		if err != nil {
-			return
-		}
+
+		// Init fonts
 		if err := ttf.Init(); err != nil {
 			return
 		}
-
-		if r.logFont, err = ttf.OpenFont("assets/skorzhen.ttf", 64); err != nil {
+		if r.skorzhenFont, err = ttf.OpenFont("assets/skorzhen.ttf", 64); err != nil {
 			return
 		}
-		if r.loginSurf, err = r.logFont.RenderUTF8Solid("login", sdl.Color{255, 255, 255, 255}); err != nil {
-			return
-		}
-		if r.loginText, err = r.renderer.CreateTextureFromSurface(r.loginSurf); err != nil {
-			return
-		}
-		if r.passwordSurf, err = r.logFont.RenderUTF8Solid("password", sdl.Color{255, 255, 255, 255}); err != nil {
-			return
-		}
-		if r.passwordText, err = r.renderer.CreateTextureFromSurface(r.passwordSurf); err != nil {
+		if r.geosteamFont, err = ttf.OpenFont("assets/geosteam.ttf", 64); err != nil {
 			return
 		}
 
-		if r.font, err = ttf.OpenFont("assets/geosteam.ttf", 256); err != nil {
+		// Init texts
+		if r.loginText, err = graphics.NewText("login", skorzhenFont, sdl.Color{44, 56, 126}); err != nil {
 			return
 		}
-		if r.titleSurf, err = r.font.RenderUTF8Solid("GAME_01", sdl.Color{0, 255, 0, 255}); err != nil {
+		if r.passwordText, err = graphics.NewText("password", skorzhenFont, sdl.Color{44, 56, 126}); err != nil {
 			return
 		}
-		if r.titleText, err = r.renderer.CreateTextureFromSurface(r.titleSurf); err != nil {
+		if r.titleText, err = graphics.NewText("GAME_01", geosteamFont, sdl.Color{178, 42, 0}); err != nil {
 			return
 		}
 	})
-	if err != nil {
-		return err
-	}
-	sdl.Do(func() { go r.render() })
-	return nil
+	return err
 }
 
 // Close closes the render window.
 func (r *Renderer) Close() error {
 	sdl.Do(func() {
-		if r.window != nil {
-			r.window.Destroy()
-		}
 		if r.renderer != nil {
 			r.renderer.Destroy()
 		}
-		if r.background != nil {
-			r.background.Free()
+		if r.skorzhenFont != nil {
+			r.skorzhenFont.Close()
 		}
-		if r.texture != nil {
-			r.texture.Destroy()
-		}
-		if r.font != nil {
-			r.font.Close()
-		}
-		if r.loginSurf != nil {
-			r.loginSurf.Free()
+		if r.geosteamFont != nil {
+			r.geosteamFont.Close()
 		}
 		if r.loginText != nil {
-			r.loginText.Destroy()
-		}
-		if r.passwordSurf != nil {
-			r.passwordSurf.Free()
+			r.loginText.Close()
 		}
 		if r.passwordText != nil {
-			r.passwordText.Destroy()
-		}
-		if r.logFont != nil {
-			r.logFont.Close()
-		}
-		if r.titleSurf != nil {
-			r.titleSurf.Free()
+			r.passwordText.Close()
 		}
 		if r.titleText != nil {
-			r.titleText.Destroy()
+			r.titleText.Close()
+		}
+	})
+	return nil
+}
+
+func (r *Renderer) Init(w *sdl.Window) error {
+	var err error
+	sdl.Do(func() {
+		if r.renderer, err = sdl.CreateRenderer(w, -1, sdl.RENDERER_ACCELERATED); err != nil {
+			return
+		}
+		if err := r.backgroundImg.Init(r.renderer); err != nil {
+			return
+		}
+		if err := r.loginText.Init(r.renderer); err != nil {
+			return
+		}
+		if err := r.passwordText.Init(r.renderer); err != nil {
+			return
+		}
+		if err := r.titleText.Init(r.renderer); err != nil {
+			return
 		}
 	})
 	return nil
@@ -171,15 +144,15 @@ func (r *Renderer) render() {
 	}
 }
 
-// UnstackEvent sends and event to server.
-func (r *Renderer) UnstackEvent() {
-	for {
-		for e := sdl.PollEvent(); e != nil; e = sdl.PollEvent() {
-			switch e.(type) {
-			case *sdl.QuitEvent:
-				return
-			}
-			// r.events[e.ID] = e
-		}
-	}
-}
+// // UnstackEvent sends and event to server.
+// func (r *Renderer) UnstackEvent() {
+// 	for {
+// 		for e := sdl.PollEvent(); e != nil; e = sdl.PollEvent() {
+// 			switch e.(type) {
+// 			case *sdl.QuitEvent:
+// 				return
+// 			}
+// 			// r.events[e.ID] = e
+// 		}
+// 	}
+// }

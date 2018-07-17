@@ -86,7 +86,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.logger = zerolog.Nop()
-		seq.Start()
+		seq.Run()
 
 		raw, err := storage.NewEvent(eset[0]).Marshal(nil)
 		assert.NoError(t, err)
@@ -119,7 +119,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.logger = zerolog.Nop()
-		seq.Start()
+		seq.Run()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
@@ -163,7 +163,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.logger = zerolog.Nop()
-		seq.Start()
+		seq.Run()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)
@@ -208,7 +208,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.logger = zerolog.Nop()
-		seq.Start()
+		seq.Run()
 
 		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
 		assert.NoError(t, err)

@@ -36,7 +36,7 @@ type app struct {
 // Dial starts the auth server.
 func (a *app) Dial(c Config) error {
 	a.lifespan = c.Lifespan
-	go a.Start()
+	go a.Run()
 	return nil
 }
 
@@ -46,7 +46,7 @@ func (a *app) Close() error {
 }
 
 // Start start the revoker
-func (a *app) Start() {
+func (a *app) Run() {
 	logger := log.With().Str("revoker", "").Logger()
 
 	tokenIDs, err := a.ListTokenHC(account.TokenHCSubset{MaxTS: time.Now().Add(-a.lifespan).Unix()})
