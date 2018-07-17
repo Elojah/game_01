@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -8,18 +9,20 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/veandco/go-sdl2/sdl"
 
+	"github.com/elojah/game_01/cmd/client/booter"
 	"github.com/elojah/game_01/cmd/client/handler"
 	"github.com/elojah/game_01/cmd/client/renderer"
+	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/usecase/token"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
 )
 
 // run services.
-func run(prog string, filename string) {
+func run(filename string, t token.T, e entity.E) {
 
 	launchers := services.Launchers{}
-	log.Logger = log.With().Str("exe", prog).Logger()
 
 	c := client.C{}
 	cl := c.NewLauncher(client.Namespaces{
@@ -70,6 +73,30 @@ func run(prog string, filename string) {
 	})
 }
 
+func boot(filename string) (token.T, entity.E, error) {
+	launchers := services.Launchers{}
+
+	b := booter.B{}
+	bl := b.NewLauncher(booter.Namespaces{
+		Booter: "booter",
+	}, "booter")
+	launchers.Add(bl)
+
+	var t token.T
+	var e entity.E
+	sdl.Main(func() {
+		if err := launchers.Up(filename); err != nil {
+			log.Error().Err(err).Str("filename", filename).Msg("failed to start")
+			return
+		}
+		log.Info().Msg("booter up")
+		sdl.Do(func() { b.UnstackEvent() })
+		launchers.Down()
+	})
+
+	return t, e, errors.New("WIP TMP")
+}
+
 func main() {
 	args := os.Args
 	if len(args) != 2 {
@@ -78,5 +105,11 @@ func main() {
 	}
 	zerolog.TimeFieldFormat = ""
 	log.Logger = log.With().Str("exe", args[0]).Logger()
-	run(args[0], args[1])
+
+	t, e, err := boot(args[1])
+	if err != nil {
+		fmt.Println("Failed to boot game:", err.Error())
+		return
+	}
+	run(args[1], t, e)
 }
