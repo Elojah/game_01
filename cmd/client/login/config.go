@@ -11,6 +11,7 @@ type Config struct {
 	Tolerance time.Duration `json:"tolerance"`
 
 	Background string `json:"background"`
+	Framerate  uint32 `json:"framerate"`
 }
 
 // Equal returns is both configs are equal.
@@ -56,6 +57,16 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key background invalid. must be string")
 	}
+
+	cFramerate, ok := fconf["framerate"]
+	if !ok {
+		return errors.New("missing key framerate")
+	}
+	cFramerateFloat64, ok := cFramerate.(float64)
+	if !ok {
+		return errors.New("key framerate invalid. must be numeric")
+	}
+	c.Framerate = uint32(cFramerateFloat64)
 
 	return nil
 }

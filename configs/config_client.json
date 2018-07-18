@@ -27,7 +27,8 @@
 	"login": {
 		"signin_url": "127.0.0.1:42000/signin",
 		"tolerance": "5s",
-		"background": "assets/booter_background.jpg"
+		"background": "assets/booter_background.jpg",
+		"framerate": 60
 	},
 	"handler": {}
 }

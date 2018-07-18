@@ -19,6 +19,8 @@ type Renderer struct {
 	width  int32
 	height int32
 
+	framerate uint32
+
 	backgroundImg *graphics.Image
 
 	bitwiseFont  *ttf.Font
@@ -47,6 +49,7 @@ func NewRenderer() *Renderer {
 func (r *Renderer) Dial(cfg Config) error {
 	var err error
 
+	r.framerate = cfg.Framerate
 	sdl.Do(func() {
 		// Init images
 		if r.backgroundImg, err = graphics.NewImage(cfg.Background); err != nil {
@@ -191,7 +194,7 @@ func (r *Renderer) Update() {
 			&sdl.Rect{X: r.width / 3, Y: r.height / 2, W: r.width / 2, H: r.height / 16},
 		)
 		r.renderer.Present()
-		sdl.Delay(180)
+		sdl.Delay(1000 / r.framerate)
 	}
 }
 
