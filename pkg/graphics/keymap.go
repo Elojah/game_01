@@ -5,8 +5,10 @@ import (
 )
 
 var (
+	returns = map[sdl.Keycode]struct{}{
+		sdl.K_RETURN: struct{}{},
+	}
 	backspaces = map[sdl.Keycode]struct{}{
-		sdl.K_RETURN:       struct{}{},
 		sdl.K_BACKSPACE:    struct{}{},
 		sdl.K_KP_BACKSPACE: struct{}{},
 	}
