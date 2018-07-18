@@ -15,31 +15,19 @@
 		"middlewares": ["lz4"],
 		"packet_size": 1024
 	},
-	"renderer": {
-		"token": "01CHX2397HA9269NPH95ERTKC3",
-		"address": "127.0.0.1:3400",
-		"tolerance": "500ms",
+	"window": {
 		"title": "game_01",
-		"width": 620,
+		"width": 860,
 		"height": 480,
 		"full_screen": false,
 		"resizable": false,
 		"undecorated": true,
-		"v_sync": true,
-		"tick_rate": 30
+		"v_sync": true
 	},
-	"booter": {
-		"address": "127.0.0.1:8080",
+	"login": {
+		"signin_url": "127.0.0.1:42000/signin",
 		"tolerance": "5s",
-		"title": "game_01 launcher",
-		"background": "assets/booter_background.jpg",
-		"width": 960,
-		"height": 480,
-		"full_screen": false,
-		"resizable": false,
-		"undecorated": true,
-		"v_sync": true,
-		"tick_rate": 30
+		"background": "assets/booter_background.jpg"
 	},
 	"handler": {}
 }

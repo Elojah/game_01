@@ -16,20 +16,28 @@ type Renderer struct {
 
 	renderer *sdl.Renderer
 
+	width  int32
+	height int32
+
 	backgroundImg *graphics.Image
 
-	skorzhenFont *ttf.Font
+	bitwiseFont  *ttf.Font
 	loginText    *graphics.Text
 	passwordText *graphics.Text
 
 	geosteamFont *ttf.Font
 	titleText    *graphics.Text
 
+	focus         *graphics.TextInput
+	loginInput    *graphics.TextInput
+	passwordInput *graphics.TextInput
+
 	signinURL net.Addr
 	tolerance time.Duration
 	tickrate  uint32
 }
 
+// NewRenderer returns a new login renderer.
 func NewRenderer() *Renderer {
 	return &Renderer{}
 }
@@ -39,6 +47,7 @@ func (r *Renderer) Dial(cfg Config) error {
 	var err error
 
 	sdl.Do(func() {
+		// Init images
 		if r.backgroundImg, err = graphics.NewImage(cfg.Background); err != nil {
 			return
 		}
@@ -47,23 +56,28 @@ func (r *Renderer) Dial(cfg Config) error {
 		if err := ttf.Init(); err != nil {
 			return
 		}
-		if r.skorzhenFont, err = ttf.OpenFont("assets/skorzhen.ttf", 64); err != nil {
+		if r.bitwiseFont, err = ttf.OpenFont("assets/bitwise.ttf", 64); err != nil {
 			return
 		}
-		if r.geosteamFont, err = ttf.OpenFont("assets/geosteam.ttf", 64); err != nil {
+		if r.geosteamFont, err = ttf.OpenFont("assets/geosteam.ttf", 256); err != nil {
 			return
 		}
 
 		// Init texts
-		if r.loginText, err = graphics.NewText("login", skorzhenFont, sdl.Color{44, 56, 126}); err != nil {
+		if r.loginText, err = graphics.NewText("login", r.bitwiseFont, sdl.Color{211, 47, 47, 255}); err != nil {
 			return
 		}
-		if r.passwordText, err = graphics.NewText("password", skorzhenFont, sdl.Color{44, 56, 126}); err != nil {
+		if r.passwordText, err = graphics.NewText("password", r.bitwiseFont, sdl.Color{211, 47, 47, 255}); err != nil {
 			return
 		}
-		if r.titleText, err = graphics.NewText("GAME_01", geosteamFont, sdl.Color{178, 42, 0}); err != nil {
+		if r.titleText, err = graphics.NewText("GAME_01", r.geosteamFont, sdl.Color{178, 42, 0, 255}); err != nil {
 			return
 		}
+
+		// Text inputs
+		r.loginInput = graphics.NewTextInput(r.bitwiseFont, sdl.Color{0, 150, 136, 255})
+		r.passwordInput = graphics.NewTextInput(r.bitwiseFont, sdl.Color{0, 150, 136, 255})
+		r.focus = r.loginInput
 	})
 	return err
 }
@@ -74,8 +88,8 @@ func (r *Renderer) Close() error {
 		if r.renderer != nil {
 			r.renderer.Destroy()
 		}
-		if r.skorzhenFont != nil {
-			r.skorzhenFont.Close()
+		if r.bitwiseFont != nil {
+			r.bitwiseFont.Close()
 		}
 		if r.geosteamFont != nil {
 			r.geosteamFont.Close()
@@ -93,6 +107,7 @@ func (r *Renderer) Close() error {
 	return nil
 }
 
+// Init initializes the login page renderer.
 func (r *Renderer) Init(w *sdl.Window) error {
 	var err error
 	sdl.Do(func() {
@@ -111,48 +126,64 @@ func (r *Renderer) Init(w *sdl.Window) error {
 		if err := r.titleText.Init(r.renderer); err != nil {
 			return
 		}
+		r.width, r.height = w.GetSize()
 	})
 	return nil
 }
 
-// render is an sdl dependant function to render current frame.
-func (r *Renderer) render() {
+// Update is an sdl dependant function to render current frame.
+func (r *Renderer) Update() {
+	sdl.StartTextInput()
 	for {
 		r.renderer.Clear()
 		r.renderer.Copy(
-			r.texture,
+			r.backgroundImg.Texture,
 			&sdl.Rect{X: 0, Y: 0, W: 3600, H: 1800},
 			&sdl.Rect{X: 0, Y: 0, W: r.width, H: r.height},
 		)
 		r.renderer.Copy(
-			r.titleText,
+			r.titleText.Texture,
 			nil,
-			&sdl.Rect{X: 200, Y: 42, W: 560, H: 84},
+			&sdl.Rect{X: r.width / 5, Y: r.height / 10, W: 3 * r.width / 5, H: r.height / 5},
 		)
 		r.renderer.Copy(
-			r.loginText,
+			r.loginText.Texture,
 			nil,
-			&sdl.Rect{X: 42, Y: 220, W: 142, H: 32},
+			&sdl.Rect{X: r.width / 10, Y: r.height/2 - r.height/15, W: r.width / 10, H: r.height / 15},
 		)
 		r.renderer.Copy(
-			r.passwordText,
+			r.passwordText.Texture,
 			nil,
-			&sdl.Rect{X: 42, Y: 260, W: 142, H: 32},
+			&sdl.Rect{X: r.width / 10, Y: r.height / 2, W: r.width / 5, H: r.height / 15},
+		)
+		r.loginInput.Update(r.renderer)
+		r.passwordInput.Update(r.renderer)
+		r.renderer.Copy(
+			r.loginInput.Texture,
+			nil,
+			&sdl.Rect{X: r.width / 3, Y: r.height/2 - r.height/15, W: r.width / 2, H: r.height / 15},
+		)
+		r.renderer.Copy(
+			r.passwordInput.Texture,
+			nil,
+			&sdl.Rect{X: r.width / 3, Y: r.height / 2, W: r.width / 2, H: r.height / 15},
 		)
 		r.renderer.Present()
-		sdl.Delay(1000 / r.tickrate)
+		sdl.Delay(180)
 	}
 }
 
-// // UnstackEvent sends and event to server.
-// func (r *Renderer) UnstackEvent() {
-// 	for {
-// 		for e := sdl.PollEvent(); e != nil; e = sdl.PollEvent() {
-// 			switch e.(type) {
-// 			case *sdl.QuitEvent:
-// 				return
-// 			}
-// 			// r.events[e.ID] = e
-// 		}
-// 	}
-// }
+// PollEvent sends and event to server.
+func (r *Renderer) PollEvent() {
+	for {
+		for e := sdl.PollEvent(); e != nil; e = sdl.PollEvent() {
+			switch e.(type) {
+			case *sdl.QuitEvent:
+				return
+			case *sdl.KeyboardEvent:
+				r.focus.Input(e.(*sdl.KeyboardEvent))
+			}
+			// r.events[e.ID] = e
+		}
+	}
+}

@@ -11,7 +11,7 @@ type TextInput struct {
 
 	surface *sdl.Surface
 
-	content string
+	content [32]rune
 	color   sdl.Color
 	font    *ttf.Font
 
@@ -21,8 +21,9 @@ type TextInput struct {
 // NewTextInput returns a new text object.
 func NewTextInput(font *ttf.Font, color sdl.Color) *TextInput {
 	return &TextInput{
-		font:  font,
-		color: color,
+		font:    font,
+		color:   color,
+		content: [32]rune{' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
 	}
 }
 
@@ -30,7 +31,7 @@ func NewTextInput(font *ttf.Font, color sdl.Color) *TextInput {
 func (t *TextInput) Update(renderer *sdl.Renderer) error {
 	var err error
 	t.Close()
-	if t.surface, err = t.font.RenderUTF8Solid(t.content, t.color); err != nil {
+	if t.surface, err = t.font.RenderUTF8Solid(string(t.content[:]), t.color); err != nil {
 		return err
 	}
 	if t.Texture, err = renderer.CreateTextureFromSurface(t.surface); err != nil {
@@ -43,7 +44,23 @@ func (t *TextInput) Update(renderer *sdl.Renderer) error {
 func (t *TextInput) Input(input *sdl.KeyboardEvent) error {
 	switch input.GetType() {
 	case sdl.KEYDOWN:
-		t.content += sdl.GetKeyName(input.Keysym.Sym)
+		if _, ok := backspaces[input.Keysym.Sym]; ok {
+			if t.cursor == 0 {
+				return nil
+			}
+			t.content[t.cursor-1] = ' '
+			t.cursor -= 1
+			return nil
+		}
+		r, ok := keymap[input.Keysym.Sym]
+		if !ok {
+			return nil
+		}
+		if t.cursor >= 32 {
+			return nil
+		}
+		t.content[t.cursor] = r
+		t.cursor++
 	}
 	return nil
 }

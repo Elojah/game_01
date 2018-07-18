@@ -9,6 +9,7 @@ type W struct {
 	*sdl.Window
 }
 
+// NewWindow returns a new SDL window.
 func NewWindow() *W {
 	return &W{}
 }
@@ -20,10 +21,7 @@ func (w *W) Dial(cfg Config) error {
 	sdl.Do(func() {
 		w.Window, err = sdl.CreateWindow(cfg.Title, sdl.WINDOWPOS_UNDEFINED, sdl.WINDOWPOS_UNDEFINED, cfg.Width, cfg.Height, sdl.WINDOW_OPENGL)
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // Close closes the render window.

@@ -126,7 +126,7 @@ func (s *Sequencer) listenProcess() {
 	}
 }
 
-// Start starts the 3 goroutines to follow up events.
+// Run starts the 3 goroutines to follow up events.
 func (s *Sequencer) Run() {
 	go s.listenInput()
 	go s.listenFetch()

@@ -29,7 +29,7 @@ func run(prog string, filename string) {
 
 	lr := login.NewRenderer()
 	lrl := lr.NewLauncher(login.Namespaces{
-		Login: "login",
+		Renderer: "login",
 	}, "login")
 	launchers.Add(lrl)
 
@@ -39,7 +39,11 @@ func run(prog string, filename string) {
 			return
 		}
 		log.Info().Msg("client up")
-		// sdl.Do(func() { r.UnstackEvent() })
+		lr.Init(w.Window)
+		sdl.Do(func() {
+			go lr.Update()
+			lr.PollEvent()
+		})
 		launchers.Down()
 	})
 }

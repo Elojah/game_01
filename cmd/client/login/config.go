@@ -26,13 +26,13 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("namespace empty")
 	}
 
-	cSigninURL, ok := fconf["address"]
+	cSigninURL, ok := fconf["signin_url"]
 	if !ok {
-		return errors.New("missing key address")
+		return errors.New("missing key signin_url")
 	}
 	c.SigninURL, ok = cSigninURL.(string)
 	if !ok {
-		return errors.New("key address invalid. must be string")
+		return errors.New("key signin_url invalid. must be string")
 	}
 
 	cTolerance, ok := fconf["tolerance"]

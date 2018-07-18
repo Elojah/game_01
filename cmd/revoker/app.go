@@ -45,7 +45,7 @@ func (a *app) Close() error {
 	return nil
 }
 
-// Start start the revoker
+// Run starts the revoker
 func (a *app) Run() {
 	logger := log.With().Str("revoker", "").Logger()
 
