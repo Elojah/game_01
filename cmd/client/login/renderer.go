@@ -28,9 +28,10 @@ type Renderer struct {
 	geosteamFont *ttf.Font
 	titleText    *graphics.Text
 
-	focus         *graphics.TextInput
+	mozart0Font   *ttf.Font
 	loginInput    *graphics.TextInput
 	passwordInput *graphics.TextInput
+	focus         *graphics.TextInput
 
 	signinURL net.Addr
 	tolerance time.Duration
@@ -62,12 +63,15 @@ func (r *Renderer) Dial(cfg Config) error {
 		if r.geosteamFont, err = ttf.OpenFont("assets/geosteam.ttf", 256); err != nil {
 			return
 		}
-
-		// Init texts
-		if r.loginText, err = graphics.NewText("login", r.bitwiseFont, sdl.Color{211, 47, 47, 255}); err != nil {
+		if r.mozart0Font, err = ttf.OpenFont("assets/mozart_0.ttf", 64); err != nil {
 			return
 		}
-		if r.passwordText, err = graphics.NewText("password", r.bitwiseFont, sdl.Color{211, 47, 47, 255}); err != nil {
+
+		// Init texts
+		if r.loginText, err = graphics.NewText("login", r.bitwiseFont, sdl.Color{57, 255, 20, 255}); err != nil {
+			return
+		}
+		if r.passwordText, err = graphics.NewText("password", r.bitwiseFont, sdl.Color{57, 255, 20, 255}); err != nil {
 			return
 		}
 		if r.titleText, err = graphics.NewText("GAME_01", r.geosteamFont, sdl.Color{178, 42, 0, 255}); err != nil {
@@ -75,8 +79,8 @@ func (r *Renderer) Dial(cfg Config) error {
 		}
 
 		// Text inputs
-		r.loginInput = graphics.NewTextInput(r.bitwiseFont, sdl.Color{0, 150, 136, 255})
-		r.passwordInput = graphics.NewTextInput(r.bitwiseFont, sdl.Color{0, 150, 136, 255})
+		r.loginInput = graphics.NewTextInput(r.mozart0Font, sdl.Color{57, 255, 20, 255})
+		r.passwordInput = graphics.NewTextInput(r.mozart0Font, sdl.Color{57, 255, 20, 255})
 		r.focus = r.loginInput
 	})
 	return err
@@ -94,6 +98,9 @@ func (r *Renderer) Close() error {
 		if r.geosteamFont != nil {
 			r.geosteamFont.Close()
 		}
+		if r.mozart0Font != nil {
+			r.mozart0Font.Close()
+		}
 		if r.loginText != nil {
 			r.loginText.Close()
 		}
@@ -102,6 +109,12 @@ func (r *Renderer) Close() error {
 		}
 		if r.titleText != nil {
 			r.titleText.Close()
+		}
+		if r.loginInput != nil {
+			r.loginInput.Close()
+		}
+		if r.passwordInput != nil {
+			r.passwordInput.Close()
 		}
 	})
 	return nil
