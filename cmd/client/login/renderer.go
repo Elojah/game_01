@@ -203,7 +203,18 @@ func (r *Renderer) PollEvent() {
 			case *sdl.QuitEvent:
 				return
 			case *sdl.KeyboardEvent:
-				r.focus.Input(e.(*sdl.KeyboardEvent))
+				event := e.(*sdl.KeyboardEvent)
+				switch event.Keysym.Sym {
+				case sdl.K_TAB:
+					if r.focus == r.loginInput {
+						r.focus = r.passwordInput
+					}
+					if r.focus == r.passwordInput {
+						r.focus = r.loginInput
+					}
+				default:
+					r.focus.Input(event)
+				}
 			}
 			// r.events[e.ID] = e
 		}

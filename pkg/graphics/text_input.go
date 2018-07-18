@@ -42,26 +42,26 @@ func (t *TextInput) Update(renderer *sdl.Renderer) error {
 
 // Input receives a text input and add it to current content.
 func (t *TextInput) Input(input *sdl.KeyboardEvent) error {
-	switch input.GetType() {
-	case sdl.KEYDOWN:
-		if _, ok := backspaces[input.Keysym.Sym]; ok {
-			if t.cursor == 0 {
-				return nil
-			}
-			t.content[t.cursor-1] = ' '
-			t.cursor--
-			return nil
-		}
-		r, ok := keymap[input.Keysym.Sym]
-		if !ok {
-			return nil
-		}
-		if t.cursor >= 32 {
-			return nil
-		}
-		t.content[t.cursor] = r
-		t.cursor++
+	if input.GetType() == sdl.KEYUP {
+		return nil
 	}
+	if _, ok := backspaces[input.Keysym.Sym]; ok {
+		if t.cursor == 0 {
+			return nil
+		}
+		t.content[t.cursor-1] = ' '
+		t.cursor--
+		return nil
+	}
+	r, ok := keymap[input.Keysym.Sym]
+	if !ok {
+		return nil
+	}
+	if t.cursor >= 32 {
+		return nil
+	}
+	t.content[t.cursor] = r
+	t.cursor++
 	return nil
 }
 
