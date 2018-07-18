@@ -2,7 +2,7 @@ package graphics
 
 import (
 	"github.com/veandco/go-sdl2/sdl"
-	"github.com/veandco/go-sdl2/sdl/ttf"
+	"github.com/veandco/go-sdl2/ttf"
 )
 
 // Text represents a SDL text to attach to a renderer.
@@ -13,7 +13,7 @@ type Text struct {
 }
 
 // NewText returns a new text object.
-func NewText(content string, font ttf.Font, color sdl.Color) (*Text, error) {
+func NewText(content string, font *ttf.Font, color sdl.Color) (*Text, error) {
 	var t Text
 	var err error
 	t.surface, err = font.RenderUTF8Solid(content, color)
