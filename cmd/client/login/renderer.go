@@ -149,37 +149,46 @@ func (r *Renderer) Update() {
 	sdl.StartTextInput()
 	for {
 		r.renderer.Clear()
+		// Background
 		r.renderer.Copy(
 			r.backgroundImg.Texture,
 			&sdl.Rect{X: 0, Y: 0, W: 3600, H: 1800},
 			&sdl.Rect{X: 0, Y: 0, W: r.width, H: r.height},
 		)
-		r.renderer.Copy(
-			r.titleText.Texture,
-			nil,
-			&sdl.Rect{X: r.width / 5, Y: r.height / 10, W: 3 * r.width / 5, H: r.height / 5},
-		)
+
+		// Style transparency
+		r.renderer.SetDrawBlendMode(sdl.BLENDMODE_BLEND)
+		r.renderer.SetDrawColor(0, 0, 0, 120)
+		r.renderer.FillRect(&sdl.Rect{X: (r.width / 3) - 10, Y: r.height/2 - r.height/15, W: (r.width / 2) + 20, H: r.height / 16})
+		r.renderer.FillRect(&sdl.Rect{X: (r.width / 3) - 10, Y: r.height / 2, W: (r.width / 2) + 20, H: r.height / 16})
+
+		// Actual content
+		// r.renderer.Copy(
+		// 	r.titleText.Texture,
+		// 	nil,
+		// 	&sdl.Rect{X: r.width / 5, Y: r.height / 10, W: 3 * r.width / 5, H: r.height / 5},
+		// )
 		r.renderer.Copy(
 			r.loginText.Texture,
 			nil,
-			&sdl.Rect{X: r.width / 10, Y: r.height/2 - r.height/15, W: r.width / 10, H: r.height / 15},
+			&sdl.Rect{X: r.width / 10, Y: r.height/2 - r.height/15, W: r.width / 10, H: r.height / 16},
 		)
 		r.renderer.Copy(
 			r.passwordText.Texture,
 			nil,
-			&sdl.Rect{X: r.width / 10, Y: r.height / 2, W: r.width / 5, H: r.height / 15},
+			&sdl.Rect{X: r.width / 10, Y: r.height / 2, W: r.width / 5, H: r.height / 16},
 		)
 		r.loginInput.Update(r.renderer)
 		r.passwordInput.Update(r.renderer)
 		r.renderer.Copy(
 			r.loginInput.Texture,
 			nil,
-			&sdl.Rect{X: r.width / 3, Y: r.height/2 - r.height/15, W: r.width / 2, H: r.height / 15},
+			&sdl.Rect{X: r.width / 3, Y: r.height/2 - r.height/15, W: r.width / 2, H: r.height / 16},
 		)
 		r.renderer.Copy(
 			r.passwordInput.Texture,
 			nil,
-			&sdl.Rect{X: r.width / 3, Y: r.height / 2, W: r.width / 2, H: r.height / 15},
+			&sdl.Rect{X: r.width / 3, Y: r.height / 2, W: r.width / 2, H: r.height / 16},
 		)
 		r.renderer.Present()
 		sdl.Delay(180)

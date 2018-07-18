@@ -49,7 +49,7 @@ func (t *TextInput) Input(input *sdl.KeyboardEvent) error {
 				return nil
 			}
 			t.content[t.cursor-1] = ' '
-			t.cursor -= 1
+			t.cursor--
 			return nil
 		}
 		r, ok := keymap[input.Keysym.Sym]
