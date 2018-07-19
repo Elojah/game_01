@@ -71,10 +71,10 @@ func (r *Renderer) Dial(cfg Config) error {
 		}
 
 		// Init texts
-		if r.loginText, err = graphics.NewText("login", r.bitwiseFont, sdl.Color{57, 255, 20, 255}); err != nil {
+		if r.loginText, err = graphics.NewText("login", r.bitwiseFont, sdl.Color{0, 255, 102, 255}); err != nil {
 			return
 		}
-		if r.passwordText, err = graphics.NewText("password", r.bitwiseFont, sdl.Color{57, 255, 20, 255}); err != nil {
+		if r.passwordText, err = graphics.NewText("password", r.bitwiseFont, sdl.Color{0, 255, 102, 255}); err != nil {
 			return
 		}
 		if r.titleText, err = graphics.NewText("GAME_01", r.geosteamFont, sdl.Color{178, 42, 0, 255}); err != nil {
@@ -82,9 +82,15 @@ func (r *Renderer) Dial(cfg Config) error {
 		}
 
 		// Text inputs
-		r.loginInput = graphics.NewTextInput(r.mozart0Font, sdl.Color{57, 255, 20, 255})
-		r.passwordInput = graphics.NewTextInput(r.mozart0Font, sdl.Color{57, 255, 20, 255})
+		r.loginInput = graphics.NewTextInput(r.mozart0Font, sdl.Color{0, 255, 102, 255}, 32)
+		r.passwordInput = graphics.NewTextInput(r.mozart0Font, sdl.Color{0, 255, 102, 255}, 32)
+		r.passwordInput.Hidden = true
+		r.loginInput.Next = r.passwordInput
+		r.loginInput.Previous = r.passwordInput
+		r.passwordInput.Previous = r.loginInput
+		r.passwordInput.Next = r.loginInput
 		r.focus = r.loginInput
+		r.focus.ShowCursor(true)
 	})
 	return err
 }
@@ -207,19 +213,18 @@ func (r *Renderer) PollEvent() {
 				return
 			case *sdl.KeyboardEvent:
 				event := e.(*sdl.KeyboardEvent)
+				keytype := event.GetType()
 				switch event.Keysym.Sym {
 				case sdl.K_TAB:
-					if r.focus == r.loginInput {
-						r.focus = r.passwordInput
-					}
-					if r.focus == r.passwordInput {
-						r.focus = r.loginInput
+					if keytype == sdl.KEYUP && r.focus.Next != nil {
+						r.focus.ShowCursor(false)
+						r.focus = r.focus.Next
+						r.focus.ShowCursor(true)
 					}
 				default:
 					r.focus.Input(event)
 				}
 			}
-			// r.events[e.ID] = e
 		}
 	}
 }
