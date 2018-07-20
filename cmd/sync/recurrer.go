@@ -29,7 +29,7 @@ type Recurrer struct {
 // NewRecurrer returns a new recurrer which sends entity data associated to id to addr, tick times per second.
 func NewRecurrer(rec event.Recurrer, tick uint32, callback func(entity.E)) *Recurrer {
 	return &Recurrer{
-		logger:   log.With().Str("recurrer", rec.TokenID.String()).Logger(),
+		logger:   log.With().Str("recurrer", ulid.String(rec.TokenID)).Logger(),
 		id:       rec.TokenID,
 		entityID: rec.EntityID,
 		callback: callback,
@@ -66,7 +66,7 @@ func (r *Recurrer) Run() {
 func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
 	se, err := r.GetEntities(sector.EntitiesSubset{SectorID: sectorID})
 	if err != nil {
-		r.logger.Error().Err(err).Str("id", sectorID.String()).Msg("failed to retrieve sector")
+		r.logger.Error().Err(err).Str("id", ulid.String(sectorID)).Msg("failed to retrieve sector")
 		return
 	}
 	for _, entityID := range se.EntityIDs {
@@ -78,7 +78,7 @@ func (r *Recurrer) sendEntity(entityID ulid.ID, t time.Time) {
 	// TODO Use token ping instead of now()
 	entity, err := r.EntityMapper.GetEntity(entity.Subset{ID: entityID, MaxTS: t.UnixNano()})
 	if err != nil {
-		r.logger.Error().Err(err).Str("id", entityID.String()).Msg("failed to retrieve entity")
+		r.logger.Error().Err(err).Str("id", ulid.String(entityID)).Msg("failed to retrieve entity")
 		return
 	}
 	r.callback(entity)

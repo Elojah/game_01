@@ -5,6 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/storage"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 
 // GetAbilityFeedback implemented with redis.
 func (s *Service) GetAbilityFeedback(subset ability.FeedbackSubset) (ability.Feedback, error) {
-	val, err := s.Get(afbKey + subset.ID.String()).Result()
+	val, err := s.Get(afbKey + ulid.String(subset.ID)).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return ability.Feedback{}, err
@@ -34,5 +35,5 @@ func (s *Service) SetAbilityFeedback(afb ability.Feedback) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(afbKey+afb.ID.String(), raw, 0).Err()
+	return s.Set(afbKey+ulid.String(afb.ID), raw, 0).Err()
 }

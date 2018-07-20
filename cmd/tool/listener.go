@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -37,12 +38,12 @@ func (h *handler) postListener(w http.ResponseWriter, r *http.Request) {
 		switch l.Action {
 		case event.Open:
 			if _, err := h.L.New(l.ID); err != nil {
-				logger.Error().Err(err).Str("listener", l.ID.String()).Msg("failed to set listener")
+				logger.Error().Err(err).Str("listener", ulid.String(l.ID)).Msg("failed to set listener")
 				return
 			}
 		case event.Close:
 			if err := h.L.Delete(l.ID); err != nil {
-				logger.Error().Err(err).Str("listener", l.ID.String()).Msg("failed to set listener")
+				logger.Error().Err(err).Str("listener", ulid.String(l.ID)).Msg("failed to set listener")
 				return
 			}
 		}

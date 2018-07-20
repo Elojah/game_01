@@ -46,10 +46,10 @@ type Subset struct {
 
 // Equal returns if both entities are equal.
 func (e E) Equal(entity E) bool {
-	if e.ID.Compare(entity.ID) != 0 {
+	if ulid.Compare(e.ID, entity.ID) != 0 {
 		return false
 	}
-	if e.Type.Compare(entity.Type) != 0 {
+	if ulid.Compare(e.Type, entity.Type) != 0 {
 		return false
 	}
 	if e.Name != entity.Name {
@@ -61,7 +61,7 @@ func (e E) Equal(entity E) bool {
 	if e.MP != entity.MP {
 		return false
 	}
-	if e.Position.SectorID.Compare(entity.Position.SectorID) != 0 {
+	if ulid.Compare(e.Position.SectorID, entity.Position.SectorID) != 0 {
 		return false
 	}
 	if e.Position.Coord.X != entity.Position.Coord.X {

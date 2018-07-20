@@ -41,7 +41,7 @@ func (s *Sequencer) Close() {
 func NewSequencer(id ulid.ID, limit int, em event.Mapper, callback func(ulid.ID, event.E)) *Sequencer {
 	return &Sequencer{
 		id:     id,
-		logger: log.With().Str("sequencer", id.String()).Logger(),
+		logger: log.With().Str("sequencer", ulid.String(id)).Logger(),
 		Mapper: em,
 
 		input:   make(tick, limit),
@@ -81,7 +81,7 @@ func (s *Sequencer) listenFetch() {
 	var min int64
 	for t := range s.fetch {
 		events, err := s.ListEvent(event.Subset{
-			Key: s.id.String(),
+			Key: ulid.String(s.id),
 			Min: t,
 		})
 		if err != nil {
@@ -121,7 +121,7 @@ func (s *Sequencer) listenFetch() {
 
 func (s *Sequencer) listenProcess() {
 	for event := range s.process {
-		s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
+		s.logger.Info().Str("event", ulid.String(event.ID)).Int64("ts", event.TS.UnixNano()).Msg("run")
 		s.callback(s.id, event)
 	}
 }
@@ -145,6 +145,6 @@ func (s *Sequencer) Handler(msg *event.Message) {
 		s.logger.Error().Err(err).Msg("error creating event")
 		return
 	}
-	s.logger.Info().Str("event", event.ID.String()).Msg("event received")
+	s.logger.Info().Str("event", ulid.String(event.ID)).Msg("event received")
 	s.input <- event.TS.UnixNano()
 }

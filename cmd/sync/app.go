@@ -49,7 +49,7 @@ func (a *app) Dial(c Config) error {
 }
 
 func (a *app) Run() {
-	logger := log.With().Str("sync", a.id.String()).Logger()
+	logger := log.With().Str("sync", ulid.String(a.id)).Logger()
 
 	a.sub = a.SubscribeRecurrer(a.id)
 	go func() {
@@ -76,7 +76,7 @@ func (a *app) Close() {
 }
 
 func (a *app) AddRecurrer(msg *event.Message) {
-	logger := log.With().Str("sync", a.id.String()).Logger()
+	logger := log.With().Str("sync", ulid.String(a.id)).Logger()
 
 	var recurrerS storage.Recurrer
 	if _, err := recurrerS.Unmarshal([]byte(msg.Payload)); err != nil {
@@ -85,7 +85,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	}
 	recurrer := recurrerS.Domain()
 
-	logger = logger.With().Str("recurrer", recurrer.TokenID.String()).Logger()
+	logger = logger.With().Str("recurrer", ulid.String(recurrer.TokenID)).Logger()
 
 	if recurrer.Action == event.Close {
 		rec := a.recurrers[recurrer.TokenID]
@@ -111,7 +111,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 			logger.Error().Err(err).Msg("failed to marshal entity")
 			return
 		}
-		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
+		logger.Info().Str("entity", ulid.String(e.ID)).Msg("send entity")
 		fmt.Println(e)
 		a.Send(raw, &address)
 	})

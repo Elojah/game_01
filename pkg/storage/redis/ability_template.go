@@ -5,6 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/storage"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 
 // GetAbilityTemplate implemented with redis.
 func (s *Service) GetAbilityTemplate(subset ability.TemplateSubset) (ability.Template, error) {
-	val, err := s.Get(abilityTemplateKey + subset.Type.String()).Result()
+	val, err := s.Get(abilityTemplateKey + ulid.String(subset.Type)).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return ability.Template{}, err
@@ -34,7 +35,7 @@ func (s *Service) SetAbilityTemplate(template ability.Template) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(abilityTemplateKey+template.ID.String(), raw, 0).Err()
+	return s.Set(abilityTemplateKey+ulid.String(template.ID), raw, 0).Err()
 }
 
 // ListAbilityTemplate implemented with redis.

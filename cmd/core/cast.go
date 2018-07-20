@@ -15,7 +15,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 
 	cast := e.Action.(event.Cast)
 
-	if id.Compare(cast.Source) == 0 {
+	if ulid.Compare(id, cast.Source) == 0 {
 		return a.CastSource(id, e)
 	}
 	return a.CastTarget(id, e)
@@ -27,14 +27,14 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
-		Target: cast.Source.String(),
+		Source: ulid.String(e.Source),
+		Target: ulid.String(cast.Source),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", ulid.String(e.Source), ulid.String(cast.Source))
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", ulid.String(e.Source), ulid.String(cast.Source))
 	}
 
 	// #Retrieve ability.
@@ -43,10 +43,10 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
+		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", ulid.String(cast.AbilityID), ulid.String(cast.Source))
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
+		return errors.Wrapf(err, "get ability %s for %s", ulid.String(cast.AbilityID), ulid.String(cast.Source))
 	}
 
 	_ = ability
@@ -60,14 +60,14 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
-		Target: cast.Source.String(),
+		Source: ulid.String(e.Source),
+		Target: ulid.String(cast.Source),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", ulid.String(e.Source), ulid.String(cast.Source))
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", ulid.String(e.Source), ulid.String(cast.Source))
 	}
 
 	// #Retrieve ability.
@@ -76,25 +76,25 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		EntityID: cast.Source,
 	})
 	if err == storage.ErrNotFound {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
+		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", ulid.String(cast.AbilityID), ulid.String(cast.Source))
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
+		return errors.Wrapf(err, "get ability %s for %s", ulid.String(cast.AbilityID), ulid.String(cast.Source))
 	}
 
 	source, err := a.EntityMapper.GetEntity(entity.Subset{ID: cast.Source, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %d", ulid.String(cast.Source), e.TS.UnixNano())
 	}
 
 	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %d", ulid.String(id), e.TS.UnixNano())
 	}
 
 	afb := ability.Affect(&target)
 	if err := a.FeedbackMapper.SetAbilityFeedback(afb); err != nil {
-		return errors.Wrapf(err, "set ability feedback %s", afb.ID.String())
+		return errors.Wrapf(err, "set ability feedback %s", ulid.String(afb.ID))
 	}
 	fb := event.E{
 		ID:     ulid.NewID(),
@@ -106,5 +106,5 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 			Target:    target.ID,
 		},
 	}
-	return errors.Wrapf(a.PublishEvent(fb, source.ID), "publish event %s to %s", fb.ID.String(), e.Source.String())
+	return errors.Wrapf(a.PublishEvent(fb, source.ID), "publish event %s to %s", ulid.String(fb.ID), ulid.String(e.Source))
 }

@@ -45,7 +45,7 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = logger.With().Str("token", tok.ID.String()).Logger()
+	logger = logger.With().Str("token", ulid.String(tok.ID)).Logger()
 
 	// #Set a new listener for this token
 	listener, err := h.L.New(tok.ID)
@@ -55,7 +55,7 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = logger.With().Str("listener", listener.ID.String()).Logger()
+	logger = logger.With().Str("listener", ulid.String(listener.ID)).Logger()
 
 	// #Marshal token for response
 	raw, err := json.Marshal(tok)
@@ -105,8 +105,8 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "failed to signout", http.StatusInternalServerError)
 		return
 	}
-	logger = logger.With().Str("account", a.ID.String()).Str("token", a.Token.String()).Logger()
-	if a.Token.Compare(adto.Token) != 0 {
+	logger = logger.With().Str("account", ulid.String(a.ID)).Str("token", ulid.String(a.Token)).Logger()
+	if ulid.Compare(a.Token, adto.Token) != 0 {
 		logger.Error().Err(err).Msg("invalid token")
 		http.Error(w, "invalid token", http.StatusBadRequest)
 		return

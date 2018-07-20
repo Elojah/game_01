@@ -29,7 +29,7 @@ func (s *Service) GetRandomCore(subset infra.CoreSubset) (infra.Core, error) {
 func (s *Service) SetCore(core infra.Core) error {
 	return s.SAdd(
 		coreKey,
-		core.ID.String(),
+		ulid.String(core.ID),
 	).Err()
 }
 
@@ -37,6 +37,6 @@ func (s *Service) SetCore(core infra.Core) error {
 func (s *Service) DelCore(subset infra.CoreSubset) error {
 	return s.SRem(
 		coreKey,
-		subset.ID.String(),
+		ulid.String(subset.ID),
 	).Err()
 }

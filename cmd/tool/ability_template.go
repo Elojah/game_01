@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/ability"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -35,7 +36,7 @@ func (h *handler) postAbilityTemplates(w http.ResponseWriter, r *http.Request) {
 
 	for _, t := range templates {
 		if err := h.AbilityTemplateMapper.SetAbilityTemplate(t); err != nil {
-			logger.Error().Err(err).Str("ability_template", t.ID.String()).Msg("failed to set ability_template")
+			logger.Error().Err(err).Str("ability_template", ulid.String(t.ID)).Msg("failed to set ability_template")
 			return
 		}
 	}

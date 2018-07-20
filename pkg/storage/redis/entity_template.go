@@ -5,6 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/storage"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -13,7 +14,7 @@ const (
 
 // GetEntityTemplate implemented with redis.
 func (s *Service) GetEntityTemplate(subset entity.TemplateSubset) (entity.Template, error) {
-	val, err := s.Get(entityTemplateKey + subset.Type.String()).Result()
+	val, err := s.Get(entityTemplateKey + ulid.String(subset.Type)).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.Template{}, err
@@ -34,7 +35,7 @@ func (s *Service) SetEntityTemplate(template entity.Template) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(entityTemplateKey+template.ID.String(), raw, 0).Err()
+	return s.Set(entityTemplateKey+ulid.String(template.ID), raw, 0).Err()
 }
 
 // ListEntityTemplate implemented with redis.

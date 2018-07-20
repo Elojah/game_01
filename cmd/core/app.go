@@ -52,7 +52,7 @@ func (a *app) Dial(c Config) error {
 }
 
 func (a *app) Run() {
-	logger := log.With().Str("core", a.id.String()).Logger()
+	logger := log.With().Str("core", ulid.String(a.id)).Logger()
 
 	a.subs = make(map[ulid.ID]*event.Subscription)
 	a.subs[a.id] = a.SubscribeListener(a.id)
@@ -80,7 +80,7 @@ func (a *app) Close() {
 }
 
 func (a *app) AddListener(msg *event.Message) {
-	logger := log.With().Str("core", a.id.String()).Logger()
+	logger := log.With().Str("core", ulid.String(a.id)).Logger()
 
 	var listenerS storage.Listener
 	if _, err := listenerS.Unmarshal([]byte(msg.Payload)); err != nil {
@@ -88,8 +88,7 @@ func (a *app) AddListener(msg *event.Message) {
 		return
 	}
 	listener := listenerS.Domain()
-	id := listener.ID.String()
-	logger = logger.With().Str("listener", id).Uint8("action", uint8(listener.Action)).Logger()
+	logger = logger.With().Str("listener", ulid.String(listener.ID)).Uint8("action", uint8(listener.Action)).Logger()
 
 	switch listener.Action {
 	case event.Open:
@@ -128,10 +127,10 @@ func (a *app) AddListener(msg *event.Message) {
 
 func (a *app) Apply(id ulid.ID, e event.E) {
 	logger := log.With().
-		Str("core", a.id.String()).
-		Str("listener", id.String()).
+		Str("core", ulid.String(a.id)).
+		Str("listener", ulid.String(id)).
 		Int64("ts", e.TS.UnixNano()).
-		Str("type", event.ActionString(e.Action)).
+		Str("type", event.String(e.Action)).
 		Logger()
 
 	switch e.Action.(type) {

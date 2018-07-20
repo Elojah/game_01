@@ -29,7 +29,7 @@ func (s *Service) GetRandomSync(subset infra.SyncSubset) (infra.Sync, error) {
 func (s *Service) SetSync(sync infra.Sync) error {
 	return s.SAdd(
 		syncKey,
-		sync.ID.String(),
+		ulid.String(sync.ID),
 	).Err()
 }
 
@@ -37,6 +37,6 @@ func (s *Service) SetSync(sync infra.Sync) error {
 func (s *Service) DelSync(subset infra.SyncSubset) error {
 	return s.SRem(
 		syncKey,
-		subset.ID.String(),
+		ulid.String(subset.ID),
 	).Err()
 }

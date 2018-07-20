@@ -21,7 +21,7 @@ func (s *Service) SetEvent(e event.E, id ulid.ID) error {
 		return err
 	}
 	return s.ZAddNX(
-		eventKey+id.String(),
+		eventKey+ulid.String(id),
 		redis.Z{
 			Score:  float64(e.TS.UnixNano()),
 			Member: raw,

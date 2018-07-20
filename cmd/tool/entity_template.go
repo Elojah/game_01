@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -35,7 +36,7 @@ func (h *handler) postEntityTemplates(w http.ResponseWriter, r *http.Request) {
 
 	for _, t := range templates {
 		if err := h.EntityTemplateMapper.SetEntityTemplate(t); err != nil {
-			logger.Error().Err(err).Str("entity_template", t.ID.String()).Msg("failed to set entity_template")
+			logger.Error().Err(err).Str("entity_template", ulid.String(t.ID)).Msg("failed to set entity_template")
 			return
 		}
 	}

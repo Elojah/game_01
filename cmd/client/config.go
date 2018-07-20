@@ -16,7 +16,7 @@ type Config struct {
 
 // Equal returns is both configs are equal.
 func (c Config) Equal(rhs Config) bool {
-	if c.Token.Compare(rhs.Token) != 0 {
+	if ulid.Compare(c.Token, rhs.Token) != 0 {
 		return false
 	}
 	return (c.Address != rhs.Address &&

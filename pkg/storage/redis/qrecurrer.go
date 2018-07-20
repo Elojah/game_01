@@ -16,10 +16,10 @@ func (s *Service) PublishRecurrer(r event.Recurrer, id ulid.ID) error {
 	if err != nil {
 		return err
 	}
-	return s.Publish(qrecurrerKey+id.String(), raw).Err()
+	return s.Publish(qrecurrerKey+ulid.String(id), raw).Err()
 }
 
 // SubscribeRecurrer implementation with redis pubsub.
 func (s *Service) SubscribeRecurrer(id ulid.ID) *event.Subscription {
-	return (*event.Subscription)(s.Subscribe(qrecurrerKey + id.String()))
+	return (*event.Subscription)(s.Subscribe(qrecurrerKey + ulid.String(id)))
 }

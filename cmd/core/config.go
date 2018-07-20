@@ -15,7 +15,7 @@ type Config struct {
 
 // Equal returns is both configs are equal.
 func (c Config) Equal(rhs Config) bool {
-	return c.ID.Compare(rhs.ID) == 0 &&
+	return ulid.Compare(c.ID, rhs.ID) == 0 &&
 		c.Limit == rhs.Limit &&
 		c.MoveTolerance == rhs.MoveTolerance
 }

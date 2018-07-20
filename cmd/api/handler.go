@@ -60,7 +60,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	// #Get and check token.
 	tok, err := h.T.Get(tokenID, ctx.Value(mux.Key("addr")).(string))
 	if err != nil {
-		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", tokenID.String()).Msg("failed to identify")
+		logger.Error().Err(err).Str("status", "unidentified").Str("tokenID", ulid.String(tokenID)).Msg("failed to identify")
 		return err
 	}
 

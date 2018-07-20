@@ -39,7 +39,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	a := adto.Domain()
 	a.ID = ulid.NewID()
 
-	logger = logger.With().Str("account", a.ID.String()).Logger()
+	logger = logger.With().Str("account", ulid.String(a.ID)).Logger()
 
 	// #Check username is unique
 	_, err := h.AccountMapper.GetAccount(account.Subset{

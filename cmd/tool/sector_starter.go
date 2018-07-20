@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/sector"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -35,7 +36,7 @@ func (h *handler) postSectorsStarter(w http.ResponseWriter, r *http.Request) {
 
 	for _, s := range starters {
 		if err := h.SetStarter(s); err != nil {
-			logger.Error().Err(err).Str("starter", s.SectorID.String()).Msg("failed to set starter")
+			logger.Error().Err(err).Str("starter", ulid.String(s.SectorID)).Msg("failed to set starter")
 			return
 		}
 	}

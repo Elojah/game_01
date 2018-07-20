@@ -15,10 +15,10 @@ func (a *app) Move(id ulid.ID, e event.E) error {
 
 	move := e.Action.(event.Move)
 
-	if id.Compare(move.Source) == 0 {
+	if ulid.Compare(id, move.Source) == 0 {
 		return a.MoveSource(e)
 	}
-	if id.Compare(move.Target) == 0 {
+	if ulid.Compare(id, move.Target) == 0 {
 		return a.MoveTarget(e)
 	}
 	return nil
@@ -38,34 +38,34 @@ func (a *app) MoveTarget(e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
-		Target: move.Source.String(),
+		Source: ulid.String(e.Source),
+		Target: ulid.String(move.Source),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
+		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", ulid.String(e.Source), ulid.String(move.Source))
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", ulid.String(e.Source), ulid.String(move.Source))
 	}
 
 	// #Check permission source/target if source != target.
 	if move.Source != move.Target {
 		permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
-			Source: move.Source.String(),
-			Target: move.Target.String(),
+			Source: ulid.String(move.Source),
+			Target: ulid.String(move.Target),
 		})
 		if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), move.Target.String())
+			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", ulid.String(move.Source), ulid.String(move.Target))
 		}
 		if err != nil {
-			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), move.Target.String())
+			return errors.Wrapf(err, "get permission entity %s for %s", ulid.String(move.Source), ulid.String(move.Target))
 		}
 	}
 
 	// #Retrieve previous state target.
 	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: move.Target, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", move.Target.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %s", ulid.String(move.Target), e.TS.UnixNano())
 	}
 
 	// #Check if target has move in correct boundaries.
@@ -79,14 +79,14 @@ func (a *app) MoveTarget(e event.E) error {
 			move.Position.X,
 			move.Position.Y,
 			move.Position.Z,
-			target.ID.String(),
+			ulid.String(target.ID),
 		)
 	}
 
 	// #Retrieve current sector
 	s, err := a.SectorMapper.GetSector(sector.Subset{ID: target.Position.SectorID})
 	if err != nil {
-		return errors.Wrapf(err, "get sector %s", target.Position.SectorID.String())
+		return errors.Wrapf(err, "get sector %s", ulid.String(target.Position.SectorID))
 	}
 
 	// #Move target
@@ -96,19 +96,19 @@ func (a *app) MoveTarget(e event.E) error {
 		bp := s.ClosestBP(target.Position.Coord)
 		nextSector, err := a.SectorMapper.GetSector(sector.Subset{ID: bp.SectorID})
 		if err != nil {
-			return errors.Wrapf(err, "get closest sector %s", bp.SectorID.String())
+			return errors.Wrapf(err, "get closest sector %s", ulid.String(bp.SectorID))
 		}
 		oppBP := nextSector.FindBP(bp.ID)
 		target.Position.SectorID = nextSector.ID
 		target.Position.Coord.MoveReference(bp.Position, oppBP.Position)
 		if err := a.EntitiesMapper.AddEntityToSector(target.ID, nextSector.ID); err != nil {
-			return errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), nextSector.ID.String())
+			return errors.Wrapf(err, "add entity %s to sector %s", ulid.String(target.ID), ulid.String(nextSector.ID))
 		}
 		if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, s.ID); err != nil {
-			return errors.Wrapf(err, "remove entity %s from sector %s", target.ID.String(), s.ID.String())
+			return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
 		}
 	}
 
 	// #Write new target state.
-	return errors.Wrapf(a.EntityMapper.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", target.ID.String(), e.TS.UnixNano())
+	return errors.Wrapf(a.EntityMapper.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", ulid.String(target.ID), e.TS.UnixNano())
 }

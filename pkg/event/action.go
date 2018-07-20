@@ -8,8 +8,8 @@ import (
 // Action is a client action.
 type Action interface{}
 
-// ActionString acts for action.String() in declarative mode.
-func ActionString(a Action) string {
+// String serialize an action.
+func String(a Action) string {
 	switch a.(type) {
 	case Move:
 		return "move"

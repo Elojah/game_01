@@ -43,7 +43,7 @@ func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 
 	for _, a := range abilities {
 		if err := h.AbilityMapper.SetAbility(a.A, a.EntityID); err != nil {
-			logger.Error().Err(err).Str("ability", a.ID.String()).Msg("failed to set ability")
+			logger.Error().Err(err).Str("ability", ulid.String(a.ID)).Msg("failed to set ability")
 			return
 		}
 	}

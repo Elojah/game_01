@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -36,7 +37,7 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 
 	for _, e := range entities {
 		if err := h.EntityMapper.SetEntity(e, time.Now().UnixNano()); err != nil {
-			logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to set entity")
+			logger.Error().Err(err).Str("entity", ulid.String(e.ID)).Msg("failed to set entity")
 			return
 		}
 	}

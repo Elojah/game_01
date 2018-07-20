@@ -17,7 +17,7 @@ const (
 
 // GetToken redis implementation.
 func (s *Service) GetToken(subset account.TokenSubset) (account.Token, error) {
-	val, err := s.Get(tokenKey + subset.ID.String()).Result()
+	val, err := s.Get(tokenKey + ulid.String(subset.ID)).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return account.Token{}, err
@@ -38,12 +38,12 @@ func (s *Service) SetToken(token account.Token) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(tokenKey+token.ID.String(), raw, 0).Err()
+	return s.Set(tokenKey+ulid.String(token.ID), raw, 0).Err()
 }
 
 // DelToken redis implementation.
 func (s *Service) DelToken(subset account.TokenSubset) error {
-	return s.Del(tokenKey + subset.ID.String()).Err()
+	return s.Del(tokenKey + ulid.String(subset.ID)).Err()
 }
 
 // SetTokenHC redis implementation.
@@ -52,7 +52,7 @@ func (s *Service) SetTokenHC(id ulid.ID, hc int64) error {
 		tokenHCKey,
 		redis.Z{
 			Score:  float64(hc),
-			Member: id.String(),
+			Member: ulid.String(id),
 		},
 	).Err()
 }
