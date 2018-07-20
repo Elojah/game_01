@@ -87,8 +87,7 @@ tool:
 .PHONY: gen
 gen:
 	$(info $(M) running gencode…) @
-	$Q cd pkg/dto && ls *.schema | xargs -n1 gencode go -package dto -schema
-	$Q cd pkg/storage && ls *.schema | xargs -n1 gencode go -package storage -schema
+	$Q cd schemas && ls *.schema | xargs -n1 gencode go -package storage -schema
 
 # Dependencies
 .PHONY: dep

@@ -1,12 +1,9 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
@@ -106,13 +103,12 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	address.Port = int(a.port)
 	logger = logger.With().Str("address", address.String()).Logger()
 	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
-		raw, err := dto.NewEntity(e).Marshal(nil)
+		raw, err := e.Marshal(nil)
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to marshal entity")
 			return
 		}
 		logger.Info().Str("entity", ulid.String(e.ID)).Msg("send entity")
-		fmt.Println(e)
 		a.Send(raw, &address)
 	})
 	rec.EntityMapper = a.EntityMapper

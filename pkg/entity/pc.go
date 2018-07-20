@@ -20,7 +20,7 @@ var (
 )
 
 // PC alias an entity.
-type PC E
+type PC = E
 
 // Check checks if pc fields are valid.
 func (pc PC) Check() error {

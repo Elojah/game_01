@@ -1,0 +1,19 @@
+struct Vec3 {
+	X			float64
+	Y			float64
+	Z			float64
+}
+
+struct Position {
+	Coord		Vec3
+	SectorID	[16]byte
+}
+
+struct E {
+	ID			[16]byte
+	Type		[16]byte
+	Name		string
+	HP			uint64
+	MP			uint64
+	Position	Position
+}

@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/dto"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
@@ -36,13 +37,13 @@ func (h *handler) handleEntity(ctx context.Context, raw []byte) error {
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	// #Unmarshal entity.
-	var e dto.Entity
+	var e entity.E
 	if _, err := e.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
 		return err
 	}
 
-	raw, err := json.Marshal(e.Domain())
+	raw, err := json.Marshal(e)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err

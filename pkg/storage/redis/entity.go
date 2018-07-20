@@ -16,7 +16,7 @@ const (
 
 // SetEntity implemented with redis.
 func (s *Service) SetEntity(e entity.E, ts int64) error {
-	raw, err := storage.NewEntity(e).Marshal(nil)
+	raw, err := e.Marshal(nil)
 	if err != nil {
 		return err
 	}
@@ -46,11 +46,11 @@ func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 	if len(vals) == 0 {
 		return entity.E{}, storage.ErrNotFound
 	}
-	var entityS storage.Entity
-	if _, err := entityS.Unmarshal([]byte(vals[0])); err != nil {
+	var e entity.E
+	if _, err := e.Unmarshal([]byte(vals[0])); err != nil {
 		return entity.E{}, err
 	}
-	return entityS.Domain(), nil
+	return e, nil
 }
 
 // DelEntity deletes entity in redis.

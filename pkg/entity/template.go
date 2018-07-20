@@ -2,7 +2,7 @@ package entity
 
 // Template alias an entity.
 // It represents semi static data. When creating PC/Entities, those templates are used.
-type Template E
+type Template = E
 
 // TemplateMapper is an interface for Template object.
 type TemplateMapper interface {
