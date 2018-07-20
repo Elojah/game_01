@@ -1,7 +1,8 @@
-package storage
+package account
 
 import (
 	"io"
+	"net"
 	"time"
 	"unsafe"
 )
@@ -12,34 +13,19 @@ var (
 	_ = time.Now()
 )
 
-type Token struct {
-	ID       [16]byte
-	IP       string
-	Account  [16]byte
-	Ping     uint64
-	CorePool [16]byte
-	SyncPool [16]byte
-	PC       [16]byte
-	Entity   [16]byte
-}
-
 func (d *Token) Size() (s uint64) {
-
 	{
 		s += 16
 	}
 	{
-		l := uint64(len(d.IP))
-
+		l := uint64(len(d.IP.String()))
 		{
-
 			t := l
 			for t >= 0x80 {
 				t >>= 7
 				s++
 			}
 			s++
-
 		}
 		s += l
 	}
@@ -71,18 +57,14 @@ func (d *Token) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
-
 	{
 		copy(buf[i+0:], d.ID[:])
 		i += 16
 	}
 	{
-		l := uint64(len(d.IP))
-
+		l := uint64(len(d.IP.String()))
 		{
-
 			t := uint64(l)
-
 			for t >= 0x80 {
 				buf[i+0] = byte(t) | 0x80
 				t >>= 7
@@ -90,9 +72,8 @@ func (d *Token) Marshal(buf []byte) ([]byte, error) {
 			}
 			buf[i+0] = byte(t)
 			i++
-
 		}
-		copy(buf[i+0:], d.IP)
+		d.IP, _ = net.ResolveUDPAddr("udp", string(buf[i+0:]))
 		i += l
 	}
 	{
@@ -100,23 +81,14 @@ func (d *Token) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
-
 		buf[i+0+0] = byte(d.Ping >> 0)
-
 		buf[i+1+0] = byte(d.Ping >> 8)
-
 		buf[i+2+0] = byte(d.Ping >> 16)
-
 		buf[i+3+0] = byte(d.Ping >> 24)
-
 		buf[i+4+0] = byte(d.Ping >> 32)
-
 		buf[i+5+0] = byte(d.Ping >> 40)
-
 		buf[i+6+0] = byte(d.Ping >> 48)
-
 		buf[i+7+0] = byte(d.Ping >> 56)
-
 	}
 	{
 		copy(buf[i+8:], d.CorePool[:])
@@ -136,19 +108,15 @@ func (d *Token) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+8], nil
 }
-
 func (d *Token) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
-
 	{
 		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
 		l := uint64(0)
-
 		{
-
 			bs := uint8(7)
 			t := uint64(buf[i+0] & 0x7F)
 			for buf[i+0]&0x80 == 0x80 {
@@ -157,11 +125,9 @@ func (d *Token) Unmarshal(buf []byte) (uint64, error) {
 				bs += 7
 			}
 			i++
-
 			l = t
-
 		}
-		d.IP = string(buf[i+0 : i+0+l])
+		d.IP, _ = net.ResolveUDPAddr("udp", string(buf[i+0:i+0+l]))
 		i += l
 	}
 	{
@@ -169,9 +135,7 @@ func (d *Token) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	{
-
 		d.Ping = 0 | (uint64(buf[i+0+0]) << 0) | (uint64(buf[i+1+0]) << 8) | (uint64(buf[i+2+0]) << 16) | (uint64(buf[i+3+0]) << 24) | (uint64(buf[i+4+0]) << 32) | (uint64(buf[i+5+0]) << 40) | (uint64(buf[i+6+0]) << 48) | (uint64(buf[i+7+0]) << 56)
-
 	}
 	{
 		copy(d.CorePool[:], buf[i+8:])

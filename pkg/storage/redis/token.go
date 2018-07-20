@@ -25,20 +25,20 @@ func (s *Service) GetToken(subset account.TokenSubset) (account.Token, error) {
 		return account.Token{}, storage.ErrNotFound
 	}
 
-	var token storage.Token
-	if _, err := token.Unmarshal([]byte(val)); err != nil {
+	var t account.Token
+	if _, err := t.Unmarshal([]byte(val)); err != nil {
 		return account.Token{}, err
 	}
-	return token.Domain()
+	return t, nil
 }
 
 // SetToken redis implementation.
-func (s *Service) SetToken(token account.Token) error {
-	raw, err := storage.NewToken(token).Marshal(nil)
+func (s *Service) SetToken(t account.Token) error {
+	raw, err := t.Marshal(nil)
 	if err != nil {
 		return err
 	}
-	return s.Set(tokenKey+ulid.String(token.ID), raw, 0).Err()
+	return s.Set(tokenKey+ulid.String(t.ID), raw, 0).Err()
 }
 
 // DelToken redis implementation.
