@@ -5,7 +5,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -135,16 +134,15 @@ func (s *Sequencer) Run() {
 
 // Handler is the consumer function to subscribe for event ordering.
 func (s *Sequencer) Handler(msg *event.Message) {
-	var eventS storage.Event
-	if _, err := eventS.Unmarshal([]byte(msg.Payload)); err != nil {
+	var e event.E
+	if _, err := e.Unmarshal([]byte(msg.Payload)); err != nil {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}
-	event := eventS.Domain()
-	if err := s.SetEvent(event, s.id); err != nil {
+	if err := s.SetEvent(e, s.id); err != nil {
 		s.logger.Error().Err(err).Msg("error creating event")
 		return
 	}
-	s.logger.Info().Str("event", ulid.String(event.ID)).Msg("event received")
-	s.input <- event.TS.UnixNano()
+	s.logger.Info().Str("e", ulid.String(e.ID)).Msg("event received")
+	s.input <- e.TS.UnixNano()
 }

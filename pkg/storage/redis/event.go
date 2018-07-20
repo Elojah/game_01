@@ -6,7 +6,6 @@ import (
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -16,7 +15,7 @@ const (
 
 // SetEvent implemented with redis.
 func (s *Service) SetEvent(e event.E, id ulid.ID) error {
-	raw, err := storage.NewEvent(e).Marshal(nil)
+	raw, err := e.Marshal(nil)
 	if err != nil {
 		return err
 	}
@@ -44,11 +43,9 @@ func (s *Service) ListEvent(subset event.Subset) ([]event.E, error) {
 	}
 	events := make([]event.E, len(vals))
 	for i := range vals {
-		var eventS storage.Event
-		if _, err := eventS.Unmarshal([]byte(vals[i])); err != nil {
+		if _, err := events[i].Unmarshal([]byte(vals[i])); err != nil {
 			return nil, err
 		}
-		events[i] = eventS.Domain()
 	}
 	return events, nil
 }

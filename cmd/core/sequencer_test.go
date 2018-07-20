@@ -10,7 +10,6 @@ import (
 
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/mocks"
-	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -88,7 +87,7 @@ func TestSequencer(t *testing.T) {
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw, err := storage.NewEvent(eset[0]).Marshal(nil)
+		raw, err := eset[0].Marshal(nil)
 		assert.NoError(t, err)
 		msg := &event.Message{Payload: string(raw)}
 		seq.Handler(msg)
@@ -121,12 +120,12 @@ func TestSequencer(t *testing.T) {
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
+		raw1, err := eset[1].Marshal(nil)
 		assert.NoError(t, err)
 		msg1 := &event.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
-		raw0, err := storage.NewEvent(eset[0]).Marshal(nil)
+		raw0, err := eset[0].Marshal(nil)
 		assert.NoError(t, err)
 		msg0 := &event.Message{Payload: string(raw0)}
 		seq.Handler(msg0)
@@ -165,12 +164,12 @@ func TestSequencer(t *testing.T) {
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
+		raw1, err := eset[1].Marshal(nil)
 		assert.NoError(t, err)
 		msg1 := &event.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
-		raw2, err := storage.NewEvent(eset[2]).Marshal(nil)
+		raw2, err := eset[2].Marshal(nil)
 		assert.NoError(t, err)
 		msg2 := &event.Message{Payload: string(raw2)}
 		seq.Handler(msg2)
@@ -210,14 +209,14 @@ func TestSequencer(t *testing.T) {
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw1, err := storage.NewEvent(eset[1]).Marshal(nil)
+		raw1, err := eset[1].Marshal(nil)
 		assert.NoError(t, err)
 		msg1 := &event.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
 		time.Sleep(10*time.Millisecond + 1*time.Nanosecond)
 
-		raw2, err := storage.NewEvent(eset[2]).Marshal(nil)
+		raw2, err := eset[2].Marshal(nil)
 		assert.NoError(t, err)
 		msg2 := &event.Message{Payload: string(raw2)}
 		seq.Handler(msg2)
