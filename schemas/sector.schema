@@ -1,0 +1,17 @@
+struct Vec3 {
+	X			float64
+	Y			float64
+	Z			float64
+}
+
+struct BondPoint {
+	ID			[16]byte
+	SectorID	[16]byte
+	Position	Vec3
+}
+
+struct S {
+	ID			[16]byte
+	Dim			Vec3
+	BondPoints	[]BondPoint
+}

@@ -17,18 +17,18 @@ type BondPoint struct {
 // S represents a cuboid in the world.
 type S struct {
 	ID         ulid.ID
-	Size       geometry.Vec3
+	Dim        geometry.Vec3
 	BondPoints []BondPoint
 }
 
 // Out returns if a position is still in the sector.
 func (s S) Out(position geometry.Vec3) bool {
 	return position.X < 0 ||
-		position.X > s.Size.X ||
+		position.X > s.Dim.X ||
 		position.Y < 0 ||
-		position.Y > s.Size.Y ||
+		position.Y > s.Dim.Y ||
 		position.Z < 0 ||
-		position.Z > s.Size.Z
+		position.Z > s.Dim.Z
 }
 
 // Adjacents returns ids of adjacent sectors.
