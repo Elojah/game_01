@@ -1,4 +1,4 @@
-struct Account {
+struct A {
 	ID			[16]byte
 	Username	string
 	Password	string

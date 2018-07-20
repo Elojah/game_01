@@ -1,4 +1,4 @@
-package storage
+package account
 
 import (
 	"io"
@@ -12,45 +12,31 @@ var (
 	_ = time.Now()
 )
 
-type Account struct {
-	ID       [16]byte
-	Username string
-	Password string
-	Token    [16]byte
-}
-
-func (d *Account) Size() (s uint64) {
-
+func (d *A) Size() (s uint64) {
 	{
 		s += 16
 	}
 	{
 		l := uint64(len(d.Username))
-
 		{
-
 			t := l
 			for t >= 0x80 {
 				t >>= 7
 				s++
 			}
 			s++
-
 		}
 		s += l
 	}
 	{
 		l := uint64(len(d.Password))
-
 		{
-
 			t := l
 			for t >= 0x80 {
 				t >>= 7
 				s++
 			}
 			s++
-
 		}
 		s += l
 	}
@@ -59,7 +45,7 @@ func (d *Account) Size() (s uint64) {
 	}
 	return
 }
-func (d *Account) Marshal(buf []byte) ([]byte, error) {
+func (d *A) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -69,105 +55,86 @@ func (d *Account) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
-
 	{
-		copy(buf[i+0:], d.ID[:])
+		copy(buf[i:], d.ID[:])
 		i += 16
 	}
 	{
 		l := uint64(len(d.Username))
-
 		{
-
 			t := uint64(l)
-
 			for t >= 0x80 {
-				buf[i+0] = byte(t) | 0x80
+				buf[i] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i+0] = byte(t)
+			buf[i] = byte(t)
 			i++
-
 		}
-		copy(buf[i+0:], d.Username)
+		copy(buf[i:], d.Username)
 		i += l
 	}
 	{
 		l := uint64(len(d.Password))
-
 		{
-
 			t := uint64(l)
-
 			for t >= 0x80 {
-				buf[i+0] = byte(t) | 0x80
+				buf[i] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i+0] = byte(t)
+			buf[i] = byte(t)
 			i++
-
 		}
-		copy(buf[i+0:], d.Password)
+		copy(buf[i:], d.Password)
 		i += l
 	}
 	{
-		copy(buf[i+0:], d.Token[:])
+		copy(buf[i:], d.Token[:])
 		i += 16
 	}
-	return buf[:i+0], nil
+	return buf[:i], nil
 }
-
-func (d *Account) Unmarshal(buf []byte) (uint64, error) {
+func (d *A) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
-
 	{
-		copy(d.ID[:], buf[i+0:])
+		copy(d.ID[:], buf[i:])
 		i += 16
 	}
 	{
 		l := uint64(0)
-
 		{
-
 			bs := uint8(7)
-			t := uint64(buf[i+0] & 0x7F)
-			for buf[i+0]&0x80 == 0x80 {
+			t := uint64(buf[i] & 0x7F)
+			for buf[i]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+0]&0x7F) << bs
+				t |= uint64(buf[i]&0x7F) << bs
 				bs += 7
 			}
 			i++
-
 			l = t
-
 		}
-		d.Username = string(buf[i+0 : i+0+l])
+		d.Username = string(buf[i : i+l])
 		i += l
 	}
 	{
 		l := uint64(0)
-
 		{
-
 			bs := uint8(7)
-			t := uint64(buf[i+0] & 0x7F)
-			for buf[i+0]&0x80 == 0x80 {
+			t := uint64(buf[i] & 0x7F)
+			for buf[i]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+0]&0x7F) << bs
+				t |= uint64(buf[i]&0x7F) << bs
 				bs += 7
 			}
 			i++
-
 			l = t
-
 		}
-		d.Password = string(buf[i+0 : i+0+l])
+		d.Password = string(buf[i : i+l])
 		i += l
 	}
 	{
-		copy(d.Token[:], buf[i+0:])
+		copy(d.Token[:], buf[i:])
 		i += 16
 	}
 	return i + 0, nil
