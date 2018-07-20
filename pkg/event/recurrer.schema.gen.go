@@ -1,4 +1,4 @@
-package storage
+package event
 
 import (
 	"io"
@@ -12,19 +12,7 @@ var (
 	_ = time.Now()
 )
 
-type Recurrer struct {
-	ID       [16]byte
-	EntityID [16]byte
-	TokenID  [16]byte
-	Action   uint8
-	Pool     [16]byte
-}
-
 func (d *Recurrer) Size() (s uint64) {
-
-	{
-		s += 16
-	}
 	{
 		s += 16
 	}
@@ -47,23 +35,16 @@ func (d *Recurrer) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
-
 	{
-		copy(buf[i+0:], d.ID[:])
+		copy(buf[i:], d.EntityID[:])
 		i += 16
 	}
 	{
-		copy(buf[i+0:], d.EntityID[:])
+		copy(buf[i:], d.TokenID[:])
 		i += 16
 	}
 	{
-		copy(buf[i+0:], d.TokenID[:])
-		i += 16
-	}
-	{
-
-		buf[i+0+0] = byte(d.Action >> 0)
-
+		buf[i] = byte(d.Action >> 0)
 	}
 	{
 		copy(buf[i+1:], d.Pool[:])
@@ -71,26 +52,18 @@ func (d *Recurrer) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+1], nil
 }
-
 func (d *Recurrer) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
-
 	{
-		copy(d.ID[:], buf[i+0:])
+		copy(d.EntityID[:], buf[i:])
 		i += 16
 	}
 	{
-		copy(d.EntityID[:], buf[i+0:])
+		copy(d.TokenID[:], buf[i:])
 		i += 16
 	}
 	{
-		copy(d.TokenID[:], buf[i+0:])
-		i += 16
-	}
-	{
-
-		d.Action = 0 | (uint8(buf[i+0+0]) << 0)
-
+		d.Action = QAction(0 | (uint8(buf[i]) << 0))
 	}
 	{
 		copy(d.Pool[:], buf[i+1:])

@@ -22,16 +22,16 @@ func (s *Service) GetRecurrer(subset event.RecurrerSubset) (event.Recurrer, erro
 		return event.Recurrer{}, storage.ErrNotFound
 	}
 
-	var recurrer storage.Recurrer
+	var recurrer event.Recurrer
 	if _, err := recurrer.Unmarshal([]byte(val)); err != nil {
 		return event.Recurrer{}, err
 	}
-	return recurrer.Domain(), nil
+	return recurrer, nil
 }
 
 // SetRecurrer redis implementation.
 func (s *Service) SetRecurrer(recurrer event.Recurrer) error {
-	raw, err := storage.NewRecurrer(recurrer).Marshal(nil)
+	raw, err := recurrer.Marshal(nil)
 	if err != nil {
 		return err
 	}

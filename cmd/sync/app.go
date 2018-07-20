@@ -8,7 +8,6 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux/client"
 )
@@ -75,12 +74,11 @@ func (a *app) Close() {
 func (a *app) AddRecurrer(msg *event.Message) {
 	logger := log.With().Str("sync", ulid.String(a.id)).Logger()
 
-	var recurrerS storage.Recurrer
-	if _, err := recurrerS.Unmarshal([]byte(msg.Payload)); err != nil {
+	var recurrer event.Recurrer
+	if _, err := recurrer.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal recurrer")
 		return
 	}
-	recurrer := recurrerS.Domain()
 
 	logger = logger.With().Str("recurrer", ulid.String(recurrer.TokenID)).Logger()
 
