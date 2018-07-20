@@ -2,7 +2,6 @@ package redis
 
 import (
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -12,7 +11,7 @@ const (
 
 // PublishListener implementation with redis pubsub.
 func (s *Service) PublishListener(l event.Listener, id ulid.ID) error {
-	raw, err := storage.NewListener(l).Marshal(nil)
+	raw, err := l.Marshal(nil)
 	if err != nil {
 		return err
 	}

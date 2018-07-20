@@ -9,7 +9,6 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -82,12 +81,11 @@ func (a *app) Close() {
 func (a *app) AddListener(msg *event.Message) {
 	logger := log.With().Str("core", ulid.String(a.id)).Logger()
 
-	var listenerS storage.Listener
-	if _, err := listenerS.Unmarshal([]byte(msg.Payload)); err != nil {
+	var listener event.Listener
+	if _, err := listener.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal listener")
 		return
 	}
-	listener := listenerS.Domain()
 	logger = logger.With().Str("listener", ulid.String(listener.ID)).Uint8("action", uint8(listener.Action)).Logger()
 
 	switch listener.Action {

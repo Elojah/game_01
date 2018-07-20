@@ -22,16 +22,16 @@ func (s *Service) GetListener(subset event.ListenerSubset) (event.Listener, erro
 		return event.Listener{}, storage.ErrNotFound
 	}
 
-	var listener storage.Listener
+	var listener event.Listener
 	if _, err := listener.Unmarshal([]byte(val)); err != nil {
 		return event.Listener{}, err
 	}
-	return listener.Domain(), nil
+	return listener, nil
 }
 
 // SetListener redis implementation.
 func (s *Service) SetListener(listener event.Listener) error {
-	raw, err := storage.NewListener(listener).Marshal(nil)
+	raw, err := listener.Marshal(nil)
 	if err != nil {
 		return err
 	}

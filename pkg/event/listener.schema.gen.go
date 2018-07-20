@@ -1,4 +1,4 @@
-package storage
+package event
 
 import (
 	"io"
@@ -12,14 +12,7 @@ var (
 	_ = time.Now()
 )
 
-type Listener struct {
-	ID     [16]byte
-	Action uint8
-	Pool   [16]byte
-}
-
 func (d *Listener) Size() (s uint64) {
-
 	{
 		s += 16
 	}
@@ -39,15 +32,12 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
-
 	{
-		copy(buf[i+0:], d.ID[:])
+		copy(buf[i:], d.ID[:])
 		i += 16
 	}
 	{
-
-		buf[i+0+0] = byte(d.Action >> 0)
-
+		buf[i] = byte(d.Action >> 0)
 	}
 	{
 		copy(buf[i+1:], d.Pool[:])
@@ -55,18 +45,14 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+1], nil
 }
-
 func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
-
 	{
-		copy(d.ID[:], buf[i+0:])
+		copy(d.ID[:], buf[i:])
 		i += 16
 	}
 	{
-
-		d.Action = 0 | (uint8(buf[i+0+0]) << 0)
-
+		d.Action = QAction(0 | (uint8(buf[i]) << 0))
 	}
 	{
 		copy(d.Pool[:], buf[i+1:])
