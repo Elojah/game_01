@@ -1,4 +1,4 @@
-struct SectorEntities {
+struct Entities {
 	SectorID	[16]byte
 	EntityIDs	[][16]byte
 }
