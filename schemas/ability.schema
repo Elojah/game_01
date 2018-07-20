@@ -22,14 +22,14 @@ struct DamageOverTime {
 	Duration		uint64
 }
 
-struct Ability {
+struct A {
 	ID				[16]byte
 	Type			[16]byte
 	Name			string
 	MPConsumption	uint64
 	CD				uint32
 	CurrentCD		uint32
-	Components		[]union {
+	Components		[]union Component {
 		HealDirect
 		DamageDirect
 		HealOverTime

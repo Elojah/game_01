@@ -29,11 +29,9 @@ func (s *Service) ListAbility(subset ability.Subset) ([]ability.A, error) {
 			return nil, err
 		}
 
-		var a storage.Ability
-		if _, err := a.Unmarshal([]byte(val)); err != nil {
+		if _, err := abilities[i].Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
-		abilities[i] = a.Domain()
 	}
 	return abilities, nil
 }
@@ -48,16 +46,16 @@ func (s *Service) GetAbility(subset ability.Subset) (ability.A, error) {
 		return ability.A{}, storage.ErrNotFound
 	}
 
-	var a storage.Ability
+	var a ability.A
 	if _, err := a.Unmarshal([]byte(val)); err != nil {
 		return ability.A{}, err
 	}
-	return a.Domain(), nil
+	return a, nil
 }
 
 // SetAbility implemented with redis.
 func (s *Service) SetAbility(a ability.A, entity ulid.ID) error {
-	raw, err := storage.NewAbility(a).Marshal(nil)
+	raw, err := a.Marshal(nil)
 	if err != nil {
 		return err
 	}

@@ -22,16 +22,17 @@ func (s *Service) GetAbilityTemplate(subset ability.TemplateSubset) (ability.Tem
 		return ability.Template{}, storage.ErrNotFound
 	}
 
-	var a storage.Ability
+	var a ability.A
 	if _, err := a.Unmarshal([]byte(val)); err != nil {
 		return ability.Template{}, err
 	}
-	return ability.Template(a.Domain()), nil
+	return ability.Template(a), nil
 }
 
 // SetAbilityTemplate implemented with redis.
 func (s *Service) SetAbilityTemplate(template ability.Template) error {
-	raw, err := storage.NewAbility(ability.A(template)).Marshal(nil)
+	a := ability.A(template)
+	raw, err := a.Marshal(nil)
 	if err != nil {
 		return err
 	}
@@ -52,11 +53,9 @@ func (s *Service) ListAbilityTemplate() ([]ability.Template, error) {
 			return nil, err
 		}
 
-		var a storage.Ability
-		if _, err := a.Unmarshal([]byte(val)); err != nil {
+		if _, err := abilities[i].Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
-		abilities[i] = ability.Template(a.Domain())
 	}
 	return abilities, nil
 }
