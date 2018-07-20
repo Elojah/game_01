@@ -43,8 +43,8 @@ func (r *Recurrer) Close() {
 	r.ticker.Stop()
 }
 
-// Start starts to read the ticker and send entities.
-func (r *Recurrer) Start() {
+// Run starts to read the ticker and send entities.
+func (r *Recurrer) Run() {
 	for t := range r.ticker.C {
 		entity, err := r.EntityMapper.GetEntity(entity.Subset{ID: r.entityID, MaxTS: t.UnixNano()})
 		if err != nil {

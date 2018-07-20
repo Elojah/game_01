@@ -61,13 +61,13 @@ func (r *reader) Dial(cfg Config) error {
 	}
 
 	r.ticker = time.NewTicker(r.tolerance)
-	go r.Start()
+	go r.Run()
 	go r.HandleACK()
 	return nil
 }
 
-// Start starts to read JSON data from stdin and sends it to API.
-func (r reader) Start() {
+// Run starts to read JSON data from stdin and sends it to API.
+func (r reader) Run() {
 	for r.Scan() {
 		var input Input
 		if err := json.Unmarshal(r.Scanner.Bytes(), &input); err != nil {

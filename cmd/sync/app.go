@@ -44,11 +44,11 @@ func (a *app) Dial(c Config) error {
 	a.port = c.EntityPort
 	a.tickRate = c.TickRate
 	a.id = c.ID
-	go a.Start()
+	go a.Run()
 	return nil
 }
 
-func (a *app) Start() {
+func (a *app) Run() {
 	logger := log.With().Str("sync", a.id.String()).Logger()
 
 	a.sub = a.SubscribeRecurrer(a.id)
@@ -119,7 +119,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 	rec.EntitiesMapper = a.EntitiesMapper
 	rec.SectorMapper = a.SectorMapper
 
-	go rec.Start()
+	go rec.Run()
 	a.recurrers[recurrer.TokenID] = rec
 	logger.Info().Msg("sync up")
 }

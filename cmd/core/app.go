@@ -47,11 +47,11 @@ func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
 	a.moveTolerance = c.MoveTolerance
-	go a.Start()
+	go a.Run()
 	return nil
 }
 
-func (a *app) Start() {
+func (a *app) Run() {
 	logger := log.With().Str("core", a.id.String()).Logger()
 
 	a.subs = make(map[ulid.ID]*event.Subscription)
@@ -94,7 +94,7 @@ func (a *app) AddListener(msg *event.Message) {
 	switch listener.Action {
 	case event.Open:
 		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventMapper, a.Apply)
-		a.seqs[listener.ID].Start()
+		a.seqs[listener.ID].Run()
 
 		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)
 

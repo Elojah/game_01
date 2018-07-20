@@ -63,7 +63,7 @@ func TestRecurrer(t *testing.T) {
 		rec.EntityMapper = entityMock
 		rec.SectorMapper = sectorMock
 		rec.EntitiesMapper = sectorEntitiesMock
-		go rec.Start()
+		go rec.Run()
 		defer rec.Close()
 		wg.Wait()
 	})
