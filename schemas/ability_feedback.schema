@@ -12,7 +12,7 @@ struct HealOverTimeFeedback {
 struct DamageOverTimeFeedback {
 }
 
-struct AbilityFeedback {
+struct Feedback {
 	ID			[16]byte
 	AbilityID	[16]byte
 	Components	[]union {

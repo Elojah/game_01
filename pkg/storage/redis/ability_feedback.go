@@ -22,16 +22,16 @@ func (s *Service) GetAbilityFeedback(subset ability.FeedbackSubset) (ability.Fee
 		return ability.Feedback{}, storage.ErrNotFound
 	}
 
-	var afb storage.AbilityFeedback
+	var afb ability.Feedback
 	if _, err := afb.Unmarshal([]byte(val)); err != nil {
 		return ability.Feedback{}, err
 	}
-	return afb.Domain(), nil
+	return afb, nil
 }
 
 // SetAbilityFeedback implemented with redis.
 func (s *Service) SetAbilityFeedback(afb ability.Feedback) error {
-	raw, err := storage.NewAbilityFeedback(afb).Marshal(nil)
+	raw, err := afb.Marshal(nil)
 	if err != nil {
 		return err
 	}
