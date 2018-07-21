@@ -1,6 +1,8 @@
 package account
 
-import "github.com/elojah/game_01/pkg/ulid"
+import (
+	"github.com/elojah/game_01/pkg/ulid"
+)
 
 // A A represents an user account.
 type A struct {

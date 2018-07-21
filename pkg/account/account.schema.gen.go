@@ -144,8 +144,56 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 }
 
 func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
-	if len(buf) < 9 {
+	lb := uint64(len(buf))
+	if lb < 32 {
 		return 0, errors.New("invalid buffer")
 	}
-	return d.Unmarshal(buf)
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	{
+		l := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i] & 0x7F)
+			for buf[i]&0x80 == 0x80 && i < lb {
+				i++
+				t |= uint64(buf[i]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			l = t
+		}
+		if i+l >= lb {
+			return 0, errors.New("invalid buffer")
+		}
+		d.Username = string(buf[i : i+l])
+		i += l
+	}
+	{
+		l := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i] & 0x7F)
+			for buf[i]&0x80 == 0x80 && i < lb {
+				i++
+				t |= uint64(buf[i]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			l = t
+		}
+		if i+l >= lb {
+			return 0, errors.New("invalid buffer")
+		}
+		d.Password = string(buf[i : i+l])
+		i += l
+	}
+	{
+		copy(d.Token[:], buf[i:])
+		i += 16
+	}
+	return i + 0, nil
 }
