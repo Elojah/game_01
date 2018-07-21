@@ -1,6 +1,7 @@
 package account
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -45,6 +46,7 @@ func (d *A) Size() (s uint64) {
 	}
 	return
 }
+
 func (d *A) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -95,6 +97,7 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i], nil
 }
+
 func (d *A) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -138,4 +141,11 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	return i + 0, nil
+}
+
+func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 9 {
+		return 0, errors.New("invalid buffer")
+	}
+	return d.Unmarshal(buf)
 }

@@ -1,6 +1,7 @@
 package account
 
 import (
+	"errors"
 	"io"
 	"net"
 	"time"
@@ -47,6 +48,7 @@ func (d *Token) Size() (s uint64) {
 	s += 8
 	return
 }
+
 func (d *Token) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -108,6 +110,7 @@ func (d *Token) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+8], nil
 }
+
 func (d *Token) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -154,4 +157,11 @@ func (d *Token) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	return i + 8, nil
+}
+
+func (d *Token) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 9 {
+		return 0, errors.New("invalid buffer")
+	}
+	return d.Unmarshal(buf)
 }

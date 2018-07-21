@@ -35,46 +35,6 @@
   revision = "29c33644ab1f500e3795419f30c9be8aa13cef7f"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/faiface/glhf"
-  packages = ["."]
-  revision = "98c0391c0fd3f0b365cfe5d467ac162b79dfb002"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/faiface/mainthread"
-  packages = ["."]
-  revision = "8b78f0a41ae388189090ac4506612659fa53082b"
-
-[[projects]]
-  name = "github.com/faiface/pixel"
-  packages = [
-    ".",
-    "imdraw",
-    "pixelgl"
-  ]
-  revision = "2d9a739e406f1f7093747c599d844e50c6e92d0e"
-  version = "v0.7"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/go-gl/gl"
-  packages = ["v3.3-core/gl"]
-  revision = "68e2537930806bfcee1b92a0e14b4e9b8bb3a3e3"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/go-gl/glfw"
-  packages = ["v3.2/glfw"]
-  revision = "46a8d530c3268b31eeb1310f30fe42be1cae98f2"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/go-gl/mathgl"
-  packages = ["mgl32"]
-  revision = "5ab0e04e1f55a10f3a71b1fccc60ca2ee9a0bc02"
-
-[[projects]]
   name = "github.com/go-redis/redis"
   packages = [
     ".",
@@ -124,27 +84,9 @@
   revision = "f35b8ab0b5a2cef36673838d662e249dd9c94686"
   version = "v1.2.2"
 
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/image"
-  packages = [
-    "colornames",
-    "math/f32"
-  ]
-  revision = "c73c2afc3b812cdd6385de5a50616511c4a3d458"
-
-[[projects]]
-  branch = "master"
-  name = "golang.org/x/net"
-  packages = [
-    "html",
-    "html/atom"
-  ]
-  revision = "292b43bbf7cb8d35ddf40f8d5100ef3837cced3f"
-
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "54ce67ae87532579a4a10a2587a1d741e2f22ded9922147ffcad5eeafa4d260d"
+  inputs-digest = "40f3e08472f1e8262ae5c7f6c783669e65a39f1ab644be8df2a67e00996822c2"
   solver-name = "gps-cdcl"
   solver-version = 1

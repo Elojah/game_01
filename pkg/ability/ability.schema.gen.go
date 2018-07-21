@@ -1,6 +1,7 @@
 package ability
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -16,6 +17,7 @@ func (d *HealDirect) Size() (s uint64) {
 	s += 9
 	return
 }
+
 func (d *HealDirect) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -41,6 +43,7 @@ func (d *HealDirect) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+9], nil
 }
+
 func (d *HealDirect) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -51,10 +54,19 @@ func (d *HealDirect) Unmarshal(buf []byte) (uint64, error) {
 	}
 	return i + 9, nil
 }
+
+func (d *HealDirect) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 9 {
+		return 0, errors.New("invalid buffer")
+	}
+	return d.Unmarshal(buf)
+}
+
 func (d *DamageDirect) Size() (s uint64) {
 	s += 9
 	return
 }
+
 func (d *DamageDirect) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -80,6 +92,7 @@ func (d *DamageDirect) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+9], nil
 }
+
 func (d *DamageDirect) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -90,10 +103,19 @@ func (d *DamageDirect) Unmarshal(buf []byte) (uint64, error) {
 	}
 	return i + 9, nil
 }
+
+func (d *DamageDirect) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 9 {
+		return 0, errors.New("invalid buffer")
+	}
+	return d.Unmarshal(buf)
+}
+
 func (d *HealOverTime) Size() (s uint64) {
 	s += 25
 	return
 }
+
 func (d *HealOverTime) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -139,6 +161,7 @@ func (d *HealOverTime) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+25], nil
 }
+
 func (d *HealOverTime) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -155,10 +178,19 @@ func (d *HealOverTime) Unmarshal(buf []byte) (uint64, error) {
 	}
 	return i + 25, nil
 }
+
+func (d *HealOverTime) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 25 {
+		return 0, errors.New("invalid buffer")
+	}
+	return d.Unmarshal(buf)
+}
+
 func (d *DamageOverTime) Size() (s uint64) {
 	s += 25
 	return
 }
+
 func (d *DamageOverTime) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -204,6 +236,7 @@ func (d *DamageOverTime) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+25], nil
 }
+
 func (d *DamageOverTime) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -220,6 +253,14 @@ func (d *DamageOverTime) Unmarshal(buf []byte) (uint64, error) {
 	}
 	return i + 25, nil
 }
+
+func (d *DamageOverTime) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 25 {
+		return 0, errors.New("invalid buffer")
+	}
+	return d.Unmarshal(buf)
+}
+
 func (d *A) Size() (s uint64) {
 	{
 		s += 16
@@ -294,6 +335,7 @@ func (d *A) Size() (s uint64) {
 	s += 16
 	return
 }
+
 func (d *A) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -423,6 +465,7 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+16], nil
 }
+
 func (d *A) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -525,6 +568,133 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 					var tt DamageOverTime
 					{
 						ni, err := tt.Unmarshal(buf[i+16:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				default:
+					d.Components[k0] = nil
+				}
+			}
+		}
+	}
+	return i + 16, nil
+}
+
+func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
+	lb := uint64(len(buf))
+	if lb < 48 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	{
+		copy(d.Type[:], buf[i:])
+		i += 16
+	}
+	{
+		l := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i] & 0x7F)
+			for buf[i]&0x80 == 0x80 {
+				i++
+				t |= uint64(buf[i]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			l = t
+		}
+		d.Name = string(buf[i : i+l])
+		i += l
+	}
+	if i > lb || lb-i < 17 {
+		return 0, errors.New("invalid buffer")
+	}
+	{
+		d.MPConsumption = 0 | (uint64(buf[i]) << 0) | (uint64(buf[i+1]) << 8) | (uint64(buf[i+2]) << 16) | (uint64(buf[i+3]) << 24) | (uint64(buf[i+4]) << 32) | (uint64(buf[i+5]) << 40) | (uint64(buf[i+6]) << 48) | (uint64(buf[i+7]) << 56)
+	}
+	{
+		d.CD = 0 | (uint32(buf[i+8]) << 0) | (uint32(buf[i+1+8]) << 8) | (uint32(buf[i+2+8]) << 16) | (uint32(buf[i+3+8]) << 24)
+	}
+	{
+		d.CurrentCD = 0 | (uint32(buf[i+12]) << 0) | (uint32(buf[i+1+12]) << 8) | (uint32(buf[i+2+12]) << 16) | (uint32(buf[i+3+12]) << 24)
+	}
+	{
+		l := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i+16] & 0x7F)
+			for buf[i+16]&0x80 == 0x80 {
+				i++
+				t |= uint64(buf[i+16]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			l = t
+		}
+		if uint64(cap(d.Components)) >= l {
+			d.Components = d.Components[:l]
+		} else {
+			d.Components = make([]Component, l)
+		}
+		for k0 := range d.Components {
+			{
+				if i > lb || lb-i < 17 {
+					return 0, errors.New("invalid buffer")
+				}
+				v := uint64(0)
+				{
+					bs := uint8(7)
+					t := uint64(buf[i+16] & 0x7F)
+					for buf[i+16]&0x80 == 0x80 {
+						i++
+						t |= uint64(buf[i+16]&0x7F) << bs
+						bs += 7
+					}
+					i++
+					v = t
+				}
+				switch v {
+				case 0 + 1:
+					var tt HealDirect
+					{
+						ni, err := tt.UnmarshalSafe(buf[i+16:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				case 1 + 1:
+					var tt DamageDirect
+					{
+						ni, err := tt.UnmarshalSafe(buf[i+16:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				case 2 + 1:
+					var tt HealOverTime
+					{
+						ni, err := tt.UnmarshalSafe(buf[i+16:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				case 3 + 1:
+					var tt DamageOverTime
+					{
+						ni, err := tt.UnmarshalSafe(buf[i+16:])
 						if err != nil {
 							return 0, err
 						}
