@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -48,7 +47,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
 	// #Unmarshal message.
-	msg := dto.Event{}
+	msg := event.DTO{}
 	if _, err := msg.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
@@ -87,9 +86,9 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	// #Dispatch on actin t
 	switch msg.Action.(type) {
-	case dto.Move:
+	case event.Move:
 		go func() { _ = h.move(ctx, msg) }()
-	case dto.Cast:
+	case event.Cast:
 		go func() { _ = h.cast(ctx, msg) }()
 	default:
 		logger.Error().Msg("unrecognized action")

@@ -17,12 +17,8 @@ struct Cast {
 	Position	Vec3
 }
 
-struct Event {
-	ID			[16]byte
-	Token		[16]byte
-	TS			int64
-	Action union {
-		Move
-		Cast
-	}
+struct Feedback {
+	Source		[16]byte
+	Target		[16]byte
+	AbilityID	[16]byte
 }

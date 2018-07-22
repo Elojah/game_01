@@ -12,7 +12,7 @@ var (
 	_ = time.Now()
 )
 
-func (d *E) Size() (s uint64) {
+func (d *DTO) Size() (s uint64) {
 	{
 		s += 16
 	}
@@ -26,8 +26,6 @@ func (d *E) Size() (s uint64) {
 			v = 0 + 1
 		case Cast:
 			v = 1 + 1
-		case Feedback:
-			v = 2 + 1
 		}
 		{
 			t := v
@@ -46,16 +44,13 @@ func (d *E) Size() (s uint64) {
 			{
 				s += tt.Size()
 			}
-		case Feedback:
-			{
-				s += tt.Size()
-			}
 		}
 	}
 	s += 8
 	return
 }
-func (d *E) Marshal(buf []byte) ([]byte, error) {
+
+func (d *DTO) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -70,19 +65,18 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
-		copy(buf[i:], d.Source[:])
+		copy(buf[i:], d.Token[:])
 		i += 16
 	}
 	{
-		t := d.TS.UnixNano()
-		buf[i] = byte(t >> 0)
-		buf[i+1] = byte(t >> 8)
-		buf[i+2] = byte(t >> 16)
-		buf[i+3] = byte(t >> 24)
-		buf[i+4] = byte(t >> 32)
-		buf[i+5] = byte(t >> 40)
-		buf[i+6] = byte(t >> 48)
-		buf[i+7] = byte(t >> 56)
+		buf[i] = byte(d.TS >> 0)
+		buf[i+1] = byte(d.TS >> 8)
+		buf[i+2] = byte(d.TS >> 16)
+		buf[i+3] = byte(d.TS >> 24)
+		buf[i+4] = byte(d.TS >> 32)
+		buf[i+5] = byte(d.TS >> 40)
+		buf[i+6] = byte(d.TS >> 48)
+		buf[i+7] = byte(d.TS >> 56)
 	}
 	{
 		var v uint64
@@ -91,8 +85,6 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 			v = 0 + 1
 		case Cast:
 			v = 1 + 1
-		case Feedback:
-			v = 2 + 1
 		}
 		{
 			t := uint64(v)
@@ -121,30 +113,23 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 				}
 				i += uint64(len(nbuf))
 			}
-		case Feedback:
-			{
-				nbuf, err := tt.Marshal(buf[i+8:])
-				if err != nil {
-					return nil, err
-				}
-				i += uint64(len(nbuf))
-			}
 		}
 	}
 	return buf[:i+8], nil
 }
-func (d *E) Unmarshal(buf []byte) (uint64, error) {
+
+func (d *DTO) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
 		copy(d.ID[:], buf[i:])
 		i += 16
 	}
 	{
-		copy(d.Source[:], buf[i:])
+		copy(d.Token[:], buf[i:])
 		i += 16
 	}
 	{
-		d.TS = time.Unix(0, 0|(int64(buf[i])<<0)|(int64(buf[i+1])<<8)|(int64(buf[i+2])<<16)|(int64(buf[i+3])<<24)|(int64(buf[i+4])<<32)|(int64(buf[i+5])<<40)|(int64(buf[i+6])<<48)|(int64(buf[i+7])<<56))
+		d.TS = 0 | (int64(buf[i]) << 0) | (int64(buf[i+1]) << 8) | (int64(buf[i+2]) << 16) | (int64(buf[i+3]) << 24) | (int64(buf[i+4]) << 32) | (int64(buf[i+5]) << 40) | (int64(buf[i+6]) << 48) | (int64(buf[i+7]) << 56)
 	}
 	{
 		v := uint64(0)
@@ -172,16 +157,6 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = tt
 		case 1 + 1:
 			var tt Cast
-			{
-				ni, err := tt.Unmarshal(buf[i+8:])
-				if err != nil {
-					return 0, err
-				}
-				i += ni
-			}
-			d.Action = tt
-		case 2 + 1:
-			var tt Feedback
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
 				if err != nil {

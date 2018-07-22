@@ -5,13 +5,13 @@ import (
 
 	"github.com/oklog/ulid"
 
-	"github.com/elojah/game_01/pkg/dto"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 )
 
 // Input represents a game action sent by player to be send to server.
 type Input struct {
-	dto.Event
+	event.DTO
 }
 
 // UnmarshalJSON unmarshal a game action depending on input type.
@@ -41,7 +41,7 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 		if err != nil {
 			return err
 		}
-		in.Action = dto.Move{
+		in.Action = event.Move{
 			Source:   [16]byte(source),
 			Target:   [16]byte(target),
 			Position: actionAlias.Position,
@@ -72,7 +72,7 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 			}
 			targets[i] = [16]byte(id)
 		}
-		in.Action = dto.Cast{
+		in.Action = event.Cast{
 			AbilityID: abilityID,
 			Source:    source,
 			Targets:   targets,

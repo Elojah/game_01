@@ -6,21 +6,20 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
 
-func (h *handler) move(ctx context.Context, msg dto.Event) error {
+func (h *handler) move(ctx context.Context, msg event.DTO) error {
 
 	logger := log.With().
 		Str("packet", ctx.Value(mux.Key("packet")).(string)).
 		Str("action", "move").
 		Logger()
 
-	a := msg.Action.(dto.Move)
+	a := msg.Action.(event.Move)
 	source := ulid.ID(a.Source)
 	target := ulid.ID(a.Target)
 	e := event.E{

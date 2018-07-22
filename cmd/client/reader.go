@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01/pkg/dto"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux/client"
 )
@@ -27,9 +27,9 @@ type reader struct {
 	ticker    *time.Ticker
 	tolerance time.Duration
 
-	events map[ulid.ID]dto.Event
+	events map[ulid.ID]event.DTO
 	ack    <-chan ulid.ID
-	event  chan dto.Event
+	event  chan event.DTO
 }
 
 func newReader(c *client.C, ack <-chan ulid.ID) *reader {
@@ -37,7 +37,7 @@ func newReader(c *client.C, ack <-chan ulid.ID) *reader {
 		C:       c,
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
-		event:   make(chan dto.Event),
+		event:   make(chan event.DTO),
 		ack:     ack,
 	}
 }
@@ -74,7 +74,7 @@ func (r reader) Run() {
 			r.logger.Error().Err(err).Msg("failed to decode input")
 			continue
 		}
-		e := dto.Event{
+		e := event.DTO{
 			ID:     ulid.NewID(),
 			Token:  r.token,
 			TS:     time.Now().UnixNano(),
@@ -100,7 +100,7 @@ func (r reader) HandleACK() {
 				if now.Sub(time.Unix(0, e.TS)) < r.tolerance {
 					continue
 				}
-				go func(e dto.Event) {
+				go func(e event.DTO) {
 					raw, err := e.Marshal(nil)
 					if err != nil {
 						r.logger.Error().Err(err).Msg("failed to marshal action")

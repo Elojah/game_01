@@ -1,13 +1,13 @@
 struct Vec3 {
-	X		float64
-	Y		float64
-	Z		float64
+	X			float64
+	Y			float64
+	Z			float64
 }
 
 struct Move {
-	Source	[16]byte
-	Target	[16]byte
-	Position Vec3
+	Source		[16]byte
+	Target		[16]byte
+	Position	Vec3
 }
 
 struct Cast {
@@ -17,19 +17,12 @@ struct Cast {
 	Position	Vec3
 }
 
-struct Feedback {
-	AbilityID	[16]byte
-	Source		[16]byte
-	Target		[16]byte
-}
-
 struct Event {
-	ID		[16]byte
-	Source	[16]byte
-	TS		int64
+	ID			[16]byte
+	Token		[16]byte
+	TS			int64
 	Action union {
 		Move
 		Cast
-		Feedback
 	}
 }
