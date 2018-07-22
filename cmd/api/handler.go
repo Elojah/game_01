@@ -9,7 +9,6 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/game_01/pkg/usecase/token"
 	"github.com/elojah/mux"
@@ -66,7 +65,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	// #Send ACK to client.
 	id := ulid.ID(msg.Token)
-	ack := dto.NewACK(infra.ACK{ID: id})
+	ack := dto.ACK{ID: id}
 	raw, err = ack.Marshal(nil)
 	if err != nil {
 		logger.Error().Err(err).Str("status", "internal").Msg("failed to marshal ack")

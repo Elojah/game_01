@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -12,17 +13,13 @@ var (
 	_ = time.Now()
 )
 
-type ACK struct {
-	ID [16]byte
-}
-
 func (d *ACK) Size() (s uint64) {
-
 	{
 		s += 16
 	}
 	return
 }
+
 func (d *ACK) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -33,20 +30,30 @@ func (d *ACK) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
-
 	{
-		copy(buf[i+0:], d.ID[:])
+		copy(buf[i:], d.ID[:])
 		i += 16
 	}
-	return buf[:i+0], nil
+	return buf[:i], nil
 }
 
 func (d *ACK) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
-
 	{
-		copy(d.ID[:], buf[i+0:])
+		copy(d.ID[:], buf[i:])
 		i += 16
 	}
-	return i + 0, nil
+	return i, nil
+}
+
+func (d *ACK) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 16 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	return i, nil
 }
