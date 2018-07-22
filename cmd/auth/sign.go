@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -24,18 +23,18 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/signin").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var adto dto.Account
-	if err := json.NewDecoder(r.Body).Decode(&adto); err != nil {
+	var ac Account
+	if err := json.NewDecoder(r.Body).Decode(&ac); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	if err := adto.Check(); err != nil {
+	if err := ac.Check(); err != nil {
 		logger.Error().Err(err).Msg("account invalid")
 		http.Error(w, "account invalid", http.StatusBadRequest)
 		return
 	}
-	a := adto.Domain()
+	a := ac.Domain()
 
 	// #Create token from account
 	tok, err := h.T.New(a, r.RemoteAddr)
@@ -84,17 +83,17 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/signout").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var adto dto.SignoutAccount
-	if err := json.NewDecoder(r.Body).Decode(&adto); err != nil {
+	var ac SignoutAccount
+	if err := json.NewDecoder(r.Body).Decode(&ac); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
 
-	logger = logger.With().Str("username", adto.Username).Logger()
+	logger = logger.With().Str("username", ac.Username).Logger()
 
 	// #Retrieve account by username.
-	a, err := h.AccountMapper.GetAccount(account.Subset{Username: adto.Username})
+	a, err := h.AccountMapper.GetAccount(account.Subset{Username: ac.Username})
 	if err != nil {
 		if err == storage.ErrNotFound {
 			logger.Error().Err(err).Msg("invalid username")
@@ -106,7 +105,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logger = logger.With().Str("account", ulid.String(a.ID)).Str("token", ulid.String(a.Token)).Logger()
-	if ulid.Compare(a.Token, adto.Token) != 0 {
+	if ulid.Compare(a.Token, ac.Token) != 0 {
 		logger.Error().Err(err).Msg("invalid token")
 		http.Error(w, "invalid token", http.StatusBadRequest)
 		return
