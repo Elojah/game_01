@@ -2,19 +2,59 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"math/rand"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/dto"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
+
+// SetPC represents the payload to send to create a new PC.
+type SetPC struct {
+	Token ulid.ID
+	Name  string
+	Type  ulid.ID
+}
+
+// Check checks setpc validity.
+func (spc SetPC) Check() error {
+	l := len(spc.Name)
+	if l < 4 || l > 15 || strings.IndexFunc(spc.Name, func(r rune) bool {
+		return r < 'A' || r > 'z'
+	}) != -1 {
+		return errors.New("invalid name")
+	}
+	return nil
+}
+
+// ListPC represents the payload to list token PCs.
+type ListPC struct {
+	Token ulid.ID
+}
+
+// ConnectPC represents the payload to connect to an existing PC.
+type ConnectPC struct {
+	Token  ulid.ID
+	Target ulid.ID
+}
+
+// DisconnectPC represents the payload to disconnect a token.
+type DisconnectPC struct {
+	Token ulid.ID
+}
+
+// EntityPC represents the response when connecting to an existing PC.
+type EntityPC struct {
+	ID ulid.ID
+}
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
@@ -28,7 +68,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/pc/create").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var setPC dto.SetPC
+	var setPC SetPC
 	if err := json.NewDecoder(r.Body).Decode(&setPC); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -137,7 +177,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/pc/list").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var listPC dto.ListPC
+	var listPC ListPC
 	if err := json.NewDecoder(r.Body).Decode(&listPC); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -193,7 +233,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/pc/connect").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var connectPC dto.ConnectPC
+	var connectPC ConnectPC
 	if err := json.NewDecoder(r.Body).Decode(&connectPC); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -284,7 +324,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Marshal response
-	raw, err := json.Marshal(dto.EntityPC{ID: e.ID})
+	raw, err := json.Marshal(EntityPC{ID: e.ID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to marshal response")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
@@ -312,7 +352,7 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/pc/disconnect").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
-	var disconnectPC dto.DisconnectPC
+	var disconnectPC DisconnectPC
 	if err := json.NewDecoder(r.Body).Decode(&disconnectPC); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
