@@ -6,6 +6,7 @@ import (
 	"github.com/oklog/ulid"
 
 	"github.com/elojah/game_01/pkg/dto"
+	"github.com/elojah/game_01/pkg/geometry"
 )
 
 // Input represents a game action sent by player to be send to server.
@@ -27,7 +28,7 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 		var actionAlias struct {
 			Source   string
 			Target   string
-			Position dto.Vec3
+			Position geometry.Vec3
 		}
 		if err := json.Unmarshal(alias.Action, &actionAlias); err != nil {
 			return err
@@ -50,7 +51,7 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 			AbilityID string
 			Source    string
 			Targets   []string
-			Position  dto.Vec3
+			Position  geometry.Vec3
 		}
 		if err := json.Unmarshal(alias.Action, &actionAlias); err != nil {
 			return err
