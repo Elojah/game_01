@@ -84,7 +84,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		return err
 	}
 
-	// #Dispatch on actin t
+	// #Dispatch on action.
 	switch msg.Action.(type) {
 	case event.Move:
 		go func() { _ = h.move(ctx, msg) }()
