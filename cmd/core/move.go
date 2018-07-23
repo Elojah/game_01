@@ -68,19 +68,24 @@ func (a *app) MoveTarget(e event.E) error {
 		return errors.Wrapf(err, "get entity %s at max ts %s", ulid.String(move.Target), e.TS.UnixNano())
 	}
 
-	// #Check if target has move in correct boundaries.
-	if geometry.Segment(target.Position.Coord, move.Position) > a.moveTolerance {
-		return errors.Wrapf(
-			account.ErrInvalidAction,
-			"check move from (%f , %f , %f) to (%f , %f , %f) for entity %s",
-			target.Position.Coord.X,
-			target.Position.Coord.Y,
-			target.Position.Coord.Z,
-			move.Position.X,
-			move.Position.Y,
-			move.Position.Z,
-			ulid.String(target.ID),
-		)
+	// #Check if target has move in correct boundaries in same sector.
+	if ulid.Compare(target.Position.SectorID, move.Position.SectorID) == 0 {
+		if geometry.Segment(target.Position.Coord, move.Position.Coord) > a.moveTolerance {
+			return errors.Wrapf(
+				account.ErrInvalidAction,
+				"check move from (%f , %f , %f) to (%f , %f , %f) for entity %s",
+				target.Position.Coord.X,
+				target.Position.Coord.Y,
+				target.Position.Coord.Z,
+				move.Position.Coord.X,
+				move.Position.Coord.Y,
+				move.Position.Coord.Z,
+				ulid.String(target.ID),
+			)
+		}
+	} else {
+		// TODO
+		return errors.New("not implemented")
 	}
 
 	// #Retrieve current sector
@@ -90,23 +95,26 @@ func (a *app) MoveTarget(e event.E) error {
 	}
 
 	// #Move target
-	target.Move(move.Position)
+	target.Move(move.Position.Coord)
+
 	// If target is out of sector, move to next
 	if s.Out(target.Position.Coord) {
-		bp := s.ClosestBP(target.Position.Coord)
-		nextSector, err := a.SectorMapper.GetSector(sector.Subset{ID: bp.SectorID})
-		if err != nil {
-			return errors.Wrapf(err, "get closest sector %s", ulid.String(bp.SectorID))
-		}
-		oppBP := nextSector.FindBP(bp.ID)
-		target.Position.SectorID = nextSector.ID
-		target.Position.Coord.MoveReference(bp.Position, oppBP.Position)
-		if err := a.EntitiesMapper.AddEntityToSector(target.ID, nextSector.ID); err != nil {
-			return errors.Wrapf(err, "add entity %s to sector %s", ulid.String(target.ID), ulid.String(nextSector.ID))
-		}
-		if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, s.ID); err != nil {
-			return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
-		}
+		// TODO
+		return errors.New("not implemented")
+		// bp := s.ClosestBP(target.Position.Coord)
+		// nextSector, err := a.SectorMapper.GetSector(sector.Subset{ID: bp.SectorID})
+		// if err != nil {
+		// 	return errors.Wrapf(err, "get closest sector %s", ulid.String(bp.SectorID))
+		// }
+		// oppBP := nextSector.FindBP(bp.ID)
+		// target.Position.SectorID = nextSector.ID
+		// target.Position.Coord.MoveReference(bp.Position, oppBP.Position)
+		// if err := a.EntitiesMapper.AddEntityToSector(target.ID, nextSector.ID); err != nil {
+		// 	return errors.Wrapf(err, "add entity %s to sector %s", ulid.String(target.ID), ulid.String(nextSector.ID))
+		// }
+		// if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, s.ID); err != nil {
+		// 	return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
+		// }
 	}
 
 	// #Write new target state.

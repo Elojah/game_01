@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
@@ -28,13 +27,13 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 
 	e := event.E{
 		ID:     ulid.NewID(),
-		Source: ulid.ID(msg.Token),
+		Source: msg.Token,
 		TS:     time.Unix(0, msg.TS),
 		Action: event.Cast{
-			AbilityID: ulid.ID(a.AbilityID),
+			AbilityID: a.AbilityID,
 			Source:    source,
 			Targets:   targets,
-			Position:  geometry.Vec3(a.Position),
+			Position:  a.Position,
 		},
 	}
 

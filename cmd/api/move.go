@@ -7,7 +7,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
@@ -24,12 +23,12 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 	target := ulid.ID(a.Target)
 	e := event.E{
 		ID:     ulid.NewID(),
-		Source: ulid.ID(msg.Token),
+		Source: msg.Token,
 		TS:     time.Unix(0, msg.TS),
 		Action: event.Move{
 			Source:   source,
 			Target:   target,
-			Position: geometry.Vec3(a.Position),
+			Position: a.Position,
 		},
 	}
 

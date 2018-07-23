@@ -4,21 +4,26 @@ struct Vec3 {
 	Z			float64
 }
 
+struct Position {
+	Coord		Vec3
+	SectorID	[16]byte
+}
+
 struct Move {
-	Source		[16]byte
-	Target		[16]byte
-	Position	Vec3
+	Source   [16]byte
+	Target   [16]byte
+	Position Position
 }
 
 struct Cast {
-	AbilityID	[16]byte
-	Source		[16]byte
-	Targets		[][16]byte
-	Position	Vec3
+	AbilityID [16]byte
+	Source    [16]byte
+	Targets   [][16]byte
+	Position  Position
 }
 
 struct Feedback {
-	Source		[16]byte
-	Target		[16]byte
-	AbilityID	[16]byte
+	ID     [16]byte
+	Source [16]byte
+	Target [16]byte
 }

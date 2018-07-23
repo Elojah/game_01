@@ -26,7 +26,7 @@ type E struct {
 
 // Move moves entity to position p.
 func (e *E) Move(p geometry.Vec3) {
-	e.Position.Coord.Add(p)
+	e.Position.Coord = p
 }
 
 // Mapper is an interface for E object.

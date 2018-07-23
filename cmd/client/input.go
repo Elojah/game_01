@@ -5,6 +5,7 @@ import (
 
 	"github.com/oklog/ulid"
 
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 )
@@ -28,7 +29,8 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 		var actionAlias struct {
 			Source   string
 			Target   string
-			Position geometry.Vec3
+			SectorID string
+			Coord    geometry.Vec3
 		}
 		if err := json.Unmarshal(alias.Action, &actionAlias); err != nil {
 			return err
@@ -41,17 +43,25 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 		if err != nil {
 			return err
 		}
+		sectorID, err := ulid.Parse(actionAlias.SectorID)
+		if err != nil {
+			return err
+		}
 		in.Action = event.Move{
-			Source:   [16]byte(source),
-			Target:   [16]byte(target),
-			Position: actionAlias.Position,
+			Source: [16]byte(source),
+			Target: [16]byte(target),
+			Position: entity.Position{
+				SectorID: sectorID,
+				Coord:    actionAlias.Coord,
+			},
 		}
 	case "cast":
 		var actionAlias struct {
 			AbilityID string
 			Source    string
 			Targets   []string
-			Position  geometry.Vec3
+			SectorID  string
+			Coord     geometry.Vec3
 		}
 		if err := json.Unmarshal(alias.Action, &actionAlias); err != nil {
 			return err
@@ -61,6 +71,10 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 			return err
 		}
 		abilityID, err := ulid.Parse(actionAlias.AbilityID)
+		if err != nil {
+			return err
+		}
+		sectorID, err := ulid.Parse(actionAlias.SectorID)
 		if err != nil {
 			return err
 		}
@@ -76,7 +90,10 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 			AbilityID: abilityID,
 			Source:    source,
 			Targets:   targets,
-			Position:  actionAlias.Position,
+			Position: entity.Position{
+				SectorID: sectorID,
+				Coord:    actionAlias.Coord,
+			},
 		}
 	default:
 		return &json.UnsupportedValueError{Str: alias.Type}

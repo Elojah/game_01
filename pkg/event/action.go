@@ -1,7 +1,7 @@
 package event
 
 import (
-	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -26,7 +26,7 @@ func String(a Action) string {
 type Move struct {
 	Source   ulid.ID
 	Target   ulid.ID
-	Position geometry.Vec3
+	Position entity.Position
 }
 
 // Cast represents a ability launch.
@@ -34,12 +34,12 @@ type Cast struct {
 	AbilityID ulid.ID
 	Source    ulid.ID
 	Targets   []ulid.ID
-	Position  geometry.Vec3
+	Position  entity.Position
 }
 
 // Feedback represents a ability feedback of ability run by Source on target.
 type Feedback struct {
-	AbilityID ulid.ID
-	Source    ulid.ID
-	Target    ulid.ID
+	ID     ulid.ID
+	Source ulid.ID
+	Target ulid.ID
 }

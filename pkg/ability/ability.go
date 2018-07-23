@@ -23,9 +23,11 @@ type A struct {
 
 // Affect applies ability a on target.
 func (a A) Affect(target *entity.E) Feedback {
-	var fb Feedback
-	fb.AbilityID = a.ID
-	fb.Components = make([]FeedbackComponent, len(a.Components))
+	fb := Feedback{
+		ID:         ulid.NewID(),
+		AbilityID:  a.ID,
+		Components: make([]FeedbackComponent, len(a.Components)),
+	}
 	for i, component := range a.Components {
 		fb.Components[i] = component.Affect(target)
 	}

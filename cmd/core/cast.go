@@ -71,7 +71,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ability, err := a.AbilityMapper.GetAbility(ability.Subset{
+	ab, err := a.AbilityMapper.GetAbility(ability.Subset{
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
@@ -92,7 +92,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get entity %s at max ts %d", ulid.String(id), e.TS.UnixNano())
 	}
 
-	afb := ability.Affect(&target)
+	afb := ab.Affect(&target)
 	if err := a.FeedbackMapper.SetAbilityFeedback(afb); err != nil {
 		return errors.Wrapf(err, "set ability feedback %s", ulid.String(afb.ID))
 	}
@@ -101,9 +101,9 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		TS:     e.TS,
 		Source: e.Source,
 		Action: event.Feedback{
-			AbilityID: afb.ID,
-			Source:    source.ID,
-			Target:    target.ID,
+			ID:     afb.ID,
+			Source: source.ID,
+			Target: target.ID,
 		},
 	}
 	return errors.Wrapf(a.PublishEvent(fb, source.ID), "publish event %s to %s", ulid.String(fb.ID), ulid.String(e.Source))
