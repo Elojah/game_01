@@ -11,7 +11,7 @@ func TestMarshalFeedback(t *testing.T) {
 	fs := []Feedback{
 		// This one fails, gencode transforms empty array into nil.
 		// Feedback{
-		// 	Components: []Component{},
+		// 	Components: []FeedbackComponent{},
 		// },
 		Feedback{},
 		Feedback{

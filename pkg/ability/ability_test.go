@@ -89,6 +89,7 @@ func TestMarshal(t *testing.T) {
 			},
 		},
 	}
+
 	t.Run("marshal/unmarshal", func(t *testing.T) {
 		for _, a := range as {
 			raw, err := a.Marshal(nil)
@@ -99,6 +100,7 @@ func TestMarshal(t *testing.T) {
 			assert.Equal(t, au, a)
 		}
 	})
+
 	t.Run("unmarshal safe", func(t *testing.T) {
 		for _, a := range as {
 			raw, err := a.Marshal(nil)
