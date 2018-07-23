@@ -59,7 +59,14 @@ func (d *HealDirect) UnmarshalSafe(buf []byte) (uint64, error) {
 	if len(buf) < 9 {
 		return 0, errors.New("invalid buffer")
 	}
-	return d.Unmarshal(buf)
+	i := uint64(0)
+	{
+		d.Amount = 0 | (uint64(buf[0]) << 0) | (uint64(buf[1]) << 8) | (uint64(buf[2]) << 16) | (uint64(buf[3]) << 24) | (uint64(buf[4]) << 32) | (uint64(buf[5]) << 40) | (uint64(buf[6]) << 48) | (uint64(buf[7]) << 56)
+	}
+	{
+		d.Type = 0 | (uint8(buf[8]) << 0)
+	}
+	return i + 9, nil
 }
 
 func (d *DamageDirect) Size() (s uint64) {
@@ -108,7 +115,14 @@ func (d *DamageDirect) UnmarshalSafe(buf []byte) (uint64, error) {
 	if len(buf) < 9 {
 		return 0, errors.New("invalid buffer")
 	}
-	return d.Unmarshal(buf)
+	i := uint64(0)
+	{
+		d.Amount = 0 | (uint64(buf[0]) << 0) | (uint64(buf[1]) << 8) | (uint64(buf[2]) << 16) | (uint64(buf[3]) << 24) | (uint64(buf[4]) << 32) | (uint64(buf[5]) << 40) | (uint64(buf[6]) << 48) | (uint64(buf[7]) << 56)
+	}
+	{
+		d.Type = 0 | (uint8(buf[8]) << 0)
+	}
+	return i + 9, nil
 }
 
 func (d *HealOverTime) Size() (s uint64) {
@@ -183,7 +197,20 @@ func (d *HealOverTime) UnmarshalSafe(buf []byte) (uint64, error) {
 	if len(buf) < 25 {
 		return 0, errors.New("invalid buffer")
 	}
-	return d.Unmarshal(buf)
+	i := uint64(0)
+	{
+		d.Amount = 0 | (uint64(buf[0]) << 0) | (uint64(buf[1]) << 8) | (uint64(buf[2]) << 16) | (uint64(buf[3]) << 24) | (uint64(buf[4]) << 32) | (uint64(buf[5]) << 40) | (uint64(buf[6]) << 48) | (uint64(buf[7]) << 56)
+	}
+	{
+		d.Type = 0 | (uint8(buf[8]) << 0)
+	}
+	{
+		d.Frequency = 0 | (uint64(buf[9]) << 0) | (uint64(buf[1+9]) << 8) | (uint64(buf[2+9]) << 16) | (uint64(buf[3+9]) << 24) | (uint64(buf[4+9]) << 32) | (uint64(buf[5+9]) << 40) | (uint64(buf[6+9]) << 48) | (uint64(buf[7+9]) << 56)
+	}
+	{
+		d.Duration = 0 | (uint64(buf[17]) << 0) | (uint64(buf[1+17]) << 8) | (uint64(buf[2+17]) << 16) | (uint64(buf[3+17]) << 24) | (uint64(buf[4+17]) << 32) | (uint64(buf[5+17]) << 40) | (uint64(buf[6+17]) << 48) | (uint64(buf[7+17]) << 56)
+	}
+	return i + 25, nil
 }
 
 func (d *DamageOverTime) Size() (s uint64) {
@@ -258,7 +285,20 @@ func (d *DamageOverTime) UnmarshalSafe(buf []byte) (uint64, error) {
 	if len(buf) < 25 {
 		return 0, errors.New("invalid buffer")
 	}
-	return d.Unmarshal(buf)
+	i := uint64(0)
+	{
+		d.Amount = 0 | (uint64(buf[0]) << 0) | (uint64(buf[1]) << 8) | (uint64(buf[2]) << 16) | (uint64(buf[3]) << 24) | (uint64(buf[4]) << 32) | (uint64(buf[5]) << 40) | (uint64(buf[6]) << 48) | (uint64(buf[7]) << 56)
+	}
+	{
+		d.Type = 0 | (uint8(buf[8]) << 0)
+	}
+	{
+		d.Frequency = 0 | (uint64(buf[9]) << 0) | (uint64(buf[1+9]) << 8) | (uint64(buf[2+9]) << 16) | (uint64(buf[3+9]) << 24) | (uint64(buf[4+9]) << 32) | (uint64(buf[5+9]) << 40) | (uint64(buf[6+9]) << 48) | (uint64(buf[7+9]) << 56)
+	}
+	{
+		d.Duration = 0 | (uint64(buf[17]) << 0) | (uint64(buf[1+17]) << 8) | (uint64(buf[2+17]) << 16) | (uint64(buf[3+17]) << 24) | (uint64(buf[4+17]) << 32) | (uint64(buf[5+17]) << 40) | (uint64(buf[6+17]) << 48) | (uint64(buf[7+17]) << 56)
+	}
+	return i + 25, nil
 }
 
 func (d *A) Size() (s uint64) {
@@ -585,7 +625,7 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 
 func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 	lb := uint64(len(buf))
-	if lb < 48 {
+	if lb < 32+16+1 {
 		return 0, errors.New("invalid buffer")
 	}
 	i := uint64(0)

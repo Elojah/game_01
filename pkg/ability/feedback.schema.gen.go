@@ -1,6 +1,7 @@
 package ability
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -16,6 +17,7 @@ func (d *HealDirectFeedback) Size() (s uint64) {
 	s += 8
 	return
 }
+
 func (d *HealDirectFeedback) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -38,7 +40,19 @@ func (d *HealDirectFeedback) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+8], nil
 }
+
 func (d *HealDirectFeedback) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+	{
+		d.Amount = 0 | (int64(buf[0]) << 0) | (int64(buf[1]) << 8) | (int64(buf[2]) << 16) | (int64(buf[3]) << 24) | (int64(buf[4]) << 32) | (int64(buf[5]) << 40) | (int64(buf[6]) << 48) | (int64(buf[7]) << 56)
+	}
+	return i + 8, nil
+}
+
+func (d *HealDirectFeedback) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 8 {
+		return 0, errors.New("invalid buffer")
+	}
 	i := uint64(0)
 	{
 		d.Amount = 0 | (int64(buf[0]) << 0) | (int64(buf[1]) << 8) | (int64(buf[2]) << 16) | (int64(buf[3]) << 24) | (int64(buf[4]) << 32) | (int64(buf[5]) << 40) | (int64(buf[6]) << 48) | (int64(buf[7]) << 56)
@@ -50,6 +64,7 @@ func (d *DamageDirectFeedback) Size() (s uint64) {
 	s += 8
 	return
 }
+
 func (d *DamageDirectFeedback) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -72,7 +87,19 @@ func (d *DamageDirectFeedback) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+8], nil
 }
+
 func (d *DamageDirectFeedback) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+	{
+		d.Amount = 0 | (int64(buf[0]) << 0) | (int64(buf[1]) << 8) | (int64(buf[2]) << 16) | (int64(buf[3]) << 24) | (int64(buf[4]) << 32) | (int64(buf[5]) << 40) | (int64(buf[6]) << 48) | (int64(buf[7]) << 56)
+	}
+	return i + 8, nil
+}
+
+func (d *DamageDirectFeedback) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 8 {
+		return 0, errors.New("invalid buffer")
+	}
 	i := uint64(0)
 	{
 		d.Amount = 0 | (int64(buf[0]) << 0) | (int64(buf[1]) << 8) | (int64(buf[2]) << 16) | (int64(buf[3]) << 24) | (int64(buf[4]) << 32) | (int64(buf[5]) << 40) | (int64(buf[6]) << 48) | (int64(buf[7]) << 56)
@@ -83,6 +110,7 @@ func (d *DamageDirectFeedback) Unmarshal(buf []byte) (uint64, error) {
 func (d *HealOverTimeFeedback) Size() (s uint64) {
 	return
 }
+
 func (d *HealOverTimeFeedback) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -95,7 +123,16 @@ func (d *HealOverTimeFeedback) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 	return buf[:i], nil
 }
+
 func (d *HealOverTimeFeedback) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+	return i + 0, nil
+}
+
+func (d *HealOverTimeFeedback) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 0 {
+		return 0, errors.New("invalid buffer")
+	}
 	i := uint64(0)
 	return i + 0, nil
 }
@@ -103,6 +140,7 @@ func (d *HealOverTimeFeedback) Unmarshal(buf []byte) (uint64, error) {
 func (d *DamageOverTimeFeedback) Size() (s uint64) {
 	return
 }
+
 func (d *DamageOverTimeFeedback) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -115,7 +153,16 @@ func (d *DamageOverTimeFeedback) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 	return buf[:i], nil
 }
+
 func (d *DamageOverTimeFeedback) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+	return i + 0, nil
+}
+
+func (d *DamageOverTimeFeedback) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 0 {
+		return 0, errors.New("invalid buffer")
+	}
 	i := uint64(0)
 	return i + 0, nil
 }
@@ -181,6 +228,7 @@ func (d *Feedback) Size() (s uint64) {
 	}
 	return
 }
+
 func (d *Feedback) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -273,6 +321,7 @@ func (d *Feedback) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i], nil
 }
+
 func (d *Feedback) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -350,6 +399,105 @@ func (d *Feedback) Unmarshal(buf []byte) (uint64, error) {
 					var tt DamageOverTimeFeedback
 					{
 						ni, err := tt.Unmarshal(buf[i:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				default:
+					d.Components[k0] = nil
+				}
+			}
+		}
+	}
+	return i + 0, nil
+}
+
+func (d *Feedback) UnmarshalSafe(buf []byte) (uint64, error) {
+	lb := uint64(len(buf))
+	if lb < 32+1 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	{
+		copy(d.AbilityID[:], buf[i:])
+		i += 16
+	}
+	{
+		l := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i] & 0x7F)
+			for buf[i]&0x80 == 0x80 && i < lb {
+				i++
+				t |= uint64(buf[i]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			l = t
+		}
+		if uint64(cap(d.Components)) >= l {
+			d.Components = d.Components[:l]
+		} else {
+			d.Components = make([]FeedbackComponent, l)
+		}
+		for k0 := range d.Components {
+			{
+				if i >= lb {
+					return 0, errors.New("invalid buffer")
+				}
+				v := uint64(0)
+				{
+					bs := uint8(7)
+					t := uint64(buf[i] & 0x7F)
+					for buf[i]&0x80 == 0x80 && i < lb {
+						i++
+						t |= uint64(buf[i]&0x7F) << bs
+						bs += 7
+					}
+					i++
+					v = t
+				}
+				switch v {
+				case 0 + 1:
+					var tt HealDirectFeedback
+					{
+						ni, err := tt.UnmarshalSafe(buf[i:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				case 1 + 1:
+					var tt DamageDirectFeedback
+					{
+						ni, err := tt.UnmarshalSafe(buf[i:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				case 2 + 1:
+					var tt HealOverTimeFeedback
+					{
+						ni, err := tt.UnmarshalSafe(buf[i:])
+						if err != nil {
+							return 0, err
+						}
+						i += ni
+					}
+					d.Components[k0] = tt
+				case 3 + 1:
+					var tt DamageOverTimeFeedback
+					{
+						ni, err := tt.UnmarshalSafe(buf[i:])
 						if err != nil {
 							return 0, err
 						}
