@@ -1,6 +1,7 @@
 package event
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -159,6 +160,67 @@ func (d *DTO) Unmarshal(buf []byte) (uint64, error) {
 			var tt Cast
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+			d.Action = tt
+		default:
+			d.Action = nil
+		}
+	}
+	return i + 8, nil
+}
+
+func (d *DTO) UnmarshalSafe(buf []byte) (uint64, error) {
+	lb := uint64(len(buf))
+	if lb < 32+8+1 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	{
+		copy(d.Token[:], buf[i:])
+		i += 16
+	}
+	{
+		d.TS = 0 | (int64(buf[i]) << 0) | (int64(buf[i+1]) << 8) | (int64(buf[i+2]) << 16) | (int64(buf[i+3]) << 24) | (int64(buf[i+4]) << 32) | (int64(buf[i+5]) << 40) | (int64(buf[i+6]) << 48) | (int64(buf[i+7]) << 56)
+	}
+	{
+		v := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i+8] & 0x7F)
+			for buf[i+8]&0x80 == 0x80 && i < lb {
+				i++
+				t |= uint64(buf[i+8]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			v = t
+		}
+		if i+8 >= lb {
+			return 0, errors.New("invalid buffer")
+		}
+		switch v {
+		case 0 + 1:
+			var tt Move
+			{
+				ni, err := tt.UnmarshalSafe(buf[i+8:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+			d.Action = tt
+		case 1 + 1:
+			var tt Cast
+			{
+				ni, err := tt.UnmarshalSafe(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
