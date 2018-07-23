@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -21,6 +22,7 @@ func (d *Position) Size() (s uint64) {
 	}
 	return
 }
+
 func (d *Position) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -44,6 +46,7 @@ func (d *Position) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i], nil
 }
+
 func (d *Position) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -59,6 +62,26 @@ func (d *Position) Unmarshal(buf []byte) (uint64, error) {
 	}
 	return i + 0, nil
 }
+
+func (d *Position) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 24+16 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		ni, err := d.Coord.Unmarshal(buf[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
+	}
+	{
+		copy(d.SectorID[:], buf[i:])
+		i += 16
+	}
+	return i + 0, nil
+}
+
 func (d *E) Size() (s uint64) {
 	{
 		s += 16
@@ -84,6 +107,7 @@ func (d *E) Size() (s uint64) {
 	s += 16
 	return
 }
+
 func (d *E) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -146,6 +170,7 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+16], nil
 }
+
 func (d *E) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -180,6 +205,58 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 	}
 	{
 		ni, err := d.Position.Unmarshal(buf[i+16:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
+	}
+	return i + 16, nil
+}
+
+func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
+	lb := uint64(len(buf))
+	if lb < 32+16+24+16+1 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	{
+		copy(d.Type[:], buf[i:])
+		i += 16
+	}
+	{
+		l := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i] & 0x7F)
+			for buf[i]&0x80 == 0x80 && i < lb {
+				i++
+				t |= uint64(buf[i]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			l = t
+		}
+		if i+l >= lb {
+			return 0, errors.New("invalid buffer")
+		}
+		d.Name = string(buf[i : i+l])
+		i += l
+	}
+	if lb-i < 17 {
+		return 0, errors.New("invalid buffer")
+	}
+	{
+		d.HP = 0 | (uint64(buf[i]) << 0) | (uint64(buf[i+1]) << 8) | (uint64(buf[i+2]) << 16) | (uint64(buf[i+3]) << 24) | (uint64(buf[i+4]) << 32) | (uint64(buf[i+5]) << 40) | (uint64(buf[i+6]) << 48) | (uint64(buf[i+7]) << 56)
+	}
+	{
+		d.MP = 0 | (uint64(buf[i+8]) << 0) | (uint64(buf[i+1+8]) << 8) | (uint64(buf[i+2+8]) << 16) | (uint64(buf[i+3+8]) << 24) | (uint64(buf[i+4+8]) << 32) | (uint64(buf[i+5+8]) << 40) | (uint64(buf[i+6+8]) << 48) | (uint64(buf[i+7+8]) << 56)
+	}
+	{
+		ni, err := d.Position.UnmarshalSafe(buf[i+16:])
 		if err != nil {
 			return 0, err
 		}

@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -16,6 +17,7 @@ func (d *Vec3) Size() (s uint64) {
 	s += 24
 	return
 }
+
 func (d *Vec3) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -39,7 +41,7 @@ func (d *Vec3) Marshal(buf []byte) ([]byte, error) {
 	}
 	{
 		v := *(*uint64)(unsafe.Pointer(&(d.Y)))
-		buf[0+8] = byte(v >> 0)
+		buf[8] = byte(v >> 0)
 		buf[1+8] = byte(v >> 8)
 		buf[2+8] = byte(v >> 16)
 		buf[3+8] = byte(v >> 24)
@@ -50,7 +52,7 @@ func (d *Vec3) Marshal(buf []byte) ([]byte, error) {
 	}
 	{
 		v := *(*uint64)(unsafe.Pointer(&(d.Z)))
-		buf[0+16] = byte(v >> 0)
+		buf[16] = byte(v >> 0)
 		buf[1+16] = byte(v >> 8)
 		buf[2+16] = byte(v >> 16)
 		buf[3+16] = byte(v >> 24)
@@ -61,6 +63,7 @@ func (d *Vec3) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+24], nil
 }
+
 func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -68,11 +71,31 @@ func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 		d.X = *(*float64)(unsafe.Pointer(&v))
 	}
 	{
-		v := 0 | (uint64(buf[0+8]) << 0) | (uint64(buf[1+8]) << 8) | (uint64(buf[2+8]) << 16) | (uint64(buf[3+8]) << 24) | (uint64(buf[4+8]) << 32) | (uint64(buf[5+8]) << 40) | (uint64(buf[6+8]) << 48) | (uint64(buf[7+8]) << 56)
+		v := 0 | (uint64(buf[8]) << 0) | (uint64(buf[1+8]) << 8) | (uint64(buf[2+8]) << 16) | (uint64(buf[3+8]) << 24) | (uint64(buf[4+8]) << 32) | (uint64(buf[5+8]) << 40) | (uint64(buf[6+8]) << 48) | (uint64(buf[7+8]) << 56)
 		d.Y = *(*float64)(unsafe.Pointer(&v))
 	}
 	{
-		v := 0 | (uint64(buf[0+16]) << 0) | (uint64(buf[1+16]) << 8) | (uint64(buf[2+16]) << 16) | (uint64(buf[3+16]) << 24) | (uint64(buf[4+16]) << 32) | (uint64(buf[5+16]) << 40) | (uint64(buf[6+16]) << 48) | (uint64(buf[7+16]) << 56)
+		v := 0 | (uint64(buf[16]) << 0) | (uint64(buf[1+16]) << 8) | (uint64(buf[2+16]) << 16) | (uint64(buf[3+16]) << 24) | (uint64(buf[4+16]) << 32) | (uint64(buf[5+16]) << 40) | (uint64(buf[6+16]) << 48) | (uint64(buf[7+16]) << 56)
+		d.Z = *(*float64)(unsafe.Pointer(&v))
+	}
+	return i + 24, nil
+}
+
+func (d *Vec3) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 24+1 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		v := 0 | (uint64(buf[0]) << 0) | (uint64(buf[1]) << 8) | (uint64(buf[2]) << 16) | (uint64(buf[3]) << 24) | (uint64(buf[4]) << 32) | (uint64(buf[5]) << 40) | (uint64(buf[6]) << 48) | (uint64(buf[7]) << 56)
+		d.X = *(*float64)(unsafe.Pointer(&v))
+	}
+	{
+		v := 0 | (uint64(buf[8]) << 0) | (uint64(buf[1+8]) << 8) | (uint64(buf[2+8]) << 16) | (uint64(buf[3+8]) << 24) | (uint64(buf[4+8]) << 32) | (uint64(buf[5+8]) << 40) | (uint64(buf[6+8]) << 48) | (uint64(buf[7+8]) << 56)
+		d.Y = *(*float64)(unsafe.Pointer(&v))
+	}
+	{
+		v := 0 | (uint64(buf[16]) << 0) | (uint64(buf[1+16]) << 8) | (uint64(buf[2+16]) << 16) | (uint64(buf[3+16]) << 24) | (uint64(buf[4+16]) << 32) | (uint64(buf[5+16]) << 40) | (uint64(buf[6+16]) << 48) | (uint64(buf[7+16]) << 56)
 		d.Z = *(*float64)(unsafe.Pointer(&v))
 	}
 	return i + 24, nil

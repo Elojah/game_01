@@ -55,22 +55,22 @@ func TestMarshalFeedback(t *testing.T) {
 		},
 	}
 	t.Run("marshal/unmarshal", func(t *testing.T) {
-		for _, a := range fs {
-			raw, err := a.Marshal(nil)
+		for _, f := range fs {
+			raw, err := f.Marshal(nil)
 			assert.NoError(t, err)
-			var au Feedback
-			_, err = au.Unmarshal(raw)
+			var fu Feedback
+			_, err = fu.Unmarshal(raw)
 			assert.NoError(t, err)
-			assert.Equal(t, au, a)
+			assert.Equal(t, fu, f)
 		}
 	})
 	t.Run("unmarshal safe", func(t *testing.T) {
-		for _, a := range fs {
-			raw, err := a.Marshal(nil)
+		for _, f := range fs {
+			raw, err := f.Marshal(nil)
 			assert.NoError(t, err)
-			var au Feedback
+			var fu Feedback
 			for i := 0; i < len(raw); i++ {
-				_, err = au.UnmarshalSafe(raw[:i])
+				_, err = fu.UnmarshalSafe(raw[:i])
 				assert.Error(t, err)
 			}
 		}
