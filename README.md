@@ -44,6 +44,8 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 |     |_ulid #domain
 |     |_usecase #domain aggregations
 |
+|_schemas #gencode original schemas
+|
 |_templates #example template files for tool
 |
 |_vendor #vendoring packages (dep)

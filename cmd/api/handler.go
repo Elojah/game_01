@@ -48,7 +48,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 
 	// #Unmarshal message.
 	msg := event.DTO{}
-	if _, err := msg.Unmarshal(raw); err != nil {
+	if _, err := msg.UnmarshalSafe(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unmarshalable").Msg("packet rejected")
 		return err
 	}
