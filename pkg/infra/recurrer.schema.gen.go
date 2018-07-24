@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -25,6 +26,7 @@ func (d *Recurrer) Size() (s uint64) {
 	s += 1
 	return
 }
+
 func (d *Recurrer) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -52,7 +54,31 @@ func (d *Recurrer) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+1], nil
 }
+
 func (d *Recurrer) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+	{
+		copy(d.EntityID[:], buf[i:])
+		i += 16
+	}
+	{
+		copy(d.TokenID[:], buf[i:])
+		i += 16
+	}
+	{
+		d.Action = QAction(0 | (uint8(buf[i]) << 0))
+	}
+	{
+		copy(d.Pool[:], buf[i+1:])
+		i += 16
+	}
+	return i + 1, nil
+}
+
+func (d *Recurrer) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 48+1 {
+		return 0, errors.New("invalid buffer")
+	}
 	i := uint64(0)
 	{
 		copy(d.EntityID[:], buf[i:])

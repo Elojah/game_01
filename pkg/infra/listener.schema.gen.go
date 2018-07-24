@@ -1,6 +1,7 @@
 package infra
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -48,6 +49,25 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 }
 
 func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	{
+		d.Action = QAction(0 | (uint8(buf[i]) << 0))
+	}
+	{
+		copy(d.Pool[:], buf[i+1:])
+		i += 16
+	}
+	return i + 1, nil
+}
+
+func (d *Listener) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 32+1 {
+		return 0, errors.New("invalid buffer")
+	}
 	i := uint64(0)
 	{
 		copy(d.ID[:], buf[i:])
