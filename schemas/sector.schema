@@ -4,10 +4,14 @@ struct Vec3 {
 	Z			float64
 }
 
+struct Position {
+	Coord		Vec3
+	SectorID	[16]byte
+}
+
 struct BondPoint {
 	ID			[16]byte
-	SectorID	[16]byte
-	Position	Vec3
+	Position	Position
 }
 
 struct S {

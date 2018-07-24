@@ -1,6 +1,7 @@
 package sector
 
 import (
+	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -17,13 +18,11 @@ func (d *BondPoint) Size() (s uint64) {
 		s += 16
 	}
 	{
-		s += 16
-	}
-	{
 		s += d.Position.Size()
 	}
 	return
 }
+
 func (d *BondPoint) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -39,10 +38,6 @@ func (d *BondPoint) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
-		copy(buf[i:], d.SectorID[:])
-		i += 16
-	}
-	{
 		nbuf, err := d.Position.Marshal(buf[i:])
 		if err != nil {
 			return nil, err
@@ -51,6 +46,7 @@ func (d *BondPoint) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i], nil
 }
+
 func (d *BondPoint) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -58,11 +54,26 @@ func (d *BondPoint) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	{
-		copy(d.SectorID[:], buf[i:])
+		ni, err := d.Position.Unmarshal(buf[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
+	}
+	return i + 0, nil
+}
+
+func (d *BondPoint) UnmarshalSafe(buf []byte) (uint64, error) {
+	if len(buf) < 16+24+1 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
 		i += 16
 	}
 	{
-		ni, err := d.Position.Unmarshal(buf[i:])
+		ni, err := d.Position.UnmarshalSafe(buf[i:])
 		if err != nil {
 			return 0, err
 		}
@@ -96,6 +107,7 @@ func (d *S) Size() (s uint64) {
 	}
 	return
 }
+
 func (d *S) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
@@ -141,6 +153,7 @@ func (d *S) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i], nil
 }
+
 func (d *S) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
@@ -175,6 +188,57 @@ func (d *S) Unmarshal(buf []byte) (uint64, error) {
 		for k0 := range d.BondPoints {
 			{
 				ni, err := d.BondPoints[k0].Unmarshal(buf[i:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+		}
+	}
+	return i + 0, nil
+}
+
+func (d *S) UnmarshalSafe(buf []byte) (uint64, error) {
+	lb := uint64(len(buf))
+	if lb < 16+24+1 {
+		return 0, errors.New("invalid buffer")
+	}
+	i := uint64(0)
+	{
+		copy(d.ID[:], buf[i:])
+		i += 16
+	}
+	{
+		ni, err := d.Dim.UnmarshalSafe(buf[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
+	}
+	{
+		l := uint64(0)
+		{
+			bs := uint8(7)
+			t := uint64(buf[i] & 0x7F)
+			for i < lb && buf[i]&0x80 == 0x80 {
+				i++
+				t |= uint64(buf[i]&0x7F) << bs
+				bs += 7
+			}
+			i++
+			l = t
+		}
+		if uint64(cap(d.BondPoints)) >= l {
+			d.BondPoints = d.BondPoints[:l]
+		} else {
+			d.BondPoints = make([]BondPoint, l)
+		}
+		for k0 := range d.BondPoints {
+			if i >= lb {
+				return 0, errors.New("invalid buffer")
+			}
+			{
+				ni, err := d.BondPoints[k0].UnmarshalSafe(buf[i:])
 				if err != nil {
 					return 0, err
 				}

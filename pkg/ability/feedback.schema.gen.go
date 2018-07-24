@@ -433,7 +433,7 @@ func (d *Feedback) UnmarshalSafe(buf []byte) (uint64, error) {
 		{
 			bs := uint8(7)
 			t := uint64(buf[i] & 0x7F)
-			for buf[i]&0x80 == 0x80 && i < lb {
+			for i < lb && buf[i]&0x80 == 0x80 {
 				i++
 				t |= uint64(buf[i]&0x7F) << bs
 				bs += 7
@@ -455,7 +455,7 @@ func (d *Feedback) UnmarshalSafe(buf []byte) (uint64, error) {
 				{
 					bs := uint8(7)
 					t := uint64(buf[i] & 0x7F)
-					for buf[i]&0x80 == 0x80 && i < lb {
+					for i < lb && buf[i]&0x80 == 0x80 {
 						i++
 						t |= uint64(buf[i]&0x7F) << bs
 						bs += 7

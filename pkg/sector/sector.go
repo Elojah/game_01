@@ -3,6 +3,7 @@ package sector
 import (
 	"math"
 
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -10,8 +11,7 @@ import (
 // BondPoint represents a connecting point to another sector.
 type BondPoint struct {
 	ID       ulid.ID
-	SectorID ulid.ID
-	Position geometry.Vec3
+	Position entity.Position
 }
 
 // S represents a cuboid in the world.
@@ -21,31 +21,31 @@ type S struct {
 	BondPoints []BondPoint
 }
 
-// Out returns if a position is still in the sector.
-func (s S) Out(position geometry.Vec3) bool {
-	return position.X < 0 ||
-		position.X > s.Dim.X ||
-		position.Y < 0 ||
-		position.Y > s.Dim.Y ||
-		position.Z < 0 ||
-		position.Z > s.Dim.Z
+// Out returns if a coord is still in the sector.
+func (s S) Out(coord geometry.Vec3) bool {
+	return coord.X < 0 ||
+		coord.X > s.Dim.X ||
+		coord.Y < 0 ||
+		coord.Y > s.Dim.Y ||
+		coord.Z < 0 ||
+		coord.Z > s.Dim.Z
 }
 
 // Adjacents returns ids of adjacent sectors.
 func (s S) Adjacents() map[ulid.ID]struct{} {
 	sectorIDs := make(map[ulid.ID]struct{})
 	for _, bp := range s.BondPoints {
-		sectorIDs[bp.SectorID] = struct{}{}
+		sectorIDs[bp.Position.SectorID] = struct{}{}
 	}
 	return sectorIDs
 }
 
 // ClosestBP returns the closest bond points in bps of position.
-func (s S) ClosestBP(position geometry.Vec3) BondPoint {
+func (s S) ClosestBP(coord geometry.Vec3) BondPoint {
 	min := math.MaxFloat64
 	var iMin int
 	for i, bp := range s.BondPoints {
-		dist := geometry.Segment(bp.Position, position)
+		dist := geometry.Segment(bp.Position.Coord, coord)
 		if dist < min {
 			min = dist
 			iMin = i
