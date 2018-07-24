@@ -54,6 +54,9 @@ func TestTokenMarshal(t *testing.T) {
 			_, err = au.Unmarshal(raw)
 			assert.NoError(t, err)
 			assert.Equal(t, au, token)
+			_, err = au.UnmarshalSafe(raw)
+			assert.NoError(t, err)
+			assert.Equal(t, au, token)
 		}
 	})
 	t.Run("unmarshal safe", func(t *testing.T) {

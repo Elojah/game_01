@@ -88,7 +88,7 @@ func (d *Move) UnmarshalSafe(buf []byte) (uint64, error) {
 		i += 16
 	}
 	{
-		ni, err := d.Position.Unmarshal(buf[i:])
+		ni, err := d.Position.UnmarshalSafe(buf[i:])
 		if err != nil {
 			return 0, err
 		}

@@ -62,6 +62,9 @@ func TestMarshalFeedback(t *testing.T) {
 			_, err = fu.Unmarshal(raw)
 			assert.NoError(t, err)
 			assert.Equal(t, fu, f)
+			_, err = fu.UnmarshalSafe(raw)
+			assert.NoError(t, err)
+			assert.Equal(t, fu, f)
 		}
 	})
 	t.Run("unmarshal safe", func(t *testing.T) {

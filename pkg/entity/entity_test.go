@@ -63,6 +63,9 @@ func TestMarshal(t *testing.T) {
 			_, err = eu.Unmarshal(raw)
 			assert.NoError(t, err)
 			assert.Equal(t, eu, e)
+			_, err = eu.UnmarshalSafe(raw)
+			assert.NoError(t, err)
+			assert.Equal(t, eu, e)
 		}
 	})
 
