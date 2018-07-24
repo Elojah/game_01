@@ -2,6 +2,7 @@ package redis
 
 import (
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -19,6 +20,6 @@ func (s *Service) PublishEvent(e event.E, id ulid.ID) error {
 }
 
 // SubscribeEvent implementation with redis pubsub.
-func (s *Service) SubscribeEvent(id ulid.ID) *event.Subscription {
-	return (*event.Subscription)(s.Subscribe(qeventKey + ulid.String(id)))
+func (s *Service) SubscribeEvent(id ulid.ID) *infra.Subscription {
+	return (*infra.Subscription)(s.Subscribe(qeventKey + ulid.String(id)))
 }

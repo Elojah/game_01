@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -27,7 +27,7 @@ type Recurrer struct {
 }
 
 // NewRecurrer returns a new recurrer which sends entity data associated to id to addr, tick times per second.
-func NewRecurrer(rec event.Recurrer, tick uint32, callback func(entity.E)) *Recurrer {
+func NewRecurrer(rec infra.Recurrer, tick uint32, callback func(entity.E)) *Recurrer {
 	return &Recurrer{
 		logger:   log.With().Str("recurrer", ulid.String(rec.TokenID)).Logger(),
 		id:       rec.TokenID,

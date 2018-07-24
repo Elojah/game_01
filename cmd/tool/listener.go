@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
@@ -25,7 +25,7 @@ func (h *handler) postListener(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var listeners []event.Listener
+	var listeners []infra.Listener
 	if err := decoder.Decode(&listeners); err != nil {
 		logger.Error().Err(err).Msg("invalid JSON")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -36,12 +36,12 @@ func (h *handler) postListener(w http.ResponseWriter, r *http.Request) {
 
 	for _, l := range listeners {
 		switch l.Action {
-		case event.Open:
+		case infra.Open:
 			if _, err := h.L.New(l.ID); err != nil {
 				logger.Error().Err(err).Str("listener", ulid.String(l.ID)).Msg("failed to set listener")
 				return
 			}
-		case event.Close:
+		case infra.Close:
 			if err := h.L.Delete(l.ID); err != nil {
 				logger.Error().Err(err).Str("listener", ulid.String(l.ID)).Msg("failed to set listener")
 				return

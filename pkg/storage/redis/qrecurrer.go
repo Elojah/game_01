@@ -1,7 +1,7 @@
 package redis
 
 import (
-	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -10,7 +10,7 @@ const (
 )
 
 // PublishRecurrer implementation with redis pubsub.
-func (s *Service) PublishRecurrer(r event.Recurrer, id ulid.ID) error {
+func (s *Service) PublishRecurrer(r infra.Recurrer, id ulid.ID) error {
 	raw, err := r.Marshal(nil)
 	if err != nil {
 		return err
@@ -19,6 +19,6 @@ func (s *Service) PublishRecurrer(r event.Recurrer, id ulid.ID) error {
 }
 
 // SubscribeRecurrer implementation with redis pubsub.
-func (s *Service) SubscribeRecurrer(id ulid.ID) *event.Subscription {
-	return (*event.Subscription)(s.Subscribe(qrecurrerKey + ulid.String(id)))
+func (s *Service) SubscribeRecurrer(id ulid.ID) *infra.Subscription {
+	return (*infra.Subscription)(s.Subscribe(qrecurrerKey + ulid.String(id)))
 }

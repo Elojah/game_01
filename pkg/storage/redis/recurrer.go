@@ -3,7 +3,7 @@ package redis
 import (
 	"github.com/go-redis/redis"
 
-	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/storage"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -13,24 +13,24 @@ const (
 )
 
 // GetRecurrer redis implementation.
-func (s *Service) GetRecurrer(subset event.RecurrerSubset) (event.Recurrer, error) {
+func (s *Service) GetRecurrer(subset infra.RecurrerSubset) (infra.Recurrer, error) {
 	val, err := s.Get(recurrerKey + ulid.String(subset.TokenID)).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return event.Recurrer{}, err
+			return infra.Recurrer{}, err
 		}
-		return event.Recurrer{}, storage.ErrNotFound
+		return infra.Recurrer{}, storage.ErrNotFound
 	}
 
-	var recurrer event.Recurrer
+	var recurrer infra.Recurrer
 	if _, err := recurrer.Unmarshal([]byte(val)); err != nil {
-		return event.Recurrer{}, err
+		return infra.Recurrer{}, err
 	}
 	return recurrer, nil
 }
 
 // SetRecurrer redis implementation.
-func (s *Service) SetRecurrer(recurrer event.Recurrer) error {
+func (s *Service) SetRecurrer(recurrer infra.Recurrer) error {
 	raw, err := recurrer.Marshal(nil)
 	if err != nil {
 		return err
@@ -39,6 +39,6 @@ func (s *Service) SetRecurrer(recurrer event.Recurrer) error {
 }
 
 // DelRecurrer deletes recurrer in redis.
-func (s *Service) DelRecurrer(subset event.RecurrerSubset) error {
+func (s *Service) DelRecurrer(subset infra.RecurrerSubset) error {
 	return s.Del(recurrerKey + ulid.String(subset.TokenID)).Err()
 }

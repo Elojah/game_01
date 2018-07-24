@@ -5,6 +5,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -133,7 +134,7 @@ func (s *Sequencer) Run() {
 }
 
 // Handler is the consumer function to subscribe for event ordering.
-func (s *Sequencer) Handler(msg *event.Message) {
+func (s *Sequencer) Handler(msg *infra.Message) {
 	var e event.E
 	if _, err := e.Unmarshal([]byte(msg.Payload)); err != nil {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")

@@ -18,7 +18,7 @@ type app struct {
 	EntityMapper entity.Mapper
 
 	event.QMapper
-	event.QRecurrerMapper
+	infra.QRecurrerMapper
 
 	infra.SyncMapper
 
@@ -29,7 +29,7 @@ type app struct {
 
 	id ulid.ID
 
-	sub *event.Subscription
+	sub *infra.Subscription
 
 	port      uint
 	tickRate  uint32
@@ -71,10 +71,10 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) AddRecurrer(msg *event.Message) {
+func (a *app) AddRecurrer(msg *infra.Message) {
 	logger := log.With().Str("sync", ulid.String(a.id)).Logger()
 
-	var recurrer event.Recurrer
+	var recurrer infra.Recurrer
 	if _, err := recurrer.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal recurrer")
 		return
@@ -82,7 +82,7 @@ func (a *app) AddRecurrer(msg *event.Message) {
 
 	logger = logger.With().Str("recurrer", ulid.String(recurrer.TokenID)).Logger()
 
-	if recurrer.Action == event.Close {
+	if recurrer.Action == infra.Close {
 		rec := a.recurrers[recurrer.TokenID]
 		if rec != nil {
 			rec.Close()

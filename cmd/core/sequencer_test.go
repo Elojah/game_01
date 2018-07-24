@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/mocks"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -89,7 +90,7 @@ func TestSequencer(t *testing.T) {
 
 		raw, err := eset[0].Marshal(nil)
 		assert.NoError(t, err)
-		msg := &event.Message{Payload: string(raw)}
+		msg := &infra.Message{Payload: string(raw)}
 		seq.Handler(msg)
 		wg.Wait()
 		seq.Close()
@@ -122,12 +123,12 @@ func TestSequencer(t *testing.T) {
 
 		raw1, err := eset[1].Marshal(nil)
 		assert.NoError(t, err)
-		msg1 := &event.Message{Payload: string(raw1)}
+		msg1 := &infra.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
 		raw0, err := eset[0].Marshal(nil)
 		assert.NoError(t, err)
-		msg0 := &event.Message{Payload: string(raw0)}
+		msg0 := &infra.Message{Payload: string(raw0)}
 		seq.Handler(msg0)
 
 		wg.Wait()
@@ -166,12 +167,12 @@ func TestSequencer(t *testing.T) {
 
 		raw1, err := eset[1].Marshal(nil)
 		assert.NoError(t, err)
-		msg1 := &event.Message{Payload: string(raw1)}
+		msg1 := &infra.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
 		raw2, err := eset[2].Marshal(nil)
 		assert.NoError(t, err)
-		msg2 := &event.Message{Payload: string(raw2)}
+		msg2 := &infra.Message{Payload: string(raw2)}
 		seq.Handler(msg2)
 
 		wg.Wait()
@@ -211,14 +212,14 @@ func TestSequencer(t *testing.T) {
 
 		raw1, err := eset[1].Marshal(nil)
 		assert.NoError(t, err)
-		msg1 := &event.Message{Payload: string(raw1)}
+		msg1 := &infra.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
 		time.Sleep(10*time.Millisecond + 1*time.Nanosecond)
 
 		raw2, err := eset[2].Marshal(nil)
 		assert.NoError(t, err)
-		msg2 := &event.Message{Payload: string(raw2)}
+		msg2 := &infra.Message{Payload: string(raw2)}
 		seq.Handler(msg2)
 
 		wg.Wait()

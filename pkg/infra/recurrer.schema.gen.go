@@ -1,4 +1,4 @@
-package event
+package infra
 
 import (
 	"io"
@@ -12,7 +12,10 @@ var (
 	_ = time.Now()
 )
 
-func (d *Listener) Size() (s uint64) {
+func (d *Recurrer) Size() (s uint64) {
+	{
+		s += 16
+	}
 	{
 		s += 16
 	}
@@ -22,7 +25,7 @@ func (d *Listener) Size() (s uint64) {
 	s += 1
 	return
 }
-func (d *Listener) Marshal(buf []byte) ([]byte, error) {
+func (d *Recurrer) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -33,7 +36,11 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 	}
 	i := uint64(0)
 	{
-		copy(buf[i:], d.ID[:])
+		copy(buf[i:], d.EntityID[:])
+		i += 16
+	}
+	{
+		copy(buf[i:], d.TokenID[:])
 		i += 16
 	}
 	{
@@ -45,10 +52,14 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 	}
 	return buf[:i+1], nil
 }
-func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
+func (d *Recurrer) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.EntityID[:], buf[i:])
+		i += 16
+	}
+	{
+		copy(d.TokenID[:], buf[i:])
 		i += 16
 	}
 	{

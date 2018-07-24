@@ -22,7 +22,7 @@ type app struct {
 	EntityTemplateMapper entity.TemplateMapper
 	EntityMapper         entity.Mapper
 
-	event.QListenerMapper
+	infra.QListenerMapper
 	event.QMapper
 	EventMapper event.Mapper
 
@@ -35,7 +35,7 @@ type app struct {
 
 	id ulid.ID
 
-	subs map[ulid.ID]*event.Subscription
+	subs map[ulid.ID]*infra.Subscription
 	seqs map[ulid.ID]*Sequencer
 
 	limit         int
@@ -53,9 +53,9 @@ func (a *app) Dial(c Config) error {
 func (a *app) Run() {
 	logger := log.With().Str("core", ulid.String(a.id)).Logger()
 
-	a.subs = make(map[ulid.ID]*event.Subscription)
+	a.subs = make(map[ulid.ID]*infra.Subscription)
 	a.subs[a.id] = a.SubscribeListener(a.id)
-	go func(sub *event.Subscription) {
+	go func(sub *infra.Subscription) {
 		for msg := range sub.Channel() {
 			go a.AddListener(msg)
 		}
@@ -78,10 +78,10 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) AddListener(msg *event.Message) {
+func (a *app) AddListener(msg *infra.Message) {
 	logger := log.With().Str("core", ulid.String(a.id)).Logger()
 
-	var listener event.Listener
+	var listener infra.Listener
 	if _, err := listener.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal listener")
 		return
@@ -89,20 +89,20 @@ func (a *app) AddListener(msg *event.Message) {
 	logger = logger.With().Str("listener", ulid.String(listener.ID)).Uint8("action", uint8(listener.Action)).Logger()
 
 	switch listener.Action {
-	case event.Open:
+	case infra.Open:
 		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventMapper, a.Apply)
 		a.seqs[listener.ID].Run()
 
 		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)
 
-		go func(seq *Sequencer, sub *event.Subscription) {
+		go func(seq *Sequencer, sub *infra.Subscription) {
 			for msg := range sub.Channel() {
 				seq.Handler(msg)
 			}
 		}(a.seqs[listener.ID], a.subs[listener.ID])
 
 		logger.Info().Msg("listening")
-	case event.Close:
+	case infra.Close:
 		seq, ok := a.seqs[listener.ID]
 		if !ok {
 			logger.Error().Msg("listener not found")

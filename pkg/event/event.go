@@ -3,17 +3,8 @@ package event
 import (
 	"time"
 
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
-)
-
-// QAction is an action required for a queue.
-type QAction uint8
-
-const (
-	// Open requires the queue to open.
-	Open QAction = 0
-	// Close requires the queue to close.
-	Close QAction = 1
 )
 
 // E is a game event triggered by an entity or mechanic.
@@ -27,7 +18,7 @@ type E struct {
 // QMapper must be implemented by a queue.
 type QMapper interface {
 	PublishEvent(E, ulid.ID) error
-	SubscribeEvent(ulid.ID) *Subscription
+	SubscribeEvent(ulid.ID) *infra.Subscription
 }
 
 // Mapper wraps action interactions.

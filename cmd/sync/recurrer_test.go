@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/mocks"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -58,7 +58,7 @@ func TestRecurrer(t *testing.T) {
 			assert.True(t, entities[0].Equal(e))
 			wg.Done()
 		}
-		r := event.Recurrer{EntityID: ulid.NewID(), TokenID: ulid.NewID()}
+		r := infra.Recurrer{EntityID: ulid.NewID(), TokenID: ulid.NewID()}
 		rec := NewRecurrer(r, 10, callback)
 		rec.EntityMapper = entityMock
 		rec.SectorMapper = sectorMock

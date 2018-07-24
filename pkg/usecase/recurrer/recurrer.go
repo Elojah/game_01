@@ -3,51 +3,50 @@ package recurrer
 import (
 	"github.com/pkg/errors"
 
-	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
 // R wraps usecases for recurrer object.
 type R struct {
-	event.QRecurrerMapper
-	event.RecurrerMapper
+	infra.QRecurrerMapper
+	infra.RecurrerMapper
 	infra.SyncMapper
 }
 
 // New creates a new recurrer on a random sync for id id.
-func (r *R) New(entityID ulid.ID, tokenID ulid.ID) (event.Recurrer, error) {
+func (r *R) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer, error) {
 
 	sync, err := r.GetRandomSync(infra.SyncSubset{})
 	if err != nil {
-		return event.Recurrer{}, errors.Wrap(err, "get random sync")
+		return infra.Recurrer{}, errors.Wrap(err, "get random sync")
 	}
-	recurrer := event.Recurrer{
+	recurrer := infra.Recurrer{
 		EntityID: entityID,
 		TokenID:  tokenID,
-		Action:   event.Open,
+		Action:   infra.Open,
 		Pool:     sync.ID,
 	}
 	if err := r.PublishRecurrer(recurrer, sync.ID); err != nil {
-		return event.Recurrer{}, errors.Wrapf(err, "open recurrer %s on pool %s", ulid.String(entityID), ulid.String(sync.ID))
+		return infra.Recurrer{}, errors.Wrapf(err, "open recurrer %s on pool %s", ulid.String(entityID), ulid.String(sync.ID))
 	}
 	if err := r.SetRecurrer(recurrer); err != nil {
-		return event.Recurrer{}, errors.Wrapf(err, "set recurrer", ulid.String(recurrer.EntityID))
+		return infra.Recurrer{}, errors.Wrapf(err, "set recurrer", ulid.String(recurrer.EntityID))
 	}
 	return recurrer, nil
 }
 
 // Delete deletes a recurrer id on any pool.
 func (r *R) Delete(id ulid.ID) error {
-	recurrer, err := r.GetRecurrer(event.RecurrerSubset{TokenID: id})
+	recurrer, err := r.GetRecurrer(infra.RecurrerSubset{TokenID: id})
 	if err != nil {
 		return errors.Wrapf(err, "get recurrer %s", ulid.String(id))
 	}
-	recurrer.Action = event.Close
+	recurrer.Action = infra.Close
 	if err := r.PublishRecurrer(recurrer, recurrer.Pool); err != nil {
 		return errors.Wrapf(err, "close recurrer %s on pool %s", ulid.String(recurrer.EntityID), ulid.String(recurrer.Pool))
 	}
-	if err := r.DelRecurrer(event.RecurrerSubset{TokenID: recurrer.TokenID}); err != nil {
+	if err := r.DelRecurrer(infra.RecurrerSubset{TokenID: recurrer.TokenID}); err != nil {
 		return errors.Wrapf(err, "delete recurrer for token %s", ulid.String(recurrer.TokenID))
 	}
 	return nil
