@@ -1,4 +1,7 @@
 # GAME_01
+
+WORK IN PROGRESS
+
 > GAME_01 is a multi services scalable MMORPG server
 
 GAME_01 is an UDP client/server with its own ACK protocol. Client writes user action and send them to API while receiving world data from sync. Core establish world rules and events order.
