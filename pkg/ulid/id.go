@@ -43,3 +43,9 @@ func Compare(lhs ID, rhs ID) int {
 func IsZero(id ID) bool {
 	return ulid.ULID(id).Time() == 0
 }
+
+/*
+func (id *ID) UnmarshalJSON(raw []byte) error {
+	return nil
+}
+*/
