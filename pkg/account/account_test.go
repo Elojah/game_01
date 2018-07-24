@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMarshal(t *testing.T) {
+func TestMarshalAccount(t *testing.T) {
 	as := []A{
 		A{},
 		A{

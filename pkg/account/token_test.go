@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTokenMarshal(t *testing.T) {
+func TestMarshalToken(t *testing.T) {
 	addr, _ := net.ResolveUDPAddr("udp", "127.0.0.1:3400")
 	tokens := []Token{
 		Token{},

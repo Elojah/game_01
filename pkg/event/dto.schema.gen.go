@@ -203,7 +203,7 @@ func (d *DTO) UnmarshalSafe(buf []byte) (uint64, error) {
 			i++
 			v = t
 		}
-		if i+8 >= lb {
+		if (v == 1 || v == 2) && i+8 >= lb {
 			return 0, errors.New("invalid buffer")
 		}
 		switch v {

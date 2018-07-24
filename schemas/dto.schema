@@ -22,19 +22,12 @@ struct Cast {
 	Position  Position
 }
 
-struct Feedback {
-	ID     [16]byte
-	Source [16]byte
-	Target [16]byte
-}
-
-struct E {
+struct DTO {
 	ID			[16]byte
 	Token		[16]byte
 	TS			int64
 	Action union {
 		Move
 		Cast
-		Feedback
 	}
 }

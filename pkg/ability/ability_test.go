@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMarshal(t *testing.T) {
+func TestMarshalAbility(t *testing.T) {
 	as := []A{
 		// This one fails, gencode transforms empty array into nil.
 		// A{
