@@ -82,7 +82,7 @@ func (d *Vec3) Unmarshal(buf []byte) (uint64, error) {
 }
 
 func (d *Vec3) UnmarshalSafe(buf []byte) (uint64, error) {
-	if len(buf) < 24+1 {
+	if len(buf) < 24 {
 		return 0, errors.New("invalid buffer")
 	}
 	i := uint64(0)
