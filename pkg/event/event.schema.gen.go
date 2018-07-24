@@ -230,14 +230,14 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 			i++
 			v = t
 		}
-		if i+8 >= lb {
+		if (v == 1 || v == 2 || v == 3) && i+8 >= lb {
 			return 0, errors.New("invalid buffer")
 		}
 		switch v {
 		case 0 + 1:
 			var tt Move
 			{
-				ni, err := tt.Unmarshal(buf[i+8:])
+				ni, err := tt.UnmarshalSafe(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
@@ -247,7 +247,7 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 		case 1 + 1:
 			var tt Cast
 			{
-				ni, err := tt.Unmarshal(buf[i+8:])
+				ni, err := tt.UnmarshalSafe(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
@@ -257,7 +257,7 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 		case 2 + 1:
 			var tt Feedback
 			{
-				ni, err := tt.Unmarshal(buf[i+8:])
+				ni, err := tt.UnmarshalSafe(buf[i+8:])
 				if err != nil {
 					return 0, err
 				}
