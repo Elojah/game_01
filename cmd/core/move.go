@@ -68,12 +68,23 @@ func (a *app) MoveTarget(e event.E) error {
 		return errors.Wrapf(err, "get entity %s at max ts %s", ulid.String(move.Target), e.TS.UnixNano())
 	}
 
-	// #Check if target has move in correct boundaries in same sector.
+	// #Retrieve current sector
+	s, err := a.SectorMapper.GetSector(sector.Subset{ID: target.Position.SectorID})
+	if err != nil {
+		return errors.Wrapf(err, "get sector %s", ulid.String(target.Position.SectorID))
+	}
+
 	if ulid.Compare(target.Position.SectorID, move.Position.SectorID) == 0 {
-		if geometry.Segment(target.Position.Coord, move.Position.Coord) > a.moveTolerance {
+
+		// #Check if target has moved in correct boundaries in same sector.
+		if s.Out(target.Position.Coord) {
 			return errors.Wrapf(
 				account.ErrInvalidAction,
-				"check move from (%f , %f , %f) to (%f , %f , %f) for entity %s",
+				"check in sector %s (%f , %f , %f) from (%f , %f , %f) to (%f , %f , %f) for entity %s",
+				ulid.String(s.ID),
+				s.Dim.X,
+				s.Dim.Y,
+				s.Dim.Z,
 				target.Position.Coord.X,
 				target.Position.Coord.Y,
 				target.Position.Coord.Z,
@@ -83,24 +94,31 @@ func (a *app) MoveTarget(e event.E) error {
 				ulid.String(target.ID),
 			)
 		}
+
+		// #Check if target has moved at a tolerable distance in same sector.
+		if geometry.Segment(target.Position.Coord, move.Position.Coord) > a.moveTolerance {
+			return errors.Wrapf(
+				account.ErrInvalidAction,
+				"check move tolerance %f from (%f , %f , %f) to (%f , %f , %f) for entity %s",
+				a.moveTolerance,
+				target.Position.Coord.X,
+				target.Position.Coord.Y,
+				target.Position.Coord.Z,
+				move.Position.Coord.X,
+				move.Position.Coord.Y,
+				move.Position.Coord.Z,
+				ulid.String(target.ID),
+			)
+		}
+
+		// #Move target
+		target.Move(move.Position.Coord)
+
 	} else {
+
 		// TODO
 		return errors.New("not implemented")
-	}
 
-	// #Retrieve current sector
-	s, err := a.SectorMapper.GetSector(sector.Subset{ID: target.Position.SectorID})
-	if err != nil {
-		return errors.Wrapf(err, "get sector %s", ulid.String(target.Position.SectorID))
-	}
-
-	// #Move target
-	target.Move(move.Position.Coord)
-
-	// If target is out of sector, move to next
-	if s.Out(target.Position.Coord) {
-		// TODO
-		return errors.New("not implemented")
 		// bp := s.ClosestBP(target.Position.Coord)
 		// nextSector, err := a.SectorMapper.GetSector(sector.Subset{ID: bp.SectorID})
 		// if err != nil {
@@ -115,6 +133,7 @@ func (a *app) MoveTarget(e event.E) error {
 		// if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, s.ID); err != nil {
 		// 	return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
 		// }
+
 	}
 
 	// #Write new target state.
