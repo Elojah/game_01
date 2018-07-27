@@ -119,21 +119,15 @@ func (a *app) MoveTarget(e event.E) error {
 		// TODO
 		return errors.New("not implemented")
 
-		bp := s.Closest(target.Position.Coord)
-		// nextSector, err := a.SectorMapper.GetSector(sector.Subset{ID: bp.SectorID})
-		// if err != nil {
-		// 	return errors.Wrapf(err, "get closest sector %s", ulid.String(bp.SectorID))
-		// }
-		// oppBP := nextSector.FindBP(bp.ID)
-		// target.Position.SectorID = nextSector.ID
-		// target.Position.Coord.MoveReference(bp.Position, oppBP.Position)
-		// if err := a.EntitiesMapper.AddEntityToSector(target.ID, nextSector.ID); err != nil {
-		// 	return errors.Wrapf(err, "add entity %s to sector %s", ulid.String(target.ID), ulid.String(nextSector.ID))
-		// }
-		// if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, s.ID); err != nil {
-		// 	return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
-		// }
-
+		con := s.Closest(target.Position.Coord)
+		target.Position.Coord.MoveReference(con.Coord, con.External.Coord)
+		if err := a.EntitiesMapper.AddEntityToSector(target.ID, con.External.SectorID); err != nil {
+			return errors.Wrapf(err, "add entity %s to sector %s", ulid.String(target.ID), ulid.String(con.External.SectorID))
+		}
+		if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, target.Position.SectorID); err != nil {
+			return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
+		}
+		target.Position.SectorID = con.External.SectorID
 	}
 
 	// #Write new target state.
