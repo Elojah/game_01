@@ -27,6 +27,18 @@ func (s S) Adjacents() []ulid.ID {
 	return ids
 }
 
+// ClosestConnection the closest connection from coord.
+func (s S) ClosestConnection(coord geometry.Vec3) Connection {
+	min := s.Dim.X + s.Dim.Y + s.Dim.Z
+	iMin := 0
+	for i, co := range s.Connections {
+		if geometry.Segment(coord, co.Coord) < min {
+			iMin = i
+		}
+	}
+	return s.Connections[iMin]
+}
+
 // Out returns if a coord is still in the sector.
 func (s S) Out(coord geometry.Vec3) bool {
 	return coord.X < 0 ||

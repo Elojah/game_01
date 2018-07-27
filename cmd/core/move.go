@@ -119,7 +119,7 @@ func (a *app) MoveTarget(e event.E) error {
 		// TODO
 		return errors.New("not implemented")
 
-		// bp := s.ClosestBP(target.Position.Coord)
+		bp := s.Closest(target.Position.Coord)
 		// nextSector, err := a.SectorMapper.GetSector(sector.Subset{ID: bp.SectorID})
 		// if err != nil {
 		// 	return errors.Wrapf(err, "get closest sector %s", ulid.String(bp.SectorID))
