@@ -51,7 +51,7 @@ func (a *app) Dial(c Config) error {
 }
 
 func (a *app) Run() {
-	logger := log.With().Str("core", ulid.String(a.id)).Logger()
+	logger := log.With().Str("core", a.id.String()).Logger()
 
 	a.subs = make(map[ulid.ID]*infra.Subscription)
 	a.subs[a.id] = a.SubscribeListener(a.id)
@@ -79,14 +79,14 @@ func (a *app) Close() {
 }
 
 func (a *app) AddListener(msg *infra.Message) {
-	logger := log.With().Str("core", ulid.String(a.id)).Logger()
+	logger := log.With().Str("core", a.id.String()).Logger()
 
 	var listener infra.Listener
 	if _, err := listener.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal listener")
 		return
 	}
-	logger = logger.With().Str("listener", ulid.String(listener.ID)).Uint8("action", uint8(listener.Action)).Logger()
+	logger = logger.With().Str("listener", listener.ID.String()).Uint8("action", uint8(listener.Action)).Logger()
 
 	switch listener.Action {
 	case infra.Open:
@@ -125,8 +125,8 @@ func (a *app) AddListener(msg *infra.Message) {
 
 func (a *app) Apply(id ulid.ID, e event.E) {
 	logger := log.With().
-		Str("core", ulid.String(a.id)).
-		Str("listener", ulid.String(id)).
+		Str("core", a.id.String()).
+		Str("listener", id.String()).
 		Int64("ts", e.TS.UnixNano()).
 		Str("type", event.String(e.Action)).
 		Logger()

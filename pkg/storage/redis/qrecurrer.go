@@ -15,10 +15,10 @@ func (s *Service) PublishRecurrer(r infra.Recurrer, id ulid.ID) error {
 	if err != nil {
 		return err
 	}
-	return s.Publish(qrecurrerKey+ulid.String(id), raw).Err()
+	return s.Publish(qrecurrerKey+id.String(), raw).Err()
 }
 
 // SubscribeRecurrer implementation with redis pubsub.
 func (s *Service) SubscribeRecurrer(id ulid.ID) *infra.Subscription {
-	return (*infra.Subscription)(s.Subscribe(qrecurrerKey + ulid.String(id)))
+	return (*infra.Subscription)(s.Subscribe(qrecurrerKey + id.String()))
 }

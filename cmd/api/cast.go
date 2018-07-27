@@ -37,20 +37,20 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		},
 	}
 
-	logger = logger.With().Str("event", ulid.String(e.ID)).Logger()
+	logger = logger.With().Str("event", e.ID.String()).Logger()
 
 	go func() {
 		if err := h.PublishEvent(e, source); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-		logger.Info().Str("source", ulid.String(source)).Msg("send event")
+		logger.Info().Str("source", source.String()).Msg("send event")
 	}()
 	for _, target := range targets {
 		go func(target ulid.ID) {
 			if err := h.PublishEvent(e, target); err != nil {
 				logger.Error().Err(err).Msg("event rejected")
 			}
-			logger.Info().Str("target", ulid.String(target)).Msg("send event")
+			logger.Info().Str("target", target.String()).Msg("send event")
 		}(target)
 	}
 	return nil

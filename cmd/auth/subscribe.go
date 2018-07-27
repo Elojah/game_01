@@ -38,7 +38,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	a := ac.Domain()
 	a.ID = ulid.NewID()
 
-	logger = logger.With().Str("account", ulid.String(a.ID)).Logger()
+	logger = logger.With().Str("account", a.ID.String()).Logger()
 
 	// #Check username is unique
 	_, err := h.AccountMapper.GetAccount(account.Subset{

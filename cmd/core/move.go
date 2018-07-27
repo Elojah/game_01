@@ -15,10 +15,10 @@ func (a *app) Move(id ulid.ID, e event.E) error {
 
 	move := e.Action.(event.Move)
 
-	if ulid.Compare(id, move.Source) == 0 {
+	if id.Compare(move.Source) == 0 {
 		return a.MoveSource(e)
 	}
-	if ulid.Compare(id, move.Target) == 0 {
+	if id.Compare(move.Target) == 0 {
 		return a.MoveTarget(e)
 	}
 	return nil
@@ -38,50 +38,50 @@ func (a *app) MoveTarget(e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
-		Source: ulid.String(e.Source),
-		Target: ulid.String(move.Source),
+		Source: e.Source.String(),
+		Target: move.Source.String(),
 	})
 	if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", ulid.String(e.Source), ulid.String(move.Source))
+		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", ulid.String(e.Source), ulid.String(move.Source))
+		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 
 	// #Check permission source/target if source != target.
 	if move.Source != move.Target {
 		permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
-			Source: ulid.String(move.Source),
-			Target: ulid.String(move.Target),
+			Source: move.Source.String(),
+			Target: move.Target.String(),
 		})
 		if err == storage.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", ulid.String(move.Source), ulid.String(move.Target))
+			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), move.Target.String())
 		}
 		if err != nil {
-			return errors.Wrapf(err, "get permission entity %s for %s", ulid.String(move.Source), ulid.String(move.Target))
+			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), move.Target.String())
 		}
 	}
 
 	// #Retrieve previous state target.
 	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: move.Target, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", ulid.String(move.Target), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %s", move.Target.String(), e.TS.UnixNano())
 	}
 
 	// #Retrieve current sector
 	s, err := a.SectorMapper.GetSector(sector.Subset{ID: target.Position.SectorID})
 	if err != nil {
-		return errors.Wrapf(err, "get sector %s", ulid.String(target.Position.SectorID))
+		return errors.Wrapf(err, "get sector %s", target.Position.SectorID.String())
 	}
 
-	if ulid.Compare(target.Position.SectorID, move.Position.SectorID) == 0 {
+	if target.Position.SectorID.Compare(move.Position.SectorID) == 0 {
 
 		// #Check if target has moved in correct boundaries in same sector.
 		if s.Out(target.Position.Coord) {
 			return errors.Wrapf(
 				account.ErrInvalidAction,
 				"check in sector %s (%f , %f , %f) from (%f , %f , %f) to (%f , %f , %f) for entity %s",
-				ulid.String(s.ID),
+				s.ID.String(),
 				s.Dim.X,
 				s.Dim.Y,
 				s.Dim.Z,
@@ -91,7 +91,7 @@ func (a *app) MoveTarget(e event.E) error {
 				move.Position.Coord.X,
 				move.Position.Coord.Y,
 				move.Position.Coord.Z,
-				ulid.String(target.ID),
+				target.ID.String(),
 			)
 		}
 
@@ -107,7 +107,7 @@ func (a *app) MoveTarget(e event.E) error {
 				move.Position.Coord.X,
 				move.Position.Coord.Y,
 				move.Position.Coord.Z,
-				ulid.String(target.ID),
+				target.ID.String(),
 			)
 		}
 
@@ -117,17 +117,17 @@ func (a *app) MoveTarget(e event.E) error {
 	} else {
 
 		// #Find closest connection point for current out coord.
-		con := s.Closest(target.Position.Coord)
+		con := s.ClosestConnection(target.Position.Coord)
 
 		// #Move coordinates to new reference.
 		target.Position.Coord.MoveReference(con.Coord, con.External.Coord)
 
 		// #Add entity to new sector and remove from previous.
 		if err := a.EntitiesMapper.AddEntityToSector(target.ID, con.External.SectorID); err != nil {
-			return errors.Wrapf(err, "add entity %s to sector %s", ulid.String(target.ID), ulid.String(con.External.SectorID))
+			return errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), con.External.SectorID.String())
 		}
 		if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, target.Position.SectorID); err != nil {
-			return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
+			return errors.Wrapf(err, "remove entity %s from sector %s", target.ID.String(), s.ID.String())
 		}
 
 		// #Change entity SectorID.
@@ -135,5 +135,5 @@ func (a *app) MoveTarget(e event.E) error {
 	}
 
 	// #Write new target state.
-	return errors.Wrapf(a.EntityMapper.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", ulid.String(target.ID), e.TS.UnixNano())
+	return errors.Wrapf(a.EntityMapper.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", target.ID.String(), e.TS.UnixNano())
 }

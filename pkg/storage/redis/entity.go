@@ -7,7 +7,6 @@ import (
 
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/storage"
-	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -21,7 +20,7 @@ func (s *Service) SetEntity(e entity.E, ts int64) error {
 		return err
 	}
 	return s.ZAddNX(
-		entityKey+ulid.String(e.ID),
+		entityKey+e.ID.String(),
 		redis.Z{
 			Score:  float64(ts),
 			Member: raw,
@@ -32,7 +31,7 @@ func (s *Service) SetEntity(e entity.E, ts int64) error {
 // GetEntity retrieves entity in Redis using ZRangeWithScores.
 func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 	cmd := s.ZRevRangeByScore(
-		entityKey+ulid.String(subset.ID),
+		entityKey+subset.ID.String(),
 		redis.ZRangeBy{
 			Count: 1,
 			Min:   "-inf",
@@ -55,5 +54,5 @@ func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 
 // DelEntity deletes entity in redis.
 func (s *Service) DelEntity(subset entity.Subset) error {
-	return s.Del(entityKey + ulid.String(subset.ID)).Err()
+	return s.Del(entityKey + subset.ID.String()).Err()
 }

@@ -22,7 +22,7 @@ func (l *L) New(id ulid.ID) (infra.Listener, error) {
 	}
 	listener := infra.Listener{ID: id, Action: infra.Open, Pool: core.ID}
 	if err := l.PublishListener(listener, core.ID); err != nil {
-		return infra.Listener{}, errors.Wrapf(err, "open listener %s on core %s", ulid.String(listener.ID), ulid.String(core.ID))
+		return infra.Listener{}, errors.Wrapf(err, "open listener %s on core %s", listener.ID.String(), core.ID.String())
 	}
 	if err := l.SetListener(listener); err != nil {
 		return infra.Listener{}, errors.Wrapf(err, "set listener %s", listener.ID)
@@ -34,14 +34,14 @@ func (l *L) New(id ulid.ID) (infra.Listener, error) {
 func (l *L) Delete(id ulid.ID) error {
 	listener, err := l.GetListener(infra.ListenerSubset{ID: id})
 	if err != nil {
-		return errors.Wrapf(err, "get listener %s", ulid.String(id))
+		return errors.Wrapf(err, "get listener %s", id.String())
 	}
 	listener.Action = infra.Close
 	if err := l.PublishListener(listener, listener.Pool); err != nil {
-		return errors.Wrapf(err, "close listener %s on pool %s", ulid.String(listener.ID), ulid.String(listener.Pool))
+		return errors.Wrapf(err, "close listener %s on pool %s", listener.ID.String(), listener.Pool.String())
 	}
 	if err := l.DelListener(infra.ListenerSubset{ID: listener.ID}); err != nil {
-		return errors.Wrapf(err, "delete listener %s", ulid.String(listener.ID))
+		return errors.Wrapf(err, "delete listener %s", listener.ID.String())
 	}
 	return nil
 }

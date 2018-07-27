@@ -15,10 +15,10 @@ func (s *Service) PublishListener(l infra.Listener, id ulid.ID) error {
 	if err != nil {
 		return err
 	}
-	return s.Publish(qlistenerKey+ulid.String(id), raw).Err()
+	return s.Publish(qlistenerKey+id.String(), raw).Err()
 }
 
 // SubscribeListener implementation with redis pubsub.
 func (s *Service) SubscribeListener(id ulid.ID) *infra.Subscription {
-	return (*infra.Subscription)(s.Subscribe(qlistenerKey + ulid.String(id)))
+	return (*infra.Subscription)(s.Subscribe(qlistenerKey + id.String()))
 }

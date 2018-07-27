@@ -4,6 +4,8 @@ import (
 	"io"
 	"time"
 	"unsafe"
+
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 var (
@@ -114,7 +116,7 @@ func (d *Entities) Unmarshal(buf []byte) (uint64, error) {
 		if uint64(cap(d.EntityIDs)) >= l {
 			d.EntityIDs = d.EntityIDs[:l]
 		} else {
-			d.EntityIDs = make([][16]byte, l)
+			d.EntityIDs = make([]ulid.ID, l)
 		}
 		for k0 := range d.EntityIDs {
 
@@ -165,7 +167,7 @@ func (d *Entities) UnmarshalSafe(buf []byte) (uint64, error) {
 		if uint64(cap(d.EntityIDs)) >= l {
 			d.EntityIDs = d.EntityIDs[:l]
 		} else {
-			d.EntityIDs = make([][16]byte, l)
+			d.EntityIDs = make([]ulid.ID, l)
 		}
 		for k0 := range d.EntityIDs {
 

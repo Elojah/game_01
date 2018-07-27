@@ -7,6 +7,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
+	myulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // Input represents a game action sent by player to be send to server.
@@ -77,7 +78,7 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 		if err != nil {
 			return err
 		}
-		targets := make([][16]byte, len(actionAlias.Targets))
+		targets := make([]myulid.ID, len(actionAlias.Targets))
 		for i, target := range actionAlias.Targets {
 			id, err := ulid.Parse(target)
 			if err != nil {

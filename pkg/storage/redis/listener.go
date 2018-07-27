@@ -5,7 +5,6 @@ import (
 
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/storage"
-	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -14,7 +13,7 @@ const (
 
 // GetListener redis implementation.
 func (s *Service) GetListener(subset infra.ListenerSubset) (infra.Listener, error) {
-	val, err := s.Get(listenerKey + ulid.String(subset.ID)).Result()
+	val, err := s.Get(listenerKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return infra.Listener{}, err
@@ -35,10 +34,10 @@ func (s *Service) SetListener(listener infra.Listener) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(listenerKey+ulid.String(listener.ID), raw, 0).Err()
+	return s.Set(listenerKey+listener.ID.String(), raw, 0).Err()
 }
 
 // DelListener deletes listener in redis.
 func (s *Service) DelListener(subset infra.ListenerSubset) error {
-	return s.Del(listenerKey + ulid.String(subset.ID)).Err()
+	return s.Del(listenerKey + subset.ID.String()).Err()
 }

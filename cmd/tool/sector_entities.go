@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -38,8 +37,8 @@ func (h *handler) postSectorEntities(w http.ResponseWriter, r *http.Request) {
 		for _, entityID := range e.EntityIDs {
 			if err := h.AddEntityToSector(entityID, e.SectorID); err != nil {
 				logger.Error().Err(err).
-					Str("sector", ulid.String(e.SectorID)).
-					Str("entity", ulid.String(entityID)).
+					Str("sector", e.SectorID.String()).
+					Str("entity", entityID.String()).
 					Msg("failed to add entity to sector")
 				return
 			}

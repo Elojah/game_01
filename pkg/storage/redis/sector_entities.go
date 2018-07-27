@@ -12,7 +12,7 @@ const (
 // GetEntities implemented with redis.
 func (s *Service) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
 	sectorEntities := sector.Entities{SectorID: subset.SectorID}
-	cmd := s.SMembers(sectorEntitiesKey + ulid.String(subset.SectorID))
+	cmd := s.SMembers(sectorEntitiesKey + subset.SectorID.String())
 	vals, err := cmd.Result()
 	if err != nil {
 		return sector.Entities{}, err
@@ -26,10 +26,10 @@ func (s *Service) GetEntities(subset sector.EntitiesSubset) (sector.Entities, er
 
 // AddEntityToSector implemented with redis.
 func (s *Service) AddEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
-	return s.SAdd(sectorEntitiesKey+ulid.String(sectorID), ulid.String(entityID)).Err()
+	return s.SAdd(sectorEntitiesKey+sectorID.String(), entityID.String()).Err()
 }
 
 // RemoveEntityToSector implemented with redis.
 func (s *Service) RemoveEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
-	return s.SRem(sectorEntitiesKey+ulid.String(sectorID), ulid.String(entityID)).Err()
+	return s.SRem(sectorEntitiesKey+sectorID.String(), entityID.String()).Err()
 }

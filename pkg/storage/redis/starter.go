@@ -29,7 +29,7 @@ func (s *Service) GetRandomStarter(subset sector.StarterSubset) (sector.Starter,
 func (s *Service) SetStarter(starter sector.Starter) error {
 	return s.SAdd(
 		starterKey,
-		ulid.String(starter.SectorID),
+		starter.SectorID.String(),
 	).Err()
 }
 
@@ -37,6 +37,6 @@ func (s *Service) SetStarter(starter sector.Starter) error {
 func (s *Service) DelStarter(subset sector.StarterSubset) error {
 	return s.SRem(
 		starterKey,
-		ulid.String(subset.ID),
+		subset.ID.String(),
 	).Err()
 }

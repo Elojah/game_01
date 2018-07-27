@@ -17,7 +17,7 @@ const (
 
 // ListPC implemented with redis.
 func (s *Service) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
-	keys, err := s.Keys(pcKey + ulid.String(subset.AccountID) + "*").Result()
+	keys, err := s.Keys(pcKey + subset.AccountID.String() + "*").Result()
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (s *Service) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
 
 // GetPC implemented with redis.
 func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
-	val, err := s.Get(pcKey + ulid.String(subset.AccountID) + ":" + ulid.String(subset.ID)).Result()
+	val, err := s.Get(pcKey + subset.AccountID.String() + ":" + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.PC{}, err
@@ -54,22 +54,22 @@ func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
 }
 
 // SetPC implemented with redis.
-func (s *Service) SetPC(pc entity.PC, account ulid.ID) error {
+func (s *Service) SetPC(pc entity.PC, accountID ulid.ID) error {
 	raw, err := pc.Marshal(nil)
 	if err != nil {
 		return err
 	}
-	return s.Set(pcKey+ulid.String(account)+":"+ulid.String(pc.ID), raw, 0).Err()
+	return s.Set(pcKey+accountID.String()+":"+pc.ID.String(), raw, 0).Err()
 }
 
 // SetPCLeft implemented with redis.
-func (s *Service) SetPCLeft(pc entity.PCLeft, account ulid.ID) error {
-	return s.Set(pcLeftKey+ulid.String(account), int(pc), 0).Err()
+func (s *Service) SetPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
+	return s.Set(pcLeftKey+accountID.String(), int(pc), 0).Err()
 }
 
 // GetPCLeft implemented with redis.
 func (s *Service) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
-	val, err := s.Get(pcLeftKey + ulid.String(subset.AccountID)).Result()
+	val, err := s.Get(pcLeftKey + subset.AccountID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.PCLeft(0), err

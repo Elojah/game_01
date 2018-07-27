@@ -4,6 +4,8 @@ import (
 	"io"
 	"time"
 	"unsafe"
+
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 var (
@@ -234,7 +236,7 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 		if uint64(cap(d.Targets)) >= l {
 			d.Targets = d.Targets[:l]
 		} else {
-			d.Targets = make([][16]byte, l)
+			d.Targets = make([]ulid.ID, l)
 		}
 		for k0 := range d.Targets {
 
@@ -299,7 +301,7 @@ func (d *Cast) UnmarshalSafe(buf []byte) (uint64, error) {
 		if uint64(cap(d.Targets)) >= l {
 			d.Targets = d.Targets[:l]
 		} else {
-			d.Targets = make([][16]byte, l)
+			d.Targets = make([]ulid.ID, l)
 		}
 		for k0 := range d.Targets {
 

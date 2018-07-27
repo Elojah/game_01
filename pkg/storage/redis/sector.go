@@ -5,7 +5,6 @@ import (
 
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/storage"
-	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -14,7 +13,7 @@ const (
 
 // GetSector implemented with redis.
 func (s *Service) GetSector(subset sector.Subset) (sector.S, error) {
-	val, err := s.Get(sectorKey + ulid.String(subset.ID)).Result()
+	val, err := s.Get(sectorKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return sector.S{}, err
@@ -35,5 +34,5 @@ func (s *Service) SetSector(sec sector.S) error {
 	if err != nil {
 		return err
 	}
-	return s.Set(sectorKey+ulid.String(sec.ID), raw, 0).Err()
+	return s.Set(sectorKey+sec.ID.String(), raw, 0).Err()
 }

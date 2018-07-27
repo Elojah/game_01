@@ -38,7 +38,7 @@ func (t T) Get(id ulid.ID, addr string) (account.Token, error) {
 	// #Search message UUID in storage.
 	tok, err := t.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
-		return account.Token{}, errors.Wrapf(err, "get token %s", ulid.String(id))
+		return account.Token{}, errors.Wrapf(err, "get token %s", id.String())
 	}
 
 	// #Match message UUID with source IP.
@@ -80,11 +80,11 @@ func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 		IP:      ip.String(),
 	}
 	if err := t.SetToken(token); err != nil {
-		return account.Token{}, errors.Wrapf(err, "set token %s", ulid.String(token.ID))
+		return account.Token{}, errors.Wrapf(err, "set token %s", token.ID.String())
 	}
 	a.Token = token.ID
 	if err := t.AccountMapper.SetAccount(a); err != nil {
-		return account.Token{}, errors.Wrapf(err, "set account %s with token %s", ulid.String(a.ID), ulid.String(token.ID))
+		return account.Token{}, errors.Wrapf(err, "set account %s with token %s", a.ID.String(), token.ID.String())
 	}
 
 	return token, nil
@@ -127,20 +127,20 @@ func (t T) Disconnect(id ulid.ID) error {
 		if err == storage.ErrNotFound {
 			return nil
 		}
-		return errors.Wrapf(err, "get entity %s", ulid.String(tokEntity))
+		return errors.Wrapf(err, "get entity %s", tokEntity.String())
 	}
 
 	// #Save last entity state into PC
 	pc := entity.PC(e)
 	pc.ID = tok.PC
 	if err := t.SetPC(pc, tok.Account); err != nil {
-		return errors.Wrapf(err, "set pc %s from entity %s", ulid.String(pc.ID), ulid.String(e.ID))
+		return errors.Wrapf(err, "set pc %s from entity %s", pc.ID.String(), e.ID.String())
 	}
 
 	// #For each entity permission
-	permissions, err := t.ListPermission(entity.PermissionSubset{Source: ulid.String(tok.ID)})
+	permissions, err := t.ListPermission(entity.PermissionSubset{Source: tok.ID.String()})
 	if err != nil {
-		return errors.Wrapf(err, "list permissions for token %s", ulid.String(tok.ID))
+		return errors.Wrapf(err, "list permissions for token %s", tok.ID.String())
 	}
 	ucentity := uce.E{
 		EntityMapper:     t.EntityMapper,
@@ -151,7 +151,7 @@ func (t T) Disconnect(id ulid.ID) error {
 	for _, permission := range permissions {
 		targetID := ulid.MustParse(permission.Target)
 		if err := ucentity.Disconnect(targetID, tok); err != nil {
-			softErr = errors.Wrapf(err, "disconnect entity %s from token %s", ulid.String(targetID), ulid.String(tok.ID))
+			softErr = errors.Wrapf(err, "disconnect entity %s from token %s", targetID.String(), tok.ID.String())
 		}
 	}
 

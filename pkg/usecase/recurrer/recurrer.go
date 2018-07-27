@@ -28,10 +28,10 @@ func (r *R) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer, error) {
 		Pool:     sync.ID,
 	}
 	if err := r.PublishRecurrer(recurrer, sync.ID); err != nil {
-		return infra.Recurrer{}, errors.Wrapf(err, "open recurrer %s on pool %s", ulid.String(entityID), ulid.String(sync.ID))
+		return infra.Recurrer{}, errors.Wrapf(err, "open recurrer %s on pool %s", entityID.String(), sync.ID.String())
 	}
 	if err := r.SetRecurrer(recurrer); err != nil {
-		return infra.Recurrer{}, errors.Wrapf(err, "set recurrer", ulid.String(recurrer.EntityID))
+		return infra.Recurrer{}, errors.Wrapf(err, "set recurrer", recurrer.EntityID.String())
 	}
 	return recurrer, nil
 }
@@ -40,14 +40,14 @@ func (r *R) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer, error) {
 func (r *R) Delete(id ulid.ID) error {
 	recurrer, err := r.GetRecurrer(infra.RecurrerSubset{TokenID: id})
 	if err != nil {
-		return errors.Wrapf(err, "get recurrer %s", ulid.String(id))
+		return errors.Wrapf(err, "get recurrer %s", id.String())
 	}
 	recurrer.Action = infra.Close
 	if err := r.PublishRecurrer(recurrer, recurrer.Pool); err != nil {
-		return errors.Wrapf(err, "close recurrer %s on pool %s", ulid.String(recurrer.EntityID), ulid.String(recurrer.Pool))
+		return errors.Wrapf(err, "close recurrer %s on pool %s", recurrer.EntityID.String(), recurrer.Pool.String())
 	}
 	if err := r.DelRecurrer(infra.RecurrerSubset{TokenID: recurrer.TokenID}); err != nil {
-		return errors.Wrapf(err, "delete recurrer for token %s", ulid.String(recurrer.TokenID))
+		return errors.Wrapf(err, "delete recurrer for token %s", recurrer.TokenID.String())
 	}
 	return nil
 }

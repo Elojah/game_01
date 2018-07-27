@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -36,7 +35,7 @@ func (h *handler) postSectors(w http.ResponseWriter, r *http.Request) {
 
 	for _, s := range sectors {
 		if err := h.SectorMapper.SetSector(s); err != nil {
-			logger.Error().Err(err).Str("sector", ulid.String(s.ID)).Msg("failed to set sector")
+			logger.Error().Err(err).Str("sector", s.ID.String()).Msg("failed to set sector")
 			return
 		}
 	}

@@ -13,30 +13,7 @@ import (
 // AbilityWithEntity represents the payload to create/associate new ability.
 type AbilityWithEntity struct {
 	ability.A
-	ID       string `json:"id"`
-	Type     string `json:"type"`
-	EntityID ulid.ID
-	Entity   string `json:"entity"`
-}
-
-// UnmarshalJSON customs unmarshal to define an ability.
-func (a *AbilityWithEntity) UnmarshalJSON(data []byte) error {
-	type alias AbilityWithEntity
-	var al alias
-	if err := json.Unmarshal(data, &al); err != nil {
-		return err
-	}
-	var err error
-	if al.A.ID, err = ulid.Parse(al.ID); err != nil {
-		return err
-	}
-	if al.A.Type, err = ulid.Parse(al.Type); err != nil {
-		return err
-	}
-	if al.EntityID, err = ulid.Parse(al.Entity); err != nil {
-		return err
-	}
-	return nil
+	EntityID ulid.ID `json:"entity_id"`
 }
 
 func (h *handler) ability(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +45,7 @@ func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 
 	for _, a := range abilities {
 		if err := h.AbilityMapper.SetAbility(a.A, a.EntityID); err != nil {
-			logger.Error().Err(err).Str("ability", ulid.String(a.A.ID)).Msg("failed to set ability")
+			logger.Error().Err(err).Str("ability", a.A.ID.String()).Msg("failed to set ability")
 			return
 		}
 	}
