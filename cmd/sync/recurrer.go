@@ -46,18 +46,18 @@ func (r *Recurrer) Close() {
 // Run starts to read the ticker and send entities.
 func (r *Recurrer) Run() {
 	for t := range r.ticker.C {
-		entity, err := r.EntityMapper.GetEntity(entity.Subset{ID: r.entityID, MaxTS: t.UnixNano()})
+		en, err := r.EntityMapper.GetEntity(entity.Subset{ID: r.entityID, MaxTS: t.UnixNano()})
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve entity")
 			continue
 		}
-		sector, err := r.SectorMapper.GetSector(sector.Subset{ID: entity.Position.SectorID})
+		sector, err := r.SectorMapper.GetSector(sector.Subset{ID: en.Position.SectorID})
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve current sector")
 			continue
 		}
 		go r.sendSector(sector.ID, t)
-		for id := range sector.Adjacents() {
+		for _, id := range sector.Adjacents() {
 			go r.sendSector(id, t)
 		}
 	}

@@ -12,18 +12,18 @@ var (
 	_ = time.Now()
 )
 
-func (d *BondPoint) Size() (s uint64) {
+func (d *Connection) Size() (s uint64) {
 
 	{
-		s += 16
+		s += d.Coord.Size()
 	}
 	{
-		s += d.Position.Size()
+		s += d.External.Size()
 	}
 	return
 }
 
-func (d *BondPoint) Marshal(buf []byte) ([]byte, error) {
+func (d *Connection) Marshal(buf []byte) ([]byte, error) {
 	size := d.Size()
 	{
 		if uint64(cap(buf)) >= size {
@@ -35,11 +35,14 @@ func (d *BondPoint) Marshal(buf []byte) ([]byte, error) {
 	i := uint64(0)
 
 	{
-		copy(buf[i+0:], d.ID[:])
-		i += 16
+		nbuf, err := d.Coord.Marshal(buf[0:])
+		if err != nil {
+			return nil, err
+		}
+		i += uint64(len(nbuf))
 	}
 	{
-		nbuf, err := d.Position.Marshal(buf[i+0:])
+		nbuf, err := d.External.Marshal(buf[i+0:])
 		if err != nil {
 			return nil, err
 		}
@@ -48,15 +51,18 @@ func (d *BondPoint) Marshal(buf []byte) ([]byte, error) {
 	return buf[:i+0], nil
 }
 
-func (d *BondPoint) Unmarshal(buf []byte) (uint64, error) {
+func (d *Connection) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.ID[:], buf[i+0:])
-		i += 16
+		ni, err := d.Coord.Unmarshal(buf[i+0:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
 	}
 	{
-		ni, err := d.Position.Unmarshal(buf[i+0:])
+		ni, err := d.External.Unmarshal(buf[i+0:])
 		if err != nil {
 			return 0, err
 		}
@@ -65,7 +71,7 @@ func (d *BondPoint) Unmarshal(buf []byte) (uint64, error) {
 	return i + 0, nil
 }
 
-func (d *BondPoint) UnmarshalSafe(buf []byte) (uint64, error) {
+func (d *Connection) UnmarshalSafe(buf []byte) (uint64, error) {
 	lb := uint64(len(buf))
 	if lb < d.Size() {
 		return 0, io.EOF
@@ -73,15 +79,22 @@ func (d *BondPoint) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
-		copy(d.ID[:], buf[i+0:])
-		i += 16
+		adjust := i + 0
+		if adjust >= lb {
+			return 0, io.EOF
+		}
+		ni, err := d.Coord.UnmarshalSafe(buf[adjust:])
+		if err != nil {
+			return 0, err
+		}
+		i += ni
 	}
 	{
 		adjust := i + 0
 		if adjust >= lb {
 			return 0, io.EOF
 		}
-		ni, err := d.Position.UnmarshalSafe(buf[adjust:])
+		ni, err := d.External.UnmarshalSafe(buf[adjust:])
 		if err != nil {
 			return 0, err
 		}
@@ -99,7 +112,7 @@ func (d *S) Size() (s uint64) {
 		s += d.Dim.Size()
 	}
 	{
-		l := uint64(len(d.BondPoints))
+		l := uint64(len(d.Connections))
 
 		{
 
@@ -112,10 +125,11 @@ func (d *S) Size() (s uint64) {
 
 		}
 
-		for k0 := range d.BondPoints {
+		for k0 := range d.Connections {
+			_ = k0 // make compiler happy in case k is unused
 
 			{
-				s += d.BondPoints[k0].Size()
+				s += d.Connections[k0].Size()
 			}
 
 		}
@@ -147,7 +161,7 @@ func (d *S) Marshal(buf []byte) ([]byte, error) {
 		i += uint64(len(nbuf))
 	}
 	{
-		l := uint64(len(d.BondPoints))
+		l := uint64(len(d.Connections))
 
 		{
 
@@ -162,10 +176,10 @@ func (d *S) Marshal(buf []byte) ([]byte, error) {
 			i++
 
 		}
-		for k0 := range d.BondPoints {
+		for k0 := range d.Connections {
 
 			{
-				nbuf, err := d.BondPoints[k0].Marshal(buf[i+0:])
+				nbuf, err := d.Connections[k0].Marshal(buf[i+0:])
 				if err != nil {
 					return nil, err
 				}
@@ -208,15 +222,15 @@ func (d *S) Unmarshal(buf []byte) (uint64, error) {
 			l = t
 
 		}
-		if uint64(cap(d.BondPoints)) >= l {
-			d.BondPoints = d.BondPoints[:l]
+		if uint64(cap(d.Connections)) >= l {
+			d.Connections = d.Connections[:l]
 		} else {
-			d.BondPoints = make([]BondPoint, l)
+			d.Connections = make([]Connection, l)
 		}
-		for k0 := range d.BondPoints {
+		for k0 := range d.Connections {
 
 			{
-				ni, err := d.BondPoints[k0].Unmarshal(buf[i+0:])
+				ni, err := d.Connections[k0].Unmarshal(buf[i+0:])
 				if err != nil {
 					return 0, err
 				}
@@ -236,6 +250,9 @@ func (d *S) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
@@ -270,19 +287,19 @@ func (d *S) UnmarshalSafe(buf []byte) (uint64, error) {
 			l = t
 
 		}
-		if uint64(cap(d.BondPoints)) >= l {
-			d.BondPoints = d.BondPoints[:l]
+		if uint64(cap(d.Connections)) >= l {
+			d.Connections = d.Connections[:l]
 		} else {
-			d.BondPoints = make([]BondPoint, l)
+			d.Connections = make([]Connection, l)
 		}
-		for k0 := range d.BondPoints {
+		for k0 := range d.Connections {
 
 			{
 				adjust := i + 0
 				if adjust >= lb {
 					return 0, io.EOF
 				}
-				ni, err := d.BondPoints[k0].UnmarshalSafe(buf[adjust:])
+				ni, err := d.Connections[k0].UnmarshalSafe(buf[adjust:])
 				if err != nil {
 					return 0, err
 				}

@@ -8,20 +8,14 @@ import (
 // Type represents the type of an entity.
 type Type = ulid.ID
 
-// Position represents an entity position in world.
-type Position struct {
-	Coord    geometry.Vec3
-	SectorID ulid.ID
-}
-
 // E represents a dynamic entity.
 type E struct {
-	ID       ulid.ID  `json:"id"`
-	Type     Type     `json:"type"`
-	Name     string   `json:"name"`
-	HP       uint64   `json:"hp"`
-	MP       uint64   `json:"mp"`
-	Position Position `json:"position"`
+	ID       ulid.ID           `json:"id"`
+	Type     Type              `json:"type"`
+	Name     string            `json:"name"`
+	HP       uint64            `json:"hp"`
+	MP       uint64            `json:"mp"`
+	Position geometry.Position `json:"position"`
 }
 
 // Move moves entity to position p.
@@ -45,32 +39,32 @@ type Subset struct {
 }
 
 // Equal returns if both entities are equal.
-func (e E) Equal(entity E) bool {
-	if ulid.Compare(e.ID, entity.ID) != 0 {
+func (e E) Equal(en E) bool {
+	if ulid.Compare(e.ID, en.ID) != 0 {
 		return false
 	}
-	if ulid.Compare(e.Type, entity.Type) != 0 {
+	if ulid.Compare(e.Type, en.Type) != 0 {
 		return false
 	}
-	if e.Name != entity.Name {
+	if e.Name != en.Name {
 		return false
 	}
-	if e.HP != entity.HP {
+	if e.HP != en.HP {
 		return false
 	}
-	if e.MP != entity.MP {
+	if e.MP != en.MP {
 		return false
 	}
-	if ulid.Compare(e.Position.SectorID, entity.Position.SectorID) != 0 {
+	if ulid.Compare(e.Position.SectorID, en.Position.SectorID) != 0 {
 		return false
 	}
-	if e.Position.Coord.X != entity.Position.Coord.X {
+	if e.Position.Coord.X != en.Position.Coord.X {
 		return false
 	}
-	if e.Position.Coord.Y != entity.Position.Coord.Y {
+	if e.Position.Coord.Y != en.Position.Coord.Y {
 		return false
 	}
-	if e.Position.Coord.Z != entity.Position.Coord.Z {
+	if e.Position.Coord.Z != en.Position.Coord.Z {
 		return false
 	}
 	return true

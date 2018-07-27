@@ -56,6 +56,9 @@ func (d *ACK) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}

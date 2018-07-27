@@ -176,6 +176,9 @@ func (d *Token) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
@@ -206,6 +209,9 @@ func (d *Token) UnmarshalSafe(buf []byte) (uint64, error) {
 		}
 	}
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Account[:], buf[i+0:])
 		i += 16
 	}
@@ -215,18 +221,30 @@ func (d *Token) UnmarshalSafe(buf []byte) (uint64, error) {
 
 	}
 	{
+		if i+8 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.CorePool[:], buf[i+8:])
 		i += 16
 	}
 	{
+		if i+8 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.SyncPool[:], buf[i+8:])
 		i += 16
 	}
 	{
+		if i+8 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.PC[:], buf[i+8:])
 		i += 16
 	}
 	{
+		if i+8 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Entity[:], buf[i+8:])
 		i += 16
 	}

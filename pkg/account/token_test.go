@@ -1,7 +1,6 @@
 package account
 
 import (
-	"net"
 	"testing"
 
 	"github.com/elojah/game_01/pkg/ulid"
@@ -9,12 +8,12 @@ import (
 )
 
 func TestMarshalToken(t *testing.T) {
-	addr, _ := net.ResolveUDPAddr("udp", "127.0.0.1:3400")
+	addr := "127.0.0.1:3400"
 	tokens := []Token{
 		Token{},
 		Token{
 			ID:       ulid.NewID(),
-			IP:       nil,
+			IP:       "",
 			Account:  ulid.NewID(),
 			Ping:     2902,
 			CorePool: ulid.NewID(),

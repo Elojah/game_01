@@ -67,7 +67,7 @@ func (d *E) Size() (s uint64) {
 
 		}
 	}
-	s += 8
+	s += 15
 	return
 }
 
@@ -87,13 +87,15 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 		i += 16
 	}
 	{
-		copy(buf[i+0:], d.Token[:])
+		copy(buf[i+0:], d.Source[:])
 		i += 16
 	}
 	{
-
-		*(*int64)(unsafe.Pointer(&buf[i+0])) = d.TS
-
+		b, err := d.TS.MarshalBinary()
+		if err != nil {
+			return nil, err
+		}
+		copy(buf[i+0:], b)
 	}
 	{
 		var v uint64
@@ -115,11 +117,11 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 			t := uint64(v)
 
 			for t >= 0x80 {
-				buf[i+8] = byte(t) | 0x80
+				buf[i+15] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i+8] = byte(t)
+			buf[i+15] = byte(t)
 			i++
 
 		}
@@ -128,7 +130,7 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 		case Move:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+8:])
+				nbuf, err := tt.Marshal(buf[i+15:])
 				if err != nil {
 					return nil, err
 				}
@@ -138,7 +140,7 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 		case Cast:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+8:])
+				nbuf, err := tt.Marshal(buf[i+15:])
 				if err != nil {
 					return nil, err
 				}
@@ -148,7 +150,7 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 		case Feedback:
 
 			{
-				nbuf, err := tt.Marshal(buf[i+8:])
+				nbuf, err := tt.Marshal(buf[i+15:])
 				if err != nil {
 					return nil, err
 				}
@@ -157,7 +159,7 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 
 		}
 	}
-	return buf[:i+8], nil
+	return buf[:i+15], nil
 }
 
 func (d *E) Unmarshal(buf []byte) (uint64, error) {
@@ -168,13 +170,11 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 		i += 16
 	}
 	{
-		copy(d.Token[:], buf[i+0:])
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
-
-		d.TS = *(*int64)(unsafe.Pointer(&buf[i+0]))
-
+		d.TS.UnmarshalBinary(buf[i+0 : i+0+15])
 	}
 	{
 		v := uint64(0)
@@ -182,10 +182,10 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 		{
 
 			bs := uint8(7)
-			t := uint64(buf[i+8] & 0x7F)
-			for buf[i+8]&0x80 == 0x80 {
+			t := uint64(buf[i+15] & 0x7F)
+			for buf[i+15]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+8]&0x7F) << bs
+				t |= uint64(buf[i+15]&0x7F) << bs
 				bs += 7
 			}
 			i++
@@ -199,7 +199,7 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 			var tt Move
 
 			{
-				ni, err := tt.Unmarshal(buf[i+8:])
+				ni, err := tt.Unmarshal(buf[i+15:])
 				if err != nil {
 					return 0, err
 				}
@@ -212,7 +212,7 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 			var tt Cast
 
 			{
-				ni, err := tt.Unmarshal(buf[i+8:])
+				ni, err := tt.Unmarshal(buf[i+15:])
 				if err != nil {
 					return 0, err
 				}
@@ -225,7 +225,7 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 			var tt Feedback
 
 			{
-				ni, err := tt.Unmarshal(buf[i+8:])
+				ni, err := tt.Unmarshal(buf[i+15:])
 				if err != nil {
 					return 0, err
 				}
@@ -238,7 +238,7 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 			d.Action = nil
 		}
 	}
-	return i + 8, nil
+	return i + 15, nil
 }
 
 func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
@@ -249,31 +249,35 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Token[:], buf[i+0:])
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
-
-		d.TS = *(*int64)(unsafe.Pointer(&buf[i+0]))
-
+		d.TS.UnmarshalBinary(buf[i+0 : i+0+15])
 	}
 	{
 		v := uint64(0)
 
 		{
 
-			if i+8 >= lb {
+			if i+15 >= lb {
 				return 0, io.EOF
 			}
 			bs := uint8(7)
-			t := uint64(buf[i+8] & 0x7F)
-			for i < lb && buf[i+8]&0x80 == 0x80 {
+			t := uint64(buf[i+15] & 0x7F)
+			for i < lb && buf[i+15]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+8]&0x7F) << bs
+				t |= uint64(buf[i+15]&0x7F) << bs
 				bs += 7
 			}
 			i++
@@ -287,7 +291,7 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 			var tt Move
 
 			{
-				adjust := i + 8
+				adjust := i + 15
 				if adjust >= lb {
 					return 0, io.EOF
 				}
@@ -304,7 +308,7 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 			var tt Cast
 
 			{
-				adjust := i + 8
+				adjust := i + 15
 				if adjust >= lb {
 					return 0, io.EOF
 				}
@@ -321,7 +325,7 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 			var tt Feedback
 
 			{
-				adjust := i + 8
+				adjust := i + 15
 				if adjust >= lb {
 					return 0, io.EOF
 				}
@@ -338,5 +342,5 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 			d.Action = nil
 		}
 	}
-	return i + 8, nil
+	return i + 15, nil
 }

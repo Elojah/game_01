@@ -94,10 +94,10 @@ gen:
 	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/dto.schema -out=pkg/event/dto.schema.gen.go -ignore=Vec3,Position,Move,Cast
 	$Q gencode go -unsafe -def-types=false -package=entity -schema=schemas/entity.schema -out=pkg/entity/entity.schema.gen.go -ignore=Position,Vec3
 	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/event.schema -out=pkg/event/event.schema.gen.go -ignore=Vec3,Position,Move,Cast,Feedback
-	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/listener.schema -out=pkg/event/listener.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/recurrer.schema -out=pkg/event/recurrer.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/listener.schema -out=pkg/infra/listener.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/recurrer.schema -out=pkg/infra/recurrer.schema.gen.go
 	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector.schema -out=pkg/sector/sector.schema.gen.go -ignore=Vec3,Position
-	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector_entities.schema -out=pkg/sector/sector_entities.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector_entities.schema -out=pkg/sector/entities.schema.gen.go
 	$Q gencode go -unsafe -def-types=false -package=account -schema=schemas/token.schema -out=pkg/account/token.schema.gen.go
 	$Q gencode go -unsafe -def-types=false -package=geometry -schema=schemas/position.schema -out=pkg/geometry/position.schema.gen.go
 

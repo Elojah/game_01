@@ -24,7 +24,7 @@ func TestRecurrer(t *testing.T) {
 			Name: "La muerte del sol",
 			HP:   76,
 			MP:   567,
-			Position: entity.Position{
+			Position: geometry.Position{
 				SectorID: ulid.NewID(),
 				Coord:    geometry.Vec3{X: 53.1233, Y: 68.0706, Z: 67.0753},
 			},

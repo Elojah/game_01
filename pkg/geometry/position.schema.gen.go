@@ -165,6 +165,9 @@ func (d *Position) UnmarshalSafe(buf []byte) (uint64, error) {
 		i += ni
 	}
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.SectorID[:], buf[i+0:])
 		i += 16
 	}

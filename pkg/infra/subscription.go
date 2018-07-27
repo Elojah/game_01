@@ -5,7 +5,7 @@ import (
 )
 
 // QAction is an action required for a queue.
-type QAction uint8
+type QAction = uint8
 
 const (
 	// Open requires the queue to open.

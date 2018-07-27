@@ -12,7 +12,7 @@ func TestMarshalEntity(t *testing.T) {
 	es := []E{
 		// This one fails, gencode transforms empty array into nil.
 		// E{
-		// 	Position: Position{},
+		// 	Position: geometry.Position{},
 		// },
 		E{},
 		E{
@@ -29,7 +29,7 @@ func TestMarshalEntity(t *testing.T) {
 			MP:   23,
 		},
 		E{
-			Position: Position{
+			Position: geometry.Position{
 				Coord: geometry.Vec3{
 					X: 79.6114,
 					Y: 86.4033,
@@ -44,7 +44,7 @@ func TestMarshalEntity(t *testing.T) {
 			Name: "Apophenia marketing motion into futurity BASE jump-ware garage disposable skyscraper nano. Semiotics systema disposable table hotdog pistol-space dead alcohol human boy car. Bicycle motion-ware j-pop tower cyber-order-flow towards nodality Chiba warehouse semiotics dome. Corrupted apophenia denim man corporation cartel engine woman bridge footage convenience store tanto shoes paranoid. Assault Kowloon car Chiba table shrine modem. Pen film sprawl systema assassin tube plastic semiotics corrupted pistol lights woman receding crypto-decay hotdog. Market spook convenience store cartel long-chain hydrocarbons physical semiotics smart-monofilament. Post-semiotics gang jeans weathered kanji drone fetishism smart-long-chain hydrocarbons. Drone bomb courier face forwards drugs gang Legba hotdog San Francisco neon corporation dome papier-mache Kowloon lights uplink singularity.",
 			HP:   97,
 			MP:   23,
-			Position: Position{
+			Position: geometry.Position{
 				Coord: geometry.Vec3{
 					X: 79.6114,
 					Y: 86.4033,

@@ -3,7 +3,6 @@ package event
 import (
 	"testing"
 
-	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/stretchr/testify/assert"
@@ -24,7 +23,7 @@ func TestMarshalDTO(t *testing.T) {
 			Action: Move{
 				Source: ulid.NewID(),
 				Target: ulid.NewID(),
-				Position: entity.Position{
+				Position: geometry.Position{
 					SectorID: ulid.NewID(),
 					Coord: geometry.Vec3{
 						X: 31.0613,
@@ -41,7 +40,7 @@ func TestMarshalDTO(t *testing.T) {
 			Action: Cast{
 				Source:  ulid.NewID(),
 				Targets: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()},
-				Position: entity.Position{
+				Position: geometry.Position{
 					SectorID: ulid.NewID(),
 					Coord: geometry.Vec3{
 						X: 31.0613,

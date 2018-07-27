@@ -1,8 +1,6 @@
 package account
 
 import (
-	"net"
-
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -10,9 +8,9 @@ import (
 type Token struct {
 	ID ulid.ID `json:"ID"`
 
-	IP      *net.UDPAddr `json:"-"`
-	Account ulid.ID      `json:"-"`
-	Ping    uint64       `json:"-"`
+	IP      string  `json:"-"`
+	Account ulid.ID `json:"-"`
+	Ping    uint64  `json:"-"`
 
 	CorePool ulid.ID `json:"-"`
 	SyncPool ulid.ID `json:"-"`

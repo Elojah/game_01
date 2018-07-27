@@ -42,7 +42,7 @@ func (t T) Get(id ulid.ID, addr string) (account.Token, error) {
 	}
 
 	// #Match message UUID with source IP.
-	expected, _, ee := net.SplitHostPort(tok.IP.String())
+	expected, _, ee := net.SplitHostPort(tok.IP)
 	actual, _, ea := net.SplitHostPort(addr)
 	if expected != actual || ee != nil || ea != nil {
 		return account.Token{}, errors.Wrapf(account.ErrWrongIP, "different ips %s != %s", expected, actual)
@@ -77,7 +77,7 @@ func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 	token := account.Token{
 		ID:      ulid.NewID(),
 		Account: a.ID,
-		IP:      ip,
+		IP:      ip.String(),
 	}
 	if err := t.SetToken(token); err != nil {
 		return account.Token{}, errors.Wrapf(err, "set token %s", ulid.String(token.ID))

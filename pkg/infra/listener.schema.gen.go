@@ -1,7 +1,6 @@
 package infra
 
 import (
-	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -14,6 +13,7 @@ var (
 )
 
 func (d *Listener) Size() (s uint64) {
+
 	{
 		s += 16
 	}
@@ -34,12 +34,15 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
+
 	{
-		copy(buf[i:], d.ID[:])
+		copy(buf[i+0:], d.ID[:])
 		i += 16
 	}
 	{
-		buf[i] = byte(d.Action >> 0)
+
+		*(*uint8)(unsafe.Pointer(&buf[i+0])) = d.Action
+
 	}
 	{
 		copy(buf[i+1:], d.Pool[:])
@@ -50,12 +53,15 @@ func (d *Listener) Marshal(buf []byte) ([]byte, error) {
 
 func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		d.Action = QAction(0 | (uint8(buf[i]) << 0))
+
+		d.Action = *(*uint8)(unsafe.Pointer(&buf[i+0]))
+
 	}
 	{
 		copy(d.Pool[:], buf[i+1:])
@@ -65,18 +71,28 @@ func (d *Listener) Unmarshal(buf []byte) (uint64, error) {
 }
 
 func (d *Listener) UnmarshalSafe(buf []byte) (uint64, error) {
-	if len(buf) < 32+1 {
-		return 0, errors.New("invalid buffer")
+	lb := uint64(len(buf))
+	if lb < d.Size() {
+		return 0, io.EOF
 	}
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		d.Action = QAction(0 | (uint8(buf[i]) << 0))
+
+		d.Action = *(*uint8)(unsafe.Pointer(&buf[i+0]))
+
 	}
 	{
+		if i+1 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Pool[:], buf[i+1:])
 		i += 16
 	}

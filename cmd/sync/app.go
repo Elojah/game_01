@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net"
+
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -97,7 +99,11 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 		return
 	}
 
-	address := *tok.IP
+	address, err := net.ResolveUDPAddr("udp", tok.IP)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to parse ip")
+		return
+	}
 	address.Port = int(a.port)
 	logger = logger.With().Str("address", address.String()).Logger()
 	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
@@ -107,7 +113,7 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 			return
 		}
 		logger.Info().Str("entity", ulid.String(e.ID)).Msg("send entity")
-		a.Send(raw, &address)
+		a.Send(raw, address)
 	})
 	rec.EntityMapper = a.EntityMapper
 	rec.EntitiesMapper = a.EntitiesMapper

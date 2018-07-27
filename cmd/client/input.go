@@ -5,7 +5,6 @@ import (
 
 	"github.com/oklog/ulid"
 
-	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 )
@@ -50,7 +49,7 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 		in.Action = event.Move{
 			Source: [16]byte(source),
 			Target: [16]byte(target),
-			Position: entity.Position{
+			Position: geometry.Position{
 				SectorID: sectorID,
 				Coord:    actionAlias.Coord,
 			},
@@ -90,7 +89,7 @@ func (in *Input) UnmarshalJSON(raw []byte) error {
 			AbilityID: abilityID,
 			Source:    source,
 			Targets:   targets,
-			Position: entity.Position{
+			Position: geometry.Position{
 				SectorID: sectorID,
 				Coord:    actionAlias.Coord,
 			},

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -71,9 +72,13 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		logger.Error().Err(err).Str("status", "internal").Msg("failed to marshal ack")
 		return err
 	}
-	address := *tok.IP
+	address, err := net.ResolveUDPAddr("udp", tok.IP)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to parse ip")
+		return err
+	}
 	address.Port = int(h.port)
-	go h.Send(raw, &address)
+	go h.Send(raw, address)
 
 	// #Check TS in tolerance range.
 	ts := time.Unix(0, msg.TS)

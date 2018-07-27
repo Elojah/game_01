@@ -84,10 +84,16 @@ func (d *Move) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
@@ -128,6 +134,7 @@ func (d *Cast) Size() (s uint64) {
 		}
 
 		for k0 := range d.Targets {
+			_ = k0 // make compiler happy in case k is unused
 
 			{
 				s += 16
@@ -256,10 +263,16 @@ func (d *Cast) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.AbilityID[:], buf[i+0:])
 		i += 16
 	}
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
@@ -291,6 +304,9 @@ func (d *Cast) UnmarshalSafe(buf []byte) (uint64, error) {
 		for k0 := range d.Targets {
 
 			{
+				if i+0 >= lb {
+					return 0, io.EOF
+				}
 				copy(d.Targets[k0][:], buf[i+0:])
 				i += 16
 			}
@@ -377,14 +393,23 @@ func (d *Feedback) UnmarshalSafe(buf []byte) (uint64, error) {
 	i := uint64(0)
 
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
+		if i+0 >= lb {
+			return 0, io.EOF
+		}
 		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}

@@ -30,8 +30,8 @@ struct Feedback {
 
 struct E {
 	ID			[16]byte
-	Token		[16]byte
-	TS			int64
+	Source		[16]byte
+	TS			time
 	Action union {
 		Move
 		Cast

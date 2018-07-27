@@ -9,13 +9,13 @@ struct Position {
 	SectorID	[16]byte
 }
 
-struct BondPoint {
-	ID			[16]byte
-	Position	Position
+struct Connection {
+	Coord		Vec3
+	External	Position
 }
 
 struct S {
 	ID			[16]byte
 	Dim			Vec3
-	BondPoints	[]BondPoint
+	Connections	[]Connection
 }
