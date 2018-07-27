@@ -87,7 +87,19 @@ tool:
 .PHONY: gen
 gen:
 	$(info $(M) running gencode…) @
-	$Q cd schemas && ls *.schema | xargs -n1 gencode go -package storage -schema
+	$Q gencode go -unsafe -def-types=false -package=ability -schema=schemas/ability.schema -out=pkg/ability/ability.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=account -schema=schemas/account.schema -out=pkg/account/account.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/ack.schema -out=pkg/infra/ack.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/action.schema -out=pkg/event/action.schema.gen.go -ignore=Position,Vec3
+	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/dto.schema -out=pkg/event/dto.schema.gen.go -ignore=Vec3,Position,Move,Cast
+	$Q gencode go -unsafe -def-types=false -package=entity -schema=schemas/entity.schema -out=pkg/entity/entity.schema.gen.go -ignore=Position,Vec3
+	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/event.schema -out=pkg/event/event.schema.gen.go -ignore=Vec3,Position,Move,Cast,Feedback
+	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/listener.schema -out=pkg/event/listener.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/recurrer.schema -out=pkg/event/recurrer.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector.schema -out=pkg/sector/sector.schema.gen.go -ignore=Vec3,Position
+	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector_entities.schema -out=pkg/sector/sector_entities.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=account -schema=schemas/token.schema -out=pkg/account/token.schema.gen.go
+	$Q gencode go -unsafe -def-types=false -package=geometry -schema=schemas/position.schema -out=pkg/geometry/position.schema.gen.go
 
 # Dependencies
 .PHONY: dep

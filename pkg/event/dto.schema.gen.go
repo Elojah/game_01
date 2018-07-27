@@ -1,7 +1,6 @@
 package event
 
 import (
-	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -14,6 +13,7 @@ var (
 )
 
 func (d *DTO) Size() (s uint64) {
+
 	{
 		s += 16
 	}
@@ -23,28 +23,39 @@ func (d *DTO) Size() (s uint64) {
 	{
 		var v uint64
 		switch d.Action.(type) {
+
 		case Move:
 			v = 0 + 1
+
 		case Cast:
 			v = 1 + 1
+
 		}
+
 		{
+
 			t := v
 			for t >= 0x80 {
 				t >>= 7
 				s++
 			}
 			s++
+
 		}
 		switch tt := d.Action.(type) {
+
 		case Move:
+
 			{
 				s += tt.Size()
 			}
+
 		case Cast:
+
 			{
 				s += tt.Size()
 			}
+
 		}
 	}
 	s += 8
@@ -61,34 +72,36 @@ func (d *DTO) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
+
 	{
-		copy(buf[i:], d.ID[:])
+		copy(buf[i+0:], d.ID[:])
 		i += 16
 	}
 	{
-		copy(buf[i:], d.Token[:])
+		copy(buf[i+0:], d.Token[:])
 		i += 16
 	}
 	{
-		buf[i] = byte(d.TS >> 0)
-		buf[i+1] = byte(d.TS >> 8)
-		buf[i+2] = byte(d.TS >> 16)
-		buf[i+3] = byte(d.TS >> 24)
-		buf[i+4] = byte(d.TS >> 32)
-		buf[i+5] = byte(d.TS >> 40)
-		buf[i+6] = byte(d.TS >> 48)
-		buf[i+7] = byte(d.TS >> 56)
+
+		*(*int64)(unsafe.Pointer(&buf[i+0])) = d.TS
+
 	}
 	{
 		var v uint64
 		switch d.Action.(type) {
+
 		case Move:
 			v = 0 + 1
+
 		case Cast:
 			v = 1 + 1
+
 		}
+
 		{
+
 			t := uint64(v)
+
 			for t >= 0x80 {
 				buf[i+8] = byte(t) | 0x80
 				t >>= 7
@@ -96,9 +109,12 @@ func (d *DTO) Marshal(buf []byte) ([]byte, error) {
 			}
 			buf[i+8] = byte(t)
 			i++
+
 		}
 		switch tt := d.Action.(type) {
+
 		case Move:
+
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
 				if err != nil {
@@ -106,7 +122,9 @@ func (d *DTO) Marshal(buf []byte) ([]byte, error) {
 				}
 				i += uint64(len(nbuf))
 			}
+
 		case Cast:
+
 			{
 				nbuf, err := tt.Marshal(buf[i+8:])
 				if err != nil {
@@ -114,6 +132,7 @@ func (d *DTO) Marshal(buf []byte) ([]byte, error) {
 				}
 				i += uint64(len(nbuf))
 			}
+
 		}
 	}
 	return buf[:i+8], nil
@@ -121,20 +140,25 @@ func (d *DTO) Marshal(buf []byte) ([]byte, error) {
 
 func (d *DTO) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Token[:], buf[i:])
+		copy(d.Token[:], buf[i+0:])
 		i += 16
 	}
 	{
-		d.TS = 0 | (int64(buf[i]) << 0) | (int64(buf[i+1]) << 8) | (int64(buf[i+2]) << 16) | (int64(buf[i+3]) << 24) | (int64(buf[i+4]) << 32) | (int64(buf[i+5]) << 40) | (int64(buf[i+6]) << 48) | (int64(buf[i+7]) << 56)
+
+		d.TS = *(*int64)(unsafe.Pointer(&buf[i+0]))
+
 	}
 	{
 		v := uint64(0)
+
 		{
+
 			bs := uint8(7)
 			t := uint64(buf[i+8] & 0x7F)
 			for buf[i+8]&0x80 == 0x80 {
@@ -143,11 +167,15 @@ func (d *DTO) Unmarshal(buf []byte) (uint64, error) {
 				bs += 7
 			}
 			i++
+
 			v = t
+
 		}
 		switch v {
+
 		case 0 + 1:
 			var tt Move
+
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
 				if err != nil {
@@ -155,9 +183,12 @@ func (d *DTO) Unmarshal(buf []byte) (uint64, error) {
 				}
 				i += ni
 			}
+
 			d.Action = tt
+
 		case 1 + 1:
 			var tt Cast
+
 			{
 				ni, err := tt.Unmarshal(buf[i+8:])
 				if err != nil {
@@ -165,7 +196,9 @@ func (d *DTO) Unmarshal(buf []byte) (uint64, error) {
 				}
 				i += ni
 			}
+
 			d.Action = tt
+
 		default:
 			d.Action = nil
 		}
@@ -175,58 +208,80 @@ func (d *DTO) Unmarshal(buf []byte) (uint64, error) {
 
 func (d *DTO) UnmarshalSafe(buf []byte) (uint64, error) {
 	lb := uint64(len(buf))
-	if lb < 32+8+1 {
-		return 0, errors.New("invalid buffer")
+	if lb < d.Size() {
+		return 0, io.EOF
 	}
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Token[:], buf[i:])
+		copy(d.Token[:], buf[i+0:])
 		i += 16
 	}
 	{
-		d.TS = 0 | (int64(buf[i]) << 0) | (int64(buf[i+1]) << 8) | (int64(buf[i+2]) << 16) | (int64(buf[i+3]) << 24) | (int64(buf[i+4]) << 32) | (int64(buf[i+5]) << 40) | (int64(buf[i+6]) << 48) | (int64(buf[i+7]) << 56)
+
+		d.TS = *(*int64)(unsafe.Pointer(&buf[i+0]))
+
 	}
 	{
 		v := uint64(0)
+
 		{
+
+			if i+8 >= lb {
+				return 0, io.EOF
+			}
 			bs := uint8(7)
 			t := uint64(buf[i+8] & 0x7F)
-			for buf[i+8]&0x80 == 0x80 && i < lb {
+			for i < lb && buf[i+8]&0x80 == 0x80 {
 				i++
 				t |= uint64(buf[i+8]&0x7F) << bs
 				bs += 7
 			}
 			i++
+
 			v = t
-		}
-		if (v == 1 || v == 2) && i+8 >= lb {
-			return 0, errors.New("invalid buffer")
+
 		}
 		switch v {
+
 		case 0 + 1:
 			var tt Move
+
 			{
-				ni, err := tt.UnmarshalSafe(buf[i+8:])
+				adjust := i + 8
+				if adjust >= lb {
+					return 0, io.EOF
+				}
+				ni, err := tt.UnmarshalSafe(buf[adjust:])
 				if err != nil {
 					return 0, err
 				}
 				i += ni
 			}
+
 			d.Action = tt
+
 		case 1 + 1:
 			var tt Cast
+
 			{
-				ni, err := tt.UnmarshalSafe(buf[i+8:])
+				adjust := i + 8
+				if adjust >= lb {
+					return 0, io.EOF
+				}
+				ni, err := tt.UnmarshalSafe(buf[adjust:])
 				if err != nil {
 					return 0, err
 				}
 				i += ni
 			}
+
 			d.Action = tt
+
 		default:
 			d.Action = nil
 		}

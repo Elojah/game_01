@@ -1,7 +1,6 @@
 package event
 
 import (
-	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -14,6 +13,7 @@ var (
 )
 
 func (d *Move) Size() (s uint64) {
+
 	{
 		s += 16
 	}
@@ -36,36 +36,38 @@ func (d *Move) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
+
 	{
-		copy(buf[i:], d.Source[:])
+		copy(buf[i+0:], d.Source[:])
 		i += 16
 	}
 	{
-		copy(buf[i:], d.Target[:])
+		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
 	{
-		nbuf, err := d.Position.Marshal(buf[i:])
+		nbuf, err := d.Position.Marshal(buf[i+0:])
 		if err != nil {
 			return nil, err
 		}
 		i += uint64(len(nbuf))
 	}
-	return buf[:i], nil
+	return buf[:i+0], nil
 }
 
 func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
+
 	{
-		copy(d.Source[:], buf[i:])
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Target[:], buf[i:])
+		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
 	{
-		ni, err := d.Position.Unmarshal(buf[i:])
+		ni, err := d.Position.Unmarshal(buf[i+0:])
 		if err != nil {
 			return 0, err
 		}
@@ -75,20 +77,26 @@ func (d *Move) Unmarshal(buf []byte) (uint64, error) {
 }
 
 func (d *Move) UnmarshalSafe(buf []byte) (uint64, error) {
-	if len(buf) < 32+1 {
-		return 0, errors.New("invalid buffer")
+	lb := uint64(len(buf))
+	if lb < d.Size() {
+		return 0, io.EOF
 	}
 	i := uint64(0)
+
 	{
-		copy(d.Source[:], buf[i:])
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Target[:], buf[i:])
+		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
 	{
-		ni, err := d.Position.UnmarshalSafe(buf[i:])
+		adjust := i + 0
+		if adjust >= lb {
+			return 0, io.EOF
+		}
+		ni, err := d.Position.UnmarshalSafe(buf[adjust:])
 		if err != nil {
 			return 0, err
 		}
@@ -98,6 +106,7 @@ func (d *Move) UnmarshalSafe(buf []byte) (uint64, error) {
 }
 
 func (d *Cast) Size() (s uint64) {
+
 	{
 		s += 16
 	}
@@ -106,19 +115,26 @@ func (d *Cast) Size() (s uint64) {
 	}
 	{
 		l := uint64(len(d.Targets))
+
 		{
+
 			t := l
 			for t >= 0x80 {
 				t >>= 7
 				s++
 			}
 			s++
+
 		}
-		for _ = range d.Targets {
+
+		for k0 := range d.Targets {
+
 			{
 				s += 16
 			}
+
 		}
+
 	}
 	{
 		s += d.Position.Size()
@@ -136,65 +152,77 @@ func (d *Cast) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
+
 	{
-		copy(buf[i:], d.AbilityID[:])
+		copy(buf[i+0:], d.AbilityID[:])
 		i += 16
 	}
 	{
-		copy(buf[i:], d.Source[:])
+		copy(buf[i+0:], d.Source[:])
 		i += 16
 	}
 	{
 		l := uint64(len(d.Targets))
+
 		{
+
 			t := uint64(l)
+
 			for t >= 0x80 {
-				buf[i] = byte(t) | 0x80
+				buf[i+0] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i] = byte(t)
+			buf[i+0] = byte(t)
 			i++
+
 		}
 		for k0 := range d.Targets {
+
 			{
-				copy(buf[i:], d.Targets[k0][:])
+				copy(buf[i+0:], d.Targets[k0][:])
 				i += 16
 			}
+
 		}
 	}
 	{
-		nbuf, err := d.Position.Marshal(buf[i:])
+		nbuf, err := d.Position.Marshal(buf[i+0:])
 		if err != nil {
 			return nil, err
 		}
 		i += uint64(len(nbuf))
 	}
-	return buf[:i], nil
+	return buf[:i+0], nil
 }
 
 func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
+
 	{
-		copy(d.AbilityID[:], buf[i:])
+		copy(d.AbilityID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Source[:], buf[i:])
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
 		l := uint64(0)
+
 		{
+
 			bs := uint8(7)
-			t := uint64(buf[i] & 0x7F)
-			for buf[i]&0x80 == 0x80 {
+			t := uint64(buf[i+0] & 0x7F)
+			for buf[i+0]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i]&0x7F) << bs
+				t |= uint64(buf[i+0]&0x7F) << bs
 				bs += 7
 			}
 			i++
+
 			l = t
+
 		}
 		if uint64(cap(d.Targets)) >= l {
 			d.Targets = d.Targets[:l]
@@ -202,14 +230,16 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 			d.Targets = make([][16]byte, l)
 		}
 		for k0 := range d.Targets {
+
 			{
-				copy(d.Targets[k0][:], buf[i:])
+				copy(d.Targets[k0][:], buf[i+0:])
 				i += 16
 			}
+
 		}
 	}
 	{
-		ni, err := d.Position.Unmarshal(buf[i:])
+		ni, err := d.Position.Unmarshal(buf[i+0:])
 		if err != nil {
 			return 0, err
 		}
@@ -220,30 +250,38 @@ func (d *Cast) Unmarshal(buf []byte) (uint64, error) {
 
 func (d *Cast) UnmarshalSafe(buf []byte) (uint64, error) {
 	lb := uint64(len(buf))
-	if lb < 32+24+16 {
-		return 0, errors.New("invalid buffer")
+	if lb < d.Size() {
+		return 0, io.EOF
 	}
 	i := uint64(0)
+
 	{
-		copy(d.AbilityID[:], buf[i:])
+		copy(d.AbilityID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Source[:], buf[i:])
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
 		l := uint64(0)
+
 		{
+
+			if i+0 >= lb {
+				return 0, io.EOF
+			}
 			bs := uint8(7)
-			t := uint64(buf[i] & 0x7F)
-			for i < lb && buf[i]&0x80 == 0x80 {
+			t := uint64(buf[i+0] & 0x7F)
+			for i < lb && buf[i+0]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i]&0x7F) << bs
+				t |= uint64(buf[i+0]&0x7F) << bs
 				bs += 7
 			}
 			i++
+
 			l = t
+
 		}
 		if uint64(cap(d.Targets)) >= l {
 			d.Targets = d.Targets[:l]
@@ -251,20 +289,20 @@ func (d *Cast) UnmarshalSafe(buf []byte) (uint64, error) {
 			d.Targets = make([][16]byte, l)
 		}
 		for k0 := range d.Targets {
+
 			{
-				if i >= lb {
-					return 0, errors.New("invalid buffer")
-				}
-				copy(d.Targets[k0][:], buf[i:])
+				copy(d.Targets[k0][:], buf[i+0:])
 				i += 16
 			}
+
 		}
 	}
-	if i >= lb {
-		return 0, errors.New("invalid buffer")
-	}
 	{
-		ni, err := d.Position.UnmarshalSafe(buf[i:])
+		adjust := i + 0
+		if adjust >= lb {
+			return 0, io.EOF
+		}
+		ni, err := d.Position.UnmarshalSafe(buf[adjust:])
 		if err != nil {
 			return 0, err
 		}
@@ -274,6 +312,7 @@ func (d *Cast) UnmarshalSafe(buf []byte) (uint64, error) {
 }
 
 func (d *Feedback) Size() (s uint64) {
+
 	{
 		s += 16
 	}
@@ -296,53 +335,57 @@ func (d *Feedback) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
+
 	{
-		copy(buf[i:], d.ID[:])
+		copy(buf[i+0:], d.ID[:])
 		i += 16
 	}
 	{
-		copy(buf[i:], d.Source[:])
+		copy(buf[i+0:], d.Source[:])
 		i += 16
 	}
 	{
-		copy(buf[i:], d.Target[:])
+		copy(buf[i+0:], d.Target[:])
 		i += 16
 	}
-	return buf[:i], nil
+	return buf[:i+0], nil
 }
 
 func (d *Feedback) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Source[:], buf[i:])
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Target[:], buf[i:])
+		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
 	return i + 0, nil
 }
 
 func (d *Feedback) UnmarshalSafe(buf []byte) (uint64, error) {
-	if len(buf) < 16+16+16 {
-		return 0, errors.New("invalid buffer")
+	lb := uint64(len(buf))
+	if lb < d.Size() {
+		return 0, io.EOF
 	}
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Source[:], buf[i:])
+		copy(d.Source[:], buf[i+0:])
 		i += 16
 	}
 	{
-		copy(d.Target[:], buf[i:])
+		copy(d.Target[:], buf[i+0:])
 		i += 16
 	}
 	return i + 0, nil

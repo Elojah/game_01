@@ -1,7 +1,6 @@
 package infra
 
 import (
-	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -14,6 +13,7 @@ var (
 )
 
 func (d *ACK) Size() (s uint64) {
+
 	{
 		s += 16
 	}
@@ -30,30 +30,34 @@ func (d *ACK) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
+
 	{
-		copy(buf[i:], d.ID[:])
+		copy(buf[i+0:], d.ID[:])
 		i += 16
 	}
-	return buf[:i], nil
+	return buf[:i+0], nil
 }
 
 func (d *ACK) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
-	return i, nil
+	return i + 0, nil
 }
 
 func (d *ACK) UnmarshalSafe(buf []byte) (uint64, error) {
-	if len(buf) < 16 {
-		return 0, errors.New("invalid buffer")
+	lb := uint64(len(buf))
+	if lb < d.Size() {
+		return 0, io.EOF
 	}
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
-	return i, nil
+	return i + 0, nil
 }

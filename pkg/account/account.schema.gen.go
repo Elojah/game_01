@@ -1,7 +1,6 @@
 package account
 
 import (
-	"errors"
 	"io"
 	"time"
 	"unsafe"
@@ -14,30 +13,37 @@ var (
 )
 
 func (d *A) Size() (s uint64) {
+
 	{
 		s += 16
 	}
 	{
 		l := uint64(len(d.Username))
+
 		{
+
 			t := l
 			for t >= 0x80 {
 				t >>= 7
 				s++
 			}
 			s++
+
 		}
 		s += l
 	}
 	{
 		l := uint64(len(d.Password))
+
 		{
+
 			t := l
 			for t >= 0x80 {
 				t >>= 7
 				s++
 			}
 			s++
+
 		}
 		s += l
 	}
@@ -57,87 +63,105 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 		}
 	}
 	i := uint64(0)
+
 	{
-		copy(buf[i:], d.ID[:])
+		copy(buf[i+0:], d.ID[:])
 		i += 16
 	}
 	{
 		l := uint64(len(d.Username))
+
 		{
+
 			t := uint64(l)
+
 			for t >= 0x80 {
-				buf[i] = byte(t) | 0x80
+				buf[i+0] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i] = byte(t)
+			buf[i+0] = byte(t)
 			i++
+
 		}
-		copy(buf[i:], d.Username)
+		copy(buf[i+0:], d.Username)
 		i += l
 	}
 	{
 		l := uint64(len(d.Password))
+
 		{
+
 			t := uint64(l)
+
 			for t >= 0x80 {
-				buf[i] = byte(t) | 0x80
+				buf[i+0] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i] = byte(t)
+			buf[i+0] = byte(t)
 			i++
+
 		}
-		copy(buf[i:], d.Password)
+		copy(buf[i+0:], d.Password)
 		i += l
 	}
 	{
-		copy(buf[i:], d.Token[:])
+		copy(buf[i+0:], d.Token[:])
 		i += 16
 	}
-	return buf[:i], nil
+	return buf[:i+0], nil
 }
 
 func (d *A) Unmarshal(buf []byte) (uint64, error) {
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
 		l := uint64(0)
+
 		{
+
 			bs := uint8(7)
-			t := uint64(buf[i] & 0x7F)
-			for buf[i]&0x80 == 0x80 {
+			t := uint64(buf[i+0] & 0x7F)
+			for buf[i+0]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i]&0x7F) << bs
+				t |= uint64(buf[i+0]&0x7F) << bs
 				bs += 7
 			}
 			i++
+
 			l = t
+
 		}
-		d.Username = string(buf[i : i+l])
+		d.Username = string(buf[i+0 : i+0+l])
 		i += l
 	}
 	{
 		l := uint64(0)
+
 		{
+
 			bs := uint8(7)
-			t := uint64(buf[i] & 0x7F)
-			for buf[i]&0x80 == 0x80 {
+			t := uint64(buf[i+0] & 0x7F)
+			for buf[i+0]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i]&0x7F) << bs
+				t |= uint64(buf[i+0]&0x7F) << bs
 				bs += 7
 			}
 			i++
+
 			l = t
+
 		}
-		d.Password = string(buf[i : i+l])
+		d.Password = string(buf[i+0 : i+0+l])
 		i += l
 	}
 	{
-		copy(d.Token[:], buf[i:])
+		copy(d.Token[:], buf[i+0:])
 		i += 16
 	}
 	return i + 0, nil
@@ -145,54 +169,69 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 
 func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 	lb := uint64(len(buf))
-	if lb < 32 {
-		return 0, errors.New("invalid buffer")
+	if lb < d.Size() {
+		return 0, io.EOF
 	}
 	i := uint64(0)
+
 	{
-		copy(d.ID[:], buf[i:])
+		copy(d.ID[:], buf[i+0:])
 		i += 16
 	}
 	{
 		l := uint64(0)
+
 		{
+
+			if i+0 >= lb {
+				return 0, io.EOF
+			}
 			bs := uint8(7)
-			t := uint64(buf[i] & 0x7F)
-			for i < lb && buf[i]&0x80 == 0x80 {
+			t := uint64(buf[i+0] & 0x7F)
+			for i < lb && buf[i+0]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i]&0x7F) << bs
+				t |= uint64(buf[i+0]&0x7F) << bs
 				bs += 7
 			}
 			i++
+
 			l = t
+
 		}
-		if i+l >= lb {
-			return 0, errors.New("invalid buffer")
-		}
-		d.Username = string(buf[i : i+l])
+		d.Username = string(buf[i+0 : i+0+l])
 		i += l
+		if d.Size() > lb {
+			return 0, io.EOF
+		}
 	}
 	{
 		l := uint64(0)
+
 		{
+
+			if i+0 >= lb {
+				return 0, io.EOF
+			}
 			bs := uint8(7)
-			t := uint64(buf[i] & 0x7F)
-			for i < lb && buf[i]&0x80 == 0x80 {
+			t := uint64(buf[i+0] & 0x7F)
+			for i < lb && buf[i+0]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i]&0x7F) << bs
+				t |= uint64(buf[i+0]&0x7F) << bs
 				bs += 7
 			}
 			i++
+
 			l = t
+
 		}
-		if i+l >= lb {
-			return 0, errors.New("invalid buffer")
-		}
-		d.Password = string(buf[i : i+l])
+		d.Password = string(buf[i+0 : i+0+l])
 		i += l
+		if d.Size() > lb {
+			return 0, io.EOF
+		}
 	}
 	{
-		copy(d.Token[:], buf[i:])
+		copy(d.Token[:], buf[i+0:])
 		i += 16
 	}
 	return i + 0, nil
