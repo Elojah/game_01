@@ -116,17 +116,21 @@ func (a *app) MoveTarget(e event.E) error {
 
 	} else {
 
-		// TODO
-		return errors.New("not implemented")
-
+		// #Find closest connection point for current out coord.
 		con := s.Closest(target.Position.Coord)
+
+		// #Move coordinates to new reference.
 		target.Position.Coord.MoveReference(con.Coord, con.External.Coord)
+
+		// #Add entity to new sector and remove from previous.
 		if err := a.EntitiesMapper.AddEntityToSector(target.ID, con.External.SectorID); err != nil {
 			return errors.Wrapf(err, "add entity %s to sector %s", ulid.String(target.ID), ulid.String(con.External.SectorID))
 		}
 		if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, target.Position.SectorID); err != nil {
 			return errors.Wrapf(err, "remove entity %s from sector %s", ulid.String(target.ID), ulid.String(s.ID))
 		}
+
+		// #Change entity SectorID.
 		target.Position.SectorID = con.External.SectorID
 	}
 
