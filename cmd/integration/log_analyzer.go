@@ -10,6 +10,8 @@ import (
 // LogAnalyzer receives log and analyze them with an Expect function.
 type LogAnalyzer struct {
 	c chan string
+
+	cmds []*exec.Cmd
 }
 
 func NewLogAnalyzer() *LogAnalyzer {
@@ -18,9 +20,18 @@ func NewLogAnalyzer() *LogAnalyzer {
 	}
 }
 
+func (a *LogAnalyzer) Close() {
+	for _, cmd := range a.cmds {
+		if err := cmd.Process.Kill(); err != nil {
+			log.Error().Err(err).Str("cmd", cmd.Path).Msg("failed to kill process")
+		}
+	}
+}
+
 // Cmd runs a cmd and plug output (stdout) in analyzer chan.
 func (a *LogAnalyzer) Cmd(args ...string) error {
 	cmd := exec.Command(args[0], args[1:]...)
+	a.cmds = append(a.cmds, cmd)
 
 	cmdout, err := cmd.StdoutPipe()
 	if err != nil {

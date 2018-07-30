@@ -14,7 +14,6 @@ type up struct {
 func expectUp(a *LogAnalyzer) error {
 
 	logup := []up{
-		up{Level: "info", Exe: "./bin/game_integration", Message: "integration up"},
 		up{Level: "info", Exe: "./bin/game_sync", Message: "sync up"},
 		up{Level: "info", Exe: "./bin/game_core", Message: "core up"},
 		up{Level: "info", Exe: "./bin/game_api", Message: "api up"},

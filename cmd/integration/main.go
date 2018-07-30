@@ -23,6 +23,7 @@ func main() {
 		[]string{"./bin/game_tool", "./configs/config_tool.json"},
 	}
 
+	defer a.Close()
 	for _, args := range cmds {
 		if err := a.Cmd(args...); err != nil {
 			log.Error().Err(err).Msg("failed to start")
@@ -32,5 +33,10 @@ func main() {
 
 	log.Info().Msg("integration up")
 
-	select {}
+	if err := expectUp(a); err != nil {
+		log.Error().Err(err).Msg("unexpected up")
+		return
+	}
+
+	log.Info().Msg("integration ok")
 }
