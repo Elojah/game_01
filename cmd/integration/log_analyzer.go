@@ -46,7 +46,7 @@ func (a *LogAnalyzer) Cmd(args ...string) error {
 		for {
 			s, err := r.ReadString('\n')
 			if err != nil {
-				log.Error().Err(err).Msg("failed to read out")
+				log.Error().Err(err).Msgf("failed to read out %s", args[0])
 				return
 			}
 			a.c <- s
