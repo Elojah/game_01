@@ -1,0 +1,58 @@
+package main
+
+import (
+	"bufio"
+	"os/exec"
+
+	"github.com/rs/zerolog/log"
+)
+
+// LogAnalyzer receives log and analyze them with an Expect function.
+type LogAnalyzer struct {
+	c chan string
+}
+
+func NewLogAnalyzer() *LogAnalyzer {
+	return &LogAnalyzer{
+		c: make(chan string),
+	}
+}
+
+// Cmd runs a cmd and plug output (stdout) in analyzer chan.
+func (a *LogAnalyzer) Cmd(args ...string) error {
+	cmd := exec.Command(args[0], args[1:]...)
+
+	cmdout, err := cmd.StdoutPipe()
+	if err != nil {
+		log.Error().Err(err).Str("cmd", args[0]).Msg("failed to pipe out")
+		return err
+	}
+
+	go func() {
+		r := bufio.NewReader(cmdout)
+		for {
+			s, err := r.ReadString('\n')
+			if err != nil {
+				log.Error().Err(err).Msg("failed to read out")
+				return
+			}
+			a.c <- s
+		}
+	}()
+
+	return cmd.Start()
+}
+
+// Expect sends log into f and return error if f fail. Returns nil when f returns ok.
+func (a *LogAnalyzer) Expect(f func(string) (bool, error)) error {
+	for s := range a.c {
+		ok, err := f(s)
+		if err != nil {
+			return err
+		}
+		if ok {
+			return nil
+		}
+	}
+	return nil
+}

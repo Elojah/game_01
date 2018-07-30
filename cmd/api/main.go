@@ -23,7 +23,7 @@ import (
 func run(prog string, filename string) {
 
 	zerolog.TimeFieldFormat = ""
-	log.Logger = log.With().Str("exe", prog).Logger()
+	log.Logger = zerolog.New(os.Stdout).With().Timestamp().Str("exe", prog).Logger()
 
 	launchers := services.Launchers{}
 

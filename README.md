@@ -77,6 +77,7 @@ make tool && bin/game_tool configs/config_tool.json
 ```sh
 # Fill static data
 curl -k -X POST https://127.0.0.1:8081/entity/template -d @templates/entity_templates.json
+curl -k -X POST https://127.0.0.1:8081/ability/template -d @templates/ability_templates.json
 curl -k -X POST https://127.0.0.1:8081/sector -d @templates/sector.json
 curl -k -X POST https://127.0.0.1:8081/sector/starter -d @templates/sector_starter.json
 
