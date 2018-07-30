@@ -9,97 +9,52 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+func logCmd(args ...string) error {
+	cmd := exec.Command(args[0], args[1:]...)
+
+	cmdout, err := cmd.StdoutPipe()
+	if err != nil {
+		log.Error().Err(err).Str("cmd", args[0]).Msg("failed to pipe out")
+		return err
+	}
+
+	go func() {
+		r := bufio.NewReader(cmdout)
+		for {
+			s, err := r.ReadString('\n')
+			if err != nil {
+				log.Error().Err(err).Msg("failed to read")
+				return
+			}
+			log.Info().Msg(s)
+		}
+	}()
+
+	return nil
+}
+
 func main() {
 
 	zerolog.TimeFieldFormat = ""
 	log.Logger = log.With().Str("exe", os.Args[0]).Logger()
 
-	sync := exec.Command("game_sync", "-c", "configs/config_sync.json")
-	core := exec.Command("game_core", "-c", "configs/config_core.json")
-	api := exec.Command("game_api", "-c", "configs/config_api.json")
-	auth := exec.Command("game_auth", "-c", "configs/config_auth.json")
-	tool := exec.Command("game_tool", "-c", "configs/config_tool.json")
-
-	syncout, err := sync.StdoutPipe()
-	if err != nil {
-		log.Error().Err(err).Msg("failed to pipe out sync")
-		return
-	}
-	coreout, err := core.StdoutPipe()
-	if err != nil {
-		log.Error().Err(err).Msg("failed to pipe out core")
-		return
-	}
-	apiout, err := api.StdoutPipe()
-	if err != nil {
-		log.Error().Err(err).Msg("failed to pipe out api")
-		return
-	}
-	authout, err := auth.StdoutPipe()
-	if err != nil {
-		log.Error().Err(err).Msg("failed to pipe out auth")
-		return
-	}
-	toolout, err := tool.StdoutPipe()
-	if err != nil {
-		log.Error().Err(err).Msg("failed to pipe out tool")
-		return
+	cmds := [][]string{
+		[]string{"game_sync", "-c", "configs/config_sync.json"},
+		[]string{"game_core", "-c", "configs/config_core.json"},
+		[]string{"game_api", "-c", "configs/config_api.json"},
+		[]string{"game_auth", "-c", "configs/config_auth.json"},
+		[]string{"game_revoker", "-c", "configs/config_revoker.json"},
+		[]string{"game_tool", "-c", "configs/config_tool.json"},
 	}
 
-	go func() {
-		r := bufio.NewReader(syncout)
-		for {
-			s, err := r.ReadString('\n')
-			if err != nil {
-				log.Error().Err(err).Msg("failed to read sync")
-				return
-			}
-			log.Info().Msg(s)
+	for _, args := range cmds {
+		if err := logCmd(args...); err != nil {
+			log.Error().Err(err).Msg("failed to start")
 		}
-	}()
-	go func() {
-		r := bufio.NewReader(coreout)
-		for {
-			s, err := r.ReadString('\n')
-			if err != nil {
-				log.Error().Err(err).Msg("failed to read core")
-				return
-			}
-			log.Info().Msg(s)
-		}
-	}()
-	go func() {
-		r := bufio.NewReader(apiout)
-		for {
-			s, err := r.ReadString('\n')
-			if err != nil {
-				log.Error().Err(err).Msg("failed to read api")
-				return
-			}
-			log.Info().Msg(s)
-		}
-	}()
-	go func() {
-		r := bufio.NewReader(authout)
-		for {
-			s, err := r.ReadString('\n')
-			if err != nil {
-				log.Error().Err(err).Msg("failed to read auth")
-				return
-			}
-			log.Info().Msg(s)
-		}
-	}()
-	go func() {
-		r := bufio.NewReader(toolout)
-		for {
-			s, err := r.ReadString('\n')
-			if err != nil {
-				log.Error().Err(err).Msg("failed to read tool")
-				return
-			}
-			log.Info().Msg(s)
-		}
-	}()
+		log.Info().Msg("integration up")
+	}
 
+	log.Info().Msg("integration up")
+
+	select {}
 }
