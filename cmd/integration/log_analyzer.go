@@ -14,12 +14,14 @@ type LogAnalyzer struct {
 	cmds []*exec.Cmd
 }
 
+// NewLogAnalyzer returns a new valid log analyzer.
 func NewLogAnalyzer() *LogAnalyzer {
 	return &LogAnalyzer{
-		c: make(chan string),
+		c: make(chan string, 1000),
 	}
 }
 
+// Close kill all pipe processes started with Cmd method.
 func (a *LogAnalyzer) Close() {
 	for _, cmd := range a.cmds {
 		if err := cmd.Process.Kill(); err != nil {

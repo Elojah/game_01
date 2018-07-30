@@ -38,5 +38,10 @@ func main() {
 		return
 	}
 
+	if err := expectStaticData(a); err != nil {
+		log.Error().Err(err).Msg("unexpected static data")
+		return
+	}
+
 	log.Info().Msg("integration ok")
 }
