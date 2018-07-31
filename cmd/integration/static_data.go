@@ -8,31 +8,32 @@ import (
 	"os"
 )
 
-type entityTemplate struct {
-	Level           string
-	Exe             string
-	Method          string
-	Route           string
-	EntityTemplates int `json:"entity_templates"`
-	Message         string
-}
-
-type abilityTemplate struct {
-	Level            string
-	Exe              string
-	Method           string
-	Route            string
-	AbilityTemplates int `json:"ability_templates"`
-	Message          string
-}
-
-type sector struct {
+type common struct {
 	Level   string
 	Exe     string
 	Method  string
 	Route   string
-	Sectors int
 	Message string
+}
+
+type entityTemplate struct {
+	common
+	EntityTemplates int `json:"entity_templates"`
+}
+
+type abilityTemplate struct {
+	common
+	AbilityTemplates int `json:"ability_templates"`
+}
+
+type sector struct {
+	common
+	Sectors int
+}
+
+type sectorStarter struct {
+	common
+	Starters int
 }
 
 func expectEntityTemplates(a *LogAnalyzer) error {
@@ -49,12 +50,14 @@ func expectEntityTemplates(a *LogAnalyzer) error {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
 	expected := entityTemplate{
-		Level:           "info",
-		Exe:             "./bin/game_tool",
-		Method:          "POST",
-		Route:           "/entity/template",
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_tool",
+			Method:  "POST",
+			Route:   "/entity/template",
+			Message: "found",
+		},
 		EntityTemplates: 5,
-		Message:         "found",
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var et entityTemplate
@@ -82,12 +85,14 @@ func expectAbilityTemplates(a *LogAnalyzer) error {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
 	expected := abilityTemplate{
-		Level:            "info",
-		Exe:              "./bin/game_tool",
-		Method:           "POST",
-		Route:            "/ability/template",
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_tool",
+			Method:  "POST",
+			Route:   "/ability/template",
+			Message: "found",
+		},
 		AbilityTemplates: 2,
-		Message:          "found",
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var et abilityTemplate
@@ -115,15 +120,52 @@ func expectSector(a *LogAnalyzer) error {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
 	expected := sector{
-		Level:   "info",
-		Exe:     "./bin/game_tool",
-		Method:  "POST",
-		Route:   "/sector",
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_tool",
+			Method:  "POST",
+			Route:   "/sector",
+			Message: "found",
+		},
 		Sectors: 2,
-		Message: "found",
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var et sector
+		if err := json.Unmarshal([]byte(s), &et); err != nil {
+			return false, err
+		}
+		if et != expected {
+			return false, fmt.Errorf("unexpected log %s", s)
+		}
+		return true, nil
+	})
+}
+
+func expectSectorStarter(a *LogAnalyzer) error {
+	file, err := os.Open("./static/sector_starter.json")
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	resp, err := http.Post("https://localhost:8081/sector/starter", "application/json", file)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("invalid status code %d", resp.StatusCode)
+	}
+	expected := sectorStarter{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_tool",
+			Method:  "POST",
+			Route:   "/sector/starter",
+			Message: "found",
+		},
+		Starters: 1,
+	}
+	return a.Expect(func(s string) (bool, error) {
+		var et sectorStarter
 		if err := json.Unmarshal([]byte(s), &et); err != nil {
 			return false, err
 		}
@@ -144,6 +186,9 @@ func expectStaticData(a *LogAnalyzer) error {
 		return err
 	}
 	if err := expectSector(a); err != nil {
+		return err
+	}
+	if err := expectSectorStarter(a); err != nil {
 		return err
 	}
 	return nil

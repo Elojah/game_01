@@ -41,5 +41,5 @@ func Segment(lhs Vec3, rhs Vec3) float64 {
 // Position represents an entity position in world.
 type Position struct {
 	Coord    Vec3
-	SectorID ulid.ID
+	SectorID ulid.ID `json:"sector_id"`
 }
