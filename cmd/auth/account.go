@@ -26,7 +26,7 @@ func (a Account) Domain() account.A {
 func (a Account) Check() error {
 	lu := len(a.Username)
 	lp := len(a.Password)
-	if lu < 4 || lu > 15 ||
+	if lu < 4 || lu > 25 ||
 		lp < 7 || lp > 50 ||
 		strings.IndexFunc(a.Username, func(r rune) bool {
 			return r < 'A' || r > 'z'
