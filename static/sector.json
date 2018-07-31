@@ -2,9 +2,51 @@
     {
         "id": "01CF001HTBA3CDR1ERJ6RF183A",
         "dim": {
-            "x": 98730.4,
-            "y": 95003.1,
-            "z": 45219.2
-        }
+            "x": 1024,
+            "y": 1024,
+            "z": 1024
+        },
+        "connections": [
+            {
+                "external": {
+                    "sector_id": "01CKQQPVZN5KQC8XC9Q9NK8YXQ",
+                    "coord": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": 0
+                    }
+                },
+                "coord": {
+                    "X": 1024,
+                    "Y": 1024,
+                    "Z": 0
+                }
+            }
+        ]
+    },
+    {
+        "id": "01CKQQPVZN5KQC8XC9Q9NK8YXQ",
+        "dim": {
+            "x": 1024,
+            "y": 1024,
+            "z": 1024
+        },
+        "connections": [
+            {
+                "external": {
+                    "sector_id": "01CF001HTBA3CDR1ERJ6RF183A",
+                    "coord": {
+	                    "X": 1024,
+	                    "Y": 1024,
+	                    "Z": 0
+                    }
+                },
+                "coord": {
+                    "X": 0,
+                    "Y": 0,
+                    "Z": 0
+                }
+            }
+        ]
     }
 ]
