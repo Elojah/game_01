@@ -116,9 +116,13 @@ func expectSignin(a *LogAnalyzer) error {
 			if _, err := net.ResolveTCPAddr("tcp", tt.Addr); err != nil {
 				return false, fmt.Errorf("invalid log addr %s", s)
 			}
-			return true, nil
+			return false, nil
 		case 1:
+			// TODO check listener log
+			return true, nil
+		default:
 		}
+		return false, fmt.Errorf("additional log %s", s)
 	})
 }
 
