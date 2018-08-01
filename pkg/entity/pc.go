@@ -35,6 +35,7 @@ type PCMapper interface {
 	SetPC(PC, ulid.ID) error
 	GetPC(PCSubset) (PC, error)
 	ListPC(PCSubset) ([]PC, error)
+	DelPC(PCSubset) error
 }
 
 // PCSubset represents a subset of PC by account ID.
@@ -50,6 +51,7 @@ type PCLeft int
 type PCLeftMapper interface {
 	SetPCLeft(PCLeft, ulid.ID) error
 	GetPCLeft(PCLeftSubset) (PCLeft, error)
+	DelPCLeft(PCLeftSubset) error
 }
 
 // PCLeftSubset represents a subset of PCLeft per account.

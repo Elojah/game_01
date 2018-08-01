@@ -39,7 +39,7 @@ func (a Account) Check() error {
 	return nil
 }
 
-// SignoutAccount represents the payload to create a new account via subscribe.
+// SignoutAccount represents the payload to disconnect an account via /signout.
 type SignoutAccount struct {
 	Username string
 	Token    ulid.ID

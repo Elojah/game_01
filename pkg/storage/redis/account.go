@@ -36,3 +36,8 @@ func (s *Service) SetAccount(a account.A) error {
 	}
 	return s.Set(accountKey+a.Username, raw, 0).Err()
 }
+
+// DelAccount redis implementation.
+func (s *Service) DelAccount(subset account.Subset) error {
+	return s.Del(accountKey + subset.Username).Err()
+}

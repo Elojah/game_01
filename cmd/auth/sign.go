@@ -30,8 +30,8 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := ac.Check(); err != nil {
-		logger.Error().Err(err).Msg("account invalid")
-		http.Error(w, "account invalid", http.StatusBadRequest)
+		logger.Error().Err(err).Msg("payload invalid")
+		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
 	a := ac.Domain()

@@ -53,7 +53,9 @@ func run(prog string, filename string) {
 		ListenerMapper:  rdx,
 		CoreMapper:      rdx,
 	}
+	h.AccountMapper = rdx
 	h.EntitiesMapper = rdlrux
+	h.PCMapper = rdx
 	h.PCLeftMapper = rdx
 	h.PermissionMapper = rdx
 	h.L = l

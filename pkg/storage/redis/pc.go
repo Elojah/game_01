@@ -62,6 +62,11 @@ func (s *Service) SetPC(pc entity.PC, accountID ulid.ID) error {
 	return s.Set(pcKey+accountID.String()+":"+pc.ID.String(), raw, 0).Err()
 }
 
+// DelPC implemented with redis.
+func (s *Service) DelPC(subset entity.PCSubset) error {
+	return s.Del(pcKey + subset.AccountID.String() + ":" + subset.ID.String()).Err()
+}
+
 // SetPCLeft implemented with redis.
 func (s *Service) SetPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
 	return s.Set(pcLeftKey+accountID.String(), int(pc), 0).Err()
@@ -79,4 +84,9 @@ func (s *Service) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
 
 	pcLeft, err := strconv.Atoi(val)
 	return entity.PCLeft(pcLeft), err
+}
+
+// DelPCLeft implemented with redis.
+func (s *Service) DelPCLeft(subset entity.PCLeftSubset) error {
+	return s.Del(pcLeftKey + subset.AccountID.String()).Err()
 }

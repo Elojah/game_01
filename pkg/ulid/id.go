@@ -30,6 +30,7 @@ func MustParse(s string) ID {
 }
 
 // IsZero returns if id is zero.
+// TODO move as method.
 func IsZero(id ID) bool {
 	return ulid.ULID(id).Time() == 0
 }

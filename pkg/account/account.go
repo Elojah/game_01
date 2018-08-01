@@ -22,4 +22,5 @@ type Subset struct {
 type Mapper interface {
 	SetAccount(A) error
 	GetAccount(Subset) (A, error)
+	DelAccount(Subset) error
 }
