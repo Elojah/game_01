@@ -24,6 +24,9 @@ func NewLogAnalyzer() *LogAnalyzer {
 // Close kill all pipe processes started with Cmd method.
 func (a *LogAnalyzer) Close() {
 	for _, cmd := range a.cmds {
+		if cmd == nil || cmd.Process == nil {
+			continue
+		}
 		if err := cmd.Process.Kill(); err != nil {
 			log.Error().Err(err).Str("cmd", cmd.Path).Msg("failed to kill process")
 		}

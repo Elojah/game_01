@@ -8,31 +8,31 @@ import (
 	"os"
 )
 
-type common struct {
-	Level   string
-	Exe     string
-	Method  string
-	Route   string
-	Message string
-}
-
 type entityTemplate struct {
 	common
+	Method          string
+	Route           string
 	EntityTemplates int `json:"entity_templates"`
 }
 
 type abilityTemplate struct {
 	common
+	Method           string
+	Route            string
 	AbilityTemplates int `json:"ability_templates"`
 }
 
 type sector struct {
 	common
+	Method  string
+	Route   string
 	Sectors int
 }
 
 type sectorStarter struct {
 	common
+	Method   string
+	Route    string
 	Starters int
 }
 
@@ -53,10 +53,10 @@ func expectEntityTemplates(a *LogAnalyzer) error {
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_tool",
-			Method:  "POST",
-			Route:   "/entity/template",
 			Message: "found",
 		},
+		Method:          "POST",
+		Route:           "/entity/template",
 		EntityTemplates: 5,
 	}
 	return a.Expect(func(s string) (bool, error) {
@@ -88,10 +88,10 @@ func expectAbilityTemplates(a *LogAnalyzer) error {
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_tool",
-			Method:  "POST",
-			Route:   "/ability/template",
 			Message: "found",
 		},
+		Method:           "POST",
+		Route:            "/ability/template",
 		AbilityTemplates: 2,
 	}
 	return a.Expect(func(s string) (bool, error) {
@@ -123,10 +123,10 @@ func expectSector(a *LogAnalyzer) error {
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_tool",
-			Method:  "POST",
-			Route:   "/sector",
 			Message: "found",
 		},
+		Method:  "POST",
+		Route:   "/sector",
 		Sectors: 2,
 	}
 	return a.Expect(func(s string) (bool, error) {
@@ -158,10 +158,10 @@ func expectSectorStarter(a *LogAnalyzer) error {
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_tool",
-			Method:  "POST",
-			Route:   "/sector/starter",
 			Message: "found",
 		},
+		Method:   "POST",
+		Route:    "/sector/starter",
 		Starters: 1,
 	}
 	return a.Expect(func(s string) (bool, error) {
