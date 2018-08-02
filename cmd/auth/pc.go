@@ -250,7 +250,6 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
 	if !ulid.IsZero(tok.Entity) {
 		logger.Error().Msg("packet rejected")
 		http.Error(w, "token already in use", http.StatusBadRequest)

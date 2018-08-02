@@ -60,11 +60,11 @@ func expectEntityTemplates(a *LogAnalyzer) error {
 		EntityTemplates: 5,
 	}
 	return a.Expect(func(s string) (bool, error) {
-		var et entityTemplate
-		if err := json.Unmarshal([]byte(s), &et); err != nil {
+		var actual entityTemplate
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if et != expected {
+		if actual != expected {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		return true, nil
@@ -95,11 +95,11 @@ func expectAbilityTemplates(a *LogAnalyzer) error {
 		AbilityTemplates: 2,
 	}
 	return a.Expect(func(s string) (bool, error) {
-		var et abilityTemplate
-		if err := json.Unmarshal([]byte(s), &et); err != nil {
+		var actual abilityTemplate
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if et != expected {
+		if actual != expected {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		return true, nil
@@ -130,11 +130,11 @@ func expectSector(a *LogAnalyzer) error {
 		Sectors: 2,
 	}
 	return a.Expect(func(s string) (bool, error) {
-		var et sector
-		if err := json.Unmarshal([]byte(s), &et); err != nil {
+		var actual sector
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if et != expected {
+		if actual != expected {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		return true, nil
@@ -165,11 +165,11 @@ func expectSectorStarter(a *LogAnalyzer) error {
 		Starters: 1,
 	}
 	return a.Expect(func(s string) (bool, error) {
-		var et sectorStarter
-		if err := json.Unmarshal([]byte(s), &et); err != nil {
+		var actual sectorStarter
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if et != expected {
+		if actual != expected {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		return true, nil

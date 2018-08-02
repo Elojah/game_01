@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 
+	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -18,7 +19,7 @@ var (
 	}
 )
 
-type account struct {
+type accountLog struct {
 	common
 	Account string
 	Method  string
@@ -26,13 +27,20 @@ type account struct {
 	Addr    string
 }
 
-type token struct {
+type tokenLog struct {
 	common
 	Method   string
 	Route    string
 	Token    string
 	Listener string
 	Addr     string
+}
+
+type listenerLog struct {
+	common
+	Core     string
+	Listener string
+	Action   uint8
 }
 
 func expectSubscribe(a *LogAnalyzer) error {
@@ -47,7 +55,7 @@ func expectSubscribe(a *LogAnalyzer) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
-	expected := account{
+	expected := accountLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
@@ -57,36 +65,41 @@ func expectSubscribe(a *LogAnalyzer) error {
 		Route:  "/subscribe",
 	}
 	return a.Expect(func(s string) (bool, error) {
-		var at account
-		if err := json.Unmarshal([]byte(s), &at); err != nil {
+		var actual accountLog
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if at.common != expected.common {
+		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
-		if _, err := ulid.Parse(at.Account); err != nil {
+		if _, err := ulid.Parse(actual.Account); err != nil {
 			return false, fmt.Errorf("invalid log account %s", s)
 		}
-		if _, err := net.ResolveTCPAddr("tcp", at.Addr); err != nil {
+		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
 			return false, fmt.Errorf("invalid log addr %s", s)
 		}
 		return true, nil
 	})
 }
 
-func expectSignin(a *LogAnalyzer) error {
+func expectSignin(a *LogAnalyzer) (account.Token, error) {
+	var tok account.Token
 	raw, err := json.Marshal(testAccount)
 	if err != nil {
-		return err
+		return tok, err
 	}
 	resp, err := http.Post("https://localhost:8080/signin", "application/json", bytes.NewBuffer(raw))
 	if err != nil {
-		return err
+		return tok, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("invalid status code %d", resp.StatusCode)
+		return tok, fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
-	expected := token{
+	defer resp.Body.Close()
+	if err := json.NewDecoder(resp.Body).Decode(&tok); err != nil {
+		return tok, err
+	}
+	expectedToken := tokenLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
@@ -95,34 +108,133 @@ func expectSignin(a *LogAnalyzer) error {
 		Method: "POST",
 		Route:  "/signin",
 	}
+	expectedListener := listenerLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_core",
+			Message: "listening",
+		},
+		Action: 0,
+	}
+	count := 0
+	return tok, a.Expect(func(s string) (bool, error) {
+		defer func() { count++ }()
+		switch count {
+		case 0:
+			var actual tokenLog
+			if err := json.Unmarshal([]byte(s), &actual); err != nil {
+				return false, err
+			}
+			if actual.common != expectedToken.common {
+				return false, fmt.Errorf("unexpected log %s", s)
+			}
+			if _, err := ulid.Parse(actual.Token); err != nil {
+				return false, fmt.Errorf("invalid token %s", s)
+			}
+			if _, err := ulid.Parse(actual.Listener); err != nil {
+				return false, fmt.Errorf("invalid listener %s", s)
+			}
+			if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+				return false, fmt.Errorf("invalid log addr %s", s)
+			}
+			return false, nil
+		case 1:
+			var actual listenerLog
+			if err := json.Unmarshal([]byte(s), &actual); err != nil {
+				return false, err
+			}
+			if actual.common != expectedListener.common {
+				return false, fmt.Errorf("unexpected log %s", s)
+			}
+			if _, err := ulid.Parse(actual.Core); err != nil {
+				return false, fmt.Errorf("invalid core %s", s)
+			}
+			if _, err := ulid.Parse(actual.Listener); err != nil {
+				return false, fmt.Errorf("invalid listener %s", s)
+			}
+			if actual.Action != expectedListener.Action {
+				return false, fmt.Errorf("invalid action %s", s)
+			}
+			return true, nil
+		default:
+			return false, fmt.Errorf("additional log %s", s)
+		}
+	})
+}
+
+func expectSignout(a *LogAnalyzer, tok account.Token) error {
+	return nil
+	raw, err := json.Marshal(testAccount)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post("https://localhost:8080/signout", "application/json", bytes.NewBuffer(raw))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("invalid status code %d", resp.StatusCode)
+	}
+	expectedToken := tokenLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_auth",
+			Message: "signin success",
+		},
+		Method: "POST",
+		Route:  "/signin",
+	}
+	expectedListener := listenerLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_core",
+			Message: "listening",
+		},
+		Action: 0,
+	}
 	count := 0
 	return a.Expect(func(s string) (bool, error) {
 		defer func() { count++ }()
 		switch count {
 		case 0:
-			var tt token
-			if err := json.Unmarshal([]byte(s), &tt); err != nil {
+			var actual tokenLog
+			if err := json.Unmarshal([]byte(s), &actual); err != nil {
 				return false, err
 			}
-			if tt.common != expected.common {
+			if actual.common != expectedToken.common {
 				return false, fmt.Errorf("unexpected log %s", s)
 			}
-			if _, err := ulid.Parse(tt.Token); err != nil {
-				return false, fmt.Errorf("invalid token %s", s)
+			if _, err := ulid.Parse(actual.Token); err != nil {
+				return false, fmt.Errorf("invalid tokenLog %s", s)
 			}
-			if _, err := ulid.Parse(tt.Listener); err != nil {
-				return false, fmt.Errorf("invalid listener %s", s)
+			if _, err := ulid.Parse(actual.Listener); err != nil {
+				return false, fmt.Errorf("invalid listenerLog %s", s)
 			}
-			if _, err := net.ResolveTCPAddr("tcp", tt.Addr); err != nil {
+			if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
 				return false, fmt.Errorf("invalid log addr %s", s)
 			}
 			return false, nil
 		case 1:
-			// TODO check listener log
+			var actual listenerLog
+			if err := json.Unmarshal([]byte(s), &actual); err != nil {
+				return false, err
+			}
+			if actual.common != expectedListener.common {
+				return false, fmt.Errorf("unexpected log %s", s)
+			}
+			if _, err := ulid.Parse(actual.Core); err != nil {
+				return false, fmt.Errorf("invalid core %s", s)
+			}
+			if _, err := ulid.Parse(actual.Listener); err != nil {
+				return false, fmt.Errorf("invalid listenerLog %s", s)
+			}
+			if actual.Action != expectedListener.Action {
+				return false, fmt.Errorf("invalid action %s", s)
+			}
 			return true, nil
 		default:
+			return false, fmt.Errorf("additional log %s", s)
 		}
-		return false, fmt.Errorf("additional log %s", s)
 	})
 }
 
@@ -138,7 +250,7 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
-	expected := account{
+	expected := accountLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
@@ -148,17 +260,17 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 		Route:  "/unsubscribe",
 	}
 	return a.Expect(func(s string) (bool, error) {
-		var at account
-		if err := json.Unmarshal([]byte(s), &at); err != nil {
+		var actual accountLog
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if at.common != expected.common {
+		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
-		if _, err := ulid.Parse(at.Account); err != nil {
+		if _, err := ulid.Parse(actual.Account); err != nil {
 			return false, fmt.Errorf("invalid log account %s", s)
 		}
-		if _, err := net.ResolveTCPAddr("tcp", at.Addr); err != nil {
+		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
 			return false, fmt.Errorf("invalid log addr %s", s)
 		}
 		return true, nil
@@ -171,7 +283,11 @@ func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 	if err := expectSubscribe(a); err != nil {
 		return ulid.ID{}, err
 	}
-	if err := expectSignin(a); err != nil {
+	tok, err := expectSignin(a)
+	if err != nil {
+		return ulid.ID{}, err
+	}
+	if err := expectSignout(a, tok); err != nil {
 		return ulid.ID{}, err
 	}
 	if err := expectUnsubscribe(a); err != nil {
