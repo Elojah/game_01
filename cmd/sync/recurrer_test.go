@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/elojah/game_01/pkg/entity"
@@ -60,6 +61,7 @@ func TestRecurrer(t *testing.T) {
 		}
 		r := infra.Recurrer{EntityID: ulid.NewID(), TokenID: ulid.NewID()}
 		rec := NewRecurrer(r, 10, callback)
+		rec.logger = zerolog.Nop()
 		rec.EntityMapper = entityMock
 		rec.SectorMapper = sectorMock
 		rec.EntitiesMapper = sectorEntitiesMock

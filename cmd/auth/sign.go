@@ -46,16 +46,6 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 
 	logger = logger.With().Str("token", tok.ID.String()).Logger()
 
-	// #Set a new listener for this token
-	listener, err := h.L.New(tok.ID)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to create token listener")
-		http.Error(w, "failed to signin", http.StatusInternalServerError)
-		return
-	}
-
-	logger = logger.With().Str("listener", listener.ID.String()).Logger()
-
 	// #Marshal token for response
 	raw, err := json.Marshal(tok)
 	if err != nil {

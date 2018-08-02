@@ -128,6 +128,7 @@ func (s *Sequencer) listenProcess() {
 
 // Run starts the 3 goroutines to follow up events.
 func (s *Sequencer) Run() {
+	s.logger.Info().Msg("run sequencer")
 	go s.listenInput()
 	go s.listenFetch()
 	go s.listenProcess()
@@ -144,6 +145,6 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		s.logger.Error().Err(err).Msg("error creating event")
 		return
 	}
-	s.logger.Info().Str("e", e.ID.String()).Msg("event received")
+	s.logger.Info().Str("event", e.ID.String()).Msg("event received")
 	s.input <- e.TS.UnixNano()
 }

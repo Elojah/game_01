@@ -40,11 +40,13 @@ func NewRecurrer(rec infra.Recurrer, tick uint32, callback func(entity.E)) *Recu
 
 // Close close the tick sender.
 func (r *Recurrer) Close() {
+	r.logger.Info().Msg("close sequencer")
 	r.ticker.Stop()
 }
 
 // Run starts to read the ticker and send entities.
 func (r *Recurrer) Run() {
+	r.logger.Info().Msg("run sequencer")
 	for t := range r.ticker.C {
 		en, err := r.EntityMapper.GetEntity(entity.Subset{ID: r.entityID, MaxTS: t.UnixNano()})
 		if err != nil {

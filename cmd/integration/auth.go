@@ -29,11 +29,10 @@ type accountLog struct {
 
 type tokenLog struct {
 	common
-	Method   string
-	Route    string
-	Token    string
-	Listener string
-	Addr     string
+	Method string
+	Route  string
+	Token  string
+	Addr   string
 }
 
 type listenerLog struct {
@@ -108,57 +107,21 @@ func expectSignin(a *LogAnalyzer) (account.Token, error) {
 		Method: "POST",
 		Route:  "/signin",
 	}
-	expectedListener := listenerLog{
-		common: common{
-			Level:   "info",
-			Exe:     "./bin/game_core",
-			Message: "listening",
-		},
-		Action: 0,
-	}
-	count := 0
 	return tok, a.Expect(func(s string) (bool, error) {
-		defer func() { count++ }()
-		switch count {
-		case 0:
-			var actual tokenLog
-			if err := json.Unmarshal([]byte(s), &actual); err != nil {
-				return false, err
-			}
-			if actual.common != expectedToken.common {
-				return false, fmt.Errorf("unexpected log %s", s)
-			}
-			if _, err := ulid.Parse(actual.Token); err != nil {
-				return false, fmt.Errorf("invalid token %s", s)
-			}
-			if _, err := ulid.Parse(actual.Listener); err != nil {
-				return false, fmt.Errorf("invalid listener %s", s)
-			}
-			if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-				return false, fmt.Errorf("invalid log addr %s", s)
-			}
-			return false, nil
-		case 1:
-			var actual listenerLog
-			if err := json.Unmarshal([]byte(s), &actual); err != nil {
-				return false, err
-			}
-			if actual.common != expectedListener.common {
-				return false, fmt.Errorf("unexpected log %s", s)
-			}
-			if _, err := ulid.Parse(actual.Core); err != nil {
-				return false, fmt.Errorf("invalid core %s", s)
-			}
-			if _, err := ulid.Parse(actual.Listener); err != nil {
-				return false, fmt.Errorf("invalid listener %s", s)
-			}
-			if actual.Action != expectedListener.Action {
-				return false, fmt.Errorf("invalid action %s", s)
-			}
-			return true, nil
-		default:
-			return false, fmt.Errorf("additional log %s", s)
+		var actual tokenLog
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
+			return false, err
 		}
+		if actual.common != expectedToken.common {
+			return false, fmt.Errorf("unexpected log %s", s)
+		}
+		if _, err := ulid.Parse(actual.Token); err != nil {
+			return false, fmt.Errorf("invalid token %s", s)
+		}
+		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+			return false, fmt.Errorf("invalid log addr %s", s)
+		}
+		return true, nil
 	})
 }
 
@@ -184,57 +147,21 @@ func expectSignout(a *LogAnalyzer, tok account.Token) error {
 		Method: "POST",
 		Route:  "/signin",
 	}
-	expectedListener := listenerLog{
-		common: common{
-			Level:   "info",
-			Exe:     "./bin/game_core",
-			Message: "listening",
-		},
-		Action: 0,
-	}
-	count := 0
 	return a.Expect(func(s string) (bool, error) {
-		defer func() { count++ }()
-		switch count {
-		case 0:
-			var actual tokenLog
-			if err := json.Unmarshal([]byte(s), &actual); err != nil {
-				return false, err
-			}
-			if actual.common != expectedToken.common {
-				return false, fmt.Errorf("unexpected log %s", s)
-			}
-			if _, err := ulid.Parse(actual.Token); err != nil {
-				return false, fmt.Errorf("invalid tokenLog %s", s)
-			}
-			if _, err := ulid.Parse(actual.Listener); err != nil {
-				return false, fmt.Errorf("invalid listenerLog %s", s)
-			}
-			if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-				return false, fmt.Errorf("invalid log addr %s", s)
-			}
-			return false, nil
-		case 1:
-			var actual listenerLog
-			if err := json.Unmarshal([]byte(s), &actual); err != nil {
-				return false, err
-			}
-			if actual.common != expectedListener.common {
-				return false, fmt.Errorf("unexpected log %s", s)
-			}
-			if _, err := ulid.Parse(actual.Core); err != nil {
-				return false, fmt.Errorf("invalid core %s", s)
-			}
-			if _, err := ulid.Parse(actual.Listener); err != nil {
-				return false, fmt.Errorf("invalid listenerLog %s", s)
-			}
-			if actual.Action != expectedListener.Action {
-				return false, fmt.Errorf("invalid action %s", s)
-			}
-			return true, nil
-		default:
-			return false, fmt.Errorf("additional log %s", s)
+		var actual tokenLog
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
+			return false, err
 		}
+		if actual.common != expectedToken.common {
+			return false, fmt.Errorf("unexpected log %s", s)
+		}
+		if _, err := ulid.Parse(actual.Token); err != nil {
+			return false, fmt.Errorf("invalid token %s", s)
+		}
+		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+			return false, fmt.Errorf("invalid log addr %s", s)
+		}
+		return true, nil
 	})
 }
 
