@@ -65,7 +65,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/create").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/pc/create").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var setPC SetPC

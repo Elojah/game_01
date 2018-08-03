@@ -35,11 +35,18 @@ type tokenLog struct {
 	Addr   string
 }
 
-type listenerLog struct {
+type createPCLog struct {
 	common
-	Core     string
-	Listener string
-	Action   uint8
+	Method string
+	Route  string
+	Token  string
+	Addr   string
+}
+
+type createPC struct {
+	Token ulid.ID
+	Name  string
+	Type  ulid.ID
 }
 
 func expectSubscribe(a *LogAnalyzer) error {
@@ -125,7 +132,51 @@ func expectSignin(a *LogAnalyzer) (account.Token, error) {
 	})
 }
 
-func expectSignout(a *LogAnalyzer, tok account.Token) error {
+func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
+	cpc := createPC{
+		Token: tok.ID,
+		Name:  "testint",
+		Type:  ulid.MustParse("01CE3J5M6QMP5A4C0GTTYFYANP"),
+	}
+	raw, err := json.Marshal(cpc)
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post("https://localhost:8080/pc/create", "application/json", bytes.NewBuffer(raw))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("invalid status code %d", resp.StatusCode)
+	}
+	expectedCreatePC := createPCLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_auth",
+			Message: "pc creation success",
+		},
+		Method: "POST",
+		Route:  "/pc/create",
+	}
+	return a.Expect(func(s string) (bool, error) {
+		var actual createPCLog
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
+			return false, err
+		}
+		if actual.common != expectedCreatePC.common {
+			return false, fmt.Errorf("unexpected log %s", s)
+		}
+		if _, err := ulid.Parse(actual.Token); err != nil {
+			return false, fmt.Errorf("invalid token %s", s)
+		}
+		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+			return false, fmt.Errorf("invalid log addr %s", s)
+		}
+		return true, nil
+	})
+}
+
+func expectSignout(a *LogAnalyzer) error {
 	return nil
 	raw, err := json.Marshal(testAccount)
 	if err != nil {
@@ -214,7 +265,10 @@ func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 	if err != nil {
 		return ulid.ID{}, err
 	}
-	if err := expectSignout(a, tok); err != nil {
+	if err := expectCreatePC(a, tok); err != nil {
+		return ulid.ID{}, err
+	}
+	if err := expectSignout(a); err != nil {
 		return ulid.ID{}, err
 	}
 	if err := expectUnsubscribe(a); err != nil {
