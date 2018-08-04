@@ -174,7 +174,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/list").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/pc/list").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var listPC ListPC

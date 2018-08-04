@@ -101,11 +101,6 @@ func (t T) Disconnect(id ulid.ID) error {
 		return errors.Wrap(err, "disconnect")
 	}
 
-	// #Close token listener
-	if err := t.L.Delete(id); err != nil {
-		softErr = errors.Wrap(err, "disconnect")
-	}
-
 	// #Close token recurrer
 	if err := t.R.Delete(id); err != nil {
 		softErr = errors.Wrap(err, "disconnect")

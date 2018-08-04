@@ -142,6 +142,12 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
 		}
+		// #Delete token
+		if err := h.DelToken(account.TokenSubset{ID: a.Token}); err != nil {
+			logger.Error().Err(err).Msg("failed to delete token")
+			http.Error(w, "failed to delete token", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	// #Delete all associated PCs.
