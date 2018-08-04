@@ -132,6 +132,8 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	logger.Info().Msg("signout success")
+
 	// #Write response
 	w.WriteHeader(http.StatusOK)
 }

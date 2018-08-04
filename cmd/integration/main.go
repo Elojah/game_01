@@ -34,19 +34,19 @@ func main() {
 	log.Info().Msg("integration up")
 
 	if err := expectUp(a); err != nil {
-		log.Error().Err(err).Msg("unexpected up")
+		log.Error().Err(err).Msg("up")
 		return
 	}
 	log.Info().Msg("up ok")
 
 	if err := expectTool(a); err != nil {
-		log.Error().Err(err).Msg("unexpected static data")
+		log.Error().Err(err).Msg("tool")
 		return
 	}
 	log.Info().Msg("tool ok")
 
 	if _, err := expectAuth(a); err != nil {
-		log.Error().Err(err).Msg("unexpected static data")
+		log.Error().Err(err).Msg("auth")
 		return
 	}
 	log.Info().Msg("auth ok")

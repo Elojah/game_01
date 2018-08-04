@@ -55,6 +55,11 @@ type listPC struct {
 	Token ulid.ID
 }
 
+type signoutAccount struct {
+	Username string
+	Token    ulid.ID
+}
+
 func expectSubscribe(a *LogAnalyzer) error {
 	raw, err := json.Marshal(testAccount)
 	if err != nil {
@@ -224,8 +229,12 @@ func expectList(a *LogAnalyzer, tok account.Token) error {
 	})
 }
 
-func expectSignout(a *LogAnalyzer) error {
-	raw, err := json.Marshal(testAccount)
+func expectSignout(a *LogAnalyzer, tok account.Token) error {
+	sa := signoutAccount{
+		Token:    tok.ID,
+		Username: testAccount["username"],
+	}
+	raw, err := json.Marshal(sa)
 	if err != nil {
 		return err
 	}
@@ -240,10 +249,10 @@ func expectSignout(a *LogAnalyzer) error {
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
-			Message: "signin success",
+			Message: "signout success",
 		},
 		Method: "POST",
-		Route:  "/signin",
+		Route:  "/signout",
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var actual tokenLog
@@ -315,7 +324,7 @@ func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 	if err := expectCreatePC(a, tok); err != nil {
 		return ulid.ID{}, err
 	}
-	if err := expectSignout(a); err != nil {
+	if err := expectSignout(a, tok); err != nil {
 		return ulid.ID{}, err
 	}
 	if err := expectUnsubscribe(a); err != nil {
