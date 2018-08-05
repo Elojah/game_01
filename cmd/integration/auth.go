@@ -39,10 +39,22 @@ type tokenLog struct {
 
 type createPCLog struct {
 	common
-	Method string
-	Route  string
-	Token  string
-	Addr   string
+	Method   string
+	Route    string
+	Token    string
+	Addr     string
+	Template string
+	PC       string
+	Sector   string
+}
+
+type listPCLog struct {
+	common
+	Method  string
+	Route   string
+	Token   string
+	Addr    string
+	Account string
 }
 
 type createPC struct {
@@ -116,7 +128,7 @@ func expectSignin(a *LogAnalyzer) (account.Token, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&tok); err != nil {
 		return tok, err
 	}
-	expectedToken := tokenLog{
+	expected := tokenLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
@@ -130,7 +142,7 @@ func expectSignin(a *LogAnalyzer) (account.Token, error) {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expectedToken.common {
+		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		if _, err := ulid.Parse(actual.Token); err != nil {
@@ -160,25 +172,32 @@ func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
-	expectedCreatePC := createPCLog{
+	expected := createPCLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
 			Message: "pc creation success",
 		},
-		Method: "POST",
-		Route:  "/pc/create",
+		Method:   "POST",
+		Route:    "/pc/create",
+		Template: testPCType.String(),
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var actual createPCLog
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expectedCreatePC.common {
+		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		if _, err := ulid.Parse(actual.Token); err != nil {
 			return false, fmt.Errorf("invalid token %s", s)
+		}
+		if _, err := ulid.Parse(actual.PC); err != nil {
+			return false, fmt.Errorf("invalid pc %s", s)
+		}
+		if _, err := ulid.Parse(actual.Sector); err != nil {
+			return false, fmt.Errorf("invalid sector %s", s)
 		}
 		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
 			return false, fmt.Errorf("invalid log addr %s", s)
@@ -187,7 +206,7 @@ func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
 	})
 }
 
-func expectList(a *LogAnalyzer, tok account.Token) error {
+func expectListPC(a *LogAnalyzer, tok account.Token) error {
 	lpc := listPC{
 		Token: tok.ID,
 	}
@@ -202,7 +221,7 @@ func expectList(a *LogAnalyzer, tok account.Token) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
-	expectedCreatePC := createPCLog{
+	expected := listPCLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
@@ -212,14 +231,17 @@ func expectList(a *LogAnalyzer, tok account.Token) error {
 		Route:  "/pc/list",
 	}
 	return a.Expect(func(s string) (bool, error) {
-		var actual createPCLog
+		var actual listPCLog
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expectedCreatePC.common {
+		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		if _, err := ulid.Parse(actual.Token); err != nil {
+			return false, fmt.Errorf("invalid token %s", s)
+		}
+		if _, err := ulid.Parse(actual.Account); err != nil {
 			return false, fmt.Errorf("invalid token %s", s)
 		}
 		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
@@ -322,6 +344,9 @@ func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 		return ulid.ID{}, err
 	}
 	if err := expectCreatePC(a, tok); err != nil {
+		return ulid.ID{}, err
+	}
+	if err := expectListPC(a, tok); err != nil {
 		return ulid.ID{}, err
 	}
 	if err := expectSignout(a, tok); err != nil {
