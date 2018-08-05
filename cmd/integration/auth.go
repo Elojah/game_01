@@ -59,6 +59,18 @@ type listPCLog struct {
 	Account string
 }
 
+type connectPCLog struct {
+	common
+	Method   string
+	Route    string
+	Token    string
+	Addr     string
+	PC       string
+	Entity   string
+	Sector   string
+	Listener string
+}
+
 type createPC struct {
 	Token ulid.ID
 	Name  string
@@ -188,6 +200,7 @@ func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
 		Method:   "POST",
 		Route:    "/pc/create",
 		Template: testPCType.String(),
+		Token:    tok.ID.String(),
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var actual createPCLog
@@ -196,9 +209,6 @@ func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
 		}
 		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Token); err != nil {
-			return false, fmt.Errorf("invalid token %s", s)
 		}
 		if _, err := ulid.Parse(actual.PC); err != nil {
 			return false, fmt.Errorf("invalid pc %s", s)
@@ -244,6 +254,7 @@ func expectListPC(a *LogAnalyzer, tok account.Token) (entity.PC, error) {
 		},
 		Method: "POST",
 		Route:  "/pc/list",
+		Token:  tok.ID.String(),
 	}
 	return pcs[0], a.Expect(func(s string) (bool, error) {
 		var actual listPCLog
@@ -252,9 +263,6 @@ func expectListPC(a *LogAnalyzer, tok account.Token) (entity.PC, error) {
 		}
 		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Token); err != nil {
-			return false, fmt.Errorf("invalid token %s", s)
 		}
 		if _, err := ulid.Parse(actual.Account); err != nil {
 			return false, fmt.Errorf("invalid account %s", s)
@@ -287,7 +295,42 @@ func expectConnectPC(a *LogAnalyzer, tok account.Token, pc entity.PC) (entity.E,
 	if err := json.NewDecoder(resp.Body).Decode(&e); err != nil {
 		return entity.E{}, err
 	}
-	return e, nil
+	expected := connectPCLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_auth",
+			Message: "connect pc success",
+		},
+		Method: "POST",
+		Route:  "/pc/connect",
+		Token:  tok.ID.String(),
+		PC:     pc.ID.String(),
+	}
+	return e, a.Expect(func(s string) (bool, error) {
+		var actual connectPCLog
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
+			return false, err
+		}
+		if actual.Exe != expected.Exe {
+			return false, nil
+		}
+		if actual.common != expected.common {
+			return false, fmt.Errorf("unexpected log %s", s)
+		}
+		if _, err := ulid.Parse(actual.Entity); err != nil {
+			return false, fmt.Errorf("invalid entity %s", s)
+		}
+		if _, err := ulid.Parse(actual.Sector); err != nil {
+			return false, fmt.Errorf("invalid sector %s", s)
+		}
+		if _, err := ulid.Parse(actual.Listener); err != nil {
+			return false, fmt.Errorf("invalid listener %s", s)
+		}
+		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+			return false, fmt.Errorf("invalid log addr %s", s)
+		}
+		return true, nil
+	})
 }
 
 func expectSignout(a *LogAnalyzer, tok account.Token) error {
@@ -306,7 +349,7 @@ func expectSignout(a *LogAnalyzer, tok account.Token) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
-	expectedToken := tokenLog{
+	expected := tokenLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_auth",
@@ -320,7 +363,10 @@ func expectSignout(a *LogAnalyzer, tok account.Token) error {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expectedToken.common {
+		if actual.Exe != expected.Exe {
+			return false, nil
+		}
+		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
 		if _, err := ulid.Parse(actual.Token); err != nil {
@@ -359,6 +405,9 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
+		if actual.Exe != expected.Exe {
+			return false, nil
+		}
 		if actual.common != expected.common {
 			return false, fmt.Errorf("unexpected log %s", s)
 		}
@@ -389,17 +438,15 @@ func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 	if err != nil {
 		return ulid.ID{}, err
 	}
-	_ = pc
-	// e, err := expectConnectPC(a, tok, pc)
-	// if err != nil {
-	// 	return ulid.ID{}, err
-	// }
-	// _ = e
+	e, err := expectConnectPC(a, tok, pc)
+	if err != nil {
+		return ulid.ID{}, err
+	}
 	if err := expectSignout(a, tok); err != nil {
 		return ulid.ID{}, err
 	}
 	if err := expectUnsubscribe(a); err != nil {
 		return ulid.ID{}, err
 	}
-	return ulid.ID{}, nil
+	return e.ID, nil
 }
