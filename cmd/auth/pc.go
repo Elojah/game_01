@@ -230,7 +230,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/connect").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/pc/connect").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
 
 	// #Read body
 	var connectPC ConnectPC
@@ -240,8 +240,10 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger = logger.With().Str("token", connectPC.Token.String()).Logger()
-	logger = logger.With().Str("pc", connectPC.Target.String()).Logger()
+	logger = logger.With().
+		Str("token", connectPC.Token.String()).
+		Str("pc", connectPC.Target.String()).
+		Logger()
 
 	// #Get and check token.
 	tok, err := h.T.Get(connectPC.Token, r.RemoteAddr)
@@ -330,7 +332,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("signin success")
+	logger.Info().Msg("connect pc success")
 
 	// #Write response
 	w.WriteHeader(http.StatusOK)

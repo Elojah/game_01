@@ -4,11 +4,13 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -65,6 +67,11 @@ type createPC struct {
 
 type listPC struct {
 	Token ulid.ID
+}
+
+type connectPC struct {
+	Token  ulid.ID
+	Target ulid.ID
 }
 
 type signoutAccount struct {
@@ -206,20 +213,28 @@ func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
 	})
 }
 
-func expectListPC(a *LogAnalyzer, tok account.Token) error {
+func expectListPC(a *LogAnalyzer, tok account.Token) (entity.PC, error) {
 	lpc := listPC{
 		Token: tok.ID,
 	}
 	raw, err := json.Marshal(lpc)
 	if err != nil {
-		return err
+		return entity.PC{}, err
 	}
 	resp, err := http.Post("https://localhost:8080/pc/list", "application/json", bytes.NewBuffer(raw))
 	if err != nil {
-		return err
+		return entity.PC{}, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("invalid status code %d", resp.StatusCode)
+		return entity.PC{}, fmt.Errorf("invalid status code %d", resp.StatusCode)
+	}
+	var pcs []entity.PC
+	defer resp.Body.Close()
+	if err := json.NewDecoder(resp.Body).Decode(&pcs); err != nil {
+		return entity.PC{}, err
+	}
+	if len(pcs) == 0 {
+		return entity.PC{}, errors.New("no pcs")
 	}
 	expected := listPCLog{
 		common: common{
@@ -230,7 +245,7 @@ func expectListPC(a *LogAnalyzer, tok account.Token) error {
 		Method: "POST",
 		Route:  "/pc/list",
 	}
-	return a.Expect(func(s string) (bool, error) {
+	return pcs[0], a.Expect(func(s string) (bool, error) {
 		var actual listPCLog
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
@@ -242,7 +257,58 @@ func expectListPC(a *LogAnalyzer, tok account.Token) error {
 			return false, fmt.Errorf("invalid token %s", s)
 		}
 		if _, err := ulid.Parse(actual.Account); err != nil {
+			return false, fmt.Errorf("invalid account %s", s)
+		}
+		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+			return false, fmt.Errorf("invalid log addr %s", s)
+		}
+		return true, nil
+	})
+}
+
+func expectConnectPC(a *LogAnalyzer, tok account.Token, pc entity.PC) (entity.E, error) {
+	cpc := connectPC{
+		Token:  tok.ID,
+		Target: pc.ID,
+	}
+	raw, err := json.Marshal(cpc)
+	if err != nil {
+		return entity.E{}, err
+	}
+	resp, err := http.Post("https://localhost:8080/pc/connect", "application/json", bytes.NewBuffer(raw))
+	if err != nil {
+		return entity.E{}, err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return entity.E{}, fmt.Errorf("invalid status code %d", resp.StatusCode)
+	}
+	var e entity.E
+	defer resp.Body.Close()
+	if err := json.NewDecoder(resp.Body).Decode(&e); err != nil {
+		return entity.E{}, err
+	}
+	expected := listPCLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_auth",
+			Message: "connect pc success",
+		},
+		Method: "POST",
+		Route:  "/pc/connect",
+	}
+	return e, a.Expect(func(s string) (bool, error) {
+		var actual listPCLog
+		if err := json.Unmarshal([]byte(s), &actual); err != nil {
+			return false, err
+		}
+		if actual.common != expected.common {
+			return false, fmt.Errorf("unexpected log %s", s)
+		}
+		if _, err := ulid.Parse(actual.Token); err != nil {
 			return false, fmt.Errorf("invalid token %s", s)
+		}
+		if _, err := ulid.Parse(actual.Account); err != nil {
+			return false, fmt.Errorf("invalid account %s", s)
 		}
 		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
 			return false, fmt.Errorf("invalid log addr %s", s)
@@ -346,7 +412,12 @@ func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 	if err := expectCreatePC(a, tok); err != nil {
 		return ulid.ID{}, err
 	}
-	if err := expectListPC(a, tok); err != nil {
+	pc, err := expectListPC(a, tok)
+	if err != nil {
+		return ulid.ID{}, err
+	}
+	e, err := expectConnectPC(a, tok, pc)
+	if err != nil {
 		return ulid.ID{}, err
 	}
 	if err := expectSignout(a, tok); err != nil {
@@ -355,5 +426,5 @@ func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 	if err := expectUnsubscribe(a); err != nil {
 		return ulid.ID{}, err
 	}
-	return ulid.ID{}, nil
+	return e.ID, nil
 }
