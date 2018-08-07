@@ -436,7 +436,7 @@ func (d *A) Size() (s uint64) {
 		}
 
 	}
-	s += 16
+	s += 20
 	return
 }
 
@@ -494,6 +494,11 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 
 	}
 	{
+
+		*(*uint32)(unsafe.Pointer(&buf[i+16])) = d.CastTime
+
+	}
+	{
 		l := uint64(len(d.Components))
 
 		{
@@ -501,11 +506,11 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 			t := uint64(l)
 
 			for t >= 0x80 {
-				buf[i+16] = byte(t) | 0x80
+				buf[i+20] = byte(t) | 0x80
 				t >>= 7
 				i++
 			}
-			buf[i+16] = byte(t)
+			buf[i+20] = byte(t)
 			i++
 
 		}
@@ -534,11 +539,11 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 					t := uint64(v)
 
 					for t >= 0x80 {
-						buf[i+16] = byte(t) | 0x80
+						buf[i+20] = byte(t) | 0x80
 						t >>= 7
 						i++
 					}
-					buf[i+16] = byte(t)
+					buf[i+20] = byte(t)
 					i++
 
 				}
@@ -547,7 +552,7 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 				case HealDirect:
 
 					{
-						nbuf, err := tt.Marshal(buf[i+16:])
+						nbuf, err := tt.Marshal(buf[i+20:])
 						if err != nil {
 							return nil, err
 						}
@@ -557,7 +562,7 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 				case DamageDirect:
 
 					{
-						nbuf, err := tt.Marshal(buf[i+16:])
+						nbuf, err := tt.Marshal(buf[i+20:])
 						if err != nil {
 							return nil, err
 						}
@@ -567,7 +572,7 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 				case HealOverTime:
 
 					{
-						nbuf, err := tt.Marshal(buf[i+16:])
+						nbuf, err := tt.Marshal(buf[i+20:])
 						if err != nil {
 							return nil, err
 						}
@@ -577,7 +582,7 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 				case DamageOverTime:
 
 					{
-						nbuf, err := tt.Marshal(buf[i+16:])
+						nbuf, err := tt.Marshal(buf[i+20:])
 						if err != nil {
 							return nil, err
 						}
@@ -589,7 +594,7 @@ func (d *A) Marshal(buf []byte) ([]byte, error) {
 
 		}
 	}
-	return buf[:i+16], nil
+	return buf[:i+20], nil
 }
 
 func (d *A) Unmarshal(buf []byte) (uint64, error) {
@@ -639,15 +644,20 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 
 	}
 	{
+
+		d.CastTime = *(*uint32)(unsafe.Pointer(&buf[i+16]))
+
+	}
+	{
 		l := uint64(0)
 
 		{
 
 			bs := uint8(7)
-			t := uint64(buf[i+16] & 0x7F)
-			for buf[i+16]&0x80 == 0x80 {
+			t := uint64(buf[i+20] & 0x7F)
+			for buf[i+20]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+16]&0x7F) << bs
+				t |= uint64(buf[i+20]&0x7F) << bs
 				bs += 7
 			}
 			i++
@@ -668,10 +678,10 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 				{
 
 					bs := uint8(7)
-					t := uint64(buf[i+16] & 0x7F)
-					for buf[i+16]&0x80 == 0x80 {
+					t := uint64(buf[i+20] & 0x7F)
+					for buf[i+20]&0x80 == 0x80 {
 						i++
-						t |= uint64(buf[i+16]&0x7F) << bs
+						t |= uint64(buf[i+20]&0x7F) << bs
 						bs += 7
 					}
 					i++
@@ -685,7 +695,7 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 					var tt HealDirect
 
 					{
-						ni, err := tt.Unmarshal(buf[i+16:])
+						ni, err := tt.Unmarshal(buf[i+20:])
 						if err != nil {
 							return 0, err
 						}
@@ -698,7 +708,7 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 					var tt DamageDirect
 
 					{
-						ni, err := tt.Unmarshal(buf[i+16:])
+						ni, err := tt.Unmarshal(buf[i+20:])
 						if err != nil {
 							return 0, err
 						}
@@ -711,7 +721,7 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 					var tt HealOverTime
 
 					{
-						ni, err := tt.Unmarshal(buf[i+16:])
+						ni, err := tt.Unmarshal(buf[i+20:])
 						if err != nil {
 							return 0, err
 						}
@@ -724,7 +734,7 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 					var tt DamageOverTime
 
 					{
-						ni, err := tt.Unmarshal(buf[i+16:])
+						ni, err := tt.Unmarshal(buf[i+20:])
 						if err != nil {
 							return 0, err
 						}
@@ -740,7 +750,7 @@ func (d *A) Unmarshal(buf []byte) (uint64, error) {
 
 		}
 	}
-	return i + 16, nil
+	return i + 20, nil
 }
 
 func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
@@ -806,18 +816,23 @@ func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 
 	}
 	{
+
+		d.CastTime = *(*uint32)(unsafe.Pointer(&buf[i+16]))
+
+	}
+	{
 		l := uint64(0)
 
 		{
 
-			if i+16 >= lb {
+			if i+20 >= lb {
 				return 0, io.EOF
 			}
 			bs := uint8(7)
-			t := uint64(buf[i+16] & 0x7F)
-			for i < lb && buf[i+16]&0x80 == 0x80 {
+			t := uint64(buf[i+20] & 0x7F)
+			for i < lb && buf[i+20]&0x80 == 0x80 {
 				i++
-				t |= uint64(buf[i+16]&0x7F) << bs
+				t |= uint64(buf[i+20]&0x7F) << bs
 				bs += 7
 			}
 			i++
@@ -837,14 +852,14 @@ func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 
 				{
 
-					if i+16 >= lb {
+					if i+20 >= lb {
 						return 0, io.EOF
 					}
 					bs := uint8(7)
-					t := uint64(buf[i+16] & 0x7F)
-					for i < lb && buf[i+16]&0x80 == 0x80 {
+					t := uint64(buf[i+20] & 0x7F)
+					for i < lb && buf[i+20]&0x80 == 0x80 {
 						i++
-						t |= uint64(buf[i+16]&0x7F) << bs
+						t |= uint64(buf[i+20]&0x7F) << bs
 						bs += 7
 					}
 					i++
@@ -858,7 +873,7 @@ func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 					var tt HealDirect
 
 					{
-						adjust := i + 16
+						adjust := i + 20
 						if adjust >= lb {
 							return 0, io.EOF
 						}
@@ -875,7 +890,7 @@ func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 					var tt DamageDirect
 
 					{
-						adjust := i + 16
+						adjust := i + 20
 						if adjust >= lb {
 							return 0, io.EOF
 						}
@@ -892,7 +907,7 @@ func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 					var tt HealOverTime
 
 					{
-						adjust := i + 16
+						adjust := i + 20
 						if adjust >= lb {
 							return 0, io.EOF
 						}
@@ -909,7 +924,7 @@ func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 					var tt DamageOverTime
 
 					{
-						adjust := i + 16
+						adjust := i + 20
 						if adjust >= lb {
 							return 0, io.EOF
 						}
@@ -929,5 +944,5 @@ func (d *A) UnmarshalSafe(buf []byte) (uint64, error) {
 
 		}
 	}
-	return i + 16, nil
+	return i + 20, nil
 }

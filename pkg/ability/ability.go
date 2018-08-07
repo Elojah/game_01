@@ -19,6 +19,7 @@ type A struct {
 	MPConsumption uint64 `json:"mp_consumption"`
 	CD            uint32 `json:"cd"`
 	CurrentCD     uint32 `json:"current_cd"`
+	CastTime      uint32 `json:"cast_time"`
 
 	Components []Component `json:"components"`
 }

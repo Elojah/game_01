@@ -29,6 +29,7 @@ struct A {
 	MPConsumption	uint64
 	CD				uint32
 	CurrentCD		uint32
+	CastTime		uint32
 	Components		[]union Component {
 		HealDirect
 		DamageDirect
