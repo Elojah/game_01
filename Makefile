@@ -1,7 +1,6 @@
 PACKAGE   = game
 DATE     ?= $(shell date +%FT%T%z)
-VERSION  ?= $(shell git describe --tags --always --dirty --match = v* 2> /dev/null || \
-			cat $(CURDIR)/.version 2> /dev/null || echo v0)
+VERSION  ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
 
 GO        = go
 GODOC     = godoc
@@ -16,8 +15,6 @@ SYNC        = sync
 TOOL        = tool
 REVOKER     = revoker
 INTEGRATION = integration
-
-FBSDIR    = .
 
 V         = 0
 Q         = $(if $(filter 1,$V),,@)
