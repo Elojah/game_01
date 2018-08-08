@@ -49,7 +49,10 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 
-	_ = ability
+	e = event.E{
+		Action: event.Casted(cast),
+	}
+	_ = e
 
 	return nil
 }

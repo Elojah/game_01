@@ -33,6 +33,9 @@ func (d *E) Size() (s uint64) {
 		case Feedback:
 			v = 2 + 1
 
+		case Casted:
+			v = 3 + 1
+
 		}
 
 		{
@@ -60,6 +63,12 @@ func (d *E) Size() (s uint64) {
 			}
 
 		case Feedback:
+
+			{
+				s += tt.Size()
+			}
+
+		case Casted:
 
 			{
 				s += tt.Size()
@@ -110,6 +119,9 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 		case Feedback:
 			v = 2 + 1
 
+		case Casted:
+			v = 3 + 1
+
 		}
 
 		{
@@ -148,6 +160,16 @@ func (d *E) Marshal(buf []byte) ([]byte, error) {
 			}
 
 		case Feedback:
+
+			{
+				nbuf, err := tt.Marshal(buf[i+15:])
+				if err != nil {
+					return nil, err
+				}
+				i += uint64(len(nbuf))
+			}
+
+		case Casted:
 
 			{
 				nbuf, err := tt.Marshal(buf[i+15:])
@@ -223,6 +245,19 @@ func (d *E) Unmarshal(buf []byte) (uint64, error) {
 
 		case 2 + 1:
 			var tt Feedback
+
+			{
+				ni, err := tt.Unmarshal(buf[i+15:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 3 + 1:
+			var tt Casted
 
 			{
 				ni, err := tt.Unmarshal(buf[i+15:])
@@ -323,6 +358,23 @@ func (d *E) UnmarshalSafe(buf []byte) (uint64, error) {
 
 		case 2 + 1:
 			var tt Feedback
+
+			{
+				adjust := i + 15
+				if adjust >= lb {
+					return 0, io.EOF
+				}
+				ni, err := tt.UnmarshalSafe(buf[adjust:])
+				if err != nil {
+					return 0, err
+				}
+				i += ni
+			}
+
+			d.Action = tt
+
+		case 3 + 1:
+			var tt Casted
 
 			{
 				adjust := i + 15

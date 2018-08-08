@@ -15,6 +15,8 @@ func String(a Action) string {
 		return "move"
 	case Cast:
 		return "cast"
+	case Casted:
+		return "casted"
 	case Feedback:
 		return "feedback"
 	default:
@@ -29,7 +31,7 @@ type Move struct {
 	Position geometry.Position
 }
 
-// Cast represents a ability launch.
+// Cast represents a ability start cast.
 type Cast struct {
 	AbilityID ulid.ID
 	Source    ulid.ID
@@ -43,3 +45,6 @@ type Feedback struct {
 	Source ulid.ID
 	Target ulid.ID
 }
+
+// Casted represents a end of cast ability.
+type Casted Cast

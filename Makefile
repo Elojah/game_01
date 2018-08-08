@@ -99,7 +99,7 @@ gen:
 	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/action.schema -out=pkg/event/action.schema.gen.go -ignore=Position,Vec3
 	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/dto.schema -out=pkg/event/dto.schema.gen.go -ignore=Vec3,Position,Move,Cast
 	$Q gencode go -unsafe -def-types=false -package=entity -schema=schemas/entity.schema -out=pkg/entity/entity.schema.gen.go -ignore=Position,Vec3
-	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/event.schema -out=pkg/event/event.schema.gen.go -ignore=Vec3,Position,Move,Cast,Feedback
+	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/event.schema -out=pkg/event/event.schema.gen.go -ignore=Vec3,Position,Move,Cast,Feedback,Casted
 	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/listener.schema -out=pkg/infra/listener.schema.gen.go
 	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/recurrer.schema -out=pkg/infra/recurrer.schema.gen.go
 	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector.schema -out=pkg/sector/sector.schema.gen.go -ignore=Vec3,Position
