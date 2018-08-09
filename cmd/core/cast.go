@@ -38,7 +38,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ability, err := a.AbilityMapper.GetAbility(ability.Subset{
+	ab, err := a.AbilityMapper.GetAbility(ability.Subset{
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
@@ -53,6 +53,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		Action: event.Casted(cast),
 	}
 	_ = e
+	_ = ab
 
 	return nil
 }
