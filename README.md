@@ -46,10 +46,48 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 |
 |_schemas #gencode original schemas
 |
+|_proto #protobuf schemas
+|
 |_templates #example template files for tool
 |
 |_vendor #vendoring packages (dep)
 ```
+### Domain
+
+ability.A
+ability.Component
+ability.Feedback
+ability.FeedbackComponent
+ability.Template
+
+account.A
+account.Token
+
+entity.E
+entity.PC
+entity.Permission
+entity.Template
+
+event.Move
+event.Cast
+event.Feedback
+event.Casted
+event.DTO
+event.E
+
+geometry.Vec2
+geometry.Vec3
+geometry.Position
+
+infra.ACK
+infra.Core (no marshal)
+infra.Listener
+infra.Recurrer
+infra.Sync (no marshal)
+
+sector.Entities
+sector.S
+sector.Starter
 
 ## Installation
 
