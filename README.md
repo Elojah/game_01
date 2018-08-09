@@ -89,6 +89,8 @@ sector.Entities
 sector.S
 sector.Starter
 
+ulid.ID
+
 ## Installation
 
 OS X & Linux & Windows:
