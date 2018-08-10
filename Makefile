@@ -107,6 +107,13 @@ gen:
 	$Q gencode go -unsafe -def-types=false -package=account -schema=schemas/token.schema -out=pkg/account/token.schema.gen.go
 	$Q gencode go -unsafe -def-types=false -package=geometry -schema=schemas/position.schema -out=pkg/geometry/position.schema.gen.go
 
+.PHONY: proto
+proto:
+	$(info $(M) running protobuf…) @
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types:. ability.proto
+
+
+
 # Dependencies
 .PHONY: dep
 dep:

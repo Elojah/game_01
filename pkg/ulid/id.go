@@ -8,29 +8,58 @@ import (
 )
 
 // ID is an alias of ulid.ULID.
-type ID = ulid.ULID
+type ID ulid.ULID
 
 // NewID returns a new random ID.
 func NewID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
 }
 
-// Parse follows internal oklog/ulid Parse.
-func Parse(s string) (ID, error) {
-	id, err := ulid.Parse(s)
-	if err != nil {
-		return ID{}, err
-	}
-	return ID(id), nil
-}
-
-// MustParse follows internal oklog/ulid MustParse.
-func MustParse(s string) ID {
-	return ID(ulid.MustParse(s))
-}
-
 // IsZero returns if id is zero.
-// TODO move as method.
-func IsZero(id ID) bool {
+func (id ID) IsZero() bool {
 	return ulid.ULID(id).Time() == 0
+}
+
+// Bytes returns id as byte slice for protobuf marshaling.
+func (id ID) Bytes() []byte {
+	return id[:]
+}
+
+// Marshal never returns any error..
+func (id ID) Marshal() ([]byte, error) {
+	return id.Bytes(), nil
+}
+
+// MarshalTo never returns any error.
+func (id ID) MarshalTo(data []byte) (n int, err error) {
+	copy(data[0:16], id[:])
+	return 16, nil
+}
+
+// Unmarshal never returns any error.
+func (id *ID) Unmarshal(data []byte) error {
+	var tmp [16]byte
+	copy(data[0:16], tmp[:])
+	*id = tmp
+	return nil
+}
+
+// Size always returns 16.
+func (id *ID) Size() int {
+	return 16
+}
+
+// MarshalJSON returns id in human readable string format.
+func (id ID) MarshalJSON() ([]byte, error) {
+	return ulid.ULID(id).MarshalText()
+}
+
+// UnmarshalJSON unmarshals and valid data.
+func (id *ID) UnmarshalJSON(data []byte) error {
+	var u ulid.ULID
+	if err := u.UnmarshalText(data); err != nil {
+		return err
+	}
+	*id = ID(u)
+	return nil
 }
