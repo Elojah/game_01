@@ -44,6 +44,9 @@ func (id ID) MarshalTo(data []byte) (n int, err error) {
 
 // Unmarshal never returns any error.
 func (id *ID) Unmarshal(data []byte) error {
+	if len(data) != 16 {
+		return ulid.ErrBufferSize
+	}
 	for i := 0; i < 16; i++ {
 		id[i] = data[i]
 	}
