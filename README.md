@@ -57,7 +57,7 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 ability.A
 ability.Component
 ability.Feedback
-ability.FeedbackComponent
+ability.ComponentFeedback
 ability.Template
 
 account.A
@@ -68,15 +68,10 @@ entity.PC
 entity.Permission
 entity.Template
 
-event.Move
-event.Cast
-event.Feedback
-event.Casted
+event.Action
 event.DTO
 event.E
 
-geometry.Vec2
-geometry.Vec3
 geometry.Position
 
 infra.ACK

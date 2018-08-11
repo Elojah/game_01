@@ -4,20 +4,6 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// Token represents a user connection. Creation is made by secure https only.
-type Token struct {
-	ID ulid.ID `json:"ID"`
-
-	IP      string  `json:"-"`
-	Account ulid.ID `json:"-"`
-	Ping    uint64  `json:"-"`
-
-	CorePool ulid.ID `json:"-"`
-	SyncPool ulid.ID `json:"-"`
-	PC       ulid.ID `json:"-"`
-	Entity   ulid.ID `json:"-"`
-}
-
 // TokenMapper is the service gate for Token resource.
 type TokenMapper interface {
 	SetToken(Token) error

@@ -2,39 +2,40 @@ syntax = "proto3";
 
 option go_package = "ability";
 
-option (gogoproto.testgen_all) = true;
+option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message HealDirect {
-	uint64 Amount = 1;
-	uint32 Type   = 2;
+	uint64 Amount                 = 1;
+	uint32 Type                   = 2;
 }
 
 message DamageDirect {
-	uint64 Amount = 1;
-	uint32 Type   = 2;
+	uint64 Amount                 = 1;
+	uint32 Type                   = 2;
 }
 
 message HealOverTime {
-	uint64 Amount    = 1;
-	uint32 Type      = 2;
-	uint64 Frequency = 3;
-	uint64 Duration  = 4;
+	uint64 Amount                 = 1;
+	uint32 Type                   = 2;
+	uint64 Frequency              = 3;
+	uint64 Duration               = 4;
 }
 
 message DamageOverTime {
-	uint64 Amount    = 1;
-	uint32 Type      = 2;
-	uint64 Frequency = 3;
-	uint64 Duration  = 4;
+	uint64 Amount                 = 1;
+	uint32 Type                   = 2;
+	uint64 Frequency              = 3;
+	uint64 Duration               = 4;
 }
 
 message Component {
-	option (gogoproto.onlyone) = true;
-	HealDirect HealDirect = 1;
-	DamageDirect DamageDirect = 2;
-	HealOverTime HealOverTime = 3;
+	option (gogoproto.onlyone)    = true;
+	HealDirect HealDirect         = 1;
+	DamageDirect DamageDirect     = 2;
+	HealOverTime HealOverTime     = 3;
 	DamageOverTime DamageOverTime = 4;
 }

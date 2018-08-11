@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option go_package = "event";
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "action.proto";
+import "google/protobuf/timestamp.proto";
+
+message E {
+	bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	google.protobuf.Timestamp TS = 2 [(gogoproto.stdtime)    = true, (gogoproto.nullable)                                    = false];
+	bytes Source                 = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	Action Action                = 4 [(gogoproto.nullable)   = false];
+}

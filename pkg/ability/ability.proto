@@ -2,21 +2,22 @@ syntax = "proto3";
 
 option go_package = "ability";
 
-option (gogoproto.testgen_all) = true;
+option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "component.proto";
 
 message A {
-	bytes    ID            =          1  [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes    Type          =          2  [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	string   Name          =          3;
+	bytes    ID                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes    Type                 = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	string   Name                 = 3;
 
-	uint64   MPConsumption =          4;
-	uint32   CD            =          5;
-	uint32   CurrentCD     =          6;
-	uint32   CastTime      =          7;
+	uint64   MPConsumption        = 4;
+	uint32   CD                   = 5;
+	uint32   CurrentCD            = 6;
+	uint32   CastTime             = 7;
 
-	repeated Component Components =   8 [(gogoproto.nullable) = false];
+	repeated Component Components = 8 [(gogoproto.nullable)   = false];
 }

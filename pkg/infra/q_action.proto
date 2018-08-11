@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option go_package = "infra";
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+enum QAction {
+	Open = 0;
+	Close = 1;
+}

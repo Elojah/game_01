@@ -63,3 +63,21 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 	*id = ID(u)
 	return nil
 }
+
+// only required if the compare option is set
+func (id ID) Compare(other ID) int {
+	return id.Compare(other)
+}
+
+// only required if the equal option is set
+func (id ID) Equal(other ID) bool {
+	return id.Equal(other)
+}
+
+// only required if populate option is set
+func NewPopulatedID(r randyID) *ID {
+	id := NewID()
+	return &id
+}
+
+type randyID interface{}

@@ -33,7 +33,7 @@ type HealDirectFeedback struct {
 func (m *HealDirectFeedback) Reset()      { *m = HealDirectFeedback{} }
 func (*HealDirectFeedback) ProtoMessage() {}
 func (*HealDirectFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_a5f9900ad3b1c461, []int{0}
+	return fileDescriptor_component_feedback_c4a66aa3bd6b45c4, []int{0}
 }
 func (m *HealDirectFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -78,7 +78,7 @@ type DamageDirectFeedback struct {
 func (m *DamageDirectFeedback) Reset()      { *m = DamageDirectFeedback{} }
 func (*DamageDirectFeedback) ProtoMessage() {}
 func (*DamageDirectFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_a5f9900ad3b1c461, []int{1}
+	return fileDescriptor_component_feedback_c4a66aa3bd6b45c4, []int{1}
 }
 func (m *DamageDirectFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -123,7 +123,7 @@ type HealOverTimeFeedback struct {
 func (m *HealOverTimeFeedback) Reset()      { *m = HealOverTimeFeedback{} }
 func (*HealOverTimeFeedback) ProtoMessage() {}
 func (*HealOverTimeFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_a5f9900ad3b1c461, []int{2}
+	return fileDescriptor_component_feedback_c4a66aa3bd6b45c4, []int{2}
 }
 func (m *HealOverTimeFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -168,7 +168,7 @@ type DamageOverTimeFeedback struct {
 func (m *DamageOverTimeFeedback) Reset()      { *m = DamageOverTimeFeedback{} }
 func (*DamageOverTimeFeedback) ProtoMessage() {}
 func (*DamageOverTimeFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_a5f9900ad3b1c461, []int{3}
+	return fileDescriptor_component_feedback_c4a66aa3bd6b45c4, []int{3}
 }
 func (m *DamageOverTimeFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -216,7 +216,7 @@ type ComponentFeedback struct {
 func (m *ComponentFeedback) Reset()      { *m = ComponentFeedback{} }
 func (*ComponentFeedback) ProtoMessage() {}
 func (*ComponentFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_a5f9900ad3b1c461, []int{4}
+	return fileDescriptor_component_feedback_c4a66aa3bd6b45c4, []int{4}
 }
 func (m *ComponentFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -636,6 +636,126 @@ func encodeVarintComponentFeedback(dAtA []byte, offset int, v uint64) int {
 	}
 	dAtA[offset] = uint8(v)
 	return offset + 1
+}
+func NewPopulatedHealDirectFeedback(r randyComponentFeedback, easy bool) *HealDirectFeedback {
+	this := &HealDirectFeedback{}
+	this.Amount = uint64(uint64(r.Uint32()))
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedDamageDirectFeedback(r randyComponentFeedback, easy bool) *DamageDirectFeedback {
+	this := &DamageDirectFeedback{}
+	this.Amount = uint64(uint64(r.Uint32()))
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedHealOverTimeFeedback(r randyComponentFeedback, easy bool) *HealOverTimeFeedback {
+	this := &HealOverTimeFeedback{}
+	this.Amount = uint64(uint64(r.Uint32()))
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedDamageOverTimeFeedback(r randyComponentFeedback, easy bool) *DamageOverTimeFeedback {
+	this := &DamageOverTimeFeedback{}
+	this.Amount = uint64(uint64(r.Uint32()))
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedComponentFeedback(r randyComponentFeedback, easy bool) *ComponentFeedback {
+	this := &ComponentFeedback{}
+	fieldNum := r.Intn(4)
+	switch fieldNum {
+	case 0:
+		this.HealDirectFeedback = NewPopulatedHealDirectFeedback(r, easy)
+	case 1:
+		this.DamageDirectFeedback = NewPopulatedDamageDirectFeedback(r, easy)
+	case 2:
+		this.HealOverTimeFeedback = NewPopulatedHealOverTimeFeedback(r, easy)
+	case 3:
+		this.DamageOverTimeFeedback = NewPopulatedDamageOverTimeFeedback(r, easy)
+	}
+	return this
+}
+
+type randyComponentFeedback interface {
+	Float32() float32
+	Float64() float64
+	Int63() int64
+	Int31() int32
+	Uint32() uint32
+	Intn(n int) int
+}
+
+func randUTF8RuneComponentFeedback(r randyComponentFeedback) rune {
+	ru := r.Intn(62)
+	if ru < 10 {
+		return rune(ru + 48)
+	} else if ru < 36 {
+		return rune(ru + 55)
+	}
+	return rune(ru + 61)
+}
+func randStringComponentFeedback(r randyComponentFeedback) string {
+	v1 := r.Intn(100)
+	tmps := make([]rune, v1)
+	for i := 0; i < v1; i++ {
+		tmps[i] = randUTF8RuneComponentFeedback(r)
+	}
+	return string(tmps)
+}
+func randUnrecognizedComponentFeedback(r randyComponentFeedback, maxFieldNumber int) (dAtA []byte) {
+	l := r.Intn(5)
+	for i := 0; i < l; i++ {
+		wire := r.Intn(4)
+		if wire == 3 {
+			wire = 5
+		}
+		fieldNumber := maxFieldNumber + r.Intn(100)
+		dAtA = randFieldComponentFeedback(dAtA, r, fieldNumber, wire)
+	}
+	return dAtA
+}
+func randFieldComponentFeedback(dAtA []byte, r randyComponentFeedback, fieldNumber int, wire int) []byte {
+	key := uint32(fieldNumber)<<3 | uint32(wire)
+	switch wire {
+	case 0:
+		dAtA = encodeVarintPopulateComponentFeedback(dAtA, uint64(key))
+		v2 := r.Int63()
+		if r.Intn(2) == 0 {
+			v2 *= -1
+		}
+		dAtA = encodeVarintPopulateComponentFeedback(dAtA, uint64(v2))
+	case 1:
+		dAtA = encodeVarintPopulateComponentFeedback(dAtA, uint64(key))
+		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
+	case 2:
+		dAtA = encodeVarintPopulateComponentFeedback(dAtA, uint64(key))
+		ll := r.Intn(100)
+		dAtA = encodeVarintPopulateComponentFeedback(dAtA, uint64(ll))
+		for j := 0; j < ll; j++ {
+			dAtA = append(dAtA, byte(r.Intn(256)))
+		}
+	default:
+		dAtA = encodeVarintPopulateComponentFeedback(dAtA, uint64(key))
+		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
+	}
+	return dAtA
+}
+func encodeVarintPopulateComponentFeedback(dAtA []byte, v uint64) []byte {
+	for v >= 1<<7 {
+		dAtA = append(dAtA, uint8(uint64(v)&0x7f|0x80))
+		v >>= 7
+	}
+	dAtA = append(dAtA, uint8(v))
+	return dAtA
 }
 func (m *HealDirectFeedback) Size() (n int) {
 	var l int
@@ -1364,11 +1484,11 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("component_feedback.proto", fileDescriptor_component_feedback_a5f9900ad3b1c461)
+	proto.RegisterFile("component_feedback.proto", fileDescriptor_component_feedback_c4a66aa3bd6b45c4)
 }
 
-var fileDescriptor_component_feedback_a5f9900ad3b1c461 = []byte{
-	// 305 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_component_feedback_c4a66aa3bd6b45c4 = []byte{
+	// 309 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x48, 0xce, 0xcf, 0x2d,
 	0xc8, 0xcf, 0x4b, 0xcd, 0x2b, 0x89, 0x4f, 0x4b, 0x4d, 0x4d, 0x49, 0x4a, 0x4c, 0xce, 0xd6, 0x2b,
 	0x28, 0xca, 0x2f, 0xc9, 0x97, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf,
@@ -1382,11 +1502,11 @@ var fileDescriptor_component_feedback_a5f9900ad3b1c461 = []byte{
 	0x03, 0x33, 0x10, 0x3c, 0xb1, 0x7b, 0x56, 0x82, 0x09, 0x6c, 0x8c, 0xa8, 0x1e, 0x36, 0xc9, 0x20,
 	0x91, 0x14, 0x6c, 0xe1, 0xe3, 0x89, 0x3d, 0x1c, 0x24, 0x98, 0xa1, 0x46, 0x61, 0x93, 0x0c, 0x12,
 	0xc9, 0xc0, 0x16, 0x74, 0xfe, 0xb8, 0x82, 0x48, 0x82, 0x05, 0x6c, 0x98, 0xb8, 0x1e, 0x76, 0xe9,
-	0x20, 0xb1, 0x14, 0xac, 0xe2, 0x56, 0x2c, 0x27, 0x16, 0xc8, 0x33, 0x3a, 0xd9, 0x5e, 0x78, 0x28,
-	0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57, 0x3c,
-	0x92, 0x63, 0xdc, 0xf1, 0x48, 0x8e, 0xf1, 0xc0, 0x23, 0x39, 0xc6, 0x13, 0x8f, 0xe4, 0x18, 0x2f,
-	0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39, 0x86, 0x0f, 0x8f, 0xe4, 0x18,
-	0x27, 0x3c, 0x96, 0x63, 0x88, 0x62, 0x4f, 0x4c, 0xca, 0xcc, 0xc9, 0x2c, 0xa9, 0x4c, 0x62, 0x03,
-	0xa7, 0x26, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x8a, 0xfd, 0x34, 0xfc, 0x98, 0x02, 0x00,
-	0x00,
+	0x20, 0xb1, 0x14, 0xac, 0xe2, 0x56, 0x2c, 0x27, 0x16, 0xc8, 0x33, 0x3a, 0x39, 0x5e, 0x78, 0x28,
+	0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x3f, 0x1e, 0xca, 0x31, 0x36, 0x3c,
+	0x92, 0x63, 0x5c, 0xf1, 0x48, 0x8e, 0x71, 0xc7, 0x23, 0x39, 0xc6, 0x03, 0x8f, 0xe4, 0x18, 0x4f,
+	0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39, 0xc6, 0x17, 0x8f, 0xe4, 0x18,
+	0x3e, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0x21, 0x8a, 0x3d, 0x31, 0x29, 0x33, 0x27, 0xb3,
+	0xa4, 0x32, 0x89, 0x0d, 0x9c, 0xa2, 0x8c, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xd2, 0xc9, 0x00,
+	0x9c, 0x9c, 0x02, 0x00, 0x00,
 }

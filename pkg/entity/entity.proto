@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "entity";
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_01/pkg/geometry/position.proto";
+
+message E {
+	bytes ID          = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Type        = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	string Name       = 3;
+	uint64 HP         = 4;
+	uint64 MP         = 5;
+	Position Position = 6 [(gogoproto.nullable)   = false];
+}
