@@ -110,9 +110,10 @@ gen:
 .PHONY: proto
 proto:
 	$(info $(M) running protobuf…) @
-	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=Mgoogle/protobuf/any.proto=github.com/gogo/protobuf/types:. ability.proto
-
-
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ability.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component_feedback.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. feedback.proto
 
 # Dependencies
 .PHONY: dep

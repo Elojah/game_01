@@ -1,6 +1,6 @@
 package ability
 
-// Template alias an entity.
+// Template alias an ability.A.
 // It represents semi static data. When creating abilities, those templates are used.
 type Template = A
 

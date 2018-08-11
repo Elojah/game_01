@@ -7,23 +7,6 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// Type represents the ability type.
-type Type = ulid.ID
-
-// A A represents a ability.
-type A struct {
-	ID   ulid.ID `json:"id"`
-	Type Type    `json:"type"`
-	Name string  `json:"name"`
-
-	MPConsumption uint64 `json:"mp_consumption"`
-	CD            uint32 `json:"cd"`
-	CurrentCD     uint32 `json:"current_cd"`
-	CastTime      uint32 `json:"cast_time"`
-
-	Components []Component `json:"components"`
-}
-
 // Affect applies ability a on target.
 func (a A) Affect(target *entity.E) Feedback {
 	fb := Feedback{
