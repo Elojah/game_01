@@ -35,7 +35,7 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("entities", len(entities)).Msg("found")
 
 	for _, e := range entities {
-		if err := h.EntityMapper.SetEntity(e, time.Now().UnixNano()); err != nil {
+		if err := h.EntityService.SetEntity(e, time.Now().UnixNano()); err != nil {
 			logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to set entity")
 			return
 		}

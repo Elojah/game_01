@@ -2,8 +2,8 @@ package sector
 
 import "github.com/elojah/game_01/pkg/ulid"
 
-// EntitiesMapper set or get sector entities. Can also add or remove individual entity to sector.
-type EntitiesMapper interface {
+// EntitiesStore set or get sector entities. Can also add or remove individual entity to sector.
+type EntitiesStore interface {
 	GetEntities(EntitiesSubset) (Entities, error)
 	AddEntityToSector(ulid.ID, ulid.ID) error
 	RemoveEntityToSector(ulid.ID, ulid.ID) error

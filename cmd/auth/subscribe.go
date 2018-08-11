@@ -41,7 +41,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("account", a.ID.String()).Logger()
 
 	// #Check username is unique
-	_, err := h.AccountMapper.GetAccount(account.Subset{
+	_, err := h.AccountService.GetAccount(account.Subset{
 		Username: a.Username,
 	})
 	if err != nil && err != storage.ErrNotFound {
@@ -56,7 +56,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Set account in redis
-	if err = h.AccountMapper.SetAccount(a); err != nil {
+	if err = h.AccountService.SetAccount(a); err != nil {
 		logger.Error().Err(err).Msg("failed to create account")
 		http.Error(w, "failed to create account", http.StatusInternalServerError)
 		return
@@ -109,7 +109,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search account in redis
-	a, err := h.AccountMapper.GetAccount(account.Subset{
+	a, err := h.AccountService.GetAccount(account.Subset{
 		Username: ac.Username,
 	})
 	if err != nil {
@@ -173,7 +173,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete account.
-	if err := h.AccountMapper.DelAccount(account.Subset{Username: a.Username}); err != nil {
+	if err := h.AccountService.DelAccount(account.Subset{Username: a.Username}); err != nil {
 		logger.Error().Err(err).Msg("failed to delete account")
 		http.Error(w, "failed to delete account", http.StatusInternalServerError)
 		return

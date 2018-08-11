@@ -46,18 +46,18 @@ func run(prog string, filename string) {
 	}, "tool")
 	launchers.Add(hl)
 
-	h.AbilityTemplateMapper = rdx
-	h.AccountMapper = rdx
-	h.EntityMapper = rdlrux
-	h.EntityTemplateMapper = rdx
+	h.AbilityTemplateService = rdx
+	h.AccountService = rdx
+	h.EntityService = rdlrux
+	h.EntityTemplateService = rdx
 	h.L = listener.L{
-		ListenerMapper:  rdx,
-		QListenerMapper: rdx,
-		CoreMapper:      rdx,
+		ListenerService:  rdx,
+		QListenerService: rdx,
+		CoreService:      rdx,
 	}
-	h.SectorMapper = rdx
-	h.StarterMapper = rdx
-	h.EntitiesMapper = rdlrux
+	h.SectorService = rdx
+	h.StarterService = rdx
+	h.EntitiesService = rdlrux
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

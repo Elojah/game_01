@@ -50,19 +50,19 @@ func run(prog string, filename string) {
 		return
 	}
 
-	a.AbilityMapper = rdx
-	a.AbilityTemplateMapper = rdx
-	a.CoreMapper = rdx
-	a.EntitiesMapper = rdlrux
-	a.EntityMapper = rdlrux
-	a.EntityTemplateMapper = rdx
-	a.EventMapper = rdx
-	a.FeedbackMapper = rdx
-	a.PermissionMapper = rdx
-	a.QListenerMapper = rdx
-	a.QMapper = rdx
-	a.SectorMapper = rdx
-	a.TokenMapper = rdx
+	a.AbilityService = rdx
+	a.AbilityTemplateService = rdx
+	a.CoreService = rdx
+	a.EntitiesService = rdlrux
+	a.EntityService = rdlrux
+	a.EntityTemplateService = rdx
+	a.EventService = rdx
+	a.FeedbackService = rdx
+	a.PermissionService = rdx
+	a.QListenerService = rdx
+	a.QService = rdx
+	a.SectorService = rdx
+	a.TokenService = rdx
 
 	log.Info().Msg("core up")
 	c := make(chan os.Signal, 1)

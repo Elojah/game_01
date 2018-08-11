@@ -49,34 +49,34 @@ func run(prog string, filename string) {
 	launchers.Add(hl)
 
 	l := listener.L{
-		QListenerMapper: rdx,
-		ListenerMapper:  rdx,
-		CoreMapper:      rdx,
+		QListenerService: rdx,
+		ListenerService:  rdx,
+		CoreService:      rdx,
 	}
-	h.AccountMapper = rdx
-	h.EntitiesMapper = rdlrux
-	h.PCMapper = rdx
-	h.PCLeftMapper = rdx
-	h.PermissionMapper = rdx
+	h.AccountService = rdx
+	h.EntitiesService = rdlrux
+	h.PCService = rdx
+	h.PCLeftService = rdx
+	h.PermissionService = rdx
 	h.L = l
-	h.QMapper = rdx
-	h.SectorMapper = rdx
-	h.StarterMapper = rdx
+	h.QService = rdx
+	h.SectorService = rdx
+	h.StarterService = rdx
 	h.T = token.T{
 		L: l,
 		R: recurrer.R{
-			QRecurrerMapper: rdx,
-			RecurrerMapper:  rdx,
-			SyncMapper:      rdx,
+			QRecurrerService: rdx,
+			RecurrerService:  rdx,
+			SyncService:      rdx,
 		},
-		AccountMapper:    rdx,
-		EntityMapper:     rdlrux,
-		TokenMapper:      rdx,
-		PCMapper:         rdx,
-		PermissionMapper: rdx,
-		EntitiesMapper:   rdlrux,
+		AccountService:    rdx,
+		EntityService:     rdlrux,
+		TokenService:      rdx,
+		PCService:         rdx,
+		PermissionService: rdx,
+		EntitiesService:   rdlrux,
 	}
-	h.TemplateMapper = rdx
+	h.TemplateService = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

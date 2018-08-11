@@ -86,6 +86,32 @@ sector.Starter
 
 ulid.ID
 
+### Reserved redis keys
+
+"ability:"
+"afb:"
+"atpl:"
+"account:"
+"token_hc:"
+"pc:"
+"token:"
+"entity:"
+"etpl:"
+"pc_left:"
+"eperm:"
+"event:"
+"qevent:"
+"core:"
+"listener:"
+"qlistener:"
+"qrecurrer:"
+"recurrer:"
+"sync:"
+"sent:"
+"sector:"
+"starter:"
+
+
 ## Installation
 
 OS X & Linux & Windows:

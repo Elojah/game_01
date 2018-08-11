@@ -15,17 +15,17 @@ import (
 )
 
 type app struct {
-	account.TokenMapper
+	account.TokenService
 
-	EntityMapper entity.Mapper
+	EntityService entity.Service
 
-	event.QMapper
-	infra.QRecurrerMapper
+	event.QService
+	infra.QRecurrerService
 
-	infra.SyncMapper
+	infra.SyncService
 
-	sector.EntitiesMapper
-	SectorMapper sector.Mapper
+	sector.EntitiesService
+	SectorService sector.Service
 
 	*client.C
 
@@ -115,9 +115,9 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
 		a.Send(raw, address)
 	})
-	rec.EntityMapper = a.EntityMapper
-	rec.EntitiesMapper = a.EntitiesMapper
-	rec.SectorMapper = a.SectorMapper
+	rec.EntityService = a.EntityService
+	rec.EntitiesService = a.EntitiesService
+	rec.SectorService = a.SectorService
 
 	go rec.Run()
 	a.recurrers[recurrer.TokenID] = rec

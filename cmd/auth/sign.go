@@ -83,7 +83,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("username", ac.Username).Logger()
 
 	// #Retrieve account by username.
-	a, err := h.AccountMapper.GetAccount(account.Subset{Username: ac.Username})
+	a, err := h.AccountService.GetAccount(account.Subset{Username: ac.Username})
 	if err != nil {
 		if err == storage.ErrNotFound {
 			logger.Error().Err(err).Msg("invalid username")
@@ -104,7 +104,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	// #Reset account token
 	tokID := a.Token
 	a.Token = ulid.ID{}
-	if err := h.AccountMapper.SetAccount(a); err != nil {
+	if err := h.AccountService.SetAccount(a); err != nil {
 		logger.Error().Err(err).Msg("failed to set account")
 		http.Error(w, "failed to reset account token", http.StatusInternalServerError)
 		return

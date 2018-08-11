@@ -13,25 +13,25 @@ import (
 )
 
 type app struct {
-	ability.FeedbackMapper
-	AbilityTemplateMapper ability.TemplateMapper
-	AbilityMapper         ability.Mapper
+	ability.FeedbackService
+	AbilityTemplateService ability.TemplateService
+	AbilityService         ability.Service
 
-	account.TokenMapper
+	account.TokenService
 
-	EntityTemplateMapper entity.TemplateMapper
-	EntityMapper         entity.Mapper
+	EntityTemplateService entity.TemplateService
+	EntityService         entity.Service
 
-	infra.QListenerMapper
-	event.QMapper
-	EventMapper event.Mapper
+	infra.QListenerService
+	event.QService
+	EventService event.Service
 
-	infra.CoreMapper
+	infra.CoreService
 
-	entity.PermissionMapper
+	entity.PermissionService
 
-	sector.EntitiesMapper
-	SectorMapper sector.Mapper
+	sector.EntitiesService
+	SectorService sector.Service
 
 	id ulid.ID
 
@@ -90,7 +90,7 @@ func (a *app) AddListener(msg *infra.Message) {
 
 	switch listener.Action {
 	case infra.Open:
-		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventMapper, a.Apply)
+		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventService, a.Apply)
 		a.seqs[listener.ID].Run()
 
 		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)

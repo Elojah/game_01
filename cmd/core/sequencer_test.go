@@ -67,7 +67,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
+		es := mocks.NewEventService()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch es.ListEventCount {
@@ -99,7 +99,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("two", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
+		es := mocks.NewEventService()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
@@ -139,7 +139,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("cancel", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
+		es := mocks.NewEventService()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
@@ -183,7 +183,7 @@ func TestSequencer(t *testing.T) {
 	t.Run("interrupt", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
+		es := mocks.NewEventService()
 		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {

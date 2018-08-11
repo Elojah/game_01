@@ -12,19 +12,19 @@ import (
 )
 
 type handler struct {
-	AbilityMapper         ability.Mapper
-	AbilityTemplateMapper ability.TemplateMapper
+	AbilityService         ability.Service
+	AbilityTemplateService ability.TemplateService
 
-	AccountMapper account.Mapper
+	AccountService account.Service
 
-	EntityMapper         entity.Mapper
-	EntityTemplateMapper entity.TemplateMapper
+	EntityService         entity.Service
+	EntityTemplateService entity.TemplateService
 
 	listener.L
 
-	SectorMapper sector.Mapper
-	sector.EntitiesMapper
-	sector.StarterMapper
+	SectorService sector.Service
+	sector.EntitiesService
+	sector.StarterService
 
 	srv *http.Server
 }

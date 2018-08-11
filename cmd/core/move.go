@@ -37,7 +37,7 @@ func (a *app) MoveTarget(e event.E) error {
 	move := e.Action.(event.Move)
 
 	// #Check permission token/source.
-	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
+	permission, err := a.PermissionService.GetPermission(entity.PermissionSubset{
 		Source: e.Source.String(),
 		Target: move.Source.String(),
 	})
@@ -50,7 +50,7 @@ func (a *app) MoveTarget(e event.E) error {
 
 	// #Check permission source/target if source != target.
 	if move.Source != move.Target {
-		permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
+		permission, err := a.PermissionService.GetPermission(entity.PermissionSubset{
 			Source: move.Source.String(),
 			Target: move.Target.String(),
 		})
@@ -63,13 +63,13 @@ func (a *app) MoveTarget(e event.E) error {
 	}
 
 	// #Retrieve previous state target.
-	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: move.Target, MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityService.GetEntity(entity.Subset{ID: move.Target, MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s at max ts %s", move.Target.String(), e.TS.UnixNano())
 	}
 
 	// #Retrieve current sector
-	s, err := a.SectorMapper.GetSector(sector.Subset{ID: target.Position.SectorID})
+	s, err := a.SectorService.GetSector(sector.Subset{ID: target.Position.SectorID})
 	if err != nil {
 		return errors.Wrapf(err, "get sector %s", target.Position.SectorID.String())
 	}
@@ -123,10 +123,10 @@ func (a *app) MoveTarget(e event.E) error {
 		target.Position.Coord.MoveReference(con.Coord, con.External.Coord)
 
 		// #Add entity to new sector and remove from previous.
-		if err := a.EntitiesMapper.AddEntityToSector(target.ID, con.External.SectorID); err != nil {
+		if err := a.EntitiesService.AddEntityToSector(target.ID, con.External.SectorID); err != nil {
 			return errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), con.External.SectorID.String())
 		}
-		if err := a.EntitiesMapper.RemoveEntityToSector(target.ID, target.Position.SectorID); err != nil {
+		if err := a.EntitiesService.RemoveEntityToSector(target.ID, target.Position.SectorID); err != nil {
 			return errors.Wrapf(err, "remove entity %s from sector %s", target.ID.String(), s.ID.String())
 		}
 
@@ -135,5 +135,5 @@ func (a *app) MoveTarget(e event.E) error {
 	}
 
 	// #Write new target state.
-	return errors.Wrapf(a.EntityMapper.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", target.ID.String(), e.TS.UnixNano())
+	return errors.Wrapf(a.EntityService.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", target.ID.String(), e.TS.UnixNano())
 }

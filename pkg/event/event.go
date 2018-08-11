@@ -5,14 +5,14 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// QMapper must be implemented by a queue.
-type QMapper interface {
+// QStore must be implemented by a queue.
+type QStore interface {
 	PublishEvent(E, ulid.ID) error
 	SubscribeEvent(ulid.ID) *infra.Subscription
 }
 
-// Mapper wraps action interactions.
-type Mapper interface {
+// Store wraps action interactions.
+type Store interface {
 	SetEvent(E, ulid.ID) error
 	ListEvent(Subset) ([]E, error)
 }

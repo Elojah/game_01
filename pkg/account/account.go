@@ -6,8 +6,8 @@ type Subset struct {
 	Password string
 }
 
-// Mapper wraps account interactions.
-type Mapper interface {
+// Store wraps account interactions.
+type Store interface {
 	SetAccount(A) error
 	GetAccount(Subset) (A, error)
 	DelAccount(Subset) error

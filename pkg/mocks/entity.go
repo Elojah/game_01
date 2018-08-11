@@ -6,8 +6,8 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 )
 
-// EntityMapper mocks entity.Mapper.
-type EntityMapper struct {
+// EntityService mocks entity.Service.
+type EntityService struct {
 	SetEntityFunc  func(entity.E, int64) error
 	SetEntityCount int32
 	GetEntityFunc  func(entity.Subset) (entity.E, error)
@@ -16,8 +16,8 @@ type EntityMapper struct {
 	DelEntityCount int32
 }
 
-// SetEntity mocks entity.Mapper.
-func (m *EntityMapper) SetEntity(e entity.E, ts int64) error {
+// SetEntity mocks entity.Service.
+func (m *EntityService) SetEntity(e entity.E, ts int64) error {
 	atomic.AddInt32(&m.SetEntityCount, 1)
 	if m.SetEntityFunc == nil {
 		return nil
@@ -25,8 +25,8 @@ func (m *EntityMapper) SetEntity(e entity.E, ts int64) error {
 	return m.SetEntityFunc(e, ts)
 }
 
-// GetEntity mocks entity.Mapper.
-func (m *EntityMapper) GetEntity(subset entity.Subset) (entity.E, error) {
+// GetEntity mocks entity.Service.
+func (m *EntityService) GetEntity(subset entity.Subset) (entity.E, error) {
 	atomic.AddInt32(&m.GetEntityCount, 1)
 	if m.GetEntityFunc == nil {
 		return entity.E{}, nil
@@ -34,8 +34,8 @@ func (m *EntityMapper) GetEntity(subset entity.Subset) (entity.E, error) {
 	return m.GetEntityFunc(subset)
 }
 
-// DelEntity mocks entity.Mapper.
-func (m *EntityMapper) DelEntity(subset entity.Subset) error {
+// DelEntity mocks entity.Service.
+func (m *EntityService) DelEntity(subset entity.Subset) error {
 	atomic.AddInt32(&m.DelEntityCount, 1)
 	if m.DelEntityFunc == nil {
 		return nil
@@ -43,7 +43,7 @@ func (m *EntityMapper) DelEntity(subset entity.Subset) error {
 	return m.DelEntityFunc(subset)
 }
 
-// NewEntityMapper returns a entity service mock ready for usage.
-func NewEntityMapper() *EntityMapper {
-	return &EntityMapper{}
+// NewEntityService returns a entity service mock ready for usage.
+func NewEntityService() *EntityService {
+	return &EntityService{}
 }

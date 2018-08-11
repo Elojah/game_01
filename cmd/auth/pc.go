@@ -141,7 +141,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logger = logger.With().Str("sector", start.SectorID.String()).Logger()
-	sec, err := h.SectorMapper.GetSector(sector.Subset{ID: start.SectorID})
+	sec, err := h.SectorService.GetSector(sector.Subset{ID: start.SectorID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -273,7 +273,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	e := entity.E(pc)
 	e.ID = ulid.NewID()
 	logger = logger.With().Str("entity", e.ID.String()).Logger()
-	if err := h.EntityMapper.SetEntity(e, time.Now().UnixNano()); err != nil {
+	if err := h.EntityService.SetEntity(e, time.Now().UnixNano()); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return

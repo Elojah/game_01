@@ -7,8 +7,8 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// SectorEntitiesMapper mocks sector.EntitiesMapper.
-type SectorEntitiesMapper struct {
+// SectorEntitiesService mocks sector.EntitiesService.
+type SectorEntitiesService struct {
 	GetEntitiesFunc           func(sector.EntitiesSubset) (sector.Entities, error)
 	GetEntitiesCount          int32
 	AddEntityToSectorFunc     func(ulid.ID, ulid.ID) error
@@ -17,8 +17,8 @@ type SectorEntitiesMapper struct {
 	RemoveEntityToSectorCount int32
 }
 
-// GetEntities mocks sector.EntitiesMapper.
-func (m *SectorEntitiesMapper) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
+// GetEntities mocks sector.EntitiesService.
+func (m *SectorEntitiesService) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
 	atomic.AddInt32(&m.GetEntitiesCount, 1)
 	if m.GetEntitiesFunc == nil {
 		return sector.Entities{}, nil
@@ -26,8 +26,8 @@ func (m *SectorEntitiesMapper) GetEntities(subset sector.EntitiesSubset) (sector
 	return m.GetEntitiesFunc(subset)
 }
 
-// AddEntityToSector mocks sector.EntitiesMapper.
-func (m *SectorEntitiesMapper) AddEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
+// AddEntityToSector mocks sector.EntitiesService.
+func (m *SectorEntitiesService) AddEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
 	atomic.AddInt32(&m.AddEntityToSectorCount, 1)
 	if m.AddEntityToSectorFunc == nil {
 		return nil
@@ -35,8 +35,8 @@ func (m *SectorEntitiesMapper) AddEntityToSector(entityID ulid.ID, sectorID ulid
 	return m.AddEntityToSectorFunc(entityID, sectorID)
 }
 
-// RemoveEntityToSector mocks sector.EntitiesMapper.
-func (m *SectorEntitiesMapper) RemoveEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
+// RemoveEntityToSector mocks sector.EntitiesService.
+func (m *SectorEntitiesService) RemoveEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
 	atomic.AddInt32(&m.RemoveEntityToSectorCount, 1)
 	if m.RemoveEntityToSectorFunc == nil {
 		return nil
@@ -44,7 +44,7 @@ func (m *SectorEntitiesMapper) RemoveEntityToSector(entityID ulid.ID, sectorID u
 	return m.RemoveEntityToSectorFunc(entityID, sectorID)
 }
 
-// NewSectorEntitiesMapper returns a event service mock ready for usage.
-func NewSectorEntitiesMapper() *SectorEntitiesMapper {
-	return &SectorEntitiesMapper{}
+// NewSectorEntitiesService returns a event service mock ready for usage.
+func NewSectorEntitiesService() *SectorEntitiesService {
+	return &SectorEntitiesService{}
 }

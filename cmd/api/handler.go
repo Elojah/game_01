@@ -20,7 +20,7 @@ type handler struct {
 	*mux.M
 	*client.C
 
-	event.QMapper
+	event.QService
 
 	token.T
 

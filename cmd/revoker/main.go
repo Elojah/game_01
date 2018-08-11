@@ -47,23 +47,23 @@ func run(prog string, filename string) {
 	}, "revoker")
 	launchers.Add(al)
 
-	a.TokenHCMapper = rdx
-	a.TokenMapper = rdx
-	a.EntityMapper = rdlrux
-	a.PCMapper = rdx
-	a.PermissionMapper = rdx
-	a.QRecurrerMapper = rdx
-	a.QListenerMapper = rdx
-	a.EntitiesMapper = rdlrux
+	a.TokenHCService = rdx
+	a.TokenService = rdx
+	a.EntityService = rdlrux
+	a.PCService = rdx
+	a.PermissionService = rdx
+	a.QRecurrerService = rdx
+	a.QListenerService = rdx
+	a.EntitiesService = rdlrux
 	a.L = listener.L{
-		QListenerMapper: rdx,
-		ListenerMapper:  rdx,
-		CoreMapper:      rdx,
+		QListenerService: rdx,
+		ListenerService:  rdx,
+		CoreService:      rdx,
 	}
 	a.R = recurrer.R{
-		QRecurrerMapper: rdx,
-		RecurrerMapper:  rdx,
-		SyncMapper:      rdx,
+		QRecurrerService: rdx,
+		RecurrerService:  rdx,
+		SyncService:      rdx,
 	}
 
 	if err := launchers.Up(filename); err != nil {

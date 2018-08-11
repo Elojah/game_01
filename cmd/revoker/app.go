@@ -15,20 +15,20 @@ import (
 )
 
 type app struct {
-	account.TokenHCMapper
-	account.TokenMapper
+	account.TokenHCService
+	account.TokenService
 
-	EntityMapper entity.Mapper
-	entity.PCMapper
-	entity.PermissionMapper
+	EntityService entity.Service
+	entity.PCService
+	entity.PermissionService
 
-	infra.QRecurrerMapper
-	infra.QListenerMapper
+	infra.QRecurrerService
+	infra.QListenerService
 
 	listener.L
 	recurrer.R
 
-	sector.EntitiesMapper
+	sector.EntitiesService
 
 	lifespan time.Duration
 }
@@ -54,13 +54,13 @@ func (a *app) Run() {
 		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
 	}
 	t := token.T{
-		TokenMapper:      a.TokenMapper,
-		EntityMapper:     a.EntityMapper,
-		PCMapper:         a.PCMapper,
+		TokenService:      a.TokenService,
+		EntityService:     a.EntityService,
+		PCService:         a.PCService,
 		L:                a.L,
 		R:                a.R,
-		PermissionMapper: a.PermissionMapper,
-		EntitiesMapper:   a.EntitiesMapper,
+		PermissionService: a.PermissionService,
+		EntitiesService:   a.EntitiesService,
 	}
 	for _, tokenID := range tokenIDs {
 		go func(tokenID ulid.ID) {

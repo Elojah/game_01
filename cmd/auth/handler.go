@@ -14,21 +14,21 @@ import (
 )
 
 type handler struct {
-	AccountMapper account.Mapper
-	entity.PCMapper
-	entity.PCLeftMapper
-	entity.PermissionMapper
-	entity.TemplateMapper
+	AccountService account.Service
+	entity.PCService
+	entity.PCLeftService
+	entity.PermissionService
+	entity.TemplateService
 
-	event.QMapper
+	event.QService
 
-	infra.SyncMapper
+	infra.SyncService
 
 	listener.L
 
-	sector.EntitiesMapper
-	sector.StarterMapper
-	SectorMapper sector.Mapper
+	sector.EntitiesService
+	sector.StarterService
+	SectorService sector.Service
 
 	token.T
 

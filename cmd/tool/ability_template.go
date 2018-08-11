@@ -34,7 +34,7 @@ func (h *handler) postAbilityTemplates(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("ability_templates", len(templates)).Msg("found")
 
 	for _, t := range templates {
-		if err := h.AbilityTemplateMapper.SetAbilityTemplate(t); err != nil {
+		if err := h.AbilityTemplateService.SetAbilityTemplate(t); err != nil {
 			logger.Error().Err(err).Str("ability_template", t.ID.String()).Msg("failed to set ability_template")
 			return
 		}

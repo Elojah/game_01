@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	abilityTemplateKey = "a_template:"
+	templateKey = "atpl:"
 )
 
-// GetAbilityTemplate implemented with redis.
-func (s *Service) GetAbilityTemplate(subset ability.TemplateSubset) (ability.Template, error) {
-	val, err := s.Get(abilityTemplateKey + subset.Type.String()).Result()
+// GetTemplate implemented with redis.
+func (s *Service) GetTemplate(subset ability.TemplateSubset) (ability.Template, error) {
+	val, err := s.Get(templateKey + subset.Type.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return ability.Template{}, err
@@ -28,19 +28,19 @@ func (s *Service) GetAbilityTemplate(subset ability.TemplateSubset) (ability.Tem
 	return ability.Template(a), nil
 }
 
-// SetAbilityTemplate implemented with redis.
-func (s *Service) SetAbilityTemplate(t ability.Template) error {
+// SetTemplate implemented with redis.
+func (s *Service) SetTemplate(t ability.Template) error {
 	a := ability.A(t)
 	raw, err := a.Marshal()
 	if err != nil {
 		return err
 	}
-	return s.Set(abilityTemplateKey+t.ID.String(), raw, 0).Err()
+	return s.Set(templateKey+t.ID.String(), raw, 0).Err()
 }
 
-// ListAbilityTemplate implemented with redis.
-func (s *Service) ListAbilityTemplate() ([]ability.Template, error) {
-	keys, err := s.Keys(abilityTemplateKey + "*").Result()
+// ListTemplate implemented with redis.
+func (s *Service) ListTemplate() ([]ability.Template, error) {
+	keys, err := s.Keys(templateKey + "*").Result()
 	if err != nil {
 		return nil, err
 	}

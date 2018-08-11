@@ -26,7 +26,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
-	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
+	permission, err := a.PermissionService.GetPermission(entity.PermissionSubset{
 		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
@@ -38,7 +38,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityMapper.GetAbility(ability.Subset{
+	ab, err := a.AbilityService.GetAbility(ability.Subset{
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
@@ -63,7 +63,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 	cast := e.Action.(event.Cast)
 
 	// #Check permission token/source.
-	permission, err := a.PermissionMapper.GetPermission(entity.PermissionSubset{
+	permission, err := a.PermissionService.GetPermission(entity.PermissionSubset{
 		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
@@ -75,7 +75,7 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityMapper.GetAbility(ability.Subset{
+	ab, err := a.AbilityService.GetAbility(ability.Subset{
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
@@ -86,18 +86,18 @@ func (a *app) CastTarget(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 
-	source, err := a.EntityMapper.GetEntity(entity.Subset{ID: cast.Source, MaxTS: e.TS.UnixNano()})
+	source, err := a.EntityService.GetEntity(entity.Subset{ID: cast.Source, MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), e.TS.UnixNano())
 	}
 
-	target, err := a.EntityMapper.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityService.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
 	}
 
 	afb := ab.Affect(&target)
-	if err := a.FeedbackMapper.SetAbilityFeedback(afb); err != nil {
+	if err := a.FeedbackService.SetAbilityFeedback(afb); err != nil {
 		return errors.Wrapf(err, "set ability feedback %s", afb.ID.String())
 	}
 	fb := event.E{

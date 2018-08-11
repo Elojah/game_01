@@ -36,8 +36,8 @@ func (s S) Out(coord geometry.Vec3) bool {
 		coord.Z > s.Dim.Z
 }
 
-// Mapper is the service for S.
-type Mapper interface {
+// Store is the service for S.
+type Store interface {
 	SetSector(S) error
 	GetSector(Subset) (S, error)
 }

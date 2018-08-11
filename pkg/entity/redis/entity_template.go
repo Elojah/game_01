@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	entityTemplateKey = "e_template:"
+	templateKey = "etpl:"
 )
 
-// GetEntityTemplate implemented with redis.
-func (s *Service) GetEntityTemplate(subset entity.TemplateSubset) (entity.Template, error) {
-	val, err := s.Get(entityTemplateKey + subset.Type.String()).Result()
+// GetTemplate implemented with redis.
+func (s *Service) GetTemplate(subset entity.TemplateSubset) (entity.Template, error) {
+	val, err := s.Get(templateKey + subset.Type.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.Template{}, err
@@ -28,18 +28,18 @@ func (s *Service) GetEntityTemplate(subset entity.TemplateSubset) (entity.Templa
 	return entity.Template(e), nil
 }
 
-// SetEntityTemplate implemented with redis.
-func (s *Service) SetEntityTemplate(t entity.Template) error {
+// SetTemplate implemented with redis.
+func (s *Service) SetTemplate(t entity.Template) error {
 	raw, err := t.Marshal()
 	if err != nil {
 		return err
 	}
-	return s.Set(entityTemplateKey+t.ID.String(), raw, 0).Err()
+	return s.Set(templateKey+t.ID.String(), raw, 0).Err()
 }
 
-// ListEntityTemplate implemented with redis.
-func (s *Service) ListEntityTemplate() ([]entity.Template, error) {
-	keys, err := s.Keys(entityTemplateKey + "*").Result()
+// ListTemplate implemented with redis.
+func (s *Service) ListTemplate() ([]entity.Template, error) {
+	keys, err := s.Keys(templateKey + "*").Result()
 	if err != nil {
 		return nil, err
 	}

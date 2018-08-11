@@ -14,9 +14,9 @@ import (
 
 // Recurrer retrieves entity data associated to pc id and send it at regular ticks.
 type Recurrer struct {
-	EntityMapper entity.Mapper
-	SectorMapper sector.Mapper
-	sector.EntitiesMapper
+	EntityService entity.Service
+	SectorService sector.Service
+	sector.EntitiesService
 
 	logger   zerolog.Logger
 	id       ulid.ID
@@ -48,12 +48,12 @@ func (r *Recurrer) Close() {
 func (r *Recurrer) Run() {
 	r.logger.Info().Msg("run sequencer")
 	for t := range r.ticker.C {
-		en, err := r.EntityMapper.GetEntity(entity.Subset{ID: r.entityID, MaxTS: t.UnixNano()})
+		en, err := r.EntityService.GetEntity(entity.Subset{ID: r.entityID, MaxTS: t.UnixNano()})
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve entity")
 			continue
 		}
-		sector, err := r.SectorMapper.GetSector(sector.Subset{ID: en.Position.SectorID})
+		sector, err := r.SectorService.GetSector(sector.Subset{ID: en.Position.SectorID})
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve current sector")
 			continue
@@ -78,7 +78,7 @@ func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
 
 func (r *Recurrer) sendEntity(entityID ulid.ID, t time.Time) {
 	// TODO Use token ping instead of now()
-	entity, err := r.EntityMapper.GetEntity(entity.Subset{ID: entityID, MaxTS: t.UnixNano()})
+	entity, err := r.EntityService.GetEntity(entity.Subset{ID: entityID, MaxTS: t.UnixNano()})
 	if err != nil {
 		r.logger.Error().Err(err).Str("id", entityID.String()).Msg("failed to retrieve entity")
 		return

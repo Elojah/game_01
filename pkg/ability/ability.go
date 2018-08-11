@@ -18,8 +18,8 @@ func (a A) Affect(target *entity.E) Feedback {
 	return fb
 }
 
-// Mapper is the communication interface for abilities.
-type Mapper interface {
+// Store is the communication interface for abilities.
+type Store interface {
 	SetAbility(A, ulid.ID) error
 	GetAbility(Subset) (A, error)
 	ListAbility(Subset) ([]A, error)

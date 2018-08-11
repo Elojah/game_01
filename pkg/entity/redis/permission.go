@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	permissionKey = "perm_entity:"
+	permissionKey = "eperm:"
 )
 
 // GetPermission implemented with redis.

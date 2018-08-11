@@ -57,24 +57,24 @@ func run(prog string, filename string) {
 	h := handler{
 		M:       &m,
 		C:       &c,
-		QMapper: rdx,
+		QService: rdx,
 		T: token.T{
-			AccountMapper: rdx,
-			TokenMapper:   rdx,
-			EntityMapper:  rdlrux,
-			PCMapper:      rdx,
+			AccountService: rdx,
+			TokenService:   rdx,
+			EntityService:  rdlrux,
+			PCService:      rdx,
 			L: listener.L{
-				QListenerMapper: rdx,
-				ListenerMapper:  rdx,
-				CoreMapper:      rdx,
+				QListenerService: rdx,
+				ListenerService:  rdx,
+				CoreService:      rdx,
 			},
 			R: recurrer.R{
-				QRecurrerMapper: rdx,
-				RecurrerMapper:  rdx,
-				SyncMapper:      rdx,
+				QRecurrerService: rdx,
+				RecurrerService:  rdx,
+				SyncService:      rdx,
 			},
-			PermissionMapper: rdx,
-			EntitiesMapper:   rdlrux,
+			PermissionService: rdx,
+			EntitiesService:   rdlrux,
 		},
 	}
 

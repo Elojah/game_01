@@ -59,13 +59,13 @@ func run(prog string, filename string) {
 	}
 
 	a.C = &c
-	a.EntityMapper = rdlrux
-	a.QMapper = rdx
-	a.QRecurrerMapper = rdx
-	a.EntitiesMapper = rdlrux
-	a.SectorMapper = rdx
-	a.SyncMapper = rdx
-	a.TokenMapper = rdx
+	a.EntityService = rdlrux
+	a.QService = rdx
+	a.QRecurrerService = rdx
+	a.EntitiesService = rdlrux
+	a.SectorService = rdx
+	a.SyncService = rdx
+	a.TokenService = rdx
 
 	log.Info().Msg("sync up")
 	cs := make(chan os.Signal, 1)
