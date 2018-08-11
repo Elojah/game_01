@@ -1,19 +1,9 @@
 package event
 
 import (
-	"time"
-
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 )
-
-// E is a game event triggered by an entity or mechanic.
-type E struct {
-	ID     ulid.ID
-	TS     time.Time
-	Source ulid.ID
-	Action Action
-}
 
 // QMapper must be implemented by a queue.
 type QMapper interface {

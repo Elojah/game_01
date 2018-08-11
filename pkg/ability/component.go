@@ -5,27 +5,46 @@ import (
 )
 
 // Affect a HealDirect on target.
-func (c HealDirect) Affect(target *entity.E) FeedbackComponent {
+func (c HealDirect) Affect(target *entity.E) ComponentFeedback {
+	var cf ComponentFeedback
+	cf.SetValue(&HealDirectFeedback{
+		Amount: c.Amount,
+	})
 	target.HP += c.Amount
-	return HealDirectFeedback{}
+	return cf
 }
 
 // Affect a DamageDirect on target.
-func (c DamageDirect) Affect(target *entity.E) FeedbackComponent {
+func (c DamageDirect) Affect(target *entity.E) ComponentFeedback {
+	var cf ComponentFeedback
 	if c.Amount >= target.HP {
+		cf.SetValue(&DamageDirectFeedback{
+			Amount: target.HP,
+		})
 		target.HP = 0
-		return DamageDirectFeedback{}
+		return cf
 	}
+	cf.SetValue(&DamageDirectFeedback{
+		Amount: c.Amount,
+	})
 	target.HP -= c.Amount
-	return DamageDirectFeedback{}
+	return cf
 }
 
 // Affect a HealOverTime on target.
-func (c HealOverTime) Affect(target *entity.E) FeedbackComponent {
-	return HealOverTimeFeedback{}
+func (c HealOverTime) Affect(target *entity.E) ComponentFeedback {
+	var cf ComponentFeedback
+	cf.SetValue(&HealOverTimeFeedback{
+		Amount: c.Amount,
+	})
+	return cf
 }
 
 // Affect a DamageOverTime on target.
-func (c DamageOverTime) Affect(target *entity.E) FeedbackComponent {
-	return DamageOverTimeFeedback{}
+func (c DamageOverTime) Affect(target *entity.E) ComponentFeedback {
+	var cf ComponentFeedback
+	cf.SetValue(&DamageOverTimeFeedback{
+		Amount: c.Amount,
+	})
+	return cf
 }

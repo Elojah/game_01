@@ -2,6 +2,7 @@ package ulid
 
 import (
 	"crypto/rand"
+	"encoding/json"
 	"time"
 
 	"github.com/oklog/ulid"
@@ -18,6 +19,11 @@ func NewID() ID {
 // IsZero returns if id is zero.
 func (id ID) IsZero() bool {
 	return ulid.ULID(id).Time() == 0
+}
+
+// String returns a human readable string ID.
+func (id ID) String() string {
+	return ulid.ULID(id).String()
 }
 
 // Bytes returns id as byte slice for protobuf marshaling.
@@ -38,9 +44,9 @@ func (id ID) MarshalTo(data []byte) (n int, err error) {
 
 // Unmarshal never returns any error.
 func (id *ID) Unmarshal(data []byte) error {
-	var tmp [16]byte
-	copy(data[0:16], tmp[:])
-	*id = tmp
+	for i := 0; i < 16; i++ {
+		id[i] = data[i]
+	}
 	return nil
 }
 
@@ -51,13 +57,17 @@ func (id *ID) Size() int {
 
 // MarshalJSON returns id in human readable string format.
 func (id ID) MarshalJSON() ([]byte, error) {
-	return ulid.ULID(id).MarshalText()
+	return json.Marshal(id.String())
 }
 
 // UnmarshalJSON unmarshals and valid data.
 func (id *ID) UnmarshalJSON(data []byte) error {
-	var u ulid.ULID
-	if err := u.UnmarshalText(data); err != nil {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	u, err := ulid.Parse(s)
+	if err != nil {
 		return err
 	}
 	*id = ID(u)
@@ -66,18 +76,25 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 
 // only required if the compare option is set
 func (id ID) Compare(other ID) int {
-	return id.Compare(other)
+	return ulid.ULID(id).Compare(ulid.ULID(other))
 }
 
 // only required if the equal option is set
 func (id ID) Equal(other ID) bool {
-	return id.Equal(other)
+	return id.Compare(other) == 0
 }
 
 // only required if populate option is set
 func NewPopulatedID(r randyID) *ID {
-	id := NewID()
+	id := ID(ulid.MustNew(uint64(r.Uint32()), rand.Reader))
 	return &id
 }
 
-type randyID interface{}
+type randyID interface {
+	Float32() float32
+	Float64() float64
+	Int63() int64
+	Int31() int32
+	Uint32() uint32
+	Intn(n int) int
+}

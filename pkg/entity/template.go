@@ -1,5 +1,7 @@
 package entity
 
+import "github.com/elojah/game_01/pkg/ulid"
+
 // Template alias an entity.
 // It represents semi static data. When creating PC/Entities, those templates are used.
 type Template = E
@@ -13,5 +15,5 @@ type TemplateMapper interface {
 
 // TemplateSubset is a subset to retrieve one template.
 type TemplateSubset struct {
-	Type Type
+	Type ulid.ID
 }
