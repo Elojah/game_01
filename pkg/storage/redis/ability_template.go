@@ -22,7 +22,7 @@ func (s *Service) GetAbilityTemplate(subset ability.TemplateSubset) (ability.Tem
 	}
 
 	var a ability.A
-	if _, err := a.Unmarshal([]byte(val)); err != nil {
+	if err := a.Unmarshal([]byte(val)); err != nil {
 		return ability.Template{}, err
 	}
 	return ability.Template(a), nil
@@ -31,7 +31,7 @@ func (s *Service) GetAbilityTemplate(subset ability.TemplateSubset) (ability.Tem
 // SetAbilityTemplate implemented with redis.
 func (s *Service) SetAbilityTemplate(t ability.Template) error {
 	a := ability.A(t)
-	raw, err := a.Marshal(nil)
+	raw, err := a.Marshal()
 	if err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (s *Service) ListAbilityTemplate() ([]ability.Template, error) {
 			return nil, err
 		}
 
-		if _, err := abilities[i].Unmarshal([]byte(val)); err != nil {
+		if err := abilities[i].Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
 	}

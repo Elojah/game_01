@@ -11,7 +11,7 @@ const (
 
 // PublishRecurrer implementation with redis pubsub.
 func (s *Service) PublishRecurrer(r infra.Recurrer, id ulid.ID) error {
-	raw, err := r.Marshal(nil)
+	raw, err := r.Marshal()
 	if err != nil {
 		return err
 	}

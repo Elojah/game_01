@@ -29,7 +29,7 @@ func (s *Service) ListAbility(subset ability.Subset) ([]ability.A, error) {
 			return nil, err
 		}
 
-		if _, err := abilities[i].Unmarshal([]byte(val)); err != nil {
+		if err := abilities[i].Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
 	}
@@ -47,7 +47,7 @@ func (s *Service) GetAbility(subset ability.Subset) (ability.A, error) {
 	}
 
 	var a ability.A
-	if _, err := a.Unmarshal([]byte(val)); err != nil {
+	if err := a.Unmarshal([]byte(val)); err != nil {
 		return ability.A{}, err
 	}
 	return a, nil
@@ -55,7 +55,7 @@ func (s *Service) GetAbility(subset ability.Subset) (ability.A, error) {
 
 // SetAbility implemented with redis.
 func (s *Service) SetAbility(a ability.A, en ulid.ID) error {
-	raw, err := a.Marshal(nil)
+	raw, err := a.Marshal()
 	if err != nil {
 		return err
 	}

@@ -29,7 +29,7 @@ func (s *Service) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
 			return nil, err
 		}
 
-		if _, err := pcs[i].Unmarshal([]byte(val)); err != nil {
+		if err := pcs[i].Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
 	}
@@ -47,7 +47,7 @@ func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
 	}
 
 	var e entity.E
-	if _, err := e.Unmarshal([]byte(val)); err != nil {
+	if err := e.Unmarshal([]byte(val)); err != nil {
 		return entity.PC{}, err
 	}
 	return entity.PC(e), nil
@@ -55,7 +55,7 @@ func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
 
 // SetPC implemented with redis.
 func (s *Service) SetPC(pc entity.PC, accountID ulid.ID) error {
-	raw, err := pc.Marshal(nil)
+	raw, err := pc.Marshal()
 	if err != nil {
 		return err
 	}

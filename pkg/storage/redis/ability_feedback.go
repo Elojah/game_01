@@ -22,7 +22,7 @@ func (s *Service) GetAbilityFeedback(subset ability.FeedbackSubset) (ability.Fee
 	}
 
 	var afb ability.Feedback
-	if _, err := afb.Unmarshal([]byte(val)); err != nil {
+	if err := afb.Unmarshal([]byte(val)); err != nil {
 		return ability.Feedback{}, err
 	}
 	return afb, nil
@@ -30,7 +30,7 @@ func (s *Service) GetAbilityFeedback(subset ability.FeedbackSubset) (ability.Fee
 
 // SetAbilityFeedback implemented with redis.
 func (s *Service) SetAbilityFeedback(afb ability.Feedback) error {
-	raw, err := afb.Marshal(nil)
+	raw, err := afb.Marshal()
 	if err != nil {
 		return err
 	}

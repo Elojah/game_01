@@ -15,7 +15,7 @@ const (
 
 // SetEvent implemented with redis.
 func (s *Service) SetEvent(e event.E, id ulid.ID) error {
-	raw, err := e.Marshal(nil)
+	raw, err := e.Marshal()
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func (s *Service) ListEvent(subset event.Subset) ([]event.E, error) {
 	}
 	events := make([]event.E, len(vals))
 	for i := range vals {
-		if _, err := events[i].Unmarshal([]byte(vals[i])); err != nil {
+		if err := events[i].Unmarshal([]byte(vals[i])); err != nil {
 			return nil, err
 		}
 	}

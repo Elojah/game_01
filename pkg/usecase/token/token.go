@@ -63,7 +63,7 @@ func (t T) New(accountPayload account.A, addr string) (account.Token, error) {
 	if a.Password != accountPayload.Password {
 		return account.Token{}, errors.Wrap(account.ErrWrongCredentials, "compare passwords")
 	}
-	if !ulid.IsZero(a.Token) {
+	if !a.Token.IsZero() {
 		return account.Token{}, errors.Wrap(account.ErrMultipleLogin, "check account state")
 	}
 

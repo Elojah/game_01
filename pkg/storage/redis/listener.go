@@ -22,7 +22,7 @@ func (s *Service) GetListener(subset infra.ListenerSubset) (infra.Listener, erro
 	}
 
 	var listener infra.Listener
-	if _, err := listener.Unmarshal([]byte(val)); err != nil {
+	if err := listener.Unmarshal([]byte(val)); err != nil {
 		return infra.Listener{}, err
 	}
 	return listener, nil
@@ -30,7 +30,7 @@ func (s *Service) GetListener(subset infra.ListenerSubset) (infra.Listener, erro
 
 // SetListener redis implementation.
 func (s *Service) SetListener(listener infra.Listener) error {
-	raw, err := listener.Marshal(nil)
+	raw, err := listener.Marshal()
 	if err != nil {
 		return err
 	}

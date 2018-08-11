@@ -12,7 +12,7 @@ const (
 
 // PublishEvent implementation with redis pubsub.
 func (s *Service) PublishEvent(e event.E, id ulid.ID) error {
-	raw, err := e.Marshal(nil)
+	raw, err := e.Marshal()
 	if err != nil {
 		return err
 	}

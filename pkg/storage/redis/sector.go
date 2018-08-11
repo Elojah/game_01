@@ -22,7 +22,7 @@ func (s *Service) GetSector(subset sector.Subset) (sector.S, error) {
 	}
 
 	var sec sector.S
-	if _, err := sec.Unmarshal([]byte(val)); err != nil {
+	if err := sec.Unmarshal([]byte(val)); err != nil {
 		return sector.S{}, err
 	}
 	return sec, nil
@@ -30,7 +30,7 @@ func (s *Service) GetSector(subset sector.Subset) (sector.S, error) {
 
 // SetSector implemented with redis.
 func (s *Service) SetSector(sec sector.S) error {
-	raw, err := sec.Marshal(nil)
+	raw, err := sec.Marshal()
 	if err != nil {
 		return err
 	}

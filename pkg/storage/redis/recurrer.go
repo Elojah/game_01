@@ -22,7 +22,7 @@ func (s *Service) GetRecurrer(subset infra.RecurrerSubset) (infra.Recurrer, erro
 	}
 
 	var recurrer infra.Recurrer
-	if _, err := recurrer.Unmarshal([]byte(val)); err != nil {
+	if err := recurrer.Unmarshal([]byte(val)); err != nil {
 		return infra.Recurrer{}, err
 	}
 	return recurrer, nil
@@ -30,7 +30,7 @@ func (s *Service) GetRecurrer(subset infra.RecurrerSubset) (infra.Recurrer, erro
 
 // SetRecurrer redis implementation.
 func (s *Service) SetRecurrer(recurrer infra.Recurrer) error {
-	raw, err := recurrer.Marshal(nil)
+	raw, err := recurrer.Marshal()
 	if err != nil {
 		return err
 	}

@@ -22,7 +22,7 @@ func (s *Service) GetAccount(subset account.Subset) (account.A, error) {
 	}
 
 	var a account.A
-	if _, err := a.Unmarshal([]byte(val)); err != nil {
+	if err := a.Unmarshal([]byte(val)); err != nil {
 		return account.A{}, err
 	}
 	return a, nil
@@ -30,7 +30,7 @@ func (s *Service) GetAccount(subset account.Subset) (account.A, error) {
 
 // SetAccount implemented with redis.
 func (s *Service) SetAccount(a account.A) error {
-	raw, err := a.Marshal(nil)
+	raw, err := a.Marshal()
 	if err != nil {
 		return err
 	}

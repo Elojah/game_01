@@ -15,7 +15,7 @@ const (
 
 // SetEntity implemented with redis.
 func (s *Service) SetEntity(e entity.E, ts int64) error {
-	raw, err := e.Marshal(nil)
+	raw, err := e.Marshal()
 	if err != nil {
 		return err
 	}
@@ -46,7 +46,7 @@ func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 		return entity.E{}, storage.ErrNotFound
 	}
 	var e entity.E
-	if _, err := e.Unmarshal([]byte(vals[0])); err != nil {
+	if err := e.Unmarshal([]byte(vals[0])); err != nil {
 		return entity.E{}, err
 	}
 	return e, nil

@@ -22,7 +22,7 @@ func (s *Service) GetEntityTemplate(subset entity.TemplateSubset) (entity.Templa
 	}
 
 	var e entity.E
-	if _, err := e.Unmarshal([]byte(val)); err != nil {
+	if err := e.Unmarshal([]byte(val)); err != nil {
 		return entity.Template{}, err
 	}
 	return entity.Template(e), nil
@@ -30,7 +30,7 @@ func (s *Service) GetEntityTemplate(subset entity.TemplateSubset) (entity.Templa
 
 // SetEntityTemplate implemented with redis.
 func (s *Service) SetEntityTemplate(t entity.Template) error {
-	raw, err := t.Marshal(nil)
+	raw, err := t.Marshal()
 	if err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (s *Service) ListEntityTemplate() ([]entity.Template, error) {
 			return nil, err
 		}
 
-		if _, err := entities[i].Unmarshal([]byte(val)); err != nil {
+		if err := entities[i].Unmarshal([]byte(val)); err != nil {
 			return nil, err
 		}
 	}

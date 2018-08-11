@@ -16,6 +16,11 @@ func NewID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
 }
 
+// MustParse alias ulid.MustParse. Panics if s is invalid.
+func MustParse(s string) ID {
+	return ID(ulid.MustParse(s))
+}
+
 // IsZero returns if id is zero.
 func (id ID) IsZero() bool {
 	return ulid.ULID(id).Time() == 0

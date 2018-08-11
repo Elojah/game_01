@@ -11,7 +11,7 @@ const (
 
 // PublishListener implementation with redis pubsub.
 func (s *Service) PublishListener(l infra.Listener, id ulid.ID) error {
-	raw, err := l.Marshal(nil)
+	raw, err := l.Marshal()
 	if err != nil {
 		return err
 	}

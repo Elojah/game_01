@@ -26,7 +26,7 @@ func (s *Service) GetToken(subset account.TokenSubset) (account.Token, error) {
 	}
 
 	var t account.Token
-	if _, err := t.Unmarshal([]byte(val)); err != nil {
+	if err := t.Unmarshal([]byte(val)); err != nil {
 		return account.Token{}, err
 	}
 	return t, nil
@@ -34,7 +34,7 @@ func (s *Service) GetToken(subset account.TokenSubset) (account.Token, error) {
 
 // SetToken redis implementation.
 func (s *Service) SetToken(t account.Token) error {
-	raw, err := t.Marshal(nil)
+	raw, err := t.Marshal()
 	if err != nil {
 		return err
 	}
