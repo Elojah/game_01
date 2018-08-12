@@ -8,10 +8,10 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/game_01/pkg/usecase/token"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 )
@@ -20,9 +20,8 @@ type handler struct {
 	*mux.M
 	*client.C
 
-	event.QService
-
-	token.T
+	event.QStore
+	accountapp.TokenService
 
 	port      uint
 	tolerance time.Duration
