@@ -126,7 +126,7 @@ func (a *app) MoveTarget(e event.E) error {
 		if err := a.EntitiesService.AddEntityToSector(target.ID, con.External.SectorID); err != nil {
 			return errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), con.External.SectorID.String())
 		}
-		if err := a.EntitiesService.RemoveEntityToSector(target.ID, target.Position.SectorID); err != nil {
+		if err := a.EntitiesService.RemoveEntityFromSector(target.ID, target.Position.SectorID); err != nil {
 			return errors.Wrapf(err, "remove entity %s from sector %s", target.ID.String(), s.ID.String())
 		}
 
