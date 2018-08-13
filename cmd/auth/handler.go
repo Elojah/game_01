@@ -5,11 +5,9 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/account"
-	accountapp "github.com/elojah/game_01/pkg/account/app"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
-	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	"github.com/elojah/game_01/pkg/sector"
 )
 
@@ -29,9 +27,9 @@ type handler struct {
 	sector.StarterStore
 	SectorStore sector.Store
 
-	accountapp.TokenService
-	infraapp.ListenerService
-	infraapp.RecurrerService
+	account.TokenService
+	infra.ListenerService
+	infra.RecurrerService
 
 	srv *http.Server
 }
