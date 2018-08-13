@@ -7,15 +7,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-// RecurrerStore represents recurrer usecases.
-type InfraRecurrerStore struct {
+// RecurrerService represents recurrer usecases.
+type RecurrerService struct {
 	InfraQRecurrerStore infra.QRecurrerStore
 	InfraRecurrerStore  infra.RecurrerStore
 	InfraSyncStore      infra.SyncStore
 }
 
 // New creates a new recurrer on a random sync for id id.
-func (s *InfraRecurrerStore) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer, error) {
+func (s RecurrerService) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer, error) {
 
 	// #Open recurrer on a random sync
 	sy, err := s.InfraSyncStore.GetRandomSync(infra.SyncSubset{})
@@ -40,7 +40,7 @@ func (s *InfraRecurrerStore) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recur
 }
 
 // Remove deletes a recurrer id on any pool.
-func (s *InfraRecurrerStore) Remove(id ulid.ID) error {
+func (s RecurrerService) Remove(id ulid.ID) error {
 
 	// #Retrieve and close recurrer
 	r, err := s.InfraRecurrerStore.GetRecurrer(infra.RecurrerSubset{TokenID: id})

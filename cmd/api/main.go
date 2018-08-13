@@ -9,10 +9,12 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	redisx "github.com/elojah/game_01/pkg/storage/redis"
-	"github.com/elojah/game_01/pkg/usecase/listener"
-	"github.com/elojah/game_01/pkg/usecase/recurrer"
-	"github.com/elojah/game_01/pkg/usecase/token"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
+	accountstore "github.com/elojah/game_01/pkg/account/storage"
+	entitystore "github.com/elojah/game_01/pkg/entity/storage"
+	eventstore "github.com/elojah/game_01/pkg/event/storage"
+	infraapp "github.com/elojah/game_01/pkg/infra/app"
+	infrastore "github.com/elojah/game_01/pkg/infra/storage"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
@@ -27,54 +29,53 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
-	rdx := redisx.NewService(&rd)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
-	rdlrux := redisx.NewService(&rdlru)
 
-	m := mux.M{}
+	m := &mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
 	}, "server")
 	launchers.Add(muxl)
 
-	c := client.C{}
+	c := &client.C{}
 	cl := c.NewLauncher(client.Namespaces{
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)
 
-	h := handler{
-		M:       &m,
-		C:       &c,
-		QService: rdx,
-		T: token.T{
-			AccountService: rdx,
-			TokenService:   rdx,
-			EntityService:  rdlrux,
-			PCService:      rdx,
-			L: listener.L{
-				QListenerService: rdx,
-				ListenerService:  rdx,
-				CoreService:      rdx,
+	// Stores and applicatives
+	eventStore := eventstore.NewService(rd)
+	accountStore := accountstore.NewService(rd)
+	entityStore := entitystore.NewService(rd)
+	entityLRUStore := entitystore.NewService(rdlru)
+	infraStore := infrastore.NewService(rd)
+
+	h := &handler{
+		M:      m,
+		C:      c,
+		QStore: eventStore,
+		TokenService: accountapp.TokenService{
+			AccountStore:      accountStore,
+			AccountTokenStore: accountStore,
+			EntityStore:       entityLRUStore,
+			EntityPCStore:     entityStore,
+			InfraRecurrerService: infraapp.RecurrerService{
+				InfraQRecurrerStore: infraStore,
+				InfraRecurrerStore:  infraStore,
+				InfraSyncStore:      infraStore,
 			},
-			R: recurrer.R{
-				QRecurrerService: rdx,
-				RecurrerService:  rdx,
-				SyncService:      rdx,
-			},
-			PermissionService: rdx,
-			EntitiesService:   rdlrux,
+			EntityPermissionStore: entityStore,
 		},
 	}
 
