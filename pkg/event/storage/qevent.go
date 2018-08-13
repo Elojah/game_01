@@ -11,7 +11,7 @@ const (
 )
 
 // PublishEvent implementation with redis pubsub.
-func (s *Service) PublishEvent(e event.E, id ulid.ID) error {
+func (s *Store) PublishEvent(e event.E, id ulid.ID) error {
 	raw, err := e.Marshal()
 	if err != nil {
 		return err
@@ -20,6 +20,6 @@ func (s *Service) PublishEvent(e event.E, id ulid.ID) error {
 }
 
 // SubscribeEvent implementation with redis pubsub.
-func (s *Service) SubscribeEvent(id ulid.ID) *infra.Subscription {
+func (s *Store) SubscribeEvent(id ulid.ID) *infra.Subscription {
 	return (*infra.Subscription)(s.Subscribe(qeventKey + id.String()))
 }

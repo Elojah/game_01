@@ -9,12 +9,12 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountstore "github.com/elojah/game_01/pkg/account/storage"
+	accountsvc "github.com/elojah/game_01/pkg/account/svc"
 	entitystore "github.com/elojah/game_01/pkg/entity/storage"
 	eventstore "github.com/elojah/game_01/pkg/event/storage"
-	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	infrastore "github.com/elojah/game_01/pkg/infra/storage"
+	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
@@ -55,27 +55,27 @@ func run(prog string, filename string) {
 	launchers.Add(cl)
 
 	// Stores and applicatives
-	eventStore := eventstore.NewService(rd)
-	accountStore := accountstore.NewService(rd)
-	entityStore := entitystore.NewService(rd)
-	entityLRUStore := entitystore.NewService(rdlru)
-	infraStore := infrastore.NewService(rd)
+	eventStore := eventstore.NewStore(rd)
+	accountStore := accountstore.NewStore(rd)
+	entityStore := entitystore.NewStore(rd)
+	entityLRUStore := entitystore.NewStore(rdlru)
+	infraStore := infrastore.NewStore(rd)
 
 	h := &handler{
 		M:      m,
 		C:      c,
 		QStore: eventStore,
-		TokenService: accountapp.TokenService{
-			AccountStore:      accountStore,
-			AccountTokenStore: accountStore,
-			EntityStore:       entityLRUStore,
-			EntityPCStore:     entityStore,
-			InfraRecurrerService: infraapp.RecurrerService{
-				InfraQRecurrerStore: infraStore,
-				InfraRecurrerStore:  infraStore,
-				InfraSyncStore:      infraStore,
+		TokenService: accountsvc.TokenService{
+			Account:          accountStore,
+			AccountToken:     accountStore,
+			Entity:           entityLRUStore,
+			EntityPC:         entityStore,
+			EntityPermission: entityStore,
+			InfraRecurrerService: infrasvc.RecurrerService{
+				InfraQRecurrer: infraStore,
+				InfraRecurrer:  infraStore,
+				InfraSync:      infraStore,
 			},
-			EntityPermissionStore: entityStore,
 		},
 	}
 

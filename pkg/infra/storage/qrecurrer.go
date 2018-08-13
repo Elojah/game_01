@@ -10,7 +10,7 @@ const (
 )
 
 // PublishRecurrer implementation with redis pubsub.
-func (s *Service) PublishRecurrer(r infra.Recurrer, id ulid.ID) error {
+func (s *Store) PublishRecurrer(r infra.Recurrer, id ulid.ID) error {
 	raw, err := r.Marshal()
 	if err != nil {
 		return err
@@ -19,6 +19,6 @@ func (s *Service) PublishRecurrer(r infra.Recurrer, id ulid.ID) error {
 }
 
 // SubscribeRecurrer implementation with redis pubsub.
-func (s *Service) SubscribeRecurrer(id ulid.ID) *infra.Subscription {
+func (s *Store) SubscribeRecurrer(id ulid.ID) *infra.Subscription {
 	return (*infra.Subscription)(s.Subscribe(qrecurrerKey + id.String()))
 }

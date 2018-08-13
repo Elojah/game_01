@@ -37,7 +37,7 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 	a := ac.Domain()
 
 	// #Create token from account
-	tok, err := h.T.New(a, r.RemoteAddr)
+	tok, err := h.TokenService.New(a, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token from account")
 		http.Error(w, "failed to signin", http.StatusInternalServerError)

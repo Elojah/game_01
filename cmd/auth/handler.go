@@ -15,6 +15,7 @@ import (
 
 type handler struct {
 	AccountStore account.Store
+
 	entity.PCStore
 	entity.PCLeftStore
 	entity.PermissionStore
@@ -24,13 +25,13 @@ type handler struct {
 
 	infra.SyncStore
 
-	infraapp.ListenerService
-
 	sector.EntitiesStore
 	sector.StarterStore
 	SectorStore sector.Store
 
 	accountapp.TokenService
+	infraapp.ListenerService
+	infraapp.RecurrerService
 
 	srv *http.Server
 }

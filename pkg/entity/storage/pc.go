@@ -16,7 +16,7 @@ const (
 )
 
 // ListPC implemented with redis.
-func (s *Service) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
+func (s *Store) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
 	keys, err := s.Keys(pcKey + subset.AccountID.String() + "*").Result()
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (s *Service) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
 }
 
 // GetPC implemented with redis.
-func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
+func (s *Store) GetPC(subset entity.PCSubset) (entity.PC, error) {
 	val, err := s.Get(pcKey + subset.AccountID.String() + ":" + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -54,7 +54,7 @@ func (s *Service) GetPC(subset entity.PCSubset) (entity.PC, error) {
 }
 
 // SetPC implemented with redis.
-func (s *Service) SetPC(pc entity.PC, accountID ulid.ID) error {
+func (s *Store) SetPC(pc entity.PC, accountID ulid.ID) error {
 	raw, err := pc.Marshal()
 	if err != nil {
 		return err
@@ -63,17 +63,17 @@ func (s *Service) SetPC(pc entity.PC, accountID ulid.ID) error {
 }
 
 // DelPC implemented with redis.
-func (s *Service) DelPC(subset entity.PCSubset) error {
+func (s *Store) DelPC(subset entity.PCSubset) error {
 	return s.Del(pcKey + subset.AccountID.String() + ":" + subset.ID.String()).Err()
 }
 
 // SetPCLeft implemented with redis.
-func (s *Service) SetPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
+func (s *Store) SetPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
 	return s.Set(pcLeftKey+accountID.String(), int(pc), 0).Err()
 }
 
 // GetPCLeft implemented with redis.
-func (s *Service) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
+func (s *Store) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
 	val, err := s.Get(pcLeftKey + subset.AccountID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -87,6 +87,6 @@ func (s *Service) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
 }
 
 // DelPCLeft implemented with redis.
-func (s *Service) DelPCLeft(subset entity.PCLeftSubset) error {
+func (s *Store) DelPCLeft(subset entity.PCLeftSubset) error {
 	return s.Del(pcLeftKey + subset.AccountID.String()).Err()
 }

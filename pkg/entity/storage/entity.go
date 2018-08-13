@@ -14,7 +14,7 @@ const (
 )
 
 // SetEntity implemented with redis.
-func (s *Service) SetEntity(e entity.E, ts int64) error {
+func (s *Store) SetEntity(e entity.E, ts int64) error {
 	raw, err := e.Marshal()
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (s *Service) SetEntity(e entity.E, ts int64) error {
 }
 
 // GetEntity retrieves entity in Redis using ZRangeWithScores.
-func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
+func (s *Store) GetEntity(subset entity.Subset) (entity.E, error) {
 	cmd := s.ZRevRangeByScore(
 		entityKey+subset.ID.String(),
 		redis.ZRangeBy{
@@ -53,6 +53,6 @@ func (s *Service) GetEntity(subset entity.Subset) (entity.E, error) {
 }
 
 // DelEntity deletes entity in redis.
-func (s *Service) DelEntity(subset entity.Subset) error {
+func (s *Store) DelEntity(subset entity.Subset) error {
 	return s.Del(entityKey + subset.ID.String()).Err()
 }

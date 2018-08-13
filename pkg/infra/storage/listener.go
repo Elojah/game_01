@@ -12,7 +12,7 @@ const (
 )
 
 // GetListener redis implementation.
-func (s *Service) GetListener(subset infra.ListenerSubset) (infra.Listener, error) {
+func (s *Store) GetListener(subset infra.ListenerSubset) (infra.Listener, error) {
 	val, err := s.Get(listenerKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -29,7 +29,7 @@ func (s *Service) GetListener(subset infra.ListenerSubset) (infra.Listener, erro
 }
 
 // SetListener redis implementation.
-func (s *Service) SetListener(listener infra.Listener) error {
+func (s *Store) SetListener(listener infra.Listener) error {
 	raw, err := listener.Marshal()
 	if err != nil {
 		return err
@@ -38,6 +38,6 @@ func (s *Service) SetListener(listener infra.Listener) error {
 }
 
 // DelListener deletes listener in redis.
-func (s *Service) DelListener(subset infra.ListenerSubset) error {
+func (s *Store) DelListener(subset infra.ListenerSubset) error {
 	return s.Del(listenerKey + subset.ID.String()).Err()
 }

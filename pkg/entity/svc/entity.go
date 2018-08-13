@@ -1,4 +1,4 @@
-package app
+package svc
 
 import (
 	"time"
@@ -14,9 +14,9 @@ import (
 
 // Service represents entity usecases.
 type Service struct {
-	EntityStore           entity.Store
-	EntityPermissionStore entity.PermissionStore
-	SectorEntitiesStore   sector.EntitiesStore
+	Entity           entity.Store
+	EntityPermission entity.PermissionStore
+	SectorEntities   sector.EntitiesStore
 
 	ListenerService app.ListenerService
 }
@@ -24,7 +24,7 @@ type Service struct {
 // Disconnect disconnects an entity.
 func (s Service) Disconnect(id ulid.ID, t account.Token) error {
 
-	e, err := s.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: time.Now().UnixNano()})
+	e, err := s.Entity.GetEntity(entity.Subset{ID: id, MaxTS: time.Now().UnixNano()})
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s", id.String())
 	}
@@ -35,7 +35,7 @@ func (s Service) Disconnect(id ulid.ID, t account.Token) error {
 	}
 
 	// #Delete token permission on entity
-	if err := s.EntityPermissionStore.DelPermission(entity.PermissionSubset{
+	if err := s.EntityPermission.DelPermission(entity.PermissionSubset{
 		Source: t.ID.String(),
 		Target: id.String(),
 	}); err != nil {
@@ -43,12 +43,12 @@ func (s Service) Disconnect(id ulid.ID, t account.Token) error {
 	}
 
 	// #Delete pc entity position
-	if err := s.SectorEntitiesStore.RemoveEntityFromSector(id, e.Position.SectorID); err != nil {
+	if err := s.SectorEntities.RemoveEntityFromSector(id, e.Position.SectorID); err != nil {
 		return errors.Wrapf(err, "remove entity %s from sector %s", id.String(), e.Position.SectorID.String())
 	}
 
 	// #Delete pc entity
-	if err := s.EntityStore.DelEntity(entity.Subset{ID: id}); err != nil {
+	if err := s.Entity.DelEntity(entity.Subset{ID: id}); err != nil {
 		return errors.Wrapf(err, "delete entity %s", id.String())
 	}
 

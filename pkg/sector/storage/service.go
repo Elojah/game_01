@@ -5,18 +5,18 @@ import (
 	"github.com/elojah/redis"
 )
 
-var _ sector.Store = (*Service)(nil)
-var _ sector.EntitiesStore = (*Service)(nil)
-var _ sector.StarterStore = (*Service)(nil)
+var _ sector.Store = (*Store)(nil)
+var _ sector.EntitiesStore = (*Store)(nil)
+var _ sector.StarterStore = (*Store)(nil)
 
-// Service implements token and entity.
-type Service struct {
+// Store implements token and entity.
+type Store struct {
 	*redis.Service
 }
 
-// NewService returns a new game_01 redis Service.
-func NewService(s *redis.Service) *Service {
-	return &Service{
+// NewStore returns a new game_01 redis Store.
+func NewStore(s *redis.Service) *Store {
+	return &Store{
 		Service: s,
 	}
 }

@@ -12,7 +12,7 @@ const (
 )
 
 // GetSector implemented with redis.
-func (s *Service) GetSector(subset sector.Subset) (sector.S, error) {
+func (s *Store) GetSector(subset sector.Subset) (sector.S, error) {
 	val, err := s.Get(sectorKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -29,7 +29,7 @@ func (s *Service) GetSector(subset sector.Subset) (sector.S, error) {
 }
 
 // SetSector implemented with redis.
-func (s *Service) SetSector(sec sector.S) error {
+func (s *Store) SetSector(sec sector.S) error {
 	raw, err := sec.Marshal()
 	if err != nil {
 		return err

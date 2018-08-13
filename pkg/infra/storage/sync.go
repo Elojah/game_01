@@ -13,7 +13,7 @@ const (
 )
 
 // GetRandomSync redis implementation.
-func (s *Service) GetRandomSync(subset infra.SyncSubset) (infra.Sync, error) {
+func (s *Store) GetRandomSync(subset infra.SyncSubset) (infra.Sync, error) {
 	val, err := s.SRandMember(syncKey).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -26,7 +26,7 @@ func (s *Service) GetRandomSync(subset infra.SyncSubset) (infra.Sync, error) {
 }
 
 // SetSync redis implementation.
-func (s *Service) SetSync(sync infra.Sync) error {
+func (s *Store) SetSync(sync infra.Sync) error {
 	return s.SAdd(
 		syncKey,
 		sync.ID.String(),
@@ -34,7 +34,7 @@ func (s *Service) SetSync(sync infra.Sync) error {
 }
 
 // DelSync redis implementation.
-func (s *Service) DelSync(subset infra.SyncSubset) error {
+func (s *Store) DelSync(subset infra.SyncSubset) error {
 	return s.SRem(
 		syncKey,
 		subset.ID.String(),

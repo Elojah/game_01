@@ -16,7 +16,7 @@ const (
 )
 
 // GetToken redis implementation.
-func (s *Service) GetToken(subset account.TokenSubset) (account.Token, error) {
+func (s *Store) GetToken(subset account.TokenSubset) (account.Token, error) {
 	val, err := s.Get(tokenKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -33,7 +33,7 @@ func (s *Service) GetToken(subset account.TokenSubset) (account.Token, error) {
 }
 
 // SetToken redis implementation.
-func (s *Service) SetToken(t account.Token) error {
+func (s *Store) SetToken(t account.Token) error {
 	raw, err := t.Marshal()
 	if err != nil {
 		return err
@@ -42,12 +42,12 @@ func (s *Service) SetToken(t account.Token) error {
 }
 
 // DelToken redis implementation.
-func (s *Service) DelToken(subset account.TokenSubset) error {
+func (s *Store) DelToken(subset account.TokenSubset) error {
 	return s.Del(tokenKey + subset.ID.String()).Err()
 }
 
 // SetTokenHC redis implementation.
-func (s *Service) SetTokenHC(id ulid.ID, hc int64) error {
+func (s *Store) SetTokenHC(id ulid.ID, hc int64) error {
 	return s.ZAddNX(
 		tokenHCKey,
 		redis.Z{
@@ -58,7 +58,7 @@ func (s *Service) SetTokenHC(id ulid.ID, hc int64) error {
 }
 
 // ListTokenHC redis implementation.
-func (s *Service) ListTokenHC(subset account.TokenHCSubset) ([]ulid.ID, error) {
+func (s *Store) ListTokenHC(subset account.TokenHCSubset) ([]ulid.ID, error) {
 	cmd := s.ZRangeByScore(
 		tokenHCKey,
 		redis.ZRangeBy{

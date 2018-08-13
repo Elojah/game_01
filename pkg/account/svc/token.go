@@ -1,4 +1,4 @@
-package app
+package svc
 
 import (
 	"net"
@@ -15,11 +15,11 @@ import (
 
 // TokenService represents token usecases.
 type TokenService struct {
-	AccountStore          account.Store
-	AccountTokenStore     account.TokenStore
-	EntityStore           entity.Store
-	EntityPCStore         entity.PCStore
-	EntityPermissionStore entity.PermissionStore
+	Account          account.Store
+	AccountToken     account.TokenStore
+	Entity           entity.Store
+	EntityPC         entity.PCStore
+	EntityPermission entity.PermissionStore
 
 	EntityService        entity.Service
 	InfraRecurrerService infra.RecurrerService
@@ -29,7 +29,7 @@ type TokenService struct {
 func (s TokenService) New(payload account.A, addr string) (account.Token, error) {
 
 	// #Search account in redis
-	a, err := s.AccountStore.GetAccount(account.Subset{
+	a, err := s.Account.GetAccount(account.Subset{
 		Username: payload.Username,
 	})
 	if err != nil {
@@ -54,11 +54,11 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 		Account: a.ID,
 		IP:      ip.String(),
 	}
-	if err := s.AccountTokenStore.SetToken(t); err != nil {
+	if err := s.AccountToken.SetToken(t); err != nil {
 		return account.Token{}, errors.Wrapf(err, "set token %s", t.ID.String())
 	}
 	a.Token = t.ID
-	if err := s.AccountStore.SetAccount(a); err != nil {
+	if err := s.Account.SetAccount(a); err != nil {
 		return account.Token{}, errors.Wrapf(err, "set account %s with token %s", a.ID.String(), t.ID.String())
 	}
 
@@ -69,7 +69,7 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
 
 	// #Search message UUID in storage.
-	t, err := s.AccountTokenStore.GetToken(account.TokenSubset{ID: id})
+	t, err := s.AccountToken.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
 		return account.Token{}, errors.Wrapf(err, "get token %s", id.String())
 	}
@@ -90,7 +90,7 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	var nonblockErr error
 
 	// #Retrieve token
-	t, err := s.AccountTokenStore.GetToken(account.TokenSubset{ID: id})
+	t, err := s.AccountToken.GetToken(account.TokenSubset{ID: id})
 	if err != nil {
 		return errors.Wrapf(err, "get token %s", id.String())
 	}
@@ -103,12 +103,12 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	// #Reset token entity.
 	te := t.Entity
 	t.Entity = ulid.ID{}
-	if err := s.AccountTokenStore.SetToken(t); err != nil {
+	if err := s.AccountToken.SetToken(t); err != nil {
 		nonblockErr = errors.Wrapf(err, "set token %s", id.String())
 	}
 
 	// #Retrieve entity
-	e, err := s.EntityStore.GetEntity(entity.Subset{
+	e, err := s.Entity.GetEntity(entity.Subset{
 		ID:    te,
 		MaxTS: time.Now().UnixNano(),
 	})
@@ -123,12 +123,12 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	// #Save last entity state into PC
 	pc := entity.PC(e)
 	pc.ID = t.PC
-	if err := s.EntityPCStore.SetPC(pc, t.Account); err != nil {
+	if err := s.EntityPC.SetPC(pc, t.Account); err != nil {
 		return errors.Wrapf(err, "set pc %s with entity %s", pc.ID.String(), e.ID.String())
 	}
 
 	// # Disconnect all entitis associated with token.
-	ps, err := s.EntityPermissionStore.ListPermission(entity.PermissionSubset{Source: t.ID.String()})
+	ps, err := s.EntityPermission.ListPermission(entity.PermissionSubset{Source: t.ID.String()})
 	if err != nil {
 		return errors.Wrapf(err, "list permissions for token %s", t.ID.String())
 	}

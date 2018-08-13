@@ -9,13 +9,13 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountstore "github.com/elojah/game_01/pkg/account/storage"
-	entityapp "github.com/elojah/game_01/pkg/entity/app"
+	accountsvc "github.com/elojah/game_01/pkg/account/svc"
 	entitystore "github.com/elojah/game_01/pkg/entity/storage"
+	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
 	eventstore "github.com/elojah/game_01/pkg/event/storage"
-	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	infrastore "github.com/elojah/game_01/pkg/infra/storage"
+	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
 	sectorstore "github.com/elojah/game_01/pkg/sector/storage"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -44,14 +44,12 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
-	accountStore := accountstore.NewService(rd)
-	accountApp := accountapp.NewService(rd)
-	entityStore := entitystore.NewService(rd)
-	entityLRUStore := entitystore.NewService(rdlru)
-	eventStore := eventstore.NewService(rd)
-	infraApp := infraapp.NewService(rd)
-	infraStore := infrastore.NewService(rd)
-	sectorStore := sectorstore.NewService(rd)
+	accountStore := accountstore.NewStore(rd)
+	entityStore := entitystore.NewStore(rd)
+	entityLRUStore := entitystore.NewStore(rdlru)
+	eventStore := eventstore.NewStore(rd)
+	infraStore := infrastore.NewStore(rd)
+	sectorStore := sectorstore.NewStore(rd)
 
 	// handler (https server)
 	h := handler{
@@ -65,36 +63,40 @@ func run(prog string, filename string) {
 		EntitiesStore:   sectorStore,
 		StarterStore:    sectorStore,
 		SectorStore:     sectorStore,
-		ListenerService: infraapp.ListenerService{
-			InfraQListenerStore: infraStore,
-			InfraListenerStore:  infraStore,
-			InfraCoreStore:      infraStore,
-		},
-		TokenService: accountapp.TokenService{
-			AccountStore:          accountStore,
-			AccountTokenStore:     accountStore,
-			EntityStore:           entityLRUStore,
-			EntityPCStore:         entityStore,
-			EntityPermissionStore: entityStore,
-
-			EntityService: entityapp.Service{
-				EntityStore:           entityLRUStore,
-				EntityPermissionStore: entityStore,
-				SectorEntitiesStore:   entityStore,
-
-				ListenerService: infraapp.ListenerService{
-					InfraQListenerStore: infraStore,
-					InfraListenerStore:  infraStore,
-					InfraCoreStore:      infraStore,
+		TokenService: accountsvc.TokenService{
+			Account:          accountStore,
+			AccountToken:     accountStore,
+			Entity:           entityLRUStore,
+			EntityPC:         entityStore,
+			EntityPermission: entityStore,
+			EntityService: entitysvc.Service{
+				Entity:           entityLRUStore,
+				EntityPermission: entityStore,
+				SectorEntities:   entityStore,
+				ListenerService: infrasvc.ListenerService{
+					InfraQListener: infraStore,
+					InfraListener:  infraStore,
+					InfraCore:      infraStore,
 				},
 			},
-			InfraRecurrerService: infraapp.RecurrerService{
-				InfraQRecurrerStore: infraStore,
-				InfraRecurrerStore:  infraStore,
-				InfraSyncStore:      infraStore,
+			InfraRecurrerService: infrasvc.RecurrerService{
+				InfraQRecurrer: infraStore,
+				InfraRecurrer:  infraStore,
+				InfraSync:      infraStore,
 			},
 		},
+		ListenerService: infrasvc.ListenerService{
+			InfraQListener: infraStore,
+			InfraListener:  infraStore,
+			InfraCore:      infraStore,
+		},
+		RecurrerService: infrasvc.RecurrerService{
+			InfraQRecurrer: infraStore,
+			InfraRecurrer:  infraStore,
+			InfraSync:      infraStore,
+		},
 	}
+
 	hl := h.NewLauncher(Namespaces{
 		Auth: "auth",
 	}, "auth")

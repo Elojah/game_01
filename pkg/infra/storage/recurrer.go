@@ -12,7 +12,7 @@ const (
 )
 
 // GetRecurrer redis implementation.
-func (s *Service) GetRecurrer(subset infra.RecurrerSubset) (infra.Recurrer, error) {
+func (s *Store) GetRecurrer(subset infra.RecurrerSubset) (infra.Recurrer, error) {
 	val, err := s.Get(recurrerKey + subset.TokenID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -29,7 +29,7 @@ func (s *Service) GetRecurrer(subset infra.RecurrerSubset) (infra.Recurrer, erro
 }
 
 // SetRecurrer redis implementation.
-func (s *Service) SetRecurrer(recurrer infra.Recurrer) error {
+func (s *Store) SetRecurrer(recurrer infra.Recurrer) error {
 	raw, err := recurrer.Marshal()
 	if err != nil {
 		return err
@@ -38,6 +38,6 @@ func (s *Service) SetRecurrer(recurrer infra.Recurrer) error {
 }
 
 // DelRecurrer deletes recurrer in redis.
-func (s *Service) DelRecurrer(subset infra.RecurrerSubset) error {
+func (s *Store) DelRecurrer(subset infra.RecurrerSubset) error {
 	return s.Del(recurrerKey + subset.TokenID.String()).Err()
 }

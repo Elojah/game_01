@@ -5,21 +5,21 @@ import (
 	"github.com/elojah/redis"
 )
 
-var _ infra.CoreStore = (*Service)(nil)
-var _ infra.ListenerStore = (*Service)(nil)
-var _ infra.QListenerStore = (*Service)(nil)
-var _ infra.RecurrerStore = (*Service)(nil)
-var _ infra.QRecurrerStore = (*Service)(nil)
-var _ infra.SyncStore = (*Service)(nil)
+var _ infra.CoreStore = (*Store)(nil)
+var _ infra.ListenerStore = (*Store)(nil)
+var _ infra.QListenerStore = (*Store)(nil)
+var _ infra.RecurrerStore = (*Store)(nil)
+var _ infra.QRecurrerStore = (*Store)(nil)
+var _ infra.SyncStore = (*Store)(nil)
 
-// Service implements token and entity.
-type Service struct {
+// Store implements token and entity.
+type Store struct {
 	*redis.Service
 }
 
-// NewService returns a new game_01 redis Service.
-func NewService(s *redis.Service) *Service {
-	return &Service{
+// NewStore returns a new game_01 redis Store.
+func NewStore(s *redis.Service) *Store {
+	return &Store{
 		Service: s,
 	}
 }

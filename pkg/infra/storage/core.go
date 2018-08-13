@@ -13,7 +13,7 @@ const (
 )
 
 // GetRandomCore redis implementation.
-func (s *Service) GetRandomCore(subset infra.CoreSubset) (infra.Core, error) {
+func (s *Store) GetRandomCore(subset infra.CoreSubset) (infra.Core, error) {
 	val, err := s.SRandMember(coreKey).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -26,7 +26,7 @@ func (s *Service) GetRandomCore(subset infra.CoreSubset) (infra.Core, error) {
 }
 
 // SetCore redis implementation.
-func (s *Service) SetCore(core infra.Core) error {
+func (s *Store) SetCore(core infra.Core) error {
 	return s.SAdd(
 		coreKey,
 		core.ID.String(),
@@ -34,7 +34,7 @@ func (s *Service) SetCore(core infra.Core) error {
 }
 
 // DelCore redis implementation.
-func (s *Service) DelCore(subset infra.CoreSubset) error {
+func (s *Store) DelCore(subset infra.CoreSubset) error {
 	return s.SRem(
 		coreKey,
 		subset.ID.String(),

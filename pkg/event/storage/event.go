@@ -14,7 +14,7 @@ const (
 )
 
 // SetEvent implemented with redis.
-func (s *Service) SetEvent(e event.E, id ulid.ID) error {
+func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 	raw, err := e.Marshal()
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (s *Service) SetEvent(e event.E, id ulid.ID) error {
 }
 
 // ListEvent retrieves event in Redis using ZRangeWithScores.
-func (s *Service) ListEvent(subset event.Subset) ([]event.E, error) {
+func (s *Store) ListEvent(subset event.Subset) ([]event.E, error) {
 	cmd := s.ZRangeByScore(
 		eventKey+subset.Key,
 		redis.ZRangeBy{

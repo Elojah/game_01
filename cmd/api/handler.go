@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
-	accountapp "github.com/elojah/game_01/pkg/account/app"
+	accountsvc "github.com/elojah/game_01/pkg/account/svc"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -21,7 +21,7 @@ type handler struct {
 	*client.C
 
 	event.QStore
-	accountapp.TokenService
+	accountsvc.TokenService
 
 	port      uint
 	tolerance time.Duration

@@ -13,7 +13,7 @@ const (
 )
 
 // ListAbility implemented with redis.
-func (s *Service) ListAbility(subset ability.Subset) ([]ability.A, error) {
+func (s *Store) ListAbility(subset ability.Subset) ([]ability.A, error) {
 	keys, err := s.Keys(aKey + subset.EntityID.String() + "*").Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -37,7 +37,7 @@ func (s *Service) ListAbility(subset ability.Subset) ([]ability.A, error) {
 }
 
 // GetAbility implemented with redis.
-func (s *Service) GetAbility(subset ability.Subset) (ability.A, error) {
+func (s *Store) GetAbility(subset ability.Subset) (ability.A, error) {
 	val, err := s.Get(aKey + subset.EntityID.String() + ":" + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -54,7 +54,7 @@ func (s *Service) GetAbility(subset ability.Subset) (ability.A, error) {
 }
 
 // SetAbility implemented with redis.
-func (s *Service) SetAbility(a ability.A, en ulid.ID) error {
+func (s *Store) SetAbility(a ability.A, en ulid.ID) error {
 	raw, err := a.Marshal()
 	if err != nil {
 		return err

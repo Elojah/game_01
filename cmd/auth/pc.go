@@ -83,7 +83,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("token", setPC.Token.String()).Logger()
 
 	// #Get and check token.
-	tok, err := h.T.Get(setPC.Token, r.RemoteAddr)
+	tok, err := h.TokenService.Access(setPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -113,8 +113,8 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 
 	logger = logger.With().Str("template", setPC.Type.String()).Logger()
 
-	// #Retrieve template for new PC.
-	template, err := h.GetEntityTemplate(entity.TemplateSubset{Type: setPC.Type})
+	// #Retrieve entity template for new PC.
+	template, err := h.GetTemplate(entity.TemplateSubset{Type: setPC.Type})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve template")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -141,7 +141,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logger = logger.With().Str("sector", start.SectorID.String()).Logger()
-	sec, err := h.SectorService.GetSector(sector.Subset{ID: start.SectorID})
+	sec, err := h.GetSector(sector.Subset{ID: start.SectorID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -187,7 +187,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("token", listPC.Token.String()).Logger()
 
 	// #Get and check token.
-	tok, err := h.T.Get(listPC.Token, r.RemoteAddr)
+	tok, err := h.TokenService.Access(listPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -246,7 +246,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		Logger()
 
 	// #Get and check token.
-	tok, err := h.T.Get(connectPC.Token, r.RemoteAddr)
+	tok, err := h.TokenService.Access(connectPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -273,7 +273,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	e := entity.E(pc)
 	e.ID = ulid.NewID()
 	logger = logger.With().Str("entity", e.ID.String()).Logger()
-	if err := h.EntityService.SetEntity(e, time.Now().UnixNano()); err != nil {
+	if err := h.SetEntity(e, time.Now().UnixNano()); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
@@ -299,7 +299,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates a new listener for this entity.
-	listener, err := h.L.New(e.ID)
+	listener, err := h.ListenerService.New(e.ID)
 	logger = logger.With().Str("listener", listener.ID.String()).Logger()
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create entity listener")
@@ -307,7 +307,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates a new recurrer for this token/entity.
-	recurrer, err := h.R.New(e.ID, tok.ID)
+	recurrer, err := h.RecurrerService.New(e.ID, tok.ID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create entity recurrer")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
@@ -363,14 +363,14 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("token", disconnectPC.Token.String()).Logger()
 
 	// #Get and check token.
-	tok, err := h.T.Get(disconnectPC.Token, r.RemoteAddr)
+	tok, err := h.TokenService.Access(disconnectPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := h.T.Disconnect(tok.ID); err != nil {
+	if err := h.TokenService.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to disconnect")
 		http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 		return

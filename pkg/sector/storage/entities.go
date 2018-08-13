@@ -10,7 +10,7 @@ const (
 )
 
 // GetEntities implemented with redis.
-func (s *Service) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
+func (s *Store) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
 	sectorEntities := sector.Entities{SectorID: subset.SectorID}
 	cmd := s.SMembers(sectorEntitiesKey + subset.SectorID.String())
 	vals, err := cmd.Result()
@@ -25,11 +25,11 @@ func (s *Service) GetEntities(subset sector.EntitiesSubset) (sector.Entities, er
 }
 
 // AddEntityToSector implemented with redis.
-func (s *Service) AddEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
+func (s *Store) AddEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
 	return s.SAdd(sectorEntitiesKey+sectorID.String(), entityID.String()).Err()
 }
 
 // RemoveEntityFromSector implemented with redis.
-func (s *Service) RemoveEntityFromSector(entityID ulid.ID, sectorID ulid.ID) error {
+func (s *Store) RemoveEntityFromSector(entityID ulid.ID, sectorID ulid.ID) error {
 	return s.SRem(sectorEntitiesKey+sectorID.String(), entityID.String()).Err()
 }

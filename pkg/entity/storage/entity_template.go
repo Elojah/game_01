@@ -12,7 +12,7 @@ const (
 )
 
 // GetTemplate implemented with redis.
-func (s *Service) GetTemplate(subset entity.TemplateSubset) (entity.Template, error) {
+func (s *Store) GetTemplate(subset entity.TemplateSubset) (entity.Template, error) {
 	val, err := s.Get(templateKey + subset.Type.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -29,7 +29,7 @@ func (s *Service) GetTemplate(subset entity.TemplateSubset) (entity.Template, er
 }
 
 // SetTemplate implemented with redis.
-func (s *Service) SetTemplate(t entity.Template) error {
+func (s *Store) SetTemplate(t entity.Template) error {
 	raw, err := t.Marshal()
 	if err != nil {
 		return err
@@ -38,7 +38,7 @@ func (s *Service) SetTemplate(t entity.Template) error {
 }
 
 // ListTemplate implemented with redis.
-func (s *Service) ListTemplate() ([]entity.Template, error) {
+func (s *Store) ListTemplate() ([]entity.Template, error) {
 	keys, err := s.Keys(templateKey + "*").Result()
 	if err != nil {
 		return nil, err

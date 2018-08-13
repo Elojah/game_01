@@ -12,7 +12,7 @@ const (
 )
 
 // GetFeedback implemented with redis.
-func (s *Service) GetFeedback(subset ability.FeedbackSubset) (ability.Feedback, error) {
+func (s *Store) GetFeedback(subset ability.FeedbackSubset) (ability.Feedback, error) {
 	val, err := s.Get(feedbackKey + subset.ID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -29,7 +29,7 @@ func (s *Service) GetFeedback(subset ability.FeedbackSubset) (ability.Feedback, 
 }
 
 // SetFeedback implemented with redis.
-func (s *Service) SetFeedback(fb ability.Feedback) error {
+func (s *Store) SetFeedback(fb ability.Feedback) error {
 	raw, err := fb.Marshal()
 	if err != nil {
 		return err

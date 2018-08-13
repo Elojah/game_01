@@ -10,7 +10,7 @@ const (
 )
 
 // PublishListener implementation with redis pubsub.
-func (s *Service) PublishListener(l infra.Listener, id ulid.ID) error {
+func (s *Store) PublishListener(l infra.Listener, id ulid.ID) error {
 	raw, err := l.Marshal()
 	if err != nil {
 		return err
@@ -19,6 +19,6 @@ func (s *Service) PublishListener(l infra.Listener, id ulid.ID) error {
 }
 
 // SubscribeListener implementation with redis pubsub.
-func (s *Service) SubscribeListener(id ulid.ID) *infra.Subscription {
+func (s *Store) SubscribeListener(id ulid.ID) *infra.Subscription {
 	return (*infra.Subscription)(s.Subscribe(qlistenerKey + id.String()))
 }
