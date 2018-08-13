@@ -5,32 +5,32 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/account"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
+	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/usecase/listener"
-	"github.com/elojah/game_01/pkg/usecase/token"
 )
 
 type handler struct {
-	AccountService account.Service
-	entity.PCService
-	entity.PCLeftService
-	entity.PermissionService
-	entity.TemplateService
+	AccountStore account.Store
+	entity.PCStore
+	entity.PCLeftStore
+	entity.PermissionStore
+	entity.TemplateStore
 
-	event.QService
+	event.QStore
 
-	infra.SyncService
+	infra.SyncStore
 
-	listener.L
+	infraapp.ListenerService
 
-	sector.EntitiesService
-	sector.StarterService
-	SectorService sector.Service
+	sector.EntitiesStore
+	sector.StarterStore
+	SectorStore sector.Store
 
-	token.T
+	accountapp.TokenService
 
 	srv *http.Server
 }
