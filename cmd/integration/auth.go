@@ -423,7 +423,7 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 
 func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
 	// ignore certificate validity
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gas
 	if err := expectSubscribe(a); err != nil {
 		return ulid.ID{}, err
 	}
