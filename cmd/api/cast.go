@@ -29,13 +29,16 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		ID:     ulid.NewID(),
 		Source: msg.Token,
 		TS:     time.Unix(0, msg.TS),
+		Action: event.Action{
+			Cast: &event.Cast{
+				AbilityID: a.AbilityID,
+				Source:    source,
+				Targets:   targets,
+				Position:  a.Position,
+			},
+		},
 	}
-	e.Action.SetValue(&event.Cast{
-		AbilityID: a.AbilityID,
-		Source:    source,
-		Targets:   targets,
-		Position:  a.Position,
-	})
+	e.Action.SetValue()
 
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 

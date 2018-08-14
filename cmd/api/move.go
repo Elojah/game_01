@@ -25,12 +25,14 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 		ID:     ulid.NewID(),
 		Source: msg.Token,
 		TS:     time.Unix(0, msg.TS),
+		Action: event.Action{
+			Move: &event.Move{
+				Source:   source,
+				Target:   target,
+				Position: a.Position,
+			},
+		},
 	}
-	e.Action.SetValue(&event.Move{
-		Source:   source,
-		Target:   target,
-		Position: a.Position,
-	})
 
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 

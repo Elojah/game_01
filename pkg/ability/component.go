@@ -6,10 +6,11 @@ import (
 
 // Affect a HealDirect on target.
 func (c HealDirect) Affect(target *entity.E) ComponentFeedback {
-	var cf ComponentFeedback
-	cf.SetValue(&HealDirectFeedback{
-		Amount: c.Amount,
-	})
+	cf := ComponentFeedback{
+		HealDirectFeedback: &HealDirectFeedback{
+			Amount: c.Amount,
+		},
+	}
 	target.HP += c.Amount
 	return cf
 }
@@ -33,18 +34,20 @@ func (c DamageDirect) Affect(target *entity.E) ComponentFeedback {
 
 // Affect a HealOverTime on target.
 func (c HealOverTime) Affect(target *entity.E) ComponentFeedback {
-	var cf ComponentFeedback
-	cf.SetValue(&HealOverTimeFeedback{
-		Amount: c.Amount,
-	})
+	cf := ComponentFeedback{
+		HealOverTimeFeedback: &HealOverTimeFeedback{
+			Amount: c.Amount,
+		},
+	}
 	return cf
 }
 
 // Affect a DamageOverTime on target.
 func (c DamageOverTime) Affect(target *entity.E) ComponentFeedback {
-	var cf ComponentFeedback
-	cf.SetValue(&DamageOverTimeFeedback{
-		Amount: c.Amount,
-	})
+	cf := ComponentFeedback{
+		DamageOverTimeFeedback: &DamageOverTimeFeedback{
+			Amount: c.Amount,
+		},
+	}
 	return cf
 }

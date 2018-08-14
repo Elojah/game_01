@@ -13,25 +13,24 @@ import (
 )
 
 type app struct {
-	ability.FeedbackService
-	AbilityTemplateService ability.TemplateService
-	AbilityService         ability.Service
+	AbilityStore         ability.Store
+	AbilityTemplateStore ability.TemplateStore
+	ability.FeedbackStore
 
-	account.TokenService
+	account.TokenStore
 
-	EntityTemplateService entity.TemplateService
-	EntityService         entity.Service
+	EntityTemplateStore entity.TemplateStore
+	EntityStore         entity.Store
+	entity.PermissionStore
 
-	infra.QListenerService
-	event.QService
-	EventService event.Service
+	infra.QListenerStore
+	infra.CoreStore
 
-	infra.CoreService
+	event.QStore
+	EventStore event.Store
 
-	entity.PermissionService
-
-	sector.EntitiesService
-	SectorService sector.Service
+	sector.EntitiesStore
+	SectorStore sector.Store
 
 	id ulid.ID
 
@@ -82,7 +81,7 @@ func (a *app) AddListener(msg *infra.Message) {
 	logger := log.With().Str("core", a.id.String()).Logger()
 
 	var listener infra.Listener
-	if _, err := listener.Unmarshal([]byte(msg.Payload)); err != nil {
+	if err := listener.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal listener")
 		return
 	}
@@ -90,7 +89,7 @@ func (a *app) AddListener(msg *infra.Message) {
 
 	switch listener.Action {
 	case infra.Open:
-		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventService, a.Apply)
+		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventStore, a.Apply)
 		a.seqs[listener.ID].Run()
 
 		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)
@@ -128,19 +127,19 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Str("core", a.id.String()).
 		Str("listener", id.String()).
 		Int64("ts", e.TS.UnixNano()).
-		Str("type", event.String(e.Action)).
+		Str("type", e.Action.Type()).
 		Logger()
 
-	switch e.Action.(type) {
-	case event.Move:
+	switch e.Action.GetValue().(type) {
+	case *event.Move:
 		if err := a.Move(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case event.Cast:
+	case *event.Cast:
 		if err := a.Cast(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case event.Feedback:
+	case *event.Feedback:
 		logger.Error().Msg("not implemented")
 	default:
 		logger.Error().Msg("unrecognized action")

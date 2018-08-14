@@ -9,7 +9,12 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	redisx "github.com/elojah/game_01/pkg/storage/redis"
+	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -23,23 +28,49 @@ func run(prog string, filename string) {
 	launchers := services.Launchers{}
 
 	// redis
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
-	rdx := redisx.NewService(&rd)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
-	rdlrux := redisx.NewService(&rdlru)
+
+	// Stores and applicatives
+	eventStore := eventsrg.NewStore(rd)
+	abilityStore := abilitysrg.NewStore(rd)
+	accountStore := accountsrg.NewStore(rd)
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	infraStore := infrasrg.NewStore(rd)
+	sectorStore := sectorsrg.NewStore(rd)
 
 	// main app
-	a := app{}
+	a := &app{
+		AbilityStore:         abilityStore,
+		AbilityTemplateStore: abilityStore,
+		FeedbackStore:        abilityStore,
+
+		TokenStore: accountStore,
+
+		EntityStore:         entityLRUStore,
+		EntityTemplateStore: entityStore,
+		PermissionStore:     entityStore,
+
+		QListenerStore: infraStore,
+		CoreStore:      infraStore,
+
+		QStore:     eventStore,
+		EventStore: eventStore,
+
+		EntitiesStore: sectorStore,
+		SectorStore:   sectorStore,
+	}
 	al := a.NewLauncher(Namespaces{
 		App: "app",
 	}, "app")
@@ -49,20 +80,6 @@ func run(prog string, filename string) {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
-
-	a.AbilityService = rdx
-	a.AbilityTemplateService = rdx
-	a.CoreService = rdx
-	a.EntitiesService = rdlrux
-	a.EntityService = rdlrux
-	a.EntityTemplateService = rdx
-	a.EventService = rdx
-	a.FeedbackService = rdx
-	a.PermissionService = rdx
-	a.QListenerService = rdx
-	a.QService = rdx
-	a.SectorService = rdx
-	a.TokenService = rdx
 
 	log.Info().Msg("core up")
 	c := make(chan os.Signal, 1)
