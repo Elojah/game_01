@@ -121,6 +121,22 @@ func (a *app) MoveTarget(e event.E) error {
 
 		// #Move coordinates to new reference.
 		target.Position.Coord.MoveReference(con.Coord, con.External.Coord)
+		if 0 > a.moveTolerance {
+			return errors.Wrapf(
+				account.ErrInvalidAction,
+				"check move tolerance %f from %s (%f , %f , %f) to %s (%f , %f , %f) for entity %s",
+				a.moveTolerance,
+				target.Position.SectorID.String(),
+				target.Position.Coord.X,
+				target.Position.Coord.Y,
+				target.Position.Coord.Z,
+				move.Position.SectorID.String(),
+				move.Position.Coord.X,
+				move.Position.Coord.Y,
+				move.Position.Coord.Z,
+				target.ID.String(),
+			)
+		}
 
 		// #Add entity to new sector and remove from previous.
 		if err := a.AddEntityToSector(target.ID, con.External.SectorID); err != nil {

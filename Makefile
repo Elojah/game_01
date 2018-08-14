@@ -2,7 +2,7 @@ PACKAGE   = game
 DATE     ?= $(shell date +%FT%T%z)
 VERSION  ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
 
-GO        = go
+GO        = vgo
 GODOC     = godoc
 GOFMT     = gofmt
 GOLINT    = gometalinter
@@ -110,12 +110,6 @@ proto:
 	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. recurrer.proto
 	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entities.proto
 	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sector.proto
-
-# Dependencies
-.PHONY: dep
-dep:
-	$(info $(M) building vendor…) @
-	$Q dep ensure
 
 # Check
 .PHONY: check
