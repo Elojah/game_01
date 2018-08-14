@@ -13,7 +13,9 @@ import (
 
 type handler struct {
 	AccountStore account.Store
+	account.TokenStore
 
+	EntityStore entity.Store
 	entity.PCStore
 	entity.PCLeftStore
 	entity.PermissionStore

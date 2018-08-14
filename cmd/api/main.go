@@ -9,11 +9,11 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	accountstore "github.com/elojah/game_01/pkg/account/storage"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
 	accountsvc "github.com/elojah/game_01/pkg/account/svc"
-	entitystore "github.com/elojah/game_01/pkg/entity/storage"
-	eventstore "github.com/elojah/game_01/pkg/event/storage"
-	infrastore "github.com/elojah/game_01/pkg/infra/storage"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
 	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
@@ -55,11 +55,11 @@ func run(prog string, filename string) {
 	launchers.Add(cl)
 
 	// Stores and applicatives
-	eventStore := eventstore.NewStore(rd)
-	accountStore := accountstore.NewStore(rd)
-	entityStore := entitystore.NewStore(rd)
-	entityLRUStore := entitystore.NewStore(rdlru)
-	infraStore := infrastore.NewStore(rd)
+	eventStore := eventsrg.NewStore(rd)
+	accountStore := accountsrg.NewStore(rd)
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	infraStore := infrasrg.NewStore(rd)
 
 	h := &handler{
 		M:      m,

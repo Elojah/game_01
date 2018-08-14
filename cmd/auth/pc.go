@@ -141,7 +141,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	logger = logger.With().Str("sector", start.SectorID.String()).Logger()
-	sec, err := h.GetSector(sector.Subset{ID: start.SectorID})
+	sec, err := h.SectorStore.GetSector(sector.Subset{ID: start.SectorID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -252,7 +252,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if !ulid.IsZero(tok.Entity) {
+	if !tok.Entity.IsZero() {
 		logger.Error().Msg("packet rejected")
 		http.Error(w, "token already in use", http.StatusBadRequest)
 		return
@@ -273,7 +273,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	e := entity.E(pc)
 	e.ID = ulid.NewID()
 	logger = logger.With().Str("entity", e.ID.String()).Logger()
-	if err := h.SetEntity(e, time.Now().UnixNano()); err != nil {
+	if err := h.EntityStore.SetEntity(e, time.Now().UnixNano()); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return

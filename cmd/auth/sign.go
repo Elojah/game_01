@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/storage"
+	"github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -83,9 +83,9 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("username", ac.Username).Logger()
 
 	// #Retrieve account by username.
-	a, err := h.AccountService.GetAccount(account.Subset{Username: ac.Username})
+	a, err := h.AccountStore.GetAccount(account.Subset{Username: ac.Username})
 	if err != nil {
-		if err == storage.ErrNotFound {
+		if err == errors.ErrNotFound {
 			logger.Error().Err(err).Msg("invalid username")
 			http.Error(w, "invalid username", http.StatusBadRequest)
 			return
@@ -104,14 +104,14 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	// #Reset account token
 	tokID := a.Token
 	a.Token = ulid.ID{}
-	if err := h.AccountService.SetAccount(a); err != nil {
+	if err := h.AccountStore.SetAccount(a); err != nil {
 		logger.Error().Err(err).Msg("failed to set account")
 		http.Error(w, "failed to reset account token", http.StatusInternalServerError)
 		return
 	}
 
 	// #Retrieve account token
-	tok, err := h.T.Get(tokID, r.RemoteAddr)
+	tok, err := h.TokenService.Access(tokID, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -119,7 +119,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Disconnect token
-	if err := h.T.Disconnect(tok.ID); err != nil {
+	if err := h.TokenService.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to disconnect token")
 		http.Error(w, "failed to disconnect token", http.StatusInternalServerError)
 		return

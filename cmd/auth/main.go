@@ -9,14 +9,14 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	accountstore "github.com/elojah/game_01/pkg/account/storage"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
 	accountsvc "github.com/elojah/game_01/pkg/account/svc"
-	entitystore "github.com/elojah/game_01/pkg/entity/storage"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
 	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
-	eventstore "github.com/elojah/game_01/pkg/event/storage"
-	infrastore "github.com/elojah/game_01/pkg/infra/storage"
+	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
 	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
-	sectorstore "github.com/elojah/game_01/pkg/sector/storage"
+	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -30,30 +30,32 @@ func run(prog string, filename string) {
 	launchers := services.Launchers{}
 
 	// redis
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
-	accountStore := accountstore.NewStore(rd)
-	entityStore := entitystore.NewStore(rd)
-	entityLRUStore := entitystore.NewStore(rdlru)
-	eventStore := eventstore.NewStore(rd)
-	infraStore := infrastore.NewStore(rd)
-	sectorStore := sectorstore.NewStore(rd)
+	accountStore := accountsrg.NewStore(rd)
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	eventStore := eventsrg.NewStore(rd)
+	infraStore := infrasrg.NewStore(rd)
+	sectorStore := sectorsrg.NewStore(rd)
 
 	// handler (https server)
-	h := handler{
+	h := &handler{
 		AccountStore:    accountStore,
+		TokenStore:      accountStore,
+		EntityStore:     entityLRUStore,
 		PCStore:         entityStore,
 		PCLeftStore:     entityStore,
 		PermissionStore: entityStore,
@@ -63,34 +65,34 @@ func run(prog string, filename string) {
 		EntitiesStore:   sectorStore,
 		StarterStore:    sectorStore,
 		SectorStore:     sectorStore,
-		TokenService: accountsvc.TokenService{
+		TokenService: &accountsvc.TokenService{
 			Account:          accountStore,
 			AccountToken:     accountStore,
 			Entity:           entityLRUStore,
 			EntityPC:         entityStore,
 			EntityPermission: entityStore,
-			EntityService: entitysvc.Service{
+			EntityService: &entitysvc.Service{
 				Entity:           entityLRUStore,
 				EntityPermission: entityStore,
-				SectorEntities:   entityStore,
-				ListenerService: infrasvc.ListenerService{
+				SectorEntities:   sectorStore,
+				ListenerService: &infrasvc.ListenerService{
 					InfraQListener: infraStore,
 					InfraListener:  infraStore,
 					InfraCore:      infraStore,
 				},
 			},
-			InfraRecurrerService: infrasvc.RecurrerService{
+			InfraRecurrerService: &infrasvc.RecurrerService{
 				InfraQRecurrer: infraStore,
 				InfraRecurrer:  infraStore,
 				InfraSync:      infraStore,
 			},
 		},
-		ListenerService: infrasvc.ListenerService{
+		ListenerService: &infrasvc.ListenerService{
 			InfraQListener: infraStore,
 			InfraListener:  infraStore,
 			InfraCore:      infraStore,
 		},
-		RecurrerService: infrasvc.RecurrerService{
+		RecurrerService: &infrasvc.RecurrerService{
 			InfraQRecurrer: infraStore,
 			InfraRecurrer:  infraStore,
 			InfraSync:      infraStore,

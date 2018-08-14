@@ -5,7 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/infra/app"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 
@@ -18,7 +18,7 @@ type Service struct {
 	EntityPermission entity.PermissionStore
 	SectorEntities   sector.EntitiesStore
 
-	ListenerService app.ListenerService
+	ListenerService infra.ListenerService
 }
 
 // Disconnect disconnects an entity.
