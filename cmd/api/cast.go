@@ -38,7 +38,6 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 			},
 		},
 	}
-	e.Action.SetValue()
 
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 

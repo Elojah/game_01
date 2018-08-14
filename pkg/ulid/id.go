@@ -88,17 +88,17 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// only required if the compare option is set
+// Compare only required if the compare option is set
 func (id ID) Compare(other ID) int {
 	return ulid.ULID(id).Compare(ulid.ULID(other))
 }
 
-// only required if the equal option is set
+// Equal only required if the equal option is set
 func (id ID) Equal(other ID) bool {
 	return id.Compare(other) == 0
 }
 
-// only required if populate option is set
+// NewPopulatedID only required if populate option is set
 func NewPopulatedID(r randyID) *ID {
 	id := ID(ulid.MustNew(uint64(r.Uint32()), rand.Reader))
 	return &id
