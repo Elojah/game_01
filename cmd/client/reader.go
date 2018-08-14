@@ -80,7 +80,7 @@ func (r reader) Run() {
 			TS:     time.Now().UnixNano(),
 			Action: input.Action,
 		}
-		raw, err := e.Marshal(nil)
+		raw, err := e.Marshal()
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to marshal action")
 			continue
@@ -101,7 +101,7 @@ func (r reader) HandleACK() {
 					continue
 				}
 				go func(e event.DTO) {
-					raw, err := e.Marshal(nil)
+					raw, err := e.Marshal()
 					if err != nil {
 						r.logger.Error().Err(err).Msg("failed to marshal action")
 						return

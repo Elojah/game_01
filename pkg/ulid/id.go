@@ -21,6 +21,12 @@ func MustParse(s string) ID {
 	return ID(ulid.MustParse(s))
 }
 
+// Parse alias ulid.Parse. Panics if s is invalid.
+func Parse(s string) (ID, error) {
+	id, err := ulid.Parse(s)
+	return ID(id), err
+}
+
 // IsZero returns if id is zero.
 func (id ID) IsZero() bool {
 	return ulid.ULID(id).Time() == 0
