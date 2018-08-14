@@ -18,7 +18,7 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		Str("action", "cast").
 		Logger()
 
-	a := msg.Action.(event.Cast)
+	a := msg.Action.GetCast()
 	source := ulid.ID(a.Source)
 	targets := make([]ulid.ID, len(a.Targets))
 	for i, target := range a.Targets {
@@ -29,11 +29,13 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		ID:     ulid.NewID(),
 		Source: msg.Token,
 		TS:     time.Unix(0, msg.TS),
-		Action: event.Cast{
-			AbilityID: a.AbilityID,
-			Source:    source,
-			Targets:   targets,
-			Position:  a.Position,
+		Action: event.Action{
+			Cast: &event.Cast{
+				AbilityID: a.AbilityID,
+				Source:    source,
+				Targets:   targets,
+				Position:  a.Position,
+			},
 		},
 	}
 

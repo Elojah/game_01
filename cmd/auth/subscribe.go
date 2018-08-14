@@ -8,7 +8,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/storage"
+	"github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -41,22 +41,22 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("account", a.ID.String()).Logger()
 
 	// #Check username is unique
-	_, err := h.AccountMapper.GetAccount(account.Subset{
+	_, err := h.AccountStore.GetAccount(account.Subset{
 		Username: a.Username,
 	})
-	if err != nil && err != storage.ErrNotFound {
+	if err != nil && err != errors.ErrNotFound {
 		logger.Error().Err(err).Msg("failed to get account")
 		http.Error(w, "failed to check account unicity", http.StatusInternalServerError)
 		return
 	}
-	if err != storage.ErrNotFound {
+	if err != errors.ErrNotFound {
 		logger.Error().Err(err).Msg("account username found")
 		http.Error(w, "username already exists", http.StatusUnauthorized)
 		return
 	}
 
 	// #Set account in redis
-	if err = h.AccountMapper.SetAccount(a); err != nil {
+	if err = h.AccountStore.SetAccount(a); err != nil {
 		logger.Error().Err(err).Msg("failed to create account")
 		http.Error(w, "failed to create account", http.StatusInternalServerError)
 		return
@@ -109,11 +109,11 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search account in redis
-	a, err := h.AccountMapper.GetAccount(account.Subset{
+	a, err := h.AccountStore.GetAccount(account.Subset{
 		Username: ac.Username,
 	})
 	if err != nil {
-		if err != storage.ErrNotFound {
+		if err != errors.ErrNotFound {
 			logger.Error().Err(err).Msg("failed to get account")
 			http.Error(w, "failed to retrieve account", http.StatusInternalServerError)
 			return
@@ -130,14 +130,14 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #If account still connect, disconnect it.
-	if !ulid.IsZero(a.Token) {
+	if !a.Token.IsZero() {
 		logger = logger.With().Str("token", a.Token.String()).Logger()
-		if _, err := h.T.Get(a.Token, r.RemoteAddr); err != nil {
+		if _, err := h.TokenService.Access(a.Token, r.RemoteAddr); err != nil {
 			logger.Error().Err(err).Msg("failed to retrieve token")
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
 		}
-		if err := h.T.Disconnect(a.Token); err != nil {
+		if err := h.TokenService.Disconnect(a.Token); err != nil {
 			logger.Error().Err(err).Msg("failed to disconnect token")
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
@@ -173,7 +173,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete account.
-	if err := h.AccountMapper.DelAccount(account.Subset{Username: a.Username}); err != nil {
+	if err := h.AccountStore.DelAccount(account.Subset{Username: a.Username}); err != nil {
 		logger.Error().Err(err).Msg("failed to delete account")
 		http.Error(w, "failed to delete account", http.StatusInternalServerError)
 		return

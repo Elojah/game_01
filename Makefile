@@ -90,22 +90,26 @@ integration:
 	$Q cp bin/$(PACKAGE)_$(INTEGRATION)_$(VERSION) bin/$(PACKAGE)_$(INTEGRATION)
 
 # Utils
-.PHONY: gen
-gen:
-	$(info $(M) running gencode…) @
-	$Q gencode go -unsafe -def-types=false -package=ability -schema=schemas/ability.schema -out=pkg/ability/ability.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=account -schema=schemas/account.schema -out=pkg/account/account.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/ack.schema -out=pkg/infra/ack.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/action.schema -out=pkg/event/action.schema.gen.go -ignore=Position,Vec3
-	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/dto.schema -out=pkg/event/dto.schema.gen.go -ignore=Vec3,Position,Move,Cast
-	$Q gencode go -unsafe -def-types=false -package=entity -schema=schemas/entity.schema -out=pkg/entity/entity.schema.gen.go -ignore=Position,Vec3
-	$Q gencode go -unsafe -def-types=false -package=event -schema=schemas/event.schema -out=pkg/event/event.schema.gen.go -ignore=Vec3,Position,Move,Cast,Feedback,Casted
-	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/listener.schema -out=pkg/infra/listener.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=infra -schema=schemas/recurrer.schema -out=pkg/infra/recurrer.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector.schema -out=pkg/sector/sector.schema.gen.go -ignore=Vec3,Position
-	$Q gencode go -unsafe -def-types=false -package=sector -schema=schemas/sector_entities.schema -out=pkg/sector/entities.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=account -schema=schemas/token.schema -out=pkg/account/token.schema.gen.go
-	$Q gencode go -unsafe -def-types=false -package=geometry -schema=schemas/position.schema -out=pkg/geometry/position.schema.gen.go
+.PHONY: proto
+proto:
+	$(info $(M) running protobuf…) @
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ability.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component_feedback.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. feedback.proto
+	$Q cd pkg/account && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. account.proto
+	$Q cd pkg/account && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. token.proto
+	$Q cd pkg/geometry && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. position.proto
+	$Q cd pkg/entity && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entity.proto
+	$Q cd pkg/event && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. action.proto
+	$Q cd pkg/event && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. dto.proto
+	$Q cd pkg/event && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:. event.proto
+	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ack.proto
+	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. q_action.proto
+	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. listener.proto
+	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. recurrer.proto
+	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entities.proto
+	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sector.proto
 
 # Dependencies
 .PHONY: dep

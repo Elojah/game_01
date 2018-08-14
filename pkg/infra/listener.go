@@ -1,22 +1,17 @@
 package infra
 
-import "github.com/elojah/game_01/pkg/ulid"
+import (
+	"github.com/elojah/game_01/pkg/ulid"
+)
 
-// Listener requires the receiver to create a new listener with subject ID.
-type Listener struct {
-	ID     ulid.ID // ID aliases a token ID OR an entity ID
-	Action QAction
-	Pool   ulid.ID
-}
-
-// QListenerMapper handles send/receive methods for listeners.
-type QListenerMapper interface {
+// QListenerStore handles send/receive methods for listeners.
+type QListenerStore interface {
 	PublishListener(Listener, ulid.ID) error
 	SubscribeListener(ulid.ID) *Subscription
 }
 
-// ListenerMapper handle listener data interactions.
-type ListenerMapper interface {
+// ListenerStore handle listener data interactions.
+type ListenerStore interface {
 	SetListener(Listener) error
 	GetListener(ListenerSubset) (Listener, error)
 	DelListener(ListenerSubset) error
@@ -25,4 +20,10 @@ type ListenerMapper interface {
 // ListenerSubset retrieves listener per ID.
 type ListenerSubset struct {
 	ID ulid.ID
+}
+
+// ListenerService represents listener usecases.
+type ListenerService interface {
+	New(ulid.ID) (Listener, error)
+	Remove(ulid.ID) error
 }

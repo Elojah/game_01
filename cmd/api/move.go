@@ -18,17 +18,19 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 		Str("action", "move").
 		Logger()
 
-	a := msg.Action.(event.Move)
+	a := msg.Action.GetMove()
 	source := ulid.ID(a.Source)
 	target := ulid.ID(a.Target)
 	e := event.E{
 		ID:     ulid.NewID(),
 		Source: msg.Token,
 		TS:     time.Unix(0, msg.TS),
-		Action: event.Move{
-			Source:   source,
-			Target:   target,
-			Position: a.Position,
+		Action: event.Action{
+			Move: &event.Move{
+				Source:   source,
+				Target:   target,
+				Position: a.Position,
+			},
 		},
 	}
 

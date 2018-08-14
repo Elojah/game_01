@@ -9,7 +9,11 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	redisx "github.com/elojah/game_01/pkg/storage/redis"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -24,30 +28,44 @@ func run(prog string, filename string) {
 	launchers := services.Launchers{}
 
 	// redis
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
-	rdx := redisx.NewService(&rd)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
-	rdlrux := redisx.NewService(&rdlru)
 
 	// client
-	c := client.C{}
+	c := &client.C{}
 	cl := c.NewLauncher(client.Namespaces{
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)
 
+	// Stores and applicatives
+	eventStore := eventsrg.NewStore(rd)
+	accountStore := accountsrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	infraStore := infrasrg.NewStore(rd)
+	sectorStore := sectorsrg.NewStore(rd)
+
 	// main app
-	a := app{}
+	a := app{
+		C:              c,
+		TokenStore:     accountStore,
+		EntityStore:    entityLRUStore,
+		QStore:         eventStore,
+		QRecurrerStore: infraStore,
+		SyncStore:      infraStore,
+		EntitiesStore:  sectorStore,
+		SectorStore:    sectorStore,
+	}
 	al := a.NewLauncher(Namespaces{
 		App: "sync",
 	}, "sync")
@@ -57,15 +75,6 @@ func run(prog string, filename string) {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
-
-	a.C = &c
-	a.EntityMapper = rdlrux
-	a.QMapper = rdx
-	a.QRecurrerMapper = rdx
-	a.EntitiesMapper = rdlrux
-	a.SectorMapper = rdx
-	a.SyncMapper = rdx
-	a.TokenMapper = rdx
 
 	log.Info().Msg("sync up")
 	cs := make(chan os.Signal, 1)

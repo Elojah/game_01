@@ -5,19 +5,6 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// Connection represents a connection points between two sectors.
-type Connection struct {
-	Coord    geometry.Vec3
-	External geometry.Position
-}
-
-// S represents a cuboid in the world.
-type S struct {
-	ID          ulid.ID
-	Dim         geometry.Vec3
-	Connections []Connection
-}
-
 // Adjacents return ids of all adjacent sectors.
 func (s S) Adjacents() []ulid.ID {
 	ids := make([]ulid.ID, len(s.Connections))
@@ -49,8 +36,8 @@ func (s S) Out(coord geometry.Vec3) bool {
 		coord.Z > s.Dim.Z
 }
 
-// Mapper is the service for S.
-type Mapper interface {
+// Store is the service for S.
+type Store interface {
 	SetSector(S) error
 	GetSector(Subset) (S, error)
 }

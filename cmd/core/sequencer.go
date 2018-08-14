@@ -14,7 +14,7 @@ type tick chan int64
 // Sequencer is an ordering/event extractor layer between two consumers.
 type Sequencer struct {
 	id ulid.ID
-	event.Mapper
+	event.Store
 
 	logger zerolog.Logger
 
@@ -38,11 +38,11 @@ func (s *Sequencer) Close() {
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
-func NewSequencer(id ulid.ID, limit int, em event.Mapper, callback func(ulid.ID, event.E)) *Sequencer {
+func NewSequencer(id ulid.ID, limit int, es event.Store, callback func(ulid.ID, event.E)) *Sequencer {
 	return &Sequencer{
 		id:     id,
 		logger: log.With().Str("sequencer", id.String()).Logger(),
-		Mapper: em,
+		Store:  es,
 
 		input:   make(tick, limit),
 		fetch:   make(tick, limit),
@@ -137,7 +137,7 @@ func (s *Sequencer) Run() {
 // Handler is the consumer function to subscribe for event ordering.
 func (s *Sequencer) Handler(msg *infra.Message) {
 	var e event.E
-	if _, err := e.Unmarshal([]byte(msg.Payload)); err != nil {
+	if err := e.Unmarshal([]byte(msg.Payload)); err != nil {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}

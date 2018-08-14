@@ -9,9 +9,13 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	redisx "github.com/elojah/game_01/pkg/storage/redis"
-	"github.com/elojah/game_01/pkg/usecase/listener"
-	"github.com/elojah/game_01/pkg/usecase/recurrer"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	accountsvc "github.com/elojah/game_01/pkg/account/svc"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
+	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -25,46 +29,56 @@ func run(prog string, filename string) {
 	launchers := services.Launchers{}
 
 	// redis
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
-	rdx := redisx.NewService(&rd)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
-	rdlrux := redisx.NewService(&rdlru)
+
+	// Stores and applicatives
+	accountStore := accountsrg.NewStore(rd)
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	infraStore := infrasrg.NewStore(rd)
+	sectorStore := sectorsrg.NewStore(rd)
 
 	// main app
-	a := app{}
+	a := &app{
+		TokenHCStore: accountStore,
+		TokenService: &accountsvc.TokenService{
+			Account:          accountStore,
+			AccountToken:     accountStore,
+			Entity:           entityLRUStore,
+			EntityPC:         entityStore,
+			EntityPermission: entityStore,
+			EntityService: &entitysvc.Service{
+				Entity:           entityLRUStore,
+				EntityPermission: entityStore,
+				SectorEntities:   sectorStore,
+				ListenerService: &infrasvc.ListenerService{
+					InfraQListener: infraStore,
+					InfraListener:  infraStore,
+					InfraCore:      infraStore,
+				},
+			},
+			InfraRecurrerService: &infrasvc.RecurrerService{
+				InfraQRecurrer: infraStore,
+				InfraRecurrer:  infraStore,
+				InfraSync:      infraStore,
+			},
+		},
+	}
 	al := a.NewLauncher(Namespaces{
 		Revoker: "revoker",
 	}, "revoker")
 	launchers.Add(al)
-
-	a.TokenHCMapper = rdx
-	a.TokenMapper = rdx
-	a.EntityMapper = rdlrux
-	a.PCMapper = rdx
-	a.PermissionMapper = rdx
-	a.QRecurrerMapper = rdx
-	a.QListenerMapper = rdx
-	a.EntitiesMapper = rdlrux
-	a.L = listener.L{
-		QListenerMapper: rdx,
-		ListenerMapper:  rdx,
-		CoreMapper:      rdx,
-	}
-	a.R = recurrer.R{
-		QRecurrerMapper: rdx,
-		RecurrerMapper:  rdx,
-		SyncMapper:      rdx,
-	}
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

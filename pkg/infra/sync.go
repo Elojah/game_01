@@ -9,8 +9,8 @@ type Sync struct {
 	ID ulid.ID
 }
 
-// SyncMapper maps sync data interactions.
-type SyncMapper interface {
+// SyncStore maps sync data interactions.
+type SyncStore interface {
 	GetRandomSync(SyncSubset) (Sync, error)
 	SetSync(Sync) error
 	DelSync(SyncSubset) error

@@ -4,22 +4,8 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// Token represents a user connection. Creation is made by secure https only.
-type Token struct {
-	ID ulid.ID `json:"ID"`
-
-	IP      string  `json:"-"`
-	Account ulid.ID `json:"-"`
-	Ping    uint64  `json:"-"`
-
-	CorePool ulid.ID `json:"-"`
-	SyncPool ulid.ID `json:"-"`
-	PC       ulid.ID `json:"-"`
-	Entity   ulid.ID `json:"-"`
-}
-
-// TokenMapper is the service gate for Token resource.
-type TokenMapper interface {
+// TokenStore is the service gate for Token resource.
+type TokenStore interface {
 	SetToken(Token) error
 	GetToken(TokenSubset) (Token, error)
 	DelToken(TokenSubset) error
@@ -30,8 +16,8 @@ type TokenSubset struct {
 	ID ulid.ID
 }
 
-// TokenHCMapper is the service gate for Token health check.
-type TokenHCMapper interface {
+// TokenHCStore is the service gate for Token health check.
+type TokenHCStore interface {
 	SetTokenHC(ulid.ID, int64) error
 	ListTokenHC(TokenHCSubset) ([]ulid.ID, error)
 }
@@ -39,4 +25,11 @@ type TokenHCMapper interface {
 // TokenHCSubset retrieves token healthchecks based on last tick.
 type TokenHCSubset struct {
 	MaxTS int64
+}
+
+// TokenService represents token usecases.
+type TokenService interface {
+	New(A, string) (Token, error)
+	Access(ulid.ID, string) (Token, error)
+	Disconnect(ulid.ID) error
 }

@@ -30,8 +30,8 @@ func (pc PC) Check() error {
 	return nil
 }
 
-// PCMapper is an interface to create a new PC.
-type PCMapper interface {
+// PCStore is an interface to create a new PC.
+type PCStore interface {
 	SetPC(PC, ulid.ID) error
 	GetPC(PCSubset) (PC, error)
 	ListPC(PCSubset) ([]PC, error)
@@ -47,8 +47,8 @@ type PCSubset struct {
 // PCLeft represents the number of character an account can still create.
 type PCLeft int
 
-// PCLeftMapper interfaces creation/retrieval of PCLeft.
-type PCLeftMapper interface {
+// PCLeftStore interfaces creation/retrieval of PCLeft.
+type PCLeftStore interface {
 	SetPCLeft(PCLeft, ulid.ID) error
 	GetPCLeft(PCLeftSubset) (PCLeft, error)
 	DelPCLeft(PCLeftSubset) error

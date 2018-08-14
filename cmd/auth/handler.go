@@ -9,28 +9,29 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/usecase/listener"
-	"github.com/elojah/game_01/pkg/usecase/token"
 )
 
 type handler struct {
-	AccountMapper account.Mapper
-	entity.PCMapper
-	entity.PCLeftMapper
-	entity.PermissionMapper
-	entity.TemplateMapper
+	AccountStore account.Store
+	account.TokenStore
 
-	event.QMapper
+	EntityStore entity.Store
+	entity.PCStore
+	entity.PCLeftStore
+	entity.PermissionStore
+	entity.TemplateStore
 
-	infra.SyncMapper
+	event.QStore
 
-	listener.L
+	infra.SyncStore
 
-	sector.EntitiesMapper
-	sector.StarterMapper
-	SectorMapper sector.Mapper
+	sector.EntitiesStore
+	sector.StarterStore
+	SectorStore sector.Store
 
-	token.T
+	account.TokenService
+	infra.ListenerService
+	infra.RecurrerService
 
 	srv *http.Server
 }

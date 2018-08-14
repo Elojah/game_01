@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option go_package = "geometry";
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+
+message Vec3 {
+	double X       = 1;
+	double Y       = 2;
+	double Z       = 3;
+}
+
+message Position {
+	bytes SectorID = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	Vec3 Coord     = 2 [(gogoproto.nullable)   = false];
+}
