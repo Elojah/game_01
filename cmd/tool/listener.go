@@ -36,12 +36,12 @@ func (h *handler) postListener(w http.ResponseWriter, r *http.Request) {
 	for _, l := range listeners {
 		switch l.Action {
 		case infra.Open:
-			if _, err := h.L.New(l.ID); err != nil {
+			if _, err := h.ListenerService.New(l.ID); err != nil {
 				logger.Error().Err(err).Str("listener", l.ID.String()).Msg("failed to set listener")
 				return
 			}
 		case infra.Close:
-			if err := h.L.Delete(l.ID); err != nil {
+			if err := h.ListenerService.Remove(l.ID); err != nil {
 				logger.Error().Err(err).Str("listener", l.ID.String()).Msg("failed to set listener")
 				return
 			}

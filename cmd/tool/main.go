@@ -9,8 +9,12 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	redisx "github.com/elojah/game_01/pkg/storage/redis"
-	"github.com/elojah/game_01/pkg/usecase/listener"
+	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
+	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -24,40 +28,47 @@ func run(prog string, filename string) {
 	launchers := services.Launchers{}
 
 	// redis
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
-	rdx := redisx.NewService(&rd)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
-	rdlrux := redisx.NewService(&rdlru)
+
+	// Stores and applicatives
+	abilityStore := abilitysrg.NewStore(rd)
+	accountStore := accountsrg.NewStore(rd)
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	infraStore := infrasrg.NewStore(rd)
+	sectorStore := sectorsrg.NewStore(rd)
 
 	// handler (https server)
-	h := handler{}
+	h := &handler{
+		AbilityStore:         abilityStore,
+		AbilityTemplateStore: abilityStore,
+		AccountStore:         accountStore,
+		EntityStore:          entityLRUStore,
+		EntityTemplateStore:  entityStore,
+		ListenerService: &infrasvc.ListenerService{
+			InfraQListener: infraStore,
+			InfraListener:  infraStore,
+			InfraCore:      infraStore,
+		},
+		SectorStore:   sectorStore,
+		EntitiesStore: sectorStore,
+		StarterStore:  sectorStore,
+	}
 	hl := h.NewLauncher(Namespaces{
 		Tool: "tool",
 	}, "tool")
 	launchers.Add(hl)
-
-	h.AbilityTemplateService = rdx
-	h.AccountService = rdx
-	h.EntityService = rdlrux
-	h.EntityTemplateService = rdx
-	h.L = listener.L{
-		ListenerService:  rdx,
-		QListenerService: rdx,
-		CoreService:      rdx,
-	}
-	h.SectorService = rdx
-	h.StarterService = rdx
-	h.EntitiesService = rdlrux
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

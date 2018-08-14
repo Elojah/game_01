@@ -7,24 +7,24 @@ import (
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/usecase/listener"
 )
 
 type handler struct {
-	AbilityService         ability.Service
-	AbilityTemplateService ability.TemplateService
+	AbilityStore         ability.Store
+	AbilityTemplateStore ability.TemplateStore
 
-	AccountService account.Service
+	AccountStore account.Store
 
-	EntityService         entity.Service
-	EntityTemplateService entity.TemplateService
+	EntityStore         entity.Store
+	EntityTemplateStore entity.TemplateStore
 
-	listener.L
+	infra.ListenerService
 
-	SectorService sector.Service
-	sector.EntitiesService
-	sector.StarterService
+	SectorStore sector.Store
+	sector.EntitiesStore
+	sector.StarterStore
 
 	srv *http.Server
 }
