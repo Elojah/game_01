@@ -145,9 +145,6 @@ func (a *app) MoveTarget(e event.E) error {
 			)
 		}
 
-		// #Move target
-		target.Position.Coord = move.Position.Coord
-
 		// #Add entity to new sector and remove from previous.
 		if err := a.AddEntityToSector(target.ID, move.Position.SectorID); err != nil {
 			return errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), move.Position.SectorID.String())
@@ -156,8 +153,8 @@ func (a *app) MoveTarget(e event.E) error {
 			return errors.Wrapf(err, "remove entity %s from sector %s", target.ID.String(), s.ID.String())
 		}
 
-		// #Change entity SectorID.
-		target.Position.SectorID = move.Position.SectorID
+		// #Move target
+		target.Position = move.Position
 	}
 
 	// #Write new target state.
