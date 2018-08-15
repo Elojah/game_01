@@ -13,6 +13,7 @@ import github_com_elojah_game_01_pkg_ulid "github.com/elojah/game_01/pkg/ulid"
 
 import strings "strings"
 import reflect "reflect"
+import github_com_gogo_protobuf_sortkeys "github.com/gogo/protobuf/sortkeys"
 
 import io "io"
 
@@ -27,71 +28,19 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
-type Connection struct {
-	Coord                geometry.Vec3     `protobuf:"bytes,1,opt,name=Coord,json=coord" json:"Coord"`
-	External             geometry.Position `protobuf:"bytes,2,opt,name=External,json=external" json:"External"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *Connection) Reset()      { *m = Connection{} }
-func (*Connection) ProtoMessage() {}
-func (*Connection) Descriptor() ([]byte, []int) {
-	return fileDescriptor_sector_4a62c773ec4dfbbd, []int{0}
-}
-func (m *Connection) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Connection) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Connection.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (dst *Connection) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Connection.Merge(dst, src)
-}
-func (m *Connection) XXX_Size() int {
-	return m.Size()
-}
-func (m *Connection) XXX_DiscardUnknown() {
-	xxx_messageInfo_Connection.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Connection proto.InternalMessageInfo
-
-func (m *Connection) GetCoord() geometry.Vec3 {
-	if m != nil {
-		return m.Coord
-	}
-	return geometry.Vec3{}
-}
-
-func (m *Connection) GetExternal() geometry.Position {
-	if m != nil {
-		return m.External
-	}
-	return geometry.Position{}
-}
-
 type S struct {
-	ID                   github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,json=iD,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
-	Dim                  geometry.Vec3                         `protobuf:"bytes,2,opt,name=Dim,json=dim" json:"Dim"`
-	Connections          []Connection                          `protobuf:"bytes,3,rep,name=Connections,json=connections" json:"Connections"`
-	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
-	XXX_sizecache        int32                                 `json:"-"`
+	ID                   github_com_elojah_game_01_pkg_ulid.ID   `protobuf:"bytes,1,opt,name=ID,json=iD,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
+	Dim                  geometry.Vec3                           `protobuf:"bytes,2,opt,name=Dim,json=dim" json:"Dim"`
+	Exposed              []github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,3,rep,name=Exposed,json=exposed,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Exposed"`
+	Neighbours           map[string]geometry.Vec3                `protobuf:"bytes,4,rep,name=Neighbours,json=neighbours" json:"Neighbours" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value"`
+	XXX_NoUnkeyedLiteral struct{}                                `json:"-"`
+	XXX_sizecache        int32                                   `json:"-"`
 }
 
 func (m *S) Reset()      { *m = S{} }
 func (*S) ProtoMessage() {}
 func (*S) Descriptor() ([]byte, []int) {
-	return fileDescriptor_sector_4a62c773ec4dfbbd, []int{1}
+	return fileDescriptor_sector_bddadf23dc4344dc, []int{0}
 }
 func (m *S) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -127,43 +76,16 @@ func (m *S) GetDim() geometry.Vec3 {
 	return geometry.Vec3{}
 }
 
-func (m *S) GetConnections() []Connection {
+func (m *S) GetNeighbours() map[string]geometry.Vec3 {
 	if m != nil {
-		return m.Connections
+		return m.Neighbours
 	}
 	return nil
 }
 
 func init() {
-	proto.RegisterType((*Connection)(nil), "Connection")
 	proto.RegisterType((*S)(nil), "S")
-}
-func (this *Connection) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*Connection)
-	if !ok {
-		that2, ok := that.(Connection)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !this.Coord.Equal(&that1.Coord) {
-		return false
-	}
-	if !this.External.Equal(&that1.External) {
-		return false
-	}
-	return true
+	proto.RegisterMapType((map[string]geometry.Vec3)(nil), "S.NeighboursEntry")
 }
 func (this *S) Equal(that interface{}) bool {
 	if that == nil {
@@ -190,41 +112,47 @@ func (this *S) Equal(that interface{}) bool {
 	if !this.Dim.Equal(&that1.Dim) {
 		return false
 	}
-	if len(this.Connections) != len(that1.Connections) {
+	if len(this.Exposed) != len(that1.Exposed) {
 		return false
 	}
-	for i := range this.Connections {
-		if !this.Connections[i].Equal(&that1.Connections[i]) {
+	for i := range this.Exposed {
+		if !this.Exposed[i].Equal(that1.Exposed[i]) {
+			return false
+		}
+	}
+	if len(this.Neighbours) != len(that1.Neighbours) {
+		return false
+	}
+	for i := range this.Neighbours {
+		a := this.Neighbours[i]
+		b := that1.Neighbours[i]
+		if !(&a).Equal(&b) {
 			return false
 		}
 	}
 	return true
 }
-func (this *Connection) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 6)
-	s = append(s, "&sector.Connection{")
-	s = append(s, "Coord: "+strings.Replace(this.Coord.GoString(), `&`, ``, 1)+",\n")
-	s = append(s, "External: "+strings.Replace(this.External.GoString(), `&`, ``, 1)+",\n")
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
 func (this *S) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 7)
+	s := make([]string, 0, 8)
 	s = append(s, "&sector.S{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "Dim: "+strings.Replace(this.Dim.GoString(), `&`, ``, 1)+",\n")
-	if this.Connections != nil {
-		vs := make([]*Connection, len(this.Connections))
-		for i := range vs {
-			vs[i] = &this.Connections[i]
-		}
-		s = append(s, "Connections: "+fmt.Sprintf("%#v", vs)+",\n")
+	s = append(s, "Exposed: "+fmt.Sprintf("%#v", this.Exposed)+",\n")
+	keysForNeighbours := make([]string, 0, len(this.Neighbours))
+	for k, _ := range this.Neighbours {
+		keysForNeighbours = append(keysForNeighbours, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForNeighbours)
+	mapStringForNeighbours := "map[string]geometry.Vec3{"
+	for _, k := range keysForNeighbours {
+		mapStringForNeighbours += fmt.Sprintf("%#v: %#v,", k, this.Neighbours[k])
+	}
+	mapStringForNeighbours += "}"
+	if this.Neighbours != nil {
+		s = append(s, "Neighbours: "+mapStringForNeighbours+",\n")
 	}
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -237,40 +165,6 @@ func valueToGoStringSector(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
-func (m *Connection) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Connection) MarshalTo(dAtA []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	dAtA[i] = 0xa
-	i++
-	i = encodeVarintSector(dAtA, i, uint64(m.Coord.Size()))
-	n1, err := m.Coord.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n1
-	dAtA[i] = 0x12
-	i++
-	i = encodeVarintSector(dAtA, i, uint64(m.External.Size()))
-	n2, err := m.External.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n2
-	return i, nil
-}
-
 func (m *S) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -289,21 +183,21 @@ func (m *S) MarshalTo(dAtA []byte) (int, error) {
 	dAtA[i] = 0xa
 	i++
 	i = encodeVarintSector(dAtA, i, uint64(m.ID.Size()))
-	n3, err := m.ID.MarshalTo(dAtA[i:])
+	n1, err := m.ID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n3
+	i += n1
 	dAtA[i] = 0x12
 	i++
 	i = encodeVarintSector(dAtA, i, uint64(m.Dim.Size()))
-	n4, err := m.Dim.MarshalTo(dAtA[i:])
+	n2, err := m.Dim.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n4
-	if len(m.Connections) > 0 {
-		for _, msg := range m.Connections {
+	i += n2
+	if len(m.Exposed) > 0 {
+		for _, msg := range m.Exposed {
 			dAtA[i] = 0x1a
 			i++
 			i = encodeVarintSector(dAtA, i, uint64(msg.Size()))
@@ -312,6 +206,32 @@ func (m *S) MarshalTo(dAtA []byte) (int, error) {
 				return 0, err
 			}
 			i += n
+		}
+	}
+	if len(m.Neighbours) > 0 {
+		for k, _ := range m.Neighbours {
+			dAtA[i] = 0x22
+			i++
+			v := m.Neighbours[k]
+			msgSize := 0
+			if (&v) != nil {
+				msgSize = (&v).Size()
+				msgSize += 1 + sovSector(uint64(msgSize))
+			}
+			mapSize := 1 + len(k) + sovSector(uint64(len(k))) + msgSize
+			i = encodeVarintSector(dAtA, i, uint64(mapSize))
+			dAtA[i] = 0xa
+			i++
+			i = encodeVarintSector(dAtA, i, uint64(len(k)))
+			i += copy(dAtA[i:], k)
+			dAtA[i] = 0x12
+			i++
+			i = encodeVarintSector(dAtA, i, uint64((&v).Size()))
+			n3, err := (&v).MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n3
 		}
 	}
 	return i, nil
@@ -326,29 +246,23 @@ func encodeVarintSector(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func NewPopulatedConnection(r randySector, easy bool) *Connection {
-	this := &Connection{}
-	v1 := geometry.NewPopulatedVec3(r, easy)
-	this.Coord = *v1
-	v2 := geometry.NewPopulatedPosition(r, easy)
-	this.External = *v2
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
 func NewPopulatedS(r randySector, easy bool) *S {
 	this := &S{}
-	v3 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v3
-	v4 := geometry.NewPopulatedVec3(r, easy)
-	this.Dim = *v4
+	v1 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v1
+	v2 := geometry.NewPopulatedVec3(r, easy)
+	this.Dim = *v2
+	v3 := r.Intn(10)
+	this.Exposed = make([]github_com_elojah_game_01_pkg_ulid.ID, v3)
+	for i := 0; i < v3; i++ {
+		v4 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+		this.Exposed[i] = *v4
+	}
 	if r.Intn(10) != 0 {
-		v5 := r.Intn(5)
-		this.Connections = make([]Connection, v5)
+		v5 := r.Intn(10)
+		this.Neighbours = make(map[string]geometry.Vec3)
 		for i := 0; i < v5; i++ {
-			v6 := NewPopulatedConnection(r, easy)
-			this.Connections[i] = *v6
+			this.Neighbours[randStringSector(r)] = *geometry.NewPopulatedVec3(r, easy)
 		}
 	}
 	if !easy && r.Intn(10) != 0 {
@@ -375,9 +289,9 @@ func randUTF8RuneSector(r randySector) rune {
 	return rune(ru + 61)
 }
 func randStringSector(r randySector) string {
-	v7 := r.Intn(100)
-	tmps := make([]rune, v7)
-	for i := 0; i < v7; i++ {
+	v6 := r.Intn(100)
+	tmps := make([]rune, v6)
+	for i := 0; i < v6; i++ {
 		tmps[i] = randUTF8RuneSector(r)
 	}
 	return string(tmps)
@@ -399,11 +313,11 @@ func randFieldSector(dAtA []byte, r randySector, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateSector(dAtA, uint64(key))
-		v8 := r.Int63()
+		v7 := r.Int63()
 		if r.Intn(2) == 0 {
-			v8 *= -1
+			v7 *= -1
 		}
-		dAtA = encodeVarintPopulateSector(dAtA, uint64(v8))
+		dAtA = encodeVarintPopulateSector(dAtA, uint64(v7))
 	case 1:
 		dAtA = encodeVarintPopulateSector(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -428,16 +342,6 @@ func encodeVarintPopulateSector(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
-func (m *Connection) Size() (n int) {
-	var l int
-	_ = l
-	l = m.Coord.Size()
-	n += 1 + l + sovSector(uint64(l))
-	l = m.External.Size()
-	n += 1 + l + sovSector(uint64(l))
-	return n
-}
-
 func (m *S) Size() (n int) {
 	var l int
 	_ = l
@@ -445,10 +349,19 @@ func (m *S) Size() (n int) {
 	n += 1 + l + sovSector(uint64(l))
 	l = m.Dim.Size()
 	n += 1 + l + sovSector(uint64(l))
-	if len(m.Connections) > 0 {
-		for _, e := range m.Connections {
+	if len(m.Exposed) > 0 {
+		for _, e := range m.Exposed {
 			l = e.Size()
 			n += 1 + l + sovSector(uint64(l))
+		}
+	}
+	if len(m.Neighbours) > 0 {
+		for k, v := range m.Neighbours {
+			_ = k
+			_ = v
+			l = v.Size()
+			mapEntrySize := 1 + len(k) + sovSector(uint64(len(k))) + 1 + l + sovSector(uint64(l))
+			n += mapEntrySize + 1 + sovSector(uint64(mapEntrySize))
 		}
 	}
 	return n
@@ -467,25 +380,25 @@ func sovSector(x uint64) (n int) {
 func sozSector(x uint64) (n int) {
 	return sovSector(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (this *Connection) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&Connection{`,
-		`Coord:` + strings.Replace(strings.Replace(this.Coord.String(), "Vec3", "geometry.Vec3", 1), `&`, ``, 1) + `,`,
-		`External:` + strings.Replace(strings.Replace(this.External.String(), "Position", "geometry.Position", 1), `&`, ``, 1) + `,`,
-		`}`,
-	}, "")
-	return s
-}
 func (this *S) String() string {
 	if this == nil {
 		return "nil"
 	}
+	keysForNeighbours := make([]string, 0, len(this.Neighbours))
+	for k, _ := range this.Neighbours {
+		keysForNeighbours = append(keysForNeighbours, k)
+	}
+	github_com_gogo_protobuf_sortkeys.Strings(keysForNeighbours)
+	mapStringForNeighbours := "map[string]geometry.Vec3{"
+	for _, k := range keysForNeighbours {
+		mapStringForNeighbours += fmt.Sprintf("%v: %v,", k, this.Neighbours[k])
+	}
+	mapStringForNeighbours += "}"
 	s := strings.Join([]string{`&S{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`Dim:` + strings.Replace(strings.Replace(this.Dim.String(), "Vec3", "geometry.Vec3", 1), `&`, ``, 1) + `,`,
-		`Connections:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Connections), "Connection", "Connection", 1), `&`, ``, 1) + `,`,
+		`Exposed:` + fmt.Sprintf("%v", this.Exposed) + `,`,
+		`Neighbours:` + mapStringForNeighbours + `,`,
 		`}`,
 	}, "")
 	return s
@@ -497,116 +410,6 @@ func valueToStringSector(v interface{}) string {
 	}
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
-}
-func (m *Connection) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowSector
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Connection: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Connection: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Coord", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSector
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthSector
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Coord.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field External", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSector
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthSector
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.External.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipSector(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthSector
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *S) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -699,7 +502,39 @@ func (m *S) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Connections", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Exposed", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSector
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthSector
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			var v github_com_elojah_game_01_pkg_ulid.ID
+			m.Exposed = append(m.Exposed, v)
+			if err := m.Exposed[len(m.Exposed)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Neighbours", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -723,10 +558,102 @@ func (m *S) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Connections = append(m.Connections, Connection{})
-			if err := m.Connections[len(m.Connections)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
+			if m.Neighbours == nil {
+				m.Neighbours = make(map[string]geometry.Vec3)
 			}
+			var mapkey string
+			mapvalue := &geometry.Vec3{}
+			for iNdEx < postIndex {
+				entryPreIndex := iNdEx
+				var wire uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSector
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					wire |= (uint64(b) & 0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				fieldNum := int32(wire >> 3)
+				if fieldNum == 1 {
+					var stringLenmapkey uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSector
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						stringLenmapkey |= (uint64(b) & 0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					intStringLenmapkey := int(stringLenmapkey)
+					if intStringLenmapkey < 0 {
+						return ErrInvalidLengthSector
+					}
+					postStringIndexmapkey := iNdEx + intStringLenmapkey
+					if postStringIndexmapkey > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapkey = string(dAtA[iNdEx:postStringIndexmapkey])
+					iNdEx = postStringIndexmapkey
+				} else if fieldNum == 2 {
+					var mapmsglen int
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSector
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						mapmsglen |= (int(b) & 0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					if mapmsglen < 0 {
+						return ErrInvalidLengthSector
+					}
+					postmsgIndex := iNdEx + mapmsglen
+					if mapmsglen < 0 {
+						return ErrInvalidLengthSector
+					}
+					if postmsgIndex > l {
+						return io.ErrUnexpectedEOF
+					}
+					mapvalue = &geometry.Vec3{}
+					if err := mapvalue.Unmarshal(dAtA[iNdEx:postmsgIndex]); err != nil {
+						return err
+					}
+					iNdEx = postmsgIndex
+				} else {
+					iNdEx = entryPreIndex
+					skippy, err := skipSector(dAtA[iNdEx:])
+					if err != nil {
+						return err
+					}
+					if skippy < 0 {
+						return ErrInvalidLengthSector
+					}
+					if (iNdEx + skippy) > postIndex {
+						return io.ErrUnexpectedEOF
+					}
+					iNdEx += skippy
+				}
+			}
+			m.Neighbours[mapkey] = *mapvalue
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -854,29 +781,30 @@ var (
 	ErrIntOverflowSector   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("sector.proto", fileDescriptor_sector_4a62c773ec4dfbbd) }
+func init() { proto.RegisterFile("sector.proto", fileDescriptor_sector_bddadf23dc4344dc) }
 
-var fileDescriptor_sector_4a62c773ec4dfbbd = []byte{
-	// 329 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_sector_bddadf23dc4344dc = []byte{
+	// 348 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x29, 0x4e, 0x4d, 0x2e,
 	0xc9, 0x2f, 0xd2, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d,
 	0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x0b, 0x27, 0x95, 0xa6, 0x81,
 	0x79, 0x60, 0x0e, 0x98, 0x05, 0x55, 0x6e, 0x8a, 0xa4, 0x3c, 0x35, 0x27, 0x3f, 0x2b, 0x31, 0x43,
 	0x3f, 0x3d, 0x31, 0x37, 0x35, 0xde, 0xc0, 0x50, 0xbf, 0x20, 0x3b, 0x5d, 0x3f, 0x3d, 0x35, 0x3f,
 	0x37, 0xb5, 0xa4, 0xa8, 0x52, 0xbf, 0x20, 0xbf, 0x38, 0xb3, 0x24, 0x33, 0x3f, 0x0f, 0xa2, 0x4d,
-	0x29, 0x86, 0x8b, 0xcb, 0x39, 0x3f, 0x2f, 0x2f, 0x35, 0x19, 0x24, 0x26, 0xa4, 0xc8, 0xc5, 0xea,
-	0x9c, 0x9f, 0x5f, 0x94, 0x22, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x6d, 0xc4, 0xaa, 0x17, 0x96, 0x9a,
-	0x6c, 0xec, 0xc4, 0x72, 0xe2, 0x9e, 0x3c, 0x43, 0x10, 0x6b, 0x32, 0x48, 0x46, 0x48, 0x9b, 0x8b,
-	0xc3, 0xb5, 0xa2, 0x24, 0xb5, 0x28, 0x2f, 0x31, 0x47, 0x82, 0x09, 0xac, 0x8a, 0x53, 0x2f, 0x00,
-	0x6a, 0x26, 0x54, 0x25, 0x47, 0x2a, 0x54, 0x81, 0xd2, 0x34, 0x46, 0x2e, 0xc6, 0x60, 0x21, 0x5b,
-	0x2e, 0x26, 0x4f, 0x17, 0xb0, 0x91, 0x3c, 0x4e, 0xba, 0x20, 0x15, 0xb7, 0xee, 0xc9, 0xab, 0xe2,
-	0x77, 0x6e, 0x69, 0x4e, 0x66, 0x8a, 0x9e, 0xa7, 0x4b, 0x10, 0x53, 0xa6, 0x8b, 0x90, 0x2c, 0x17,
-	0xb3, 0x4b, 0x66, 0x2e, 0xd4, 0x32, 0x14, 0x27, 0x31, 0xa7, 0x64, 0xe6, 0x0a, 0x19, 0x73, 0x71,
-	0x23, 0x7c, 0x50, 0x2c, 0xc1, 0xac, 0xc0, 0xac, 0xc1, 0x6d, 0xc4, 0xad, 0x87, 0x10, 0x83, 0x2a,
-	0xe6, 0x4e, 0x46, 0xa8, 0x72, 0x72, 0xb8, 0xf0, 0x50, 0x8e, 0xe1, 0xc6, 0x43, 0x39, 0x86, 0x0f,
-	0x0f, 0xe5, 0x18, 0x7f, 0x3c, 0x94, 0x63, 0x6c, 0x78, 0x24, 0xc7, 0xb8, 0xe2, 0x91, 0x1c, 0xe3,
-	0x8e, 0x47, 0x72, 0x8c, 0x07, 0x1e, 0xc9, 0x31, 0x9e, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c,
-	0xe3, 0x83, 0x47, 0x72, 0x8c, 0x2f, 0x1e, 0xc9, 0x31, 0x7c, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1,
-	0x1c, 0x43, 0x14, 0x1b, 0x24, 0x92, 0x92, 0xd8, 0xc0, 0xe1, 0x67, 0x0c, 0x08, 0x00, 0x00, 0xff,
-	0xff, 0xb8, 0x06, 0x88, 0xb8, 0xb5, 0x01, 0x00, 0x00,
+	0x69, 0x15, 0x13, 0x17, 0x63, 0xb0, 0x90, 0x2d, 0x17, 0x93, 0xa7, 0x8b, 0x04, 0xa3, 0x02, 0xa3,
+	0x06, 0x8f, 0x93, 0xee, 0x89, 0x7b, 0xf2, 0x0c, 0xb7, 0xee, 0xc9, 0xab, 0xe2, 0x37, 0xb0, 0x34,
+	0x27, 0x33, 0x45, 0xcf, 0xd3, 0x25, 0x88, 0x29, 0xd3, 0x45, 0x48, 0x96, 0x8b, 0xd9, 0x25, 0x33,
+	0x57, 0x82, 0x49, 0x81, 0x51, 0x83, 0xdb, 0x88, 0x55, 0x2f, 0x2c, 0x35, 0xd9, 0xd8, 0x89, 0x05,
+	0x64, 0x4c, 0x10, 0x73, 0x4a, 0x66, 0xae, 0x90, 0x3b, 0x17, 0xbb, 0x6b, 0x45, 0x41, 0x7e, 0x71,
+	0x6a, 0x8a, 0x04, 0xb3, 0x02, 0x33, 0xe9, 0x56, 0xb0, 0xa7, 0x42, 0x74, 0x0b, 0x59, 0x70, 0x71,
+	0xf9, 0xa5, 0x66, 0xa6, 0x67, 0x24, 0xe5, 0x97, 0x16, 0x15, 0x4b, 0xb0, 0x28, 0x30, 0x6b, 0x70,
+	0x1b, 0x09, 0xe9, 0x05, 0xeb, 0x21, 0x04, 0x5d, 0xf3, 0x4a, 0x8a, 0x2a, 0xa1, 0x76, 0x73, 0xe5,
+	0xc1, 0x85, 0xa5, 0x5c, 0xb8, 0xf8, 0xd1, 0x14, 0x09, 0x09, 0x70, 0x31, 0x67, 0xa7, 0x56, 0x82,
+	0x3d, 0xcd, 0x19, 0x04, 0x62, 0x0a, 0x49, 0x73, 0xb1, 0x96, 0x25, 0xe6, 0x94, 0xa6, 0xa2, 0x78,
+	0x24, 0x08, 0x22, 0x66, 0xc5, 0x64, 0xc1, 0xe8, 0xe4, 0x70, 0xe1, 0xa1, 0x1c, 0xc3, 0x8d, 0x87,
+	0x72, 0x0c, 0x1f, 0x1e, 0xca, 0x31, 0xfe, 0x78, 0x28, 0xc7, 0xd8, 0xf0, 0x48, 0x8e, 0x71, 0xc5,
+	0x23, 0x39, 0xc6, 0x1d, 0x8f, 0xe4, 0x18, 0x0f, 0x3c, 0x92, 0x63, 0x3c, 0xf1, 0x48, 0x8e, 0xf1,
+	0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x5f, 0x3c, 0x92, 0x63, 0xf8, 0xf0, 0x48, 0x8e,
+	0x71, 0xc2, 0x63, 0x39, 0x86, 0x28, 0x36, 0x48, 0xd4, 0x26, 0xb1, 0x81, 0x43, 0xdd, 0x18, 0x10,
+	0x00, 0x00, 0xff, 0xff, 0x1a, 0xea, 0xec, 0xcf, 0xeb, 0x01, 0x00, 0x00,
 }

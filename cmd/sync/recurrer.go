@@ -59,7 +59,7 @@ func (r *Recurrer) Run() {
 			continue
 		}
 		go r.sendSector(sector.ID, t)
-		for _, id := range sector.Adjacents() {
+		for _, id := range sector.Exposed {
 			go r.sendSector(id, t)
 		}
 	}

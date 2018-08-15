@@ -9,13 +9,9 @@ option (gogoproto.populate_all) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_01/pkg/geometry/position.proto";
 
-message Connection {
-	Vec3 Coord                      = 1 [(gogoproto.nullable)   = false];
-	Position External               = 2 [(gogoproto.nullable)   = false];
-}
-
 message S {
 	bytes ID                        = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	Vec3 Dim                        = 2 [(gogoproto.nullable)   = false];
-	repeated Connection Connections = 3 [(gogoproto.nullable)   = false];
+	repeated bytes Exposed          = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	map<string, Vec3> Neighbours    = 4 [(gogoproto.nullable)   = false];
 }

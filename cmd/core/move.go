@@ -112,16 +112,23 @@ func (a *app) MoveTarget(e event.E) error {
 		}
 
 		// #Move target
-		target.Move(move.Position.Coord)
+		target.Position.Coord = move.Position.Coord
 
 	} else {
 
-		// #Find closest connection point for current out coord.
-		con := s.ClosestConnection(target.Position.Coord)
+		// #Check if new sector is a neighbour.
+		neigh, ok := s.Neighbours[move.Position.SectorID.String()]
+		if !ok {
+			return errors.Wrapf(
+				account.ErrInvalidAction,
+				"invalid next neighbour sector %s with previous %s",
+				move.Position.SectorID.String(),
+				target.Position.SectorID.String(),
+			)
+		}
 
-		// #Move coordinates to new reference.
-		target.Position.Coord.MoveReference(con.Coord, con.External.Coord)
-		if 0 > a.moveTolerance {
+		// #Check if target has moved at a tolerable distance in different sectors.
+		if geometry.Segment(target.Position.Coord, move.Position.Coord.MoveReference(neigh)) > a.moveTolerance {
 			return errors.Wrapf(
 				account.ErrInvalidAction,
 				"check move tolerance %f from %s (%f , %f , %f) to %s (%f , %f , %f) for entity %s",
@@ -138,16 +145,19 @@ func (a *app) MoveTarget(e event.E) error {
 			)
 		}
 
+		// #Move target
+		target.Position.Coord = move.Position.Coord
+
 		// #Add entity to new sector and remove from previous.
-		if err := a.AddEntityToSector(target.ID, con.External.SectorID); err != nil {
-			return errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), con.External.SectorID.String())
+		if err := a.AddEntityToSector(target.ID, move.Position.SectorID); err != nil {
+			return errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), move.Position.SectorID.String())
 		}
 		if err := a.RemoveEntityFromSector(target.ID, target.Position.SectorID); err != nil {
 			return errors.Wrapf(err, "remove entity %s from sector %s", target.ID.String(), s.ID.String())
 		}
 
 		// #Change entity SectorID.
-		target.Position.SectorID = con.External.SectorID
+		target.Position.SectorID = move.Position.SectorID
 	}
 
 	// #Write new target state.

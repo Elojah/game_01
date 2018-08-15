@@ -11,11 +11,13 @@ func (v *Vec3) Add(p Vec3) {
 	v.Z += p.Z
 }
 
-// MoveReference moves v to a new reference. lhs and rhs must refer to a identical point in both references.
-func (v *Vec3) MoveReference(lhs Vec3, rhs Vec3) {
-	v.X += rhs.X - lhs.X
-	v.Y += rhs.Y - lhs.Y
-	v.Z += rhs.Z - lhs.Z
+// MoveReference returns  v position moved to a new reference ref relative to previous origin.
+func (v Vec3) MoveReference(ref Vec3) Vec3 {
+	return Vec3{
+		X: v.X + ref.X,
+		Y: v.Y + ref.Y,
+		Z: v.Z + ref.Z,
+	}
 }
 
 // Segment returns the distance between 2 points following XYZ axis.
