@@ -15,9 +15,10 @@ message A {
 	string   Name                 = 3;
 
 	uint64   MPConsumption        = 4;
-	uint32   CD                   = 5;
-	uint32   CurrentCD            = 6;
-	uint32   CastTime             = 7;
+	uint64   PostMPConsumption    = 5;
+	uint32   CD                   = 6;
+	uint32   LastUsed             = 7;
+	uint32   CastTime             = 8;
 
-	repeated Component Components = 8 [(gogoproto.nullable)   = false];
+	repeated Component Components = 9 [(gogoproto.nullable)   = false];
 }

@@ -11,19 +11,19 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) Cast(id ulid.ID, e event.E) error {
+func (a *app) Casted(id ulid.ID, e event.E) error {
 
-	cast := e.Action.GetValue().(*event.Cast)
+	cast := e.Action.GetValue().(*event.Casted)
 
 	if id.Compare(cast.Source) == 0 {
-		return a.CastSource(id, e)
+		return a.CastedSource(id, e)
 	}
-	return a.CastTarget(id, e)
+	return a.CastedTarget(id, e)
 }
 
-func (a *app) CastSource(id ulid.ID, e event.E) error {
+func (a *app) CastedSource(id ulid.ID, e event.E) error {
 
-	cast := e.Action.GetValue().(*event.Cast)
+	cast := e.Action.GetValue().(*event.Casted)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
@@ -49,7 +49,6 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 
-	// #Check MP consumption
 	e = event.E{
 		Action: event.Action{
 			Casted: (*event.Casted)(cast),
@@ -61,9 +60,9 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	return nil
 }
 
-func (a *app) CastTarget(id ulid.ID, e event.E) error {
+func (a *app) CastedTarget(id ulid.ID, e event.E) error {
 
-	cast := e.Action.GetValue().(*event.Cast)
+	cast := e.Action.GetValue().(*event.Casted)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{

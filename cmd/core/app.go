@@ -141,6 +141,10 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		}
 	case *event.Feedback:
 		logger.Error().Msg("not implemented")
+	case *event.Casted:
+		if err := a.Casted(id, e); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
 	default:
 		logger.Error().Msg("unrecognized action")
 	}
