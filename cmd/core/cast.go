@@ -55,7 +55,20 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), e.TS.UnixNano())
 	}
 	if source.MP < ab.MPConsumption {
-		return errors.Wrapf(account.ErrInvalidAction)
+		return errors.Wrapf(
+			account.ErrInvalidAction,
+			"entity %s with MP %d for ability %s with MP: %d",
+			cast.Source.String(),
+			source.MP,
+			ab.ID.String(),
+			ab.MPConsumption,
+		)
+	}
+
+	// #Decrease MP
+	source.MP -= ab.MPConsumption
+	if err := a.EntityStore.SetEntity(source, e.TS.UnixNano()); err != nil {
+		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
 	e = event.E{

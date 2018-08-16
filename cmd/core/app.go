@@ -89,7 +89,9 @@ func (a *app) AddListener(msg *infra.Message) {
 
 	switch listener.Action {
 	case infra.Open:
-		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.EventStore, a.Apply)
+		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.Apply)
+		a.seqs[listener.ID].EventStore = a.EventStore
+		a.seqs[listener.ID].EntityStore = a.EntityStore
 		a.seqs[listener.ID].Run()
 
 		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)

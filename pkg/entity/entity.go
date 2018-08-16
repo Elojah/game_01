@@ -15,6 +15,7 @@ type Store interface {
 // Subset is a subset to retrieve one entity.
 type Subset struct {
 	ID     ulid.ID
+	MinTS  int64
 	MaxTS  int64
 	Cursor uint64
 	Count  int64

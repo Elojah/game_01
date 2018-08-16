@@ -4,6 +4,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -14,7 +15,9 @@ type tick chan int64
 // Sequencer is an ordering/event extractor layer between two consumers.
 type Sequencer struct {
 	id ulid.ID
-	event.Store
+
+	EventStore  event.Store
+	EntityStore entity.Store
 
 	logger zerolog.Logger
 
@@ -38,11 +41,10 @@ func (s *Sequencer) Close() {
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.
-func NewSequencer(id ulid.ID, limit int, es event.Store, callback func(ulid.ID, event.E)) *Sequencer {
+func NewSequencer(id ulid.ID, limit int, callback func(ulid.ID, event.E)) *Sequencer {
 	return &Sequencer{
 		id:     id,
 		logger: log.With().Str("sequencer", id.String()).Logger(),
-		Store:  es,
 
 		input:   make(tick, limit),
 		fetch:   make(tick, limit),
@@ -80,7 +82,7 @@ func (s *Sequencer) listenInput() {
 func (s *Sequencer) listenFetch() {
 	var min int64
 	for t := range s.fetch {
-		events, err := s.ListEvent(event.Subset{
+		events, err := s.EventStore.ListEvent(event.Subset{
 			Key: s.id.String(),
 			Min: t,
 		})
@@ -141,8 +143,12 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}
-	if err := s.SetEvent(e, s.id); err != nil {
+	if err := s.EventStore.SetEvent(e, s.id); err != nil {
 		s.logger.Error().Err(err).Msg("error creating event")
+		return
+	}
+	if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: e.TS.UnixNano()}); err != nil {
+		s.logger.Error().Err(err).Msg("error clearing entity states")
 		return
 	}
 	s.logger.Info().Str("event", e.ID.String()).Msg("event received")

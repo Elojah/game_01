@@ -8,8 +8,9 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
+	entitymocks "github.com/elojah/game_01/pkg/entity/mocks"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/event/mocks"
+	eventmocks "github.com/elojah/game_01/pkg/event/mocks"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -51,10 +52,11 @@ func TestSequencer(t *testing.T) {
 	t.Run("simple", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewStore()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
-			switch es.ListEventCount {
+			switch eventStore.ListEventCount {
 			case 0:
 				assert.Equal(t, eset[0].TS.UnixNano(), subset.Min)
 			}
@@ -63,12 +65,14 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, 32, es,
+		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
 				assert.True(t, eset[0].Equal(e))
 				wg.Done()
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
@@ -83,8 +87,9 @@ func TestSequencer(t *testing.T) {
 	t.Run("two", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewStore()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
 			case eset[0].TS.UnixNano():
@@ -97,11 +102,13 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(2)
-		seq := NewSequencer(seqID, 32, es,
+		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
 				wg.Done()
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
@@ -123,8 +130,9 @@ func TestSequencer(t *testing.T) {
 	t.Run("cancel", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewStore()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
 			case eset[1].TS.UnixNano():
@@ -138,7 +146,7 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, 32, es,
+		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
 				assert.False(t, e.Equal(eset[0]))
 				if e.Equal(eset[2]) {
@@ -146,6 +154,8 @@ func TestSequencer(t *testing.T) {
 				}
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
@@ -167,8 +177,9 @@ func TestSequencer(t *testing.T) {
 	t.Run("interrupt", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewStore()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
 			case eset[1].TS.UnixNano():
@@ -183,7 +194,7 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, 1, es,
+		seq := NewSequencer(seqID, 1,
 			func(id ulid.ID, e event.E) {
 				assert.False(t, e.Equal(eset[0]))
 				if e.Equal(eset[2]) {
@@ -191,6 +202,8 @@ func TestSequencer(t *testing.T) {
 				}
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 

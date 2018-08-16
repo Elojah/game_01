@@ -54,5 +54,12 @@ func (s *Store) GetEntity(subset entity.Subset) (entity.E, error) {
 
 // DelEntity deletes entity in redis.
 func (s *Store) DelEntity(subset entity.Subset) error {
-	return s.Del(entityKey + subset.ID.String()).Err()
+	if subset.MinTS == 0 {
+		return s.Del(entityKey + subset.ID.String()).Err()
+	}
+	return s.ZRemRangeByScore(
+		entityKey+subset.ID.String(),
+		strconv.FormatInt(subset.MinTS, 10),
+		"+inf",
+	).Err()
 }
