@@ -82,6 +82,10 @@ func (s *Sequencer) listenInput() {
 func (s *Sequencer) listenFetch() {
 	var min int64
 	for t := range s.fetch {
+		if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: t}); err != nil {
+			s.logger.Error().Err(err).Msg("failed to clear entities")
+			continue
+		}
 		events, err := s.EventStore.ListEvent(event.Subset{
 			Key: s.id.String(),
 			Min: t,
@@ -145,10 +149,6 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 	}
 	if err := s.EventStore.SetEvent(e, s.id); err != nil {
 		s.logger.Error().Err(err).Msg("error creating event")
-		return
-	}
-	if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: e.TS.UnixNano()}); err != nil {
-		s.logger.Error().Err(err).Msg("error clearing entity states")
 		return
 	}
 	s.logger.Info().Str("event", e.ID.String()).Msg("event received")
