@@ -8,11 +8,15 @@ import fmt "fmt"
 import math "math"
 import geometry "github.com/elojah/game_01/pkg/geometry"
 import _ "github.com/gogo/protobuf/gogoproto"
+import _ "github.com/gogo/protobuf/types"
 
 import github_com_elojah_game_01_pkg_ulid "github.com/elojah/game_01/pkg/ulid"
+import time "time"
 
 import strings "strings"
 import reflect "reflect"
+
+import github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 
 import io "io"
 
@@ -20,6 +24,7 @@ import io "io"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -27,15 +32,62 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
+type Cast struct {
+	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=AbilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
+	TS                   time.Time                             `protobuf:"bytes,2,opt,name=TS,stdtime" json:"TS"`
+	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
+	XXX_sizecache        int32                                 `json:"-"`
+}
+
+func (m *Cast) Reset()      { *m = Cast{} }
+func (*Cast) ProtoMessage() {}
+func (*Cast) Descriptor() ([]byte, []int) {
+	return fileDescriptor_entity_696b44e06dd4b9ad, []int{0}
+}
+func (m *Cast) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Cast) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Cast.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (dst *Cast) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Cast.Merge(dst, src)
+}
+func (m *Cast) XXX_Size() int {
+	return m.Size()
+}
+func (m *Cast) XXX_DiscardUnknown() {
+	xxx_messageInfo_Cast.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Cast proto.InternalMessageInfo
+
+func (m *Cast) GetTS() time.Time {
+	if m != nil {
+		return m.TS
+	}
+	return time.Time{}
+}
+
 type E struct {
-	ID                   github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,json=iD,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
-	Type                 github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=Type,json=type,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Type"`
-	Name                 string                                `protobuf:"bytes,3,opt,name=Name,json=name,proto3" json:"Name,omitempty"`
-	HP                   uint64                                `protobuf:"varint,4,opt,name=HP,json=hP,proto3" json:"HP,omitempty"`
-	MaxHP                uint64                                `protobuf:"varint,5,opt,name=MaxHP,json=maxHP,proto3" json:"MaxHP,omitempty"`
-	MP                   uint64                                `protobuf:"varint,6,opt,name=MP,json=mP,proto3" json:"MP,omitempty"`
-	MaxMP                uint64                                `protobuf:"varint,7,opt,name=MaxMP,json=maxMP,proto3" json:"MaxMP,omitempty"`
-	Position             geometry.Position                     `protobuf:"bytes,8,opt,name=Position,json=position" json:"Position"`
+	ID                   github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
+	Type                 github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=Type,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Type"`
+	Name                 string                                `protobuf:"bytes,3,opt,name=Name,proto3" json:"Name,omitempty"`
+	HP                   uint64                                `protobuf:"varint,4,opt,name=HP,proto3" json:"HP,omitempty"`
+	MaxHP                uint64                                `protobuf:"varint,5,opt,name=MaxHP,proto3" json:"MaxHP,omitempty"`
+	MP                   uint64                                `protobuf:"varint,6,opt,name=MP,proto3" json:"MP,omitempty"`
+	MaxMP                uint64                                `protobuf:"varint,7,opt,name=MaxMP,proto3" json:"MaxMP,omitempty"`
+	Position             geometry.Position                     `protobuf:"bytes,8,opt,name=Position" json:"Position"`
+	Cast                 *Cast                                 `protobuf:"bytes,9,opt,name=Cast" json:"Cast,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
 }
@@ -43,7 +95,7 @@ type E struct {
 func (m *E) Reset()      { *m = E{} }
 func (*E) ProtoMessage() {}
 func (*E) Descriptor() ([]byte, []int) {
-	return fileDescriptor_entity_88a22bc116f05312, []int{0}
+	return fileDescriptor_entity_696b44e06dd4b9ad, []int{1}
 }
 func (m *E) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -114,8 +166,43 @@ func (m *E) GetPosition() geometry.Position {
 	return geometry.Position{}
 }
 
+func (m *E) GetCast() *Cast {
+	if m != nil {
+		return m.Cast
+	}
+	return nil
+}
+
 func init() {
+	proto.RegisterType((*Cast)(nil), "Cast")
 	proto.RegisterType((*E)(nil), "E")
+}
+func (this *Cast) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Cast)
+	if !ok {
+		that2, ok := that.(Cast)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.AbilityID.Equal(that1.AbilityID) {
+		return false
+	}
+	if !this.TS.Equal(that1.TS) {
+		return false
+	}
+	return true
 }
 func (this *E) Equal(that interface{}) bool {
 	if that == nil {
@@ -160,13 +247,27 @@ func (this *E) Equal(that interface{}) bool {
 	if !this.Position.Equal(&that1.Position) {
 		return false
 	}
+	if !this.Cast.Equal(that1.Cast) {
+		return false
+	}
 	return true
+}
+func (this *Cast) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&entity.Cast{")
+	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
+	s = append(s, "TS: "+fmt.Sprintf("%#v", this.TS)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
 }
 func (this *E) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 12)
+	s := make([]string, 0, 13)
 	s = append(s, "&entity.E{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "Type: "+fmt.Sprintf("%#v", this.Type)+",\n")
@@ -176,6 +277,9 @@ func (this *E) GoString() string {
 	s = append(s, "MP: "+fmt.Sprintf("%#v", this.MP)+",\n")
 	s = append(s, "MaxMP: "+fmt.Sprintf("%#v", this.MaxMP)+",\n")
 	s = append(s, "Position: "+strings.Replace(this.Position.GoString(), `&`, ``, 1)+",\n")
+	if this.Cast != nil {
+		s = append(s, "Cast: "+fmt.Sprintf("%#v", this.Cast)+",\n")
+	}
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -187,6 +291,40 @@ func valueToGoStringEntity(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
+func (m *Cast) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Cast) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	dAtA[i] = 0xa
+	i++
+	i = encodeVarintEntity(dAtA, i, uint64(m.AbilityID.Size()))
+	n1, err := m.AbilityID.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n1
+	dAtA[i] = 0x12
+	i++
+	i = encodeVarintEntity(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(m.TS)))
+	n2, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.TS, dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n2
+	return i, nil
+}
+
 func (m *E) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -205,19 +343,19 @@ func (m *E) MarshalTo(dAtA []byte) (int, error) {
 	dAtA[i] = 0xa
 	i++
 	i = encodeVarintEntity(dAtA, i, uint64(m.ID.Size()))
-	n1, err := m.ID.MarshalTo(dAtA[i:])
+	n3, err := m.ID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n1
+	i += n3
 	dAtA[i] = 0x12
 	i++
 	i = encodeVarintEntity(dAtA, i, uint64(m.Type.Size()))
-	n2, err := m.Type.MarshalTo(dAtA[i:])
+	n4, err := m.Type.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n2
+	i += n4
 	if len(m.Name) > 0 {
 		dAtA[i] = 0x1a
 		i++
@@ -247,11 +385,21 @@ func (m *E) MarshalTo(dAtA []byte) (int, error) {
 	dAtA[i] = 0x42
 	i++
 	i = encodeVarintEntity(dAtA, i, uint64(m.Position.Size()))
-	n3, err := m.Position.MarshalTo(dAtA[i:])
+	n5, err := m.Position.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n3
+	i += n5
+	if m.Cast != nil {
+		dAtA[i] = 0x4a
+		i++
+		i = encodeVarintEntity(dAtA, i, uint64(m.Cast.Size()))
+		n6, err := m.Cast.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n6
+	}
 	return i, nil
 }
 
@@ -264,19 +412,33 @@ func encodeVarintEntity(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
+func NewPopulatedCast(r randyEntity, easy bool) *Cast {
+	this := &Cast{}
+	v1 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.AbilityID = *v1
+	v2 := github_com_gogo_protobuf_types.NewPopulatedStdTime(r, easy)
+	this.TS = *v2
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
 func NewPopulatedE(r randyEntity, easy bool) *E {
 	this := &E{}
-	v1 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v1
-	v2 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Type = *v2
+	v3 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v3
+	v4 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.Type = *v4
 	this.Name = string(randStringEntity(r))
 	this.HP = uint64(uint64(r.Uint32()))
 	this.MaxHP = uint64(uint64(r.Uint32()))
 	this.MP = uint64(uint64(r.Uint32()))
 	this.MaxMP = uint64(uint64(r.Uint32()))
-	v3 := geometry.NewPopulatedPosition(r, easy)
-	this.Position = *v3
+	v5 := geometry.NewPopulatedPosition(r, easy)
+	this.Position = *v5
+	if r.Intn(10) != 0 {
+		this.Cast = NewPopulatedCast(r, easy)
+	}
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -301,9 +463,9 @@ func randUTF8RuneEntity(r randyEntity) rune {
 	return rune(ru + 61)
 }
 func randStringEntity(r randyEntity) string {
-	v4 := r.Intn(100)
-	tmps := make([]rune, v4)
-	for i := 0; i < v4; i++ {
+	v6 := r.Intn(100)
+	tmps := make([]rune, v6)
+	for i := 0; i < v6; i++ {
 		tmps[i] = randUTF8RuneEntity(r)
 	}
 	return string(tmps)
@@ -325,11 +487,11 @@ func randFieldEntity(dAtA []byte, r randyEntity, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
-		v5 := r.Int63()
+		v7 := r.Int63()
 		if r.Intn(2) == 0 {
-			v5 *= -1
+			v7 *= -1
 		}
-		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v5))
+		dAtA = encodeVarintPopulateEntity(dAtA, uint64(v7))
 	case 1:
 		dAtA = encodeVarintPopulateEntity(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -354,6 +516,16 @@ func encodeVarintPopulateEntity(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
+func (m *Cast) Size() (n int) {
+	var l int
+	_ = l
+	l = m.AbilityID.Size()
+	n += 1 + l + sovEntity(uint64(l))
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.TS)
+	n += 1 + l + sovEntity(uint64(l))
+	return n
+}
+
 func (m *E) Size() (n int) {
 	var l int
 	_ = l
@@ -379,6 +551,10 @@ func (m *E) Size() (n int) {
 	}
 	l = m.Position.Size()
 	n += 1 + l + sovEntity(uint64(l))
+	if m.Cast != nil {
+		l = m.Cast.Size()
+		n += 1 + l + sovEntity(uint64(l))
+	}
 	return n
 }
 
@@ -395,6 +571,17 @@ func sovEntity(x uint64) (n int) {
 func sozEntity(x uint64) (n int) {
 	return sovEntity(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
+func (this *Cast) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Cast{`,
+		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
+		`TS:` + strings.Replace(strings.Replace(this.TS.String(), "Timestamp", "types.Timestamp", 1), `&`, ``, 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
 func (this *E) String() string {
 	if this == nil {
 		return "nil"
@@ -408,6 +595,7 @@ func (this *E) String() string {
 		`MP:` + fmt.Sprintf("%v", this.MP) + `,`,
 		`MaxMP:` + fmt.Sprintf("%v", this.MaxMP) + `,`,
 		`Position:` + strings.Replace(strings.Replace(this.Position.String(), "Position", "geometry.Position", 1), `&`, ``, 1) + `,`,
+		`Cast:` + strings.Replace(fmt.Sprintf("%v", this.Cast), "Cast", "Cast", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -419,6 +607,116 @@ func valueToStringEntity(v interface{}) string {
 	}
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
+}
+func (m *Cast) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEntity
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Cast: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Cast: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AbilityID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.AbilityID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TS", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.TS, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEntity(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthEntity
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *E) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -644,6 +942,39 @@ func (m *E) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Cast", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEntity
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthEntity
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Cast == nil {
+				m.Cast = &Cast{}
+			}
+			if err := m.Cast.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEntity(dAtA[iNdEx:])
@@ -770,30 +1101,35 @@ var (
 	ErrIntOverflowEntity   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("entity.proto", fileDescriptor_entity_88a22bc116f05312) }
+func init() { proto.RegisterFile("entity.proto", fileDescriptor_entity_696b44e06dd4b9ad) }
 
-var fileDescriptor_entity_88a22bc116f05312 = []byte{
-	// 338 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0xcd, 0x2b, 0xc9,
-	0x2c, 0xa9, 0xd4, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d,
-	0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x0b, 0x27, 0x95, 0xa6, 0x81,
-	0x79, 0x60, 0x0e, 0x98, 0x05, 0x55, 0x6e, 0x8a, 0xa4, 0x3c, 0x35, 0x27, 0x3f, 0x2b, 0x31, 0x43,
-	0x3f, 0x3d, 0x31, 0x37, 0x35, 0xde, 0xc0, 0x50, 0xbf, 0x20, 0x3b, 0x5d, 0x3f, 0x3d, 0x35, 0x3f,
-	0x37, 0xb5, 0xa4, 0xa8, 0x52, 0xbf, 0x20, 0xbf, 0x38, 0xb3, 0x24, 0x33, 0x3f, 0x0f, 0xa2, 0x4d,
-	0x69, 0x12, 0x13, 0x17, 0xa3, 0xab, 0x90, 0x2d, 0x17, 0x93, 0xa7, 0x8b, 0x04, 0xa3, 0x02, 0xa3,
-	0x06, 0x8f, 0x93, 0xee, 0x89, 0x7b, 0xf2, 0x0c, 0xb7, 0xee, 0xc9, 0xab, 0xe2, 0x37, 0xb0, 0x34,
-	0x27, 0x33, 0x45, 0xcf, 0xd3, 0x25, 0x88, 0x29, 0xd3, 0x45, 0xc8, 0x91, 0x8b, 0x25, 0xa4, 0xb2,
-	0x20, 0x55, 0x82, 0x89, 0x1c, 0x03, 0x58, 0x4a, 0x2a, 0x0b, 0x52, 0x85, 0x84, 0xb8, 0x58, 0xfc,
-	0x12, 0x73, 0x53, 0x25, 0x98, 0x15, 0x18, 0x35, 0x38, 0x83, 0x58, 0xf2, 0x12, 0x73, 0x53, 0x85,
-	0xf8, 0xb8, 0x98, 0x3c, 0x02, 0x24, 0x58, 0x14, 0x18, 0x35, 0x58, 0x82, 0x98, 0x32, 0x02, 0x84,
-	0x44, 0xb8, 0x58, 0x7d, 0x13, 0x2b, 0x3c, 0x02, 0x24, 0x58, 0xc1, 0x42, 0xac, 0xb9, 0x20, 0x0e,
-	0x48, 0x95, 0x6f, 0x80, 0x04, 0x1b, 0x44, 0x55, 0x2e, 0x4c, 0x95, 0x6f, 0x80, 0x04, 0x3b, 0x5c,
-	0x95, 0x6f, 0x80, 0x90, 0x36, 0x17, 0x47, 0x00, 0xd4, 0xe7, 0x12, 0x1c, 0x0a, 0x8c, 0x1a, 0xdc,
-	0x46, 0x9c, 0x7a, 0x30, 0x01, 0x27, 0x16, 0x90, 0x8b, 0x83, 0x38, 0x60, 0x41, 0xe3, 0xe4, 0x70,
-	0xe1, 0xa1, 0x1c, 0xc3, 0x8d, 0x87, 0x72, 0x0c, 0x1f, 0x1e, 0xca, 0x31, 0xfe, 0x78, 0x28, 0xc7,
-	0xd8, 0xf0, 0x48, 0x8e, 0x71, 0xc5, 0x23, 0x39, 0xc6, 0x1d, 0x8f, 0xe4, 0x18, 0x0f, 0x3c, 0x92,
-	0x63, 0x3c, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x5f, 0x3c,
-	0x92, 0x63, 0xf8, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x28, 0x36, 0x48, 0x14, 0x26,
-	0xb1, 0x81, 0x43, 0xd7, 0x18, 0x10, 0x00, 0x00, 0xff, 0xff, 0x93, 0x28, 0xf9, 0x7e, 0xd3, 0x01,
-	0x00, 0x00,
+var fileDescriptor_entity_696b44e06dd4b9ad = []byte{
+	// 419 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xbf, 0x6f, 0xd3, 0x40,
+	0x14, 0xc7, 0xfd, 0x0e, 0x27, 0x24, 0x47, 0xc5, 0x70, 0x62, 0x38, 0x75, 0x38, 0x47, 0x95, 0x90,
+	0x22, 0xa1, 0x9e, 0xf9, 0x39, 0x22, 0xd1, 0x10, 0xa4, 0x44, 0xc8, 0xc8, 0x72, 0x33, 0xb1, 0x20,
+	0x1b, 0x8e, 0xeb, 0x81, 0xdd, 0xb3, 0x9a, 0x8b, 0x84, 0x37, 0x56, 0xb6, 0xfe, 0x19, 0xec, 0x2c,
+	0x8c, 0x8c, 0x1d, 0x3b, 0x22, 0x86, 0x82, 0x8f, 0x85, 0xb1, 0x23, 0x23, 0xf2, 0x39, 0x6e, 0x98,
+	0x90, 0xe8, 0xf6, 0xbe, 0xcf, 0x9f, 0xf7, 0xde, 0x57, 0xfe, 0x1e, 0xde, 0x12, 0x87, 0x46, 0x99,
+	0x8a, 0x97, 0x47, 0xda, 0xe8, 0xed, 0x5d, 0xa9, 0xcc, 0xc1, 0x2a, 0xe3, 0x2f, 0x75, 0x11, 0x4a,
+	0x2d, 0x75, 0xe8, 0xda, 0xd9, 0xea, 0xb5, 0x53, 0x4e, 0xb8, 0x6a, 0x8d, 0x3f, 0xf8, 0x0b, 0x17,
+	0xb9, 0x7e, 0x93, 0x1e, 0x84, 0x32, 0x2d, 0xc4, 0x8b, 0xdb, 0x77, 0xc2, 0xf2, 0xad, 0x0c, 0xa5,
+	0xd0, 0x85, 0x30, 0x47, 0x55, 0x58, 0xea, 0xa5, 0x32, 0x4a, 0x1f, 0xae, 0xc7, 0x02, 0xa9, 0xb5,
+	0xcc, 0xc5, 0x66, 0xb9, 0x51, 0x85, 0x58, 0x9a, 0xb4, 0x28, 0x5b, 0x60, 0xe7, 0x03, 0x60, 0xff,
+	0x71, 0xba, 0x34, 0xe4, 0x29, 0x1e, 0xee, 0x65, 0x2a, 0x57, 0xa6, 0x9a, 0x4f, 0x29, 0x8c, 0x60,
+	0xbc, 0x35, 0xd9, 0x3d, 0x39, 0x0b, 0xbc, 0x6f, 0x67, 0xc1, 0xcd, 0x7f, 0xdf, 0x5e, 0xe5, 0xea,
+	0x15, 0x9f, 0x4f, 0x93, 0xcd, 0x3c, 0xb9, 0x8f, 0xd1, 0x62, 0x9f, 0xa2, 0x11, 0x8c, 0xaf, 0xdd,
+	0xdd, 0xe6, 0xad, 0x07, 0xde, 0x79, 0xe0, 0x8b, 0xce, 0xc3, 0x64, 0xd0, 0x5c, 0x38, 0xfe, 0x1e,
+	0x40, 0x82, 0x16, 0xfb, 0x3b, 0x9f, 0x10, 0x86, 0x27, 0xe4, 0x21, 0x46, 0x97, 0x75, 0x80, 0xe6,
+	0x53, 0xb2, 0x87, 0xfd, 0x45, 0x55, 0x0a, 0x77, 0xfc, 0xbf, 0x17, 0xb8, 0x51, 0x42, 0xb0, 0xff,
+	0x2c, 0x2d, 0x04, 0xbd, 0x32, 0x82, 0xf1, 0x30, 0x71, 0x35, 0xb9, 0x8e, 0xd1, 0x2c, 0xa6, 0xfe,
+	0x08, 0xc6, 0x7e, 0x82, 0x66, 0x31, 0xb9, 0x81, 0x7b, 0x51, 0xfa, 0x6e, 0x16, 0xd3, 0x9e, 0x6b,
+	0xb5, 0xa2, 0xa1, 0xa2, 0x98, 0xf6, 0x5b, 0x2a, 0xea, 0xa8, 0x28, 0xa6, 0x57, 0x2f, 0xa8, 0x28,
+	0x26, 0xb7, 0xf0, 0x20, 0x5e, 0xc7, 0x44, 0x07, 0xee, 0x1f, 0x0d, 0x79, 0xd7, 0x98, 0xf8, 0x8d,
+	0xe3, 0xe4, 0x02, 0x20, 0x41, 0x9b, 0x0f, 0x1d, 0x3a, 0xb0, 0xc7, 0x1b, 0xe1, 0x20, 0x48, 0xdc,
+	0x87, 0xc9, 0xa3, 0xd3, 0x9a, 0x79, 0x5f, 0x6b, 0xe6, 0x9d, 0xd7, 0x0c, 0x7e, 0xd7, 0x0c, 0xde,
+	0x5b, 0x06, 0x1f, 0x2d, 0x83, 0xcf, 0x96, 0xc1, 0x17, 0xcb, 0xe0, 0xc4, 0x32, 0x38, 0xb5, 0x0c,
+	0x7e, 0x58, 0x06, 0xbf, 0x2c, 0xf3, 0xce, 0x2d, 0x83, 0xe3, 0x9f, 0xcc, 0x7b, 0xde, 0x6f, 0x1f,
+	0x64, 0xd6, 0x77, 0xc9, 0xdc, 0xfb, 0x13, 0x00, 0x00, 0xff, 0xff, 0x20, 0x57, 0x46, 0xf5, 0xa1,
+	0x02, 0x00, 0x00,
 }

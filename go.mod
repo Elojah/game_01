@@ -8,6 +8,7 @@ require (
 	github.com/elojah/services v0.0.0-20180629094217-29c33644ab1f
 	github.com/go-redis/redis v6.12.0+incompatible
 	github.com/gogo/protobuf v1.1.1
+	github.com/golang/protobuf v1.1.0
 	github.com/oklog/ulid v0.3.0
 	github.com/pkg/errors v0.8.0
 	github.com/pmezard/go-difflib v1.0.0

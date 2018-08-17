@@ -65,19 +65,29 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		)
 	}
 
-	// #Decrease MP
+	// #Check CD validity
+	if ab.LastUsed.Add(ab.CD).Before(e.TS) {
+		return errors.Wrapf(account.ErrInvalidAction, "cd up for skill %s ", ab.ID.String())
+	}
+
+	// #Set entity new state with decreased MP and casting up.
 	source.MP -= ab.MPConsumption
+	source.Cast = &entity.Cast{AbilityID: ab.ID, TS: e.TS}
 	if err := a.EntityStore.SetEntity(source, e.TS.UnixNano()); err != nil {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
+	// #Add casted event to event set.
 	e = event.E{
+		ID: ulid.NewID(),
+		TS: e.TS.Add(ab.CastTime),
 		Action: event.Action{
 			Casted: (*event.Casted)(cast),
 		},
 	}
-	_ = e
-	_ = ab
+	if err := a.EventStore.SetEvent(e, source.ID); err != nil {
+		return errors.Wrapf(err, "set casted event %s", e.ID.String())
+	}
 
 	return nil
 }

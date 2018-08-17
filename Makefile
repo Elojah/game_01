@@ -94,16 +94,23 @@ integration:
 proto:
 	$(info $(M) running protobuf…) @
 	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component.proto
-	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ability.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
+Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types:.\
+		ability.proto
 	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component_feedback.proto
 	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. feedback.proto
 	$Q cd pkg/account && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. account.proto
 	$Q cd pkg/account && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. token.proto
 	$Q cd pkg/geometry && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. position.proto
-	$Q cd pkg/entity && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entity.proto
+	$Q cd pkg/entity && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:.\
+		entity.proto
 	$Q cd pkg/event && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. action.proto
 	$Q cd pkg/event && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. dto.proto
-	$Q cd pkg/event && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:. event.proto
+	$Q cd pkg/event && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=\
+Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:.\
+		event.proto
 	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ack.proto
 	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. q_action.proto
 	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. listener.proto
