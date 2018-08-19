@@ -9,8 +9,8 @@ type Core struct {
 	ID ulid.ID
 }
 
-// CoreMapper maps core data interactions.
-type CoreMapper interface {
+// CoreStore maps core data interactions.
+type CoreStore interface {
 	GetRandomCore(CoreSubset) (Core, error)
 	SetCore(Core) error
 	DelCore(CoreSubset) error

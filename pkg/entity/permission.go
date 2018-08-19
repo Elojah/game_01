@@ -10,8 +10,8 @@ type Permission struct {
 	Value  int
 }
 
-// PermissionMapper defines Permission operations.
-type PermissionMapper interface {
+// PermissionStore defines Permission operations.
+type PermissionStore interface {
 	SetPermission(Permission) error
 	GetPermission(PermissionSubset) (Permission, error)
 	ListPermission(PermissionSubset) ([]Permission, error)

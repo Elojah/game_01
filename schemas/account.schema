@@ -1,6 +1,0 @@
-struct A {
-	ID			[16]byte
-	Username	string
-	Password	string
-	Token		[16]byte
-}

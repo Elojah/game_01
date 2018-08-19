@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option go_package = "ability";
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "component.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+message A {
+	bytes ID                           = 1 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Type                         = 2 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Animation                    = 3 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	string Name                        = 4;
+
+	uint64 MPConsumption               = 5;
+	uint64 PostMPConsumption           = 6;
+	google.protobuf.Duration CD        = 7 [(gogoproto.stdduration) = true, (gogoproto.nullable)                                    = false];
+	google.protobuf.Timestamp LastUsed = 8 [(gogoproto.stdtime)     = true, (gogoproto.nullable)                                    = false];
+	google.protobuf.Duration CastTime  = 9 [(gogoproto.stdduration) = true, (gogoproto.nullable)                                    = false];
+	repeated Component Components      = 10 [(gogoproto.nullable)   = false];
+}

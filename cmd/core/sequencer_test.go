@@ -8,69 +8,55 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
+	entitymocks "github.com/elojah/game_01/pkg/entity/mocks"
 	"github.com/elojah/game_01/pkg/event"
+	eventmocks "github.com/elojah/game_01/pkg/event/mocks"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/mocks"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
 func TestSequencer(t *testing.T) {
 
-	equalEvent := func(lhs event.E, rhs event.E) bool {
-		switch lhs.Action.(type) {
-		case event.Cast:
-			switch rhs.Action.(type) {
-			case event.Cast:
-				lhsTargets := lhs.Action.(event.Cast).Targets
-				rhsTargets := rhs.Action.(event.Cast).Targets
-				for i, target := range lhsTargets {
-					if target.Compare(rhsTargets[i]) != 0 {
-						return false
-					}
-				}
-			default:
-				return false
-			}
-		default:
-			if lhs.Action != rhs.Action {
-				return false
-			}
-		}
-		return lhs.ID.Compare(rhs.ID) == 0 &&
-			lhs.TS.Equal(rhs.TS)
-	}
-
 	now := time.Now()
 	eset := []event.E{
 		event.E{
-			ID:     ulid.NewID(),
-			TS:     now,
-			Action: event.Cast{Source: ulid.NewID(), Targets: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
+			ID: ulid.NewID(),
+			TS: now,
+			Action: event.Action{
+				Cast: &event.Cast{Source: ulid.NewID(), Targets: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
+			},
 		},
 		event.E{
-			ID:     ulid.NewID(),
-			TS:     now.Add(-1 * time.Second),
-			Action: event.Move{Source: ulid.NewID()},
+			ID: ulid.NewID(),
+			TS: now.Add(-1 * time.Second),
+			Action: event.Action{
+				Move: &event.Move{Source: ulid.NewID()},
+			},
 		},
 		event.E{
-			ID:     ulid.NewID(),
-			TS:     now.Add(-2 * time.Second),
-			Action: event.Move{Source: ulid.NewID()},
+			ID: ulid.NewID(),
+			TS: now.Add(-2 * time.Second),
+			Action: event.Action{
+				Move: &event.Move{Source: ulid.NewID()},
+			},
 		},
 		event.E{
-			ID:     ulid.NewID(),
-			TS:     now.Add(-3 * time.Second),
-			Action: event.Move{Source: ulid.NewID()},
+			ID: ulid.NewID(),
+			TS: now.Add(-3 * time.Second),
+			Action: event.Action{
+				Move: &event.Move{Source: ulid.NewID()},
+			},
 		},
 	}
 
 	t.Run("simple", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
-			switch es.ListEventCount {
+			switch eventStore.ListEventCount {
 			case 0:
 				assert.Equal(t, eset[0].TS.UnixNano(), subset.Min)
 			}
@@ -79,16 +65,18 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, 32, es,
+		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
-				assert.True(t, equalEvent(eset[0], e))
+				assert.True(t, eset[0].Equal(e))
 				wg.Done()
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw, err := eset[0].Marshal(nil)
+		raw, err := eset[0].Marshal()
 		assert.NoError(t, err)
 		msg := &infra.Message{Payload: string(raw)}
 		seq.Handler(msg)
@@ -99,8 +87,9 @@ func TestSequencer(t *testing.T) {
 	t.Run("two", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
 			case eset[0].TS.UnixNano():
@@ -113,20 +102,22 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(2)
-		seq := NewSequencer(seqID, 32, es,
+		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
 				wg.Done()
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw1, err := eset[1].Marshal(nil)
+		raw1, err := eset[1].Marshal()
 		assert.NoError(t, err)
 		msg1 := &infra.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
-		raw0, err := eset[0].Marshal(nil)
+		raw0, err := eset[0].Marshal()
 		assert.NoError(t, err)
 		msg0 := &infra.Message{Payload: string(raw0)}
 		seq.Handler(msg0)
@@ -139,8 +130,9 @@ func TestSequencer(t *testing.T) {
 	t.Run("cancel", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
 			case eset[1].TS.UnixNano():
@@ -154,23 +146,25 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, 32, es,
+		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
-				assert.False(t, equalEvent(e, eset[0]))
-				if equalEvent(e, eset[2]) {
+				assert.False(t, e.Equal(eset[0]))
+				if e.Equal(eset[2]) {
 					wg.Done()
 				}
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw1, err := eset[1].Marshal(nil)
+		raw1, err := eset[1].Marshal()
 		assert.NoError(t, err)
 		msg1 := &infra.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
-		raw2, err := eset[2].Marshal(nil)
+		raw2, err := eset[2].Marshal()
 		assert.NoError(t, err)
 		msg2 := &infra.Message{Payload: string(raw2)}
 		seq.Handler(msg2)
@@ -183,8 +177,9 @@ func TestSequencer(t *testing.T) {
 	t.Run("interrupt", func(t *testing.T) {
 
 		seqID := ulid.NewID()
-		es := mocks.NewEventMapper()
-		es.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
+		entityStore := entitymocks.NewStore()
+		eventStore := eventmocks.NewStore()
+		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), subset.Key)
 			switch int64(subset.Min) {
 			case eset[1].TS.UnixNano():
@@ -199,25 +194,27 @@ func TestSequencer(t *testing.T) {
 
 		var wg sync.WaitGroup
 		wg.Add(1)
-		seq := NewSequencer(seqID, 1, es,
+		seq := NewSequencer(seqID, 1,
 			func(id ulid.ID, e event.E) {
-				assert.False(t, equalEvent(e, eset[0]))
-				if equalEvent(e, eset[2]) {
+				assert.False(t, e.Equal(eset[0]))
+				if e.Equal(eset[2]) {
 					wg.Done()
 				}
 			},
 		)
+		seq.EventStore = eventStore
+		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
 
-		raw1, err := eset[1].Marshal(nil)
+		raw1, err := eset[1].Marshal()
 		assert.NoError(t, err)
 		msg1 := &infra.Message{Payload: string(raw1)}
 		seq.Handler(msg1)
 
 		time.Sleep(10*time.Millisecond + 1*time.Nanosecond)
 
-		raw2, err := eset[2].Marshal(nil)
+		raw2, err := eset[2].Marshal()
 		assert.NoError(t, err)
 		msg2 := &infra.Message{Payload: string(raw2)}
 		seq.Handler(msg2)

@@ -38,7 +38,7 @@ func (h *handler) handleEntity(ctx context.Context, raw []byte) error {
 
 	// #Unmarshal entity.
 	var e entity.E
-	if _, err := e.Unmarshal(raw); err != nil {
+	if err := e.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
 		return err
 	}
@@ -61,7 +61,7 @@ func (h *handler) handleACK(ctx context.Context, raw []byte) error {
 
 	// #Unmarshal entity.
 	var ack infra.ACK
-	if _, err := ack.Unmarshal(raw); err != nil {
+	if err := ack.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")
 		return err
 	}

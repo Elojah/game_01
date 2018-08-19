@@ -9,8 +9,8 @@ type Starter struct {
 	SectorID ulid.ID
 }
 
-// StarterMapper interfaces starter data interactions.
-type StarterMapper interface {
+// StarterStore interfaces starter data interactions.
+type StarterStore interface {
 	GetRandomStarter(StarterSubset) (Starter, error)
 	SetStarter(Starter) error
 	DelStarter(StarterSubset) error

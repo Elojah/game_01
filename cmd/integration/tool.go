@@ -178,7 +178,7 @@ func expectSectorStarter(a *LogAnalyzer) error {
 
 func expectTool(a *LogAnalyzer) error {
 	// ignore certificate validity
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gas
 	if err := expectEntityTemplates(a); err != nil {
 		return err
 	}

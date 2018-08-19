@@ -9,10 +9,12 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	redisx "github.com/elojah/game_01/pkg/storage/redis"
-	"github.com/elojah/game_01/pkg/usecase/listener"
-	"github.com/elojah/game_01/pkg/usecase/recurrer"
-	"github.com/elojah/game_01/pkg/usecase/token"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	accountsvc "github.com/elojah/game_01/pkg/account/svc"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
@@ -27,54 +29,53 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
-	rdx := redisx.NewService(&rd)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
-	rdlrux := redisx.NewService(&rdlru)
 
-	m := mux.M{}
+	m := &mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "server",
 	}, "server")
 	launchers.Add(muxl)
 
-	c := client.C{}
+	c := &client.C{}
 	cl := c.NewLauncher(client.Namespaces{
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)
 
-	h := handler{
-		M:       &m,
-		C:       &c,
-		QMapper: rdx,
-		T: token.T{
-			AccountMapper: rdx,
-			TokenMapper:   rdx,
-			EntityMapper:  rdlrux,
-			PCMapper:      rdx,
-			L: listener.L{
-				QListenerMapper: rdx,
-				ListenerMapper:  rdx,
-				CoreMapper:      rdx,
+	// Stores and applicatives
+	eventStore := eventsrg.NewStore(rd)
+	accountStore := accountsrg.NewStore(rd)
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	infraStore := infrasrg.NewStore(rd)
+
+	h := &handler{
+		M:      m,
+		C:      c,
+		QStore: eventStore,
+		TokenService: accountsvc.TokenService{
+			Account:          accountStore,
+			AccountToken:     accountStore,
+			Entity:           entityLRUStore,
+			EntityPC:         entityStore,
+			EntityPermission: entityStore,
+			InfraRecurrerService: infrasvc.RecurrerService{
+				InfraQRecurrer: infraStore,
+				InfraRecurrer:  infraStore,
+				InfraSync:      infraStore,
 			},
-			R: recurrer.R{
-				QRecurrerMapper: rdx,
-				RecurrerMapper:  rdx,
-				SyncMapper:      rdx,
-			},
-			PermissionMapper: rdx,
-			EntitiesMapper:   rdlrux,
 		},
 	}
 

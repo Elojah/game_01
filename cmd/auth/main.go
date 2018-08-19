@@ -9,10 +9,14 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	redisx "github.com/elojah/game_01/pkg/storage/redis"
-	"github.com/elojah/game_01/pkg/usecase/listener"
-	"github.com/elojah/game_01/pkg/usecase/recurrer"
-	"github.com/elojah/game_01/pkg/usecase/token"
+	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	accountsvc "github.com/elojah/game_01/pkg/account/svc"
+	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
+	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
+	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -26,57 +30,79 @@ func run(prog string, filename string) {
 	launchers := services.Launchers{}
 
 	// redis
-	rd := redis.Service{}
+	rd := &redis.Service{}
 	rdl := rd.NewLauncher(redis.Namespaces{
 		Redis: "redis",
 	}, "redis")
 	launchers.Add(rdl)
-	rdx := redisx.NewService(&rd)
 
 	// redis-lru
-	rdlru := redis.Service{}
+	rdlru := &redis.Service{}
 	rdlrul := rdlru.NewLauncher(redis.Namespaces{
 		Redis: "redis-lru",
 	}, "redis-lru")
 	launchers.Add(rdlrul)
-	rdlrux := redisx.NewService(&rdlru)
+
+	// Stores and applicatives
+	accountStore := accountsrg.NewStore(rd)
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
+	eventStore := eventsrg.NewStore(rd)
+	infraStore := infrasrg.NewStore(rd)
+	sectorStore := sectorsrg.NewStore(rd)
 
 	// handler (https server)
-	h := handler{}
+	h := &handler{
+		AccountStore:    accountStore,
+		TokenStore:      accountStore,
+		EntityStore:     entityLRUStore,
+		PCStore:         entityStore,
+		PCLeftStore:     entityStore,
+		PermissionStore: entityStore,
+		TemplateStore:   entityStore,
+		QStore:          eventStore,
+		SyncStore:       infraStore,
+		EntitiesStore:   sectorStore,
+		StarterStore:    sectorStore,
+		SectorStore:     sectorStore,
+		TokenService: &accountsvc.TokenService{
+			Account:          accountStore,
+			AccountToken:     accountStore,
+			Entity:           entityLRUStore,
+			EntityPC:         entityStore,
+			EntityPermission: entityStore,
+			EntityService: &entitysvc.Service{
+				Entity:           entityLRUStore,
+				EntityPermission: entityStore,
+				SectorEntities:   sectorStore,
+				ListenerService: &infrasvc.ListenerService{
+					InfraQListener: infraStore,
+					InfraListener:  infraStore,
+					InfraCore:      infraStore,
+				},
+			},
+			InfraRecurrerService: &infrasvc.RecurrerService{
+				InfraQRecurrer: infraStore,
+				InfraRecurrer:  infraStore,
+				InfraSync:      infraStore,
+			},
+		},
+		ListenerService: &infrasvc.ListenerService{
+			InfraQListener: infraStore,
+			InfraListener:  infraStore,
+			InfraCore:      infraStore,
+		},
+		RecurrerService: &infrasvc.RecurrerService{
+			InfraQRecurrer: infraStore,
+			InfraRecurrer:  infraStore,
+			InfraSync:      infraStore,
+		},
+	}
+
 	hl := h.NewLauncher(Namespaces{
 		Auth: "auth",
 	}, "auth")
 	launchers.Add(hl)
-
-	l := listener.L{
-		QListenerMapper: rdx,
-		ListenerMapper:  rdx,
-		CoreMapper:      rdx,
-	}
-	h.AccountMapper = rdx
-	h.EntitiesMapper = rdlrux
-	h.PCMapper = rdx
-	h.PCLeftMapper = rdx
-	h.PermissionMapper = rdx
-	h.L = l
-	h.QMapper = rdx
-	h.SectorMapper = rdx
-	h.StarterMapper = rdx
-	h.T = token.T{
-		L: l,
-		R: recurrer.R{
-			QRecurrerMapper: rdx,
-			RecurrerMapper:  rdx,
-			SyncMapper:      rdx,
-		},
-		AccountMapper:    rdx,
-		EntityMapper:     rdlrux,
-		TokenMapper:      rdx,
-		PCMapper:         rdx,
-		PermissionMapper: rdx,
-		EntitiesMapper:   rdlrux,
-	}
-	h.TemplateMapper = rdx
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

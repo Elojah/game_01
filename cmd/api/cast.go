@@ -18,7 +18,7 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		Str("action", "cast").
 		Logger()
 
-	a := msg.Action.(event.Cast)
+	a := msg.Action.GetCast()
 	source := ulid.ID(a.Source)
 	targets := make([]ulid.ID, len(a.Targets))
 	for i, target := range a.Targets {
@@ -29,11 +29,13 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		ID:     ulid.NewID(),
 		Source: msg.Token,
 		TS:     time.Unix(0, msg.TS),
-		Action: event.Cast{
-			AbilityID: a.AbilityID,
-			Source:    source,
-			Targets:   targets,
-			Position:  a.Position,
+		Action: event.Action{
+			Cast: &event.Cast{
+				AbilityID: a.AbilityID,
+				Source:    source,
+				Targets:   targets,
+				Position:  a.Position,
+			},
 		},
 	}
 
@@ -45,13 +47,5 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		}
 		logger.Info().Str("source", source.String()).Msg("send event")
 	}()
-	for _, target := range targets {
-		go func(target ulid.ID) {
-			if err := h.PublishEvent(e, target); err != nil {
-				logger.Error().Err(err).Msg("event rejected")
-			}
-			logger.Info().Str("target", target.String()).Msg("send event")
-		}(target)
-	}
 	return nil
 }

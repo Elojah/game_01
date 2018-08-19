@@ -35,7 +35,7 @@ func (a *LogAnalyzer) Close() {
 
 // Cmd runs a cmd and plug output (stdout) in analyzer chan.
 func (a *LogAnalyzer) Cmd(args ...string) error {
-	cmd := exec.Command(args[0], args[1:]...)
+	cmd := exec.Command(args[0], args[1:]...) // nolint: gas
 	a.cmds = append(a.cmds, cmd)
 
 	cmdout, err := cmd.StdoutPipe()

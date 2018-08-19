@@ -1,23 +1,17 @@
 package infra
 
-import "github.com/elojah/game_01/pkg/ulid"
+import (
+	"github.com/elojah/game_01/pkg/ulid"
+)
 
-// Recurrer requires the receiver to create a new recurrer with subject ID.
-type Recurrer struct {
-	TokenID  ulid.ID
-	EntityID ulid.ID
-	Action   QAction
-	Pool     ulid.ID
-}
-
-// QRecurrerMapper handles send/receive methods for recurrers.
-type QRecurrerMapper interface {
+// QRecurrerStore handles send/receive methods for recurrers.
+type QRecurrerStore interface {
 	PublishRecurrer(Recurrer, ulid.ID) error
 	SubscribeRecurrer(ulid.ID) *Subscription
 }
 
-// RecurrerMapper handles set/get methods for recurrers.
-type RecurrerMapper interface {
+// RecurrerStore handles set/get methods for recurrers.
+type RecurrerStore interface {
 	SetRecurrer(Recurrer) error
 	GetRecurrer(RecurrerSubset) (Recurrer, error)
 	DelRecurrer(RecurrerSubset) error
@@ -26,4 +20,10 @@ type RecurrerMapper interface {
 // RecurrerSubset retrieves recurrer by Token ID.
 type RecurrerSubset struct {
 	TokenID ulid.ID
+}
+
+// RecurrerService represents recurrer usecases.
+type RecurrerService interface {
+	New(ulid.ID, ulid.ID) (Recurrer, error)
+	Remove(ulid.ID) error
 }

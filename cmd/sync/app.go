@@ -15,17 +15,17 @@ import (
 )
 
 type app struct {
-	account.TokenMapper
+	account.TokenStore
 
-	EntityMapper entity.Mapper
+	EntityStore entity.Store
 
-	event.QMapper
-	infra.QRecurrerMapper
+	event.QStore
+	infra.QRecurrerStore
 
-	infra.SyncMapper
+	infra.SyncStore
 
-	sector.EntitiesMapper
-	SectorMapper sector.Mapper
+	sector.EntitiesStore
+	SectorStore sector.Store
 
 	*client.C
 
@@ -76,24 +76,24 @@ func (a *app) Close() {
 func (a *app) AddRecurrer(msg *infra.Message) {
 	logger := log.With().Str("sync", a.id.String()).Logger()
 
-	var recurrer infra.Recurrer
-	if _, err := recurrer.Unmarshal([]byte(msg.Payload)); err != nil {
+	var r infra.Recurrer
+	if err := r.Unmarshal([]byte(msg.Payload)); err != nil {
 		logger.Error().Err(err).Msg("failed to unmarshal recurrer")
 		return
 	}
 
-	logger = logger.With().Str("recurrer", recurrer.TokenID.String()).Logger()
+	logger = logger.With().Str("r", r.TokenID.String()).Logger()
 
-	if recurrer.Action == infra.Close {
-		rec := a.recurrers[recurrer.TokenID]
+	if r.Action == infra.Close {
+		rec := a.recurrers[r.TokenID]
 		if rec != nil {
 			rec.Close()
 		}
-		delete(a.recurrers, recurrer.TokenID)
+		delete(a.recurrers, r.TokenID)
 		return
 	}
 
-	tok, err := a.GetToken(account.TokenSubset{ID: recurrer.TokenID})
+	tok, err := a.GetToken(account.TokenSubset{ID: r.TokenID})
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		return
@@ -106,8 +106,8 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 	}
 	address.Port = int(a.port)
 	logger = logger.With().Str("address", address.String()).Logger()
-	rec := NewRecurrer(recurrer, a.tickRate, func(e entity.E) {
-		raw, err := e.Marshal(nil)
+	rec := NewRecurrer(r, a.tickRate, func(e entity.E) {
+		raw, err := e.Marshal()
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to marshal entity")
 			return
@@ -115,11 +115,11 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
 		a.Send(raw, address)
 	})
-	rec.EntityMapper = a.EntityMapper
-	rec.EntitiesMapper = a.EntitiesMapper
-	rec.SectorMapper = a.SectorMapper
+	rec.EntityStore = a.EntityStore
+	rec.EntitiesStore = a.EntitiesStore
+	rec.SectorStore = a.SectorStore
 
 	go rec.Run()
-	a.recurrers[recurrer.TokenID] = rec
+	a.recurrers[r.TokenID] = rec
 	logger.Info().Msg("sync up")
 }
