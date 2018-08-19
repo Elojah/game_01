@@ -32,9 +32,9 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 |
 |_pkg_ #common code
 |     |_ability_ # domain
-|               |_svc # service/usecases
-|               |_srg # storage/database
-|
+|     |         |_svc # service/usecases
+|     |         |_srg # storage/database
+|     |
 |     |_account
 |     |_entity
 |     |_event
