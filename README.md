@@ -31,85 +31,80 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 |_docker #docker files
 |
 |_pkg_ #common code
-|     |_ability #domain
-|     |_account #domain
-|     |_dto #external format input/output
-|     |_entity #domain
-|     |_event #domain
-|     |_geometry #domain
-|     |_infra #domain
-|     |_mocks #domain mocks
-|     |_sector #domain
-|     |_storage #domain mapper implementations
-|     |_ulid #domain
-|     |_usecase #domain aggregations
+|     |_ability_ # domain
+|               |_svc # service/usecases
+|               |_srg # storage/database
 |
-|_schemas #gencode original schemas
+|     |_account
+|     |_entity
+|     |_event
+|     |_geometry
+|     |_infra
+|     |_sector
+|     |_ulid
 |
-|_proto #protobuf schemas
-|
-|_templates #example template files for tool
+|_static #example template files for tool
 |
 |_vendor #vendoring packages (dep)
 ```
 ### Domain
 
-ability.A
-ability.Component
-ability.Feedback
-ability.ComponentFeedback
-ability.Template
+- ability.A
+- ability.Component
+- ability.Feedback
+- ability.ComponentFeedback
+- ability.Template
 
-account.A
-account.Token
+- account.A
+- account.Token
 
-entity.E
-entity.PC
-entity.Permission
-entity.Template
+- entity.E
+- entity.PC
+- entity.Permission
+- entity.Template
 
-event.Action
-event.DTO
-event.E
+- event.Action
+- event.DTO
+- event.E
 
-geometry.Position
+- geometry.Position
 
-infra.ACK
-infra.Core (no marshal)
-infra.Listener
-infra.Recurrer
-infra.Sync (no marshal)
+- infra.ACK
+- infra.Core (no marshal)
+- infra.Listener
+- infra.Recurrer
+- infra.Sync (no marshal)
 
-sector.Entities
-sector.S
-sector.Starter
+- sector.Entities
+- sector.S
+- sector.Starter
 
-ulid.ID
+- ulid.ID
 
 ### Reserved redis keys
 
-"ability:"
-"afb:"
-"atpl:"
-"account:"
-"token_hc:"
-"pc:"
-"token:"
-"entity:"
-"etpl:"
-"pc_left:"
-"eperm:"
-"event:"
-"qevent:"
-"core:"
-"listener:"
-"qlistener:"
-"qrecurrer:"
-"recurrer:"
-"sync:"
-"sent:"
-"sector:"
-"starter:"
+- "ability:"
+- "afb:"
+- "atpl:"
+- "account:"
+- "token_hc:"
+- "pc:"
+- "token:"
+- "entity:"
+- "etpl:"
+- "pc_left:"
+- "eperm:"
+- "event:"
+- "qevent:"
+- "core:"
+- "listener:"
+- "qlistener:"
+- "qrecurrer:"
+- "recurrer:"
+- "sync:"
+- "sent:"
+- "sector:"
+- "starter:"
 
 
 ## Installation
@@ -134,6 +129,8 @@ make tool && bin/game_tool configs/config_tool.json
 ```
 
 ## Usage example
+
+(run with integration)
 
 ```sh
 # Fill static data
