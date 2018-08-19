@@ -15,16 +15,6 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 
 	cast := e.Action.GetValue().(*event.Cast)
 
-	if id.Compare(cast.Source) == 0 {
-		return a.CastSource(id, e)
-	}
-	return a.CastTarget(id, e)
-}
-
-func (a *app) CastSource(id ulid.ID, e event.E) error {
-
-	cast := e.Action.GetValue().(*event.Cast)
-
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
 		Source: e.Source.String(),
@@ -65,7 +55,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		)
 	}
 
-	// #Check CD validity
+	// #Check CD validity. if LastUsed + CD < now.
 	if ab.LastUsed.Add(ab.CD).Before(e.TS) {
 		return errors.Wrapf(account.ErrInvalidAction, "cd up for skill %s ", ab.ID.String())
 	}
@@ -90,61 +80,4 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	return nil
-}
-
-func (a *app) CastTarget(id ulid.ID, e event.E) error {
-
-	cast := e.Action.GetValue().(*event.Cast)
-
-	// #Check permission token/source.
-	permission, err := a.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
-		Target: cast.Source.String(),
-	})
-	if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
-	}
-	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
-	}
-
-	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(ability.Subset{
-		ID:       cast.AbilityID,
-		EntityID: cast.Source,
-	})
-	if err == serrors.ErrNotFound {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
-	}
-	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
-	}
-
-	source, err := a.EntityStore.GetEntity(entity.Subset{ID: cast.Source, MaxTS: e.TS.UnixNano()})
-	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), e.TS.UnixNano())
-	}
-
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
-	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
-	}
-
-	afb := ab.Affect(&target)
-	if err := a.SetFeedback(afb); err != nil {
-		return errors.Wrapf(err, "set ability feedback %s", afb.ID.String())
-	}
-	fb := event.E{
-		ID:     ulid.NewID(),
-		TS:     e.TS,
-		Source: e.Source,
-		Action: event.Action{
-			Feedback: &event.Feedback{
-				ID:     afb.ID,
-				Source: source.ID,
-				Target: target.ID,
-			},
-		},
-	}
-	return errors.Wrapf(a.PublishEvent(fb, source.ID), "publish event %s to %s", fb.ID.String(), e.Source.String())
 }

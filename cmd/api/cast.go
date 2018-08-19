@@ -47,13 +47,5 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		}
 		logger.Info().Str("source", source.String()).Msg("send event")
 	}()
-	for _, target := range targets {
-		go func(target ulid.ID) {
-			if err := h.PublishEvent(e, target); err != nil {
-				logger.Error().Err(err).Msg("event rejected")
-			}
-			logger.Info().Str("target", target.String()).Msg("send event")
-		}(target)
-	}
 	return nil
 }
