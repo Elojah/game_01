@@ -8,7 +8,7 @@ option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_01/pkg/geometry/position.proto";
-import "github.com/elojah/game_01/pkg/ability/component.proto";
+import "github.com/elojah/game_01/pkg/ability/targets.proto";
 
 message Move {
 	bytes Source               = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];

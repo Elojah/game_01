@@ -6,10 +6,7 @@ package ability
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
-import geometry "github.com/elojah/game_01/pkg/geometry"
 import _ "github.com/gogo/protobuf/gogoproto"
-
-import github_com_elojah_game_01_pkg_ulid "github.com/elojah/game_01/pkg/ulid"
 
 import strconv "strconv"
 
@@ -55,98 +52,7 @@ var Element_value = map[string]int32{
 }
 
 func (Element) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{0}
-}
-
-type Entities struct {
-	IDs                  []github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,rep,name=IDs,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"IDs"`
-	XXX_NoUnkeyedLiteral struct{}                                `json:"-"`
-	XXX_sizecache        int32                                   `json:"-"`
-}
-
-func (m *Entities) Reset()      { *m = Entities{} }
-func (*Entities) ProtoMessage() {}
-func (*Entities) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{0}
-}
-func (m *Entities) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Entities) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Entities.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (dst *Entities) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Entities.Merge(dst, src)
-}
-func (m *Entities) XXX_Size() int {
-	return m.Size()
-}
-func (m *Entities) XXX_DiscardUnknown() {
-	xxx_messageInfo_Entities.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Entities proto.InternalMessageInfo
-
-type Targets struct {
-	Entities             []Entities          `protobuf:"bytes,1,rep,name=Entities" json:"Entities"`
-	Positions            []geometry.Position `protobuf:"bytes,2,rep,name=Positions" json:"Positions"`
-	XXX_NoUnkeyedLiteral struct{}            `json:"-"`
-	XXX_sizecache        int32               `json:"-"`
-}
-
-func (m *Targets) Reset()      { *m = Targets{} }
-func (*Targets) ProtoMessage() {}
-func (*Targets) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{1}
-}
-func (m *Targets) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Targets) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Targets.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (dst *Targets) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Targets.Merge(dst, src)
-}
-func (m *Targets) XXX_Size() int {
-	return m.Size()
-}
-func (m *Targets) XXX_DiscardUnknown() {
-	xxx_messageInfo_Targets.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Targets proto.InternalMessageInfo
-
-func (m *Targets) GetEntities() []Entities {
-	if m != nil {
-		return m.Entities
-	}
-	return nil
-}
-
-func (m *Targets) GetPositions() []geometry.Position {
-	if m != nil {
-		return m.Positions
-	}
-	return nil
+	return fileDescriptor_component_5840d60edd84ecfd, []int{0}
 }
 
 type HealDirect struct {
@@ -159,7 +65,7 @@ type HealDirect struct {
 func (m *HealDirect) Reset()      { *m = HealDirect{} }
 func (*HealDirect) ProtoMessage() {}
 func (*HealDirect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{2}
+	return fileDescriptor_component_5840d60edd84ecfd, []int{0}
 }
 func (m *HealDirect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -212,7 +118,7 @@ type DamageDirect struct {
 func (m *DamageDirect) Reset()      { *m = DamageDirect{} }
 func (*DamageDirect) ProtoMessage() {}
 func (*DamageDirect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{3}
+	return fileDescriptor_component_5840d60edd84ecfd, []int{1}
 }
 func (m *DamageDirect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -267,7 +173,7 @@ type HealOverTime struct {
 func (m *HealOverTime) Reset()      { *m = HealOverTime{} }
 func (*HealOverTime) ProtoMessage() {}
 func (*HealOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{4}
+	return fileDescriptor_component_5840d60edd84ecfd, []int{2}
 }
 func (m *HealOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -336,7 +242,7 @@ type DamageOverTime struct {
 func (m *DamageOverTime) Reset()      { *m = DamageOverTime{} }
 func (*DamageOverTime) ProtoMessage() {}
 func (*DamageOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{5}
+	return fileDescriptor_component_5840d60edd84ecfd, []int{3}
 }
 func (m *DamageOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -405,7 +311,7 @@ type Component struct {
 func (m *Component) Reset()      { *m = Component{} }
 func (*Component) ProtoMessage() {}
 func (*Component) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_e4b8dedc2954b61c, []int{6}
+	return fileDescriptor_component_5840d60edd84ecfd, []int{4}
 }
 func (m *Component) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -463,8 +369,6 @@ func (m *Component) GetDamageOverTime() *DamageOverTime {
 }
 
 func init() {
-	proto.RegisterType((*Entities)(nil), "Entities")
-	proto.RegisterType((*Targets)(nil), "Targets")
 	proto.RegisterType((*HealDirect)(nil), "HealDirect")
 	proto.RegisterType((*DamageDirect)(nil), "DamageDirect")
 	proto.RegisterType((*HealOverTime)(nil), "HealOverTime")
@@ -478,72 +382,6 @@ func (x Element) String() string {
 		return s
 	}
 	return strconv.Itoa(int(x))
-}
-func (this *Entities) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*Entities)
-	if !ok {
-		that2, ok := that.(Entities)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if len(this.IDs) != len(that1.IDs) {
-		return false
-	}
-	for i := range this.IDs {
-		if !this.IDs[i].Equal(that1.IDs[i]) {
-			return false
-		}
-	}
-	return true
-}
-func (this *Targets) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*Targets)
-	if !ok {
-		that2, ok := that.(Targets)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if len(this.Entities) != len(that1.Entities) {
-		return false
-	}
-	for i := range this.Entities {
-		if !this.Entities[i].Equal(&that1.Entities[i]) {
-			return false
-		}
-	}
-	if len(this.Positions) != len(that1.Positions) {
-		return false
-	}
-	for i := range this.Positions {
-		if !this.Positions[i].Equal(&that1.Positions[i]) {
-			return false
-		}
-	}
-	return true
 }
 func (this *HealDirect) Equal(that interface{}) bool {
 	if that == nil {
@@ -698,39 +536,6 @@ func (this *Component) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *Entities) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 5)
-	s = append(s, "&ability.Entities{")
-	s = append(s, "IDs: "+fmt.Sprintf("%#v", this.IDs)+",\n")
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
-func (this *Targets) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 6)
-	s = append(s, "&ability.Targets{")
-	if this.Entities != nil {
-		vs := make([]*Entities, len(this.Entities))
-		for i := range vs {
-			vs[i] = &this.Entities[i]
-		}
-		s = append(s, "Entities: "+fmt.Sprintf("%#v", vs)+",\n")
-	}
-	if this.Positions != nil {
-		vs := make([]*geometry.Position, len(this.Positions))
-		for i := range vs {
-			vs[i] = &this.Positions[i]
-		}
-		s = append(s, "Positions: "+fmt.Sprintf("%#v", vs)+",\n")
-	}
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
 func (this *HealDirect) GoString() string {
 	if this == nil {
 		return "nil"
@@ -808,78 +613,6 @@ func valueToGoStringComponent(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
-func (m *Entities) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Entities) MarshalTo(dAtA []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.IDs) > 0 {
-		for _, msg := range m.IDs {
-			dAtA[i] = 0xa
-			i++
-			i = encodeVarintComponent(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	return i, nil
-}
-
-func (m *Targets) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Targets) MarshalTo(dAtA []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	if len(m.Entities) > 0 {
-		for _, msg := range m.Entities {
-			dAtA[i] = 0xa
-			i++
-			i = encodeVarintComponent(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	if len(m.Positions) > 0 {
-		for _, msg := range m.Positions {
-			dAtA[i] = 0x12
-			i++
-			i = encodeVarintComponent(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	return i, nil
-}
-
 func (m *HealDirect) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -1079,42 +812,6 @@ func encodeVarintComponent(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func NewPopulatedEntities(r randyComponent, easy bool) *Entities {
-	this := &Entities{}
-	v1 := r.Intn(10)
-	this.IDs = make([]github_com_elojah_game_01_pkg_ulid.ID, v1)
-	for i := 0; i < v1; i++ {
-		v2 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-		this.IDs[i] = *v2
-	}
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
-func NewPopulatedTargets(r randyComponent, easy bool) *Targets {
-	this := &Targets{}
-	if r.Intn(10) != 0 {
-		v3 := r.Intn(5)
-		this.Entities = make([]Entities, v3)
-		for i := 0; i < v3; i++ {
-			v4 := NewPopulatedEntities(r, easy)
-			this.Entities[i] = *v4
-		}
-	}
-	if r.Intn(10) != 0 {
-		v5 := r.Intn(5)
-		this.Positions = make([]geometry.Position, v5)
-		for i := 0; i < v5; i++ {
-			v6 := geometry.NewPopulatedPosition(r, easy)
-			this.Positions[i] = *v6
-		}
-	}
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
 func NewPopulatedHealDirect(r randyComponent, easy bool) *HealDirect {
 	this := &HealDirect{}
 	this.Amount = uint64(uint64(r.Uint32()))
@@ -1190,9 +887,9 @@ func randUTF8RuneComponent(r randyComponent) rune {
 	return rune(ru + 61)
 }
 func randStringComponent(r randyComponent) string {
-	v7 := r.Intn(100)
-	tmps := make([]rune, v7)
-	for i := 0; i < v7; i++ {
+	v1 := r.Intn(100)
+	tmps := make([]rune, v1)
+	for i := 0; i < v1; i++ {
 		tmps[i] = randUTF8RuneComponent(r)
 	}
 	return string(tmps)
@@ -1214,11 +911,11 @@ func randFieldComponent(dAtA []byte, r randyComponent, fieldNumber int, wire int
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateComponent(dAtA, uint64(key))
-		v8 := r.Int63()
+		v2 := r.Int63()
 		if r.Intn(2) == 0 {
-			v8 *= -1
+			v2 *= -1
 		}
-		dAtA = encodeVarintPopulateComponent(dAtA, uint64(v8))
+		dAtA = encodeVarintPopulateComponent(dAtA, uint64(v2))
 	case 1:
 		dAtA = encodeVarintPopulateComponent(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -1243,36 +940,6 @@ func encodeVarintPopulateComponent(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
-func (m *Entities) Size() (n int) {
-	var l int
-	_ = l
-	if len(m.IDs) > 0 {
-		for _, e := range m.IDs {
-			l = e.Size()
-			n += 1 + l + sovComponent(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *Targets) Size() (n int) {
-	var l int
-	_ = l
-	if len(m.Entities) > 0 {
-		for _, e := range m.Entities {
-			l = e.Size()
-			n += 1 + l + sovComponent(uint64(l))
-		}
-	}
-	if len(m.Positions) > 0 {
-		for _, e := range m.Positions {
-			l = e.Size()
-			n += 1 + l + sovComponent(uint64(l))
-		}
-	}
-	return n
-}
-
 func (m *HealDirect) Size() (n int) {
 	var l int
 	_ = l
@@ -1367,27 +1034,6 @@ func sovComponent(x uint64) (n int) {
 }
 func sozComponent(x uint64) (n int) {
 	return sovComponent(uint64((x << 1) ^ uint64((int64(x) >> 63))))
-}
-func (this *Entities) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&Entities{`,
-		`IDs:` + fmt.Sprintf("%v", this.IDs) + `,`,
-		`}`,
-	}, "")
-	return s
-}
-func (this *Targets) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&Targets{`,
-		`Entities:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Entities), "Entities", "Entities", 1), `&`, ``, 1) + `,`,
-		`Positions:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Positions), "Position", "geometry.Position", 1), `&`, ``, 1) + `,`,
-		`}`,
-	}, "")
-	return s
 }
 func (this *HealDirect) String() string {
 	if this == nil {
@@ -1488,200 +1134,6 @@ func (this *Component) SetValue(value interface{}) bool {
 		return false
 	}
 	return true
-}
-func (m *Entities) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowComponent
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Entities: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Entities: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IDs", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowComponent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthComponent
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			var v github_com_elojah_game_01_pkg_ulid.ID
-			m.IDs = append(m.IDs, v)
-			if err := m.IDs[len(m.IDs)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipComponent(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthComponent
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *Targets) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowComponent
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Targets: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Targets: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Entities", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowComponent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthComponent
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Entities = append(m.Entities, Entities{})
-			if err := m.Entities[len(m.Entities)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Positions", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowComponent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthComponent
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Positions = append(m.Positions, geometry.Position{})
-			if err := m.Positions[len(m.Positions)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipComponent(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthComponent
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
 }
 func (m *HealDirect) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -2398,41 +1850,34 @@ var (
 	ErrIntOverflowComponent   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("component.proto", fileDescriptor_component_e4b8dedc2954b61c) }
+func init() { proto.RegisterFile("component.proto", fileDescriptor_component_5840d60edd84ecfd) }
 
-var fileDescriptor_component_e4b8dedc2954b61c = []byte{
-	// 523 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x53, 0x41, 0x8b, 0xd3, 0x4e,
-	0x1c, 0xcd, 0xb4, 0xf9, 0x6f, 0xdb, 0x69, 0xff, 0xbb, 0x65, 0x0e, 0x12, 0x16, 0x99, 0x96, 0x80,
-	0x50, 0x5c, 0x9a, 0xd8, 0x8a, 0x08, 0x22, 0x48, 0x6b, 0xba, 0xec, 0xea, 0x41, 0x09, 0x0b, 0x82,
-	0x17, 0x99, 0xd6, 0x31, 0x1d, 0x4d, 0x32, 0x75, 0x32, 0x11, 0x7a, 0xf3, 0x20, 0x9e, 0xfd, 0x08,
-	0x1e, 0xfd, 0x08, 0x1e, 0x3d, 0xf6, 0xb8, 0x47, 0x11, 0x5c, 0x6c, 0xbc, 0x78, 0xdc, 0xa3, 0x47,
-	0xc9, 0x6c, 0xba, 0x49, 0xf6, 0xe0, 0x45, 0xc1, 0x5b, 0xde, 0x9b, 0xf7, 0x7b, 0x79, 0xf3, 0x7b,
-	0x09, 0xdc, 0x99, 0xf1, 0x60, 0xc1, 0x43, 0x1a, 0x4a, 0x6b, 0x21, 0xb8, 0xe4, 0xbb, 0x7d, 0x8f,
-	0xc9, 0x79, 0x3c, 0xb5, 0x66, 0x3c, 0xb0, 0x3d, 0xee, 0x71, 0x5b, 0xd1, 0xd3, 0xf8, 0x99, 0x42,
-	0x0a, 0xa8, 0xa7, 0x4c, 0x7e, 0xa3, 0x20, 0xa7, 0x3e, 0x7f, 0x4e, 0xe6, 0xb6, 0x47, 0x02, 0xfa,
-	0xe4, 0xda, 0xc0, 0x5e, 0xbc, 0xf0, 0x6c, 0x8f, 0xf2, 0x80, 0x4a, 0xb1, 0xb4, 0x17, 0x3c, 0x62,
-	0x92, 0xf1, 0xf0, 0x6c, 0xcc, 0xbc, 0x0f, 0xeb, 0x93, 0x50, 0x32, 0xc9, 0x68, 0x84, 0xee, 0xc0,
-	0xea, 0xa1, 0x13, 0x19, 0xa0, 0x5b, 0xed, 0xb5, 0xc6, 0xfd, 0xd5, 0x49, 0x47, 0xfb, 0x72, 0xd2,
-	0xb9, 0xf2, 0x7b, 0xdf, 0xd8, 0x67, 0x4f, 0xad, 0x43, 0xc7, 0x4d, 0x27, 0x4d, 0x0a, 0x6b, 0x47,
-	0x44, 0x78, 0x54, 0x46, 0x68, 0x2f, 0xf7, 0x55, 0x86, 0xcd, 0x61, 0xc3, 0xda, 0x10, 0x63, 0x3d,
-	0xf5, 0x76, 0xf3, 0x17, 0xf7, 0x61, 0xe3, 0x61, 0x16, 0x2b, 0x32, 0x2a, 0x99, 0x7a, 0xc3, 0x64,
-	0xea, 0x5c, 0x61, 0x1e, 0x40, 0x78, 0x40, 0x89, 0xef, 0x30, 0x41, 0x67, 0x12, 0x5d, 0x82, 0x5b,
-	0xa3, 0x80, 0xc7, 0xa1, 0x34, 0x40, 0x17, 0xf4, 0x74, 0x37, 0x43, 0xc8, 0x84, 0xb5, 0x89, 0x4f,
-	0x03, 0x1a, 0x4a, 0xa3, 0xd2, 0x05, 0xbd, 0xed, 0x61, 0xdd, 0xca, 0xb0, 0xbb, 0x39, 0x30, 0xef,
-	0xc1, 0x96, 0x43, 0x02, 0xe2, 0xd1, 0xbf, 0xe0, 0xf5, 0x06, 0xc0, 0x56, 0x1a, 0xeb, 0xc1, 0x2b,
-	0x2a, 0x8e, 0x58, 0x40, 0xff, 0xc4, 0x0c, 0x5d, 0x86, 0x8d, 0x7d, 0x41, 0x5f, 0xc6, 0x34, 0x9c,
-	0x2d, 0x8d, 0xaa, 0x1a, 0xcf, 0x09, 0xb4, 0x0b, 0xeb, 0x4e, 0x2c, 0x48, 0xba, 0x0d, 0x43, 0x57,
-	0x87, 0xe7, 0xd8, 0x7c, 0x0b, 0xe0, 0xf6, 0xd9, 0x9d, 0xfe, 0x71, 0x90, 0xaf, 0x00, 0x36, 0xee,
-	0x6e, 0xbe, 0x69, 0xb4, 0x57, 0xec, 0x4c, 0xe5, 0x68, 0x0e, 0x9b, 0x56, 0x4e, 0xb9, 0xc5, 0x4a,
-	0x07, 0xe5, 0x5a, 0x54, 0xba, 0xe6, 0xf0, 0x7f, 0xab, 0x48, 0xba, 0xe5, 0xe6, 0x06, 0xe5, 0xe5,
-	0xab, 0xa8, 0xe9, 0x48, 0x91, 0x74, 0xcb, 0xfd, 0xdc, 0xbc, 0xb8, 0x28, 0x75, 0x85, 0xe6, 0x70,
-	0xc7, 0x2a, 0xd3, 0xee, 0x05, 0xd9, 0x2d, 0x7d, 0xf5, 0xbe, 0x03, 0xae, 0xde, 0x3e, 0xdf, 0x1e,
-	0xaa, 0x43, 0x7d, 0x9f, 0x09, 0xda, 0xd6, 0x50, 0x03, 0xfe, 0xf7, 0x88, 0x48, 0x2a, 0xda, 0x00,
-	0xd5, 0x60, 0x75, 0xc4, 0x44, 0xbb, 0x92, 0x72, 0x13, 0x22, 0xe4, 0xbc, 0x5d, 0x4d, 0x85, 0xa9,
-	0x43, 0x5b, 0x1f, 0x8f, 0x8e, 0xd7, 0x58, 0xfb, 0xbc, 0xc6, 0xda, 0xe9, 0x1a, 0x83, 0x9f, 0x6b,
-	0x0c, 0x5e, 0x27, 0x18, 0x7c, 0x48, 0x30, 0xf8, 0x98, 0x60, 0xf0, 0x29, 0xc1, 0x60, 0x95, 0x60,
-	0x70, 0x9c, 0x60, 0xf0, 0x2d, 0xc1, 0xe0, 0x47, 0x82, 0xb5, 0xd3, 0x04, 0x83, 0x77, 0xdf, 0xb1,
-	0xf6, 0xb8, 0x46, 0xa6, 0xcc, 0x67, 0x72, 0x39, 0xdd, 0x52, 0x7f, 0xf0, 0xf5, 0x5f, 0x01, 0x00,
-	0x00, 0xff, 0xff, 0xf7, 0xd1, 0xe1, 0x07, 0x3a, 0x04, 0x00, 0x00,
+var fileDescriptor_component_5840d60edd84ecfd = []byte{
+	// 402 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x93, 0xbf, 0xcb, 0xd3, 0x40,
+	0x18, 0xc7, 0xf3, 0xbc, 0x8d, 0x6f, 0xdb, 0xcb, 0xeb, 0xdb, 0x70, 0x83, 0x84, 0x22, 0x67, 0xc9,
+	0x54, 0x14, 0x53, 0x1a, 0x07, 0x41, 0x5c, 0xaa, 0x6d, 0x29, 0x2e, 0x42, 0x10, 0x04, 0xb7, 0x24,
+	0x9c, 0xe9, 0x41, 0x93, 0xab, 0xc7, 0x45, 0xe8, 0xe6, 0x20, 0xce, 0xfe, 0x09, 0x8e, 0xfe, 0x09,
+	0x8e, 0x8e, 0x1d, 0x3b, 0xba, 0x08, 0xe6, 0x5c, 0x1c, 0x3b, 0x3a, 0x4a, 0xae, 0xbf, 0x92, 0xae,
+	0x0a, 0x6e, 0xf9, 0x7e, 0xee, 0x79, 0x1e, 0xbe, 0xcf, 0xf3, 0x25, 0xa8, 0x13, 0xf3, 0x74, 0xc9,
+	0x33, 0x9a, 0x49, 0x6f, 0x29, 0xb8, 0xe4, 0xdd, 0xfb, 0x09, 0x93, 0xf3, 0x3c, 0xf2, 0x62, 0x9e,
+	0x0e, 0x12, 0x9e, 0xf0, 0x81, 0xc6, 0x51, 0xfe, 0x5a, 0x2b, 0x2d, 0xf4, 0xd7, 0xae, 0xdc, 0x9d,
+	0x21, 0x34, 0xa3, 0xe1, 0x62, 0xcc, 0x04, 0x8d, 0x25, 0xbe, 0x85, 0x2e, 0x47, 0x29, 0xcf, 0x33,
+	0xe9, 0x40, 0x0f, 0xfa, 0x66, 0xb0, 0x57, 0xd8, 0x45, 0xcd, 0xc9, 0x82, 0xa6, 0x34, 0x93, 0xce,
+	0x45, 0x0f, 0xfa, 0xd7, 0x7e, 0xcb, 0xdb, 0xeb, 0xe0, 0xf0, 0xe0, 0x3e, 0x43, 0x57, 0xe3, 0x30,
+	0x0d, 0x13, 0xfa, 0x0f, 0x66, 0xbd, 0x07, 0x74, 0x55, 0xda, 0x7a, 0xfe, 0x96, 0x8a, 0x17, 0x2c,
+	0xa5, 0x7f, 0x33, 0x0c, 0xdf, 0x46, 0xed, 0xa9, 0xa0, 0x6f, 0x72, 0x9a, 0xc5, 0x2b, 0xa7, 0xa1,
+	0xdb, 0x4f, 0x00, 0x77, 0x51, 0x6b, 0x9c, 0x8b, 0x50, 0x32, 0x9e, 0x39, 0xa6, 0x7e, 0x3c, 0x6a,
+	0xf7, 0x03, 0xa0, 0xeb, 0xdd, 0x4e, 0xff, 0xd9, 0xc8, 0x77, 0x40, 0xed, 0xa7, 0x87, 0xa0, 0xf1,
+	0xbd, 0x6a, 0x66, 0xda, 0x87, 0xe5, 0x5b, 0xde, 0x09, 0x05, 0xd5, 0x48, 0x87, 0xf5, 0x58, 0xb4,
+	0x3b, 0xcb, 0xbf, 0xe9, 0x55, 0x61, 0x50, 0x4f, 0x6e, 0x58, 0x3f, 0xbe, 0xb6, 0x5a, 0xb6, 0x54,
+	0x61, 0x50, 0xcf, 0xe7, 0xe1, 0xf9, 0xa1, 0xf4, 0x0a, 0x96, 0xdf, 0xf1, 0xea, 0x38, 0x38, 0x2b,
+	0x7b, 0x64, 0xae, 0x3f, 0xdd, 0x81, 0xbb, 0x8f, 0x8f, 0xd7, 0xc3, 0x2d, 0x64, 0x4e, 0x99, 0xa0,
+	0xb6, 0x81, 0xdb, 0xe8, 0xc6, 0xcb, 0x50, 0x52, 0x61, 0x03, 0x6e, 0xa2, 0xc6, 0x88, 0x09, 0xfb,
+	0xa2, 0x64, 0x93, 0x50, 0xc8, 0xb9, 0xdd, 0x28, 0x0b, 0xcb, 0x09, 0xb6, 0xf9, 0x64, 0xb4, 0x29,
+	0x88, 0xf1, 0xad, 0x20, 0xc6, 0xb6, 0x20, 0xf0, 0xbb, 0x20, 0xf0, 0x4e, 0x11, 0xf8, 0xac, 0x08,
+	0x7c, 0x51, 0x04, 0xbe, 0x2a, 0x02, 0x6b, 0x45, 0x60, 0xa3, 0x08, 0xfc, 0x50, 0x04, 0x7e, 0x29,
+	0x62, 0x6c, 0x15, 0x81, 0x8f, 0x3f, 0x89, 0xf1, 0xaa, 0x19, 0x46, 0x6c, 0xc1, 0xe4, 0x2a, 0xba,
+	0xd4, 0x7f, 0xc3, 0x83, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x4a, 0x64, 0x4e, 0x42, 0x4f, 0x03,
+	0x00, 0x00,
 }
