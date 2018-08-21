@@ -74,6 +74,7 @@ func (a *app) MoveTarget(e event.E) error {
 		return errors.Wrapf(err, "get sector %s", target.Position.SectorID.String())
 	}
 
+	// #If moved in same sector
 	if target.Position.SectorID.Compare(move.Position.SectorID) == 0 {
 
 		// #Check if target has moved in correct boundaries in same sector.
@@ -114,6 +115,7 @@ func (a *app) MoveTarget(e event.E) error {
 		// #Move target
 		target.Position.Coord = move.Position.Coord
 
+		// #Else
 	} else {
 
 		// #Check if new sector is a neighbour.
