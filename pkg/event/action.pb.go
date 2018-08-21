@@ -6,6 +6,7 @@ package event
 import proto "github.com/gogo/protobuf/proto"
 import fmt "fmt"
 import math "math"
+import ability "github.com/elojah/game_01/pkg/ability"
 import geometry "github.com/elojah/game_01/pkg/geometry"
 import _ "github.com/gogo/protobuf/gogoproto"
 
@@ -28,17 +29,17 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
 type Move struct {
-	Source               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=Source,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Source"`
-	Target               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=Target,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Target"`
-	Position             geometry.Position                     `protobuf:"bytes,3,opt,name=Position" json:"Position"`
-	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
-	XXX_sizecache        int32                                 `json:"-"`
+	Source               github_com_elojah_game_01_pkg_ulid.ID   `protobuf:"bytes,1,opt,name=Source,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Source"`
+	Targets              []github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,rep,name=Targets,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Targets"`
+	Position             geometry.Position                       `protobuf:"bytes,3,opt,name=Position" json:"Position"`
+	XXX_NoUnkeyedLiteral struct{}                                `json:"-"`
+	XXX_sizecache        int32                                   `json:"-"`
 }
 
 func (m *Move) Reset()      { *m = Move{} }
 func (*Move) ProtoMessage() {}
 func (*Move) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_5f6dcfe5703aad58, []int{0}
+	return fileDescriptor_action_920f2fa28a2c10fb, []int{0}
 }
 func (m *Move) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -75,18 +76,17 @@ func (m *Move) GetPosition() geometry.Position {
 }
 
 type Cast struct {
-	AbilityID            github_com_elojah_game_01_pkg_ulid.ID   `protobuf:"bytes,1,opt,name=AbilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
-	Source               github_com_elojah_game_01_pkg_ulid.ID   `protobuf:"bytes,2,opt,name=Source,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Source"`
-	Targets              []github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,3,rep,name=Targets,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Targets"`
-	Position             geometry.Position                       `protobuf:"bytes,4,opt,name=Position" json:"Position"`
-	XXX_NoUnkeyedLiteral struct{}                                `json:"-"`
-	XXX_sizecache        int32                                   `json:"-"`
+	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=AbilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
+	Source               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=Source,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Source"`
+	Targets              ability.Targets                       `protobuf:"bytes,3,opt,name=Targets" json:"Targets"`
+	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
+	XXX_sizecache        int32                                 `json:"-"`
 }
 
 func (m *Cast) Reset()      { *m = Cast{} }
 func (*Cast) ProtoMessage() {}
 func (*Cast) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_5f6dcfe5703aad58, []int{1}
+	return fileDescriptor_action_920f2fa28a2c10fb, []int{1}
 }
 func (m *Cast) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -115,11 +115,11 @@ func (m *Cast) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Cast proto.InternalMessageInfo
 
-func (m *Cast) GetPosition() geometry.Position {
+func (m *Cast) GetTargets() ability.Targets {
 	if m != nil {
-		return m.Position
+		return m.Targets
 	}
-	return geometry.Position{}
+	return ability.Targets{}
 }
 
 type Feedback struct {
@@ -133,7 +133,7 @@ type Feedback struct {
 func (m *Feedback) Reset()      { *m = Feedback{} }
 func (*Feedback) ProtoMessage() {}
 func (*Feedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_5f6dcfe5703aad58, []int{2}
+	return fileDescriptor_action_920f2fa28a2c10fb, []int{2}
 }
 func (m *Feedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -163,18 +163,15 @@ func (m *Feedback) XXX_DiscardUnknown() {
 var xxx_messageInfo_Feedback proto.InternalMessageInfo
 
 type Casted struct {
-	AbilityID            github_com_elojah_game_01_pkg_ulid.ID   `protobuf:"bytes,1,opt,name=AbilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
-	Source               github_com_elojah_game_01_pkg_ulid.ID   `protobuf:"bytes,2,opt,name=Source,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Source"`
-	Targets              []github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,3,rep,name=Targets,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Targets"`
-	Position             geometry.Position                       `protobuf:"bytes,4,opt,name=Position" json:"Position"`
-	XXX_NoUnkeyedLiteral struct{}                                `json:"-"`
-	XXX_sizecache        int32                                   `json:"-"`
+	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=AbilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
+	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
+	XXX_sizecache        int32                                 `json:"-"`
 }
 
 func (m *Casted) Reset()      { *m = Casted{} }
 func (*Casted) ProtoMessage() {}
 func (*Casted) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_5f6dcfe5703aad58, []int{3}
+	return fileDescriptor_action_920f2fa28a2c10fb, []int{3}
 }
 func (m *Casted) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -203,13 +200,6 @@ func (m *Casted) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Casted proto.InternalMessageInfo
 
-func (m *Casted) GetPosition() geometry.Position {
-	if m != nil {
-		return m.Position
-	}
-	return geometry.Position{}
-}
-
 type Action struct {
 	Move                 *Move     `protobuf:"bytes,1,opt,name=Move" json:"Move,omitempty"`
 	Cast                 *Cast     `protobuf:"bytes,2,opt,name=Cast" json:"Cast,omitempty"`
@@ -222,7 +212,7 @@ type Action struct {
 func (m *Action) Reset()      { *m = Action{} }
 func (*Action) ProtoMessage() {}
 func (*Action) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_5f6dcfe5703aad58, []int{4}
+	return fileDescriptor_action_920f2fa28a2c10fb, []int{4}
 }
 func (m *Action) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -308,8 +298,13 @@ func (this *Move) Equal(that interface{}) bool {
 	if !this.Source.Equal(that1.Source) {
 		return false
 	}
-	if !this.Target.Equal(that1.Target) {
+	if len(this.Targets) != len(that1.Targets) {
 		return false
+	}
+	for i := range this.Targets {
+		if !this.Targets[i].Equal(that1.Targets[i]) {
+			return false
+		}
 	}
 	if !this.Position.Equal(&that1.Position) {
 		return false
@@ -341,15 +336,7 @@ func (this *Cast) Equal(that interface{}) bool {
 	if !this.Source.Equal(that1.Source) {
 		return false
 	}
-	if len(this.Targets) != len(that1.Targets) {
-		return false
-	}
-	for i := range this.Targets {
-		if !this.Targets[i].Equal(that1.Targets[i]) {
-			return false
-		}
-	}
-	if !this.Position.Equal(&that1.Position) {
+	if !this.Targets.Equal(&that1.Targets) {
 		return false
 	}
 	return true
@@ -406,20 +393,6 @@ func (this *Casted) Equal(that interface{}) bool {
 	if !this.AbilityID.Equal(that1.AbilityID) {
 		return false
 	}
-	if !this.Source.Equal(that1.Source) {
-		return false
-	}
-	if len(this.Targets) != len(that1.Targets) {
-		return false
-	}
-	for i := range this.Targets {
-		if !this.Targets[i].Equal(that1.Targets[i]) {
-			return false
-		}
-	}
-	if !this.Position.Equal(&that1.Position) {
-		return false
-	}
 	return true
 }
 func (this *Action) Equal(that interface{}) bool {
@@ -462,7 +435,7 @@ func (this *Move) GoString() string {
 	s := make([]string, 0, 7)
 	s = append(s, "&event.Move{")
 	s = append(s, "Source: "+fmt.Sprintf("%#v", this.Source)+",\n")
-	s = append(s, "Target: "+fmt.Sprintf("%#v", this.Target)+",\n")
+	s = append(s, "Targets: "+fmt.Sprintf("%#v", this.Targets)+",\n")
 	s = append(s, "Position: "+strings.Replace(this.Position.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -471,12 +444,11 @@ func (this *Cast) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 7)
 	s = append(s, "&event.Cast{")
 	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
 	s = append(s, "Source: "+fmt.Sprintf("%#v", this.Source)+",\n")
-	s = append(s, "Targets: "+fmt.Sprintf("%#v", this.Targets)+",\n")
-	s = append(s, "Position: "+strings.Replace(this.Position.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "Targets: "+strings.Replace(this.Targets.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -496,12 +468,9 @@ func (this *Casted) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 5)
 	s = append(s, "&event.Casted{")
 	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
-	s = append(s, "Source: "+fmt.Sprintf("%#v", this.Source)+",\n")
-	s = append(s, "Targets: "+fmt.Sprintf("%#v", this.Targets)+",\n")
-	s = append(s, "Position: "+strings.Replace(this.Position.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -557,22 +526,26 @@ func (m *Move) MarshalTo(dAtA []byte) (int, error) {
 		return 0, err
 	}
 	i += n1
-	dAtA[i] = 0x12
+	if len(m.Targets) > 0 {
+		for _, msg := range m.Targets {
+			dAtA[i] = 0x12
+			i++
+			i = encodeVarintAction(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	dAtA[i] = 0x1a
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Target.Size()))
-	n2, err := m.Target.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.Position.Size()))
+	n2, err := m.Position.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n2
-	dAtA[i] = 0x1a
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Position.Size()))
-	n3, err := m.Position.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n3
 	return i, nil
 }
 
@@ -594,39 +567,27 @@ func (m *Cast) MarshalTo(dAtA []byte) (int, error) {
 	dAtA[i] = 0xa
 	i++
 	i = encodeVarintAction(dAtA, i, uint64(m.AbilityID.Size()))
-	n4, err := m.AbilityID.MarshalTo(dAtA[i:])
+	n3, err := m.AbilityID.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n3
+	dAtA[i] = 0x12
+	i++
+	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
+	n4, err := m.Source.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n4
-	dAtA[i] = 0x12
+	dAtA[i] = 0x1a
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
-	n5, err := m.Source.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.Targets.Size()))
+	n5, err := m.Targets.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n5
-	if len(m.Targets) > 0 {
-		for _, msg := range m.Targets {
-			dAtA[i] = 0x1a
-			i++
-			i = encodeVarintAction(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	dAtA[i] = 0x22
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Position.Size()))
-	n6, err := m.Position.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n6
 	return i, nil
 }
 
@@ -648,27 +609,27 @@ func (m *Feedback) MarshalTo(dAtA []byte) (int, error) {
 	dAtA[i] = 0xa
 	i++
 	i = encodeVarintAction(dAtA, i, uint64(m.ID.Size()))
-	n7, err := m.ID.MarshalTo(dAtA[i:])
+	n6, err := m.ID.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n6
+	dAtA[i] = 0x12
+	i++
+	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
+	n7, err := m.Source.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n7
-	dAtA[i] = 0x12
+	dAtA[i] = 0x1a
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
-	n8, err := m.Source.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.Target.Size()))
+	n8, err := m.Target.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n8
-	dAtA[i] = 0x1a
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Target.Size()))
-	n9, err := m.Target.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n9
 	return i, nil
 }
 
@@ -690,39 +651,11 @@ func (m *Casted) MarshalTo(dAtA []byte) (int, error) {
 	dAtA[i] = 0xa
 	i++
 	i = encodeVarintAction(dAtA, i, uint64(m.AbilityID.Size()))
-	n10, err := m.AbilityID.MarshalTo(dAtA[i:])
+	n9, err := m.AbilityID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n10
-	dAtA[i] = 0x12
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
-	n11, err := m.Source.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n11
-	if len(m.Targets) > 0 {
-		for _, msg := range m.Targets {
-			dAtA[i] = 0x1a
-			i++
-			i = encodeVarintAction(dAtA, i, uint64(msg.Size()))
-			n, err := msg.MarshalTo(dAtA[i:])
-			if err != nil {
-				return 0, err
-			}
-			i += n
-		}
-	}
-	dAtA[i] = 0x22
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Position.Size()))
-	n12, err := m.Position.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n12
+	i += n9
 	return i, nil
 }
 
@@ -745,41 +678,41 @@ func (m *Action) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintAction(dAtA, i, uint64(m.Move.Size()))
-		n13, err := m.Move.MarshalTo(dAtA[i:])
+		n10, err := m.Move.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n13
+		i += n10
 	}
 	if m.Cast != nil {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintAction(dAtA, i, uint64(m.Cast.Size()))
-		n14, err := m.Cast.MarshalTo(dAtA[i:])
+		n11, err := m.Cast.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n14
+		i += n11
 	}
 	if m.Feedback != nil {
 		dAtA[i] = 0x1a
 		i++
 		i = encodeVarintAction(dAtA, i, uint64(m.Feedback.Size()))
-		n15, err := m.Feedback.MarshalTo(dAtA[i:])
+		n12, err := m.Feedback.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n15
+		i += n12
 	}
 	if m.Casted != nil {
 		dAtA[i] = 0x22
 		i++
 		i = encodeVarintAction(dAtA, i, uint64(m.Casted.Size()))
-		n16, err := m.Casted.MarshalTo(dAtA[i:])
+		n13, err := m.Casted.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n16
+		i += n13
 	}
 	return i, nil
 }
@@ -797,10 +730,14 @@ func NewPopulatedMove(r randyAction, easy bool) *Move {
 	this := &Move{}
 	v1 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.Source = *v1
-	v2 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Target = *v2
-	v3 := geometry.NewPopulatedPosition(r, easy)
-	this.Position = *v3
+	v2 := r.Intn(10)
+	this.Targets = make([]github_com_elojah_game_01_pkg_ulid.ID, v2)
+	for i := 0; i < v2; i++ {
+		v3 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+		this.Targets[i] = *v3
+	}
+	v4 := geometry.NewPopulatedPosition(r, easy)
+	this.Position = *v4
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -808,18 +745,12 @@ func NewPopulatedMove(r randyAction, easy bool) *Move {
 
 func NewPopulatedCast(r randyAction, easy bool) *Cast {
 	this := &Cast{}
-	v4 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.AbilityID = *v4
 	v5 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Source = *v5
-	v6 := r.Intn(10)
-	this.Targets = make([]github_com_elojah_game_01_pkg_ulid.ID, v6)
-	for i := 0; i < v6; i++ {
-		v7 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-		this.Targets[i] = *v7
-	}
-	v8 := geometry.NewPopulatedPosition(r, easy)
-	this.Position = *v8
+	this.AbilityID = *v5
+	v6 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.Source = *v6
+	v7 := ability.NewPopulatedTargets(r, easy)
+	this.Targets = *v7
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -827,12 +758,12 @@ func NewPopulatedCast(r randyAction, easy bool) *Cast {
 
 func NewPopulatedFeedback(r randyAction, easy bool) *Feedback {
 	this := &Feedback{}
+	v8 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v8
 	v9 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v9
+	this.Source = *v9
 	v10 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Source = *v10
-	v11 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Target = *v11
+	this.Target = *v10
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -840,18 +771,8 @@ func NewPopulatedFeedback(r randyAction, easy bool) *Feedback {
 
 func NewPopulatedCasted(r randyAction, easy bool) *Casted {
 	this := &Casted{}
-	v12 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.AbilityID = *v12
-	v13 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Source = *v13
-	v14 := r.Intn(10)
-	this.Targets = make([]github_com_elojah_game_01_pkg_ulid.ID, v14)
-	for i := 0; i < v14; i++ {
-		v15 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-		this.Targets[i] = *v15
-	}
-	v16 := geometry.NewPopulatedPosition(r, easy)
-	this.Position = *v16
+	v11 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.AbilityID = *v11
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -892,9 +813,9 @@ func randUTF8RuneAction(r randyAction) rune {
 	return rune(ru + 61)
 }
 func randStringAction(r randyAction) string {
-	v17 := r.Intn(100)
-	tmps := make([]rune, v17)
-	for i := 0; i < v17; i++ {
+	v12 := r.Intn(100)
+	tmps := make([]rune, v12)
+	for i := 0; i < v12; i++ {
 		tmps[i] = randUTF8RuneAction(r)
 	}
 	return string(tmps)
@@ -916,11 +837,11 @@ func randFieldAction(dAtA []byte, r randyAction, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateAction(dAtA, uint64(key))
-		v18 := r.Int63()
+		v13 := r.Int63()
 		if r.Intn(2) == 0 {
-			v18 *= -1
+			v13 *= -1
 		}
-		dAtA = encodeVarintPopulateAction(dAtA, uint64(v18))
+		dAtA = encodeVarintPopulateAction(dAtA, uint64(v13))
 	case 1:
 		dAtA = encodeVarintPopulateAction(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -950,8 +871,12 @@ func (m *Move) Size() (n int) {
 	_ = l
 	l = m.Source.Size()
 	n += 1 + l + sovAction(uint64(l))
-	l = m.Target.Size()
-	n += 1 + l + sovAction(uint64(l))
+	if len(m.Targets) > 0 {
+		for _, e := range m.Targets {
+			l = e.Size()
+			n += 1 + l + sovAction(uint64(l))
+		}
+	}
 	l = m.Position.Size()
 	n += 1 + l + sovAction(uint64(l))
 	return n
@@ -964,13 +889,7 @@ func (m *Cast) Size() (n int) {
 	n += 1 + l + sovAction(uint64(l))
 	l = m.Source.Size()
 	n += 1 + l + sovAction(uint64(l))
-	if len(m.Targets) > 0 {
-		for _, e := range m.Targets {
-			l = e.Size()
-			n += 1 + l + sovAction(uint64(l))
-		}
-	}
-	l = m.Position.Size()
+	l = m.Targets.Size()
 	n += 1 + l + sovAction(uint64(l))
 	return n
 }
@@ -991,16 +910,6 @@ func (m *Casted) Size() (n int) {
 	var l int
 	_ = l
 	l = m.AbilityID.Size()
-	n += 1 + l + sovAction(uint64(l))
-	l = m.Source.Size()
-	n += 1 + l + sovAction(uint64(l))
-	if len(m.Targets) > 0 {
-		for _, e := range m.Targets {
-			l = e.Size()
-			n += 1 + l + sovAction(uint64(l))
-		}
-	}
-	l = m.Position.Size()
 	n += 1 + l + sovAction(uint64(l))
 	return n
 }
@@ -1046,7 +955,7 @@ func (this *Move) String() string {
 	}
 	s := strings.Join([]string{`&Move{`,
 		`Source:` + fmt.Sprintf("%v", this.Source) + `,`,
-		`Target:` + fmt.Sprintf("%v", this.Target) + `,`,
+		`Targets:` + fmt.Sprintf("%v", this.Targets) + `,`,
 		`Position:` + strings.Replace(strings.Replace(this.Position.String(), "Position", "geometry.Position", 1), `&`, ``, 1) + `,`,
 		`}`,
 	}, "")
@@ -1059,8 +968,7 @@ func (this *Cast) String() string {
 	s := strings.Join([]string{`&Cast{`,
 		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
 		`Source:` + fmt.Sprintf("%v", this.Source) + `,`,
-		`Targets:` + fmt.Sprintf("%v", this.Targets) + `,`,
-		`Position:` + strings.Replace(strings.Replace(this.Position.String(), "Position", "geometry.Position", 1), `&`, ``, 1) + `,`,
+		`Targets:` + strings.Replace(strings.Replace(this.Targets.String(), "Targets", "ability.Targets", 1), `&`, ``, 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1083,9 +991,6 @@ func (this *Casted) String() string {
 	}
 	s := strings.Join([]string{`&Casted{`,
 		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
-		`Source:` + fmt.Sprintf("%v", this.Source) + `,`,
-		`Targets:` + fmt.Sprintf("%v", this.Targets) + `,`,
-		`Position:` + strings.Replace(strings.Replace(this.Position.String(), "Position", "geometry.Position", 1), `&`, ``, 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1203,7 +1108,7 @@ func (m *Move) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Target", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -1227,7 +1132,9 @@ func (m *Move) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Target.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			var v github_com_elojah_game_01_pkg_ulid.ID
+			m.Targets = append(m.Targets, v)
+			if err := m.Targets[len(m.Targets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1375,38 +1282,6 @@ func (m *Cast) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
 			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthAction
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			var v github_com_elojah_game_01_pkg_ulid.ID
-			m.Targets = append(m.Targets, v)
-			if err := m.Targets[len(m.Targets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
-			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
@@ -1429,7 +1304,7 @@ func (m *Cast) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Position.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Targets.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1650,98 +1525,6 @@ func (m *Casted) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			if err := m.AbilityID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthAction
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthAction
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			var v github_com_elojah_game_01_pkg_ulid.ID
-			m.Targets = append(m.Targets, v)
-			if err := m.Targets[len(m.Targets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Position", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthAction
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Position.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -2053,35 +1836,37 @@ var (
 	ErrIntOverflowAction   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("action.proto", fileDescriptor_action_5f6dcfe5703aad58) }
+func init() { proto.RegisterFile("action.proto", fileDescriptor_action_920f2fa28a2c10fb) }
 
-var fileDescriptor_action_5f6dcfe5703aad58 = []byte{
-	// 431 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_action_920f2fa28a2c10fb = []byte{
+	// 452 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0x4c, 0x2e, 0xc9,
 	0xcc, 0xcf, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d,
 	0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x0b, 0x27, 0x95, 0xa6, 0x81,
 	0x79, 0x60, 0x0e, 0x98, 0x05, 0x55, 0x6e, 0x8a, 0xa4, 0x3c, 0x35, 0x27, 0x3f, 0x2b, 0x31, 0x43,
 	0x3f, 0x3d, 0x31, 0x37, 0x35, 0xde, 0xc0, 0x50, 0xbf, 0x20, 0x3b, 0x5d, 0x3f, 0x3d, 0x35, 0x3f,
-	0x37, 0xb5, 0xa4, 0xa8, 0x52, 0xbf, 0x20, 0xbf, 0x38, 0x13, 0x61, 0x8b, 0xd2, 0x41, 0x46, 0x2e,
-	0x16, 0xdf, 0xfc, 0xb2, 0x54, 0x21, 0x57, 0x2e, 0xb6, 0xe0, 0xfc, 0xd2, 0xa2, 0xe4, 0x54, 0x09,
-	0x46, 0x05, 0x46, 0x0d, 0x1e, 0x27, 0xdd, 0x13, 0xf7, 0xe4, 0x19, 0x6e, 0xdd, 0x93, 0x57, 0xc5,
-	0x6f, 0x6e, 0x69, 0x4e, 0x66, 0x8a, 0x9e, 0xa7, 0x4b, 0x10, 0x54, 0x33, 0xc8, 0x98, 0x90, 0xc4,
-	0xa2, 0xf4, 0xd4, 0x12, 0x09, 0x26, 0xb2, 0x8c, 0x81, 0x68, 0x16, 0xd2, 0xe6, 0xe2, 0x08, 0x80,
-	0x3a, 0x54, 0x82, 0x59, 0x81, 0x51, 0x83, 0xdb, 0x88, 0x53, 0x0f, 0x26, 0xe0, 0xc4, 0x02, 0x32,
-	0x33, 0x08, 0xae, 0x40, 0x69, 0x02, 0x13, 0x17, 0x8b, 0x73, 0x62, 0x71, 0x89, 0x90, 0x37, 0x17,
-	0xa7, 0x63, 0x52, 0x66, 0x4e, 0x66, 0x49, 0xa5, 0xa7, 0x0b, 0x79, 0xde, 0x40, 0xe8, 0x47, 0x0a,
-	0x10, 0x26, 0x4a, 0x02, 0xc4, 0x9d, 0x8b, 0x1d, 0xe2, 0xa7, 0x62, 0x09, 0x66, 0x05, 0x66, 0xd2,
-	0xcd, 0x81, 0xe9, 0x46, 0x09, 0x12, 0x16, 0x42, 0x41, 0x72, 0x9d, 0x91, 0x8b, 0xc3, 0x2d, 0x35,
-	0x35, 0x25, 0x29, 0x31, 0x39, 0x5b, 0xc8, 0x96, 0x8b, 0x89, 0xdc, 0xf0, 0x60, 0xa2, 0x5e, 0x40,
-	0x20, 0x52, 0x06, 0x33, 0x05, 0x29, 0x43, 0x69, 0x12, 0x13, 0x17, 0x1b, 0x28, 0xb2, 0x53, 0x53,
-	0x46, 0xa3, 0x1b, 0x1e, 0xdd, 0x3d, 0x8c, 0x5c, 0x6c, 0x8e, 0xe0, 0xc2, 0x43, 0x48, 0x12, 0x92,
-	0x9f, 0xc1, 0xe1, 0xc1, 0x6d, 0xc4, 0xaa, 0x07, 0xe2, 0x04, 0x41, 0xb2, 0xb8, 0x24, 0x24, 0x9b,
-	0x80, 0x3d, 0x08, 0x92, 0x02, 0x71, 0x82, 0x20, 0x39, 0x47, 0x15, 0x91, 0x5c, 0xe0, 0xf9, 0x0d,
-	0x26, 0x10, 0x84, 0x48, 0x49, 0xf2, 0xb0, 0xb0, 0x87, 0x3a, 0x89, 0x5d, 0x0f, 0xc2, 0x0d, 0x82,
-	0x0a, 0x5b, 0xb1, 0x9c, 0x58, 0x20, 0xcf, 0xe8, 0x64, 0x7f, 0xe1, 0xa1, 0x1c, 0xc3, 0x8d, 0x87,
-	0x72, 0x0c, 0x1f, 0x1e, 0xca, 0x31, 0xfe, 0x78, 0x28, 0xc7, 0xd8, 0xf0, 0x48, 0x8e, 0x71, 0xc5,
-	0x23, 0x39, 0xc6, 0x1d, 0x8f, 0xe4, 0x18, 0x0f, 0x3c, 0x92, 0x63, 0x3c, 0xf1, 0x48, 0x8e, 0xf1,
-	0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4, 0x18, 0x5f, 0x3c, 0x92, 0x63, 0xf8, 0xf0, 0x48, 0x8e,
-	0x71, 0xc2, 0x63, 0x39, 0x86, 0x28, 0xd6, 0xd4, 0xb2, 0xd4, 0xbc, 0x92, 0x24, 0x36, 0x70, 0xe1,
-	0x64, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xc6, 0xd4, 0xa3, 0x2f, 0x12, 0x05, 0x00, 0x00,
+	0x37, 0xb5, 0xa4, 0xa8, 0x52, 0xbf, 0x20, 0xbf, 0x38, 0x13, 0xc9, 0x16, 0x02, 0xda, 0x12, 0x93,
+	0x32, 0x73, 0x32, 0x4b, 0x2a, 0xf5, 0x93, 0xf3, 0x73, 0x0b, 0xf2, 0xf3, 0x52, 0xf3, 0x4a, 0x20,
+	0xda, 0x94, 0x0e, 0x33, 0x72, 0xb1, 0xf8, 0xe6, 0x97, 0xa5, 0x0a, 0xb9, 0x72, 0xb1, 0x05, 0xe7,
+	0x97, 0x16, 0x25, 0xa7, 0x4a, 0x30, 0x2a, 0x30, 0x6a, 0xf0, 0x38, 0xe9, 0x9e, 0xb8, 0x27, 0xcf,
+	0x70, 0xeb, 0x9e, 0xbc, 0x2a, 0x7e, 0x73, 0x4b, 0x73, 0x32, 0x53, 0xf4, 0x3c, 0x5d, 0x82, 0xa0,
+	0x9a, 0x85, 0xdc, 0xb9, 0xd8, 0x43, 0x12, 0x8b, 0xd2, 0x53, 0x4b, 0x8a, 0x25, 0x98, 0x14, 0x98,
+	0x49, 0x37, 0x07, 0xa6, 0x5b, 0x48, 0x9b, 0x8b, 0x23, 0x00, 0xea, 0x43, 0x09, 0x66, 0x05, 0x46,
+	0x0d, 0x6e, 0x23, 0x4e, 0x3d, 0x98, 0x80, 0x13, 0x0b, 0xc8, 0xd0, 0x20, 0xb8, 0x02, 0xa5, 0x23,
+	0x8c, 0x5c, 0x2c, 0xce, 0x89, 0xc5, 0x25, 0x42, 0xde, 0x5c, 0x9c, 0x8e, 0x10, 0x9f, 0x7a, 0xba,
+	0x90, 0xe7, 0x11, 0x84, 0x7e, 0xa4, 0x20, 0x61, 0xa2, 0x24, 0x48, 0x34, 0x10, 0x41, 0x02, 0xf1,
+	0x08, 0x87, 0x1e, 0x94, 0x0f, 0xf5, 0x07, 0x4c, 0x5a, 0xe9, 0x3a, 0x23, 0x17, 0x87, 0x5b, 0x6a,
+	0x6a, 0x4a, 0x52, 0x62, 0x72, 0xb6, 0x90, 0x2d, 0x17, 0x13, 0xb9, 0x7e, 0x60, 0xa2, 0x9e, 0xe3,
+	0x5d, 0xb9, 0xd8, 0x20, 0xae, 0x03, 0xbb, 0x9d, 0x74, 0x63, 0x20, 0x9a, 0x95, 0x42, 0xb9, 0xd8,
+	0x40, 0xf1, 0x93, 0x9a, 0x42, 0xd5, 0x18, 0x52, 0xea, 0x61, 0xe4, 0x62, 0x73, 0x04, 0xe7, 0x35,
+	0x21, 0x49, 0x48, 0x3a, 0x06, 0x1b, 0xc9, 0x6d, 0xc4, 0xaa, 0x07, 0xe2, 0x04, 0x41, 0x92, 0xb6,
+	0x24, 0x24, 0x71, 0x80, 0x03, 0x02, 0x24, 0x05, 0xe2, 0x04, 0x41, 0xd2, 0x8b, 0x2a, 0x22, 0xc0,
+	0xe1, 0xa9, 0x0c, 0x26, 0x10, 0x84, 0x88, 0x0b, 0x79, 0x98, 0xf3, 0x25, 0x58, 0xc0, 0x8a, 0xd8,
+	0xf5, 0x20, 0xdc, 0x20, 0xa8, 0xb0, 0x15, 0xcb, 0x89, 0x05, 0xf2, 0x8c, 0x4e, 0xf6, 0x17, 0x1e,
+	0xca, 0x31, 0xdc, 0x78, 0x28, 0xc7, 0xf0, 0xe1, 0xa1, 0x1c, 0xe3, 0x8f, 0x87, 0x72, 0x8c, 0x0d,
+	0x8f, 0xe4, 0x18, 0x57, 0x3c, 0x92, 0x63, 0xdc, 0xf1, 0x48, 0x8e, 0xf1, 0xc0, 0x23, 0x39, 0xc6,
+	0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39,
+	0x86, 0x0f, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0x88, 0x62, 0x4d, 0x2d, 0x4b, 0xcd, 0x2b,
+	0x49, 0x62, 0x03, 0x67, 0x4a, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x39, 0x82, 0xc0, 0x77,
+	0x41, 0x04, 0x00, 0x00,
 }

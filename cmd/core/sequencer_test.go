@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/elojah/game_01/pkg/ability"
 	entitymocks "github.com/elojah/game_01/pkg/entity/mocks"
 	"github.com/elojah/game_01/pkg/event"
 	eventmocks "github.com/elojah/game_01/pkg/event/mocks"
@@ -23,7 +24,15 @@ func TestSequencer(t *testing.T) {
 			ID: ulid.NewID(),
 			TS: now,
 			Action: event.Action{
-				Cast: &event.Cast{Source: ulid.NewID(), Targets: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
+				Cast: &event.Cast{
+					Source: ulid.NewID(),
+					Targets: ability.Targets{
+						Entities: []ability.Entities{
+							ability.Entities{
+								IDs: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
+						},
+					},
+				},
 			},
 		},
 		event.E{

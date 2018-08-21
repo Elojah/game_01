@@ -68,14 +68,13 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 	}
 
 	// #Add casted event to event set.
-	e = event.E{
+	if err := a.EventStore.SetEvent(event.E{
 		ID: ulid.NewID(),
 		TS: e.TS.Add(ab.CastTime),
 		Action: event.Action{
-			Casted: (*event.Casted)(cast),
+			Casted: &event.Casted{AbilityID: ab.ID},
 		},
-	}
-	if err := a.EventStore.SetEvent(e, source.ID); err != nil {
+	}, source.ID); err != nil {
 		return errors.Wrapf(err, "set casted event %s", e.ID.String())
 	}
 

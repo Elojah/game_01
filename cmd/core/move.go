@@ -1,6 +1,10 @@
 package main
 
 import (
+	"time"
+
+	"github.com/rs/zerolog/log"
+
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	serrors "github.com/elojah/game_01/pkg/errors"
@@ -11,28 +15,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	maxTargets = 100
+)
+
 func (a *app) Move(id ulid.ID, e event.E) error {
-
-	move := e.Action.GetValue().(*event.Move)
-
-	if id.Compare(move.Source) == 0 {
-		return a.MoveSource(e)
-	}
-	if id.Compare(move.Target) == 0 {
-		return a.MoveTarget(e)
-	}
-	return nil
-}
-
-func (a *app) MoveSource(e event.E) error {
-	// TODO
-	// check if source is not stun/slience/unable to move units.
-	// in this case cancel (what mechanism ?) the move on both source + target.
-	// And if there is some bonus for moving one, add it here.
-	return nil
-}
-
-func (a *app) MoveTarget(e event.E) error {
 
 	move := e.Action.GetValue().(*event.Move)
 
@@ -48,24 +35,45 @@ func (a *app) MoveTarget(e event.E) error {
 		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 
+	if len(move.Targets) > maxTargets {
+		return errors.Wrapf(account.ErrInvalidAction, "too many targets %d", len(move.Targets))
+	}
+
+	var nonblockErr error
+	for _, target := range move.Targets {
+		if err := a.MoveTarget(move, target, e.TS); err != nil {
+			log.Error().
+				Str("source", e.Source.String()).
+				Str("target", target.String()).
+				Str("event", e.ID.String()).
+				Str("action", "move").
+				Msg("failed to move")
+			nonblockErr = err
+		}
+	}
+	return nonblockErr
+}
+
+func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error {
+
 	// #Check permission source/target if source != target.
-	if move.Source != move.Target {
+	if move.Source != targetID {
 		permission, err := a.GetPermission(entity.PermissionSubset{
 			Source: move.Source.String(),
-			Target: move.Target.String(),
+			Target: targetID.String(),
 		})
 		if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), move.Target.String())
+			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), targetID.String())
 		}
 		if err != nil {
-			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), move.Target.String())
+			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), targetID.String())
 		}
 	}
 
 	// #Retrieve previous state target.
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: move.Target, MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityStore.GetEntity(entity.Subset{ID: targetID, MaxTS: ts.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", move.Target.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %s", targetID.String(), ts.UnixNano())
 	}
 
 	// #Retrieve current sector
@@ -160,5 +168,5 @@ func (a *app) MoveTarget(e event.E) error {
 	}
 
 	// #Write new target state.
-	return errors.Wrapf(a.EntityStore.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", target.ID.String(), e.TS.UnixNano())
+	return errors.Wrapf(a.EntityStore.SetEntity(target, ts.UnixNano()), "set entity %s for ts %d", target.ID.String(), ts.UnixNano())
 }

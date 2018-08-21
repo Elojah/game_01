@@ -7,29 +7,51 @@ option (gogoproto.benchgen_all) = true;
 option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "github.com/elojah/game_01/pkg/geometry/position.proto";
+
+enum Element {
+	Fire                          = 0;
+	Water                         = 1;
+	Air                           = 2;
+	Earth                         = 3;
+	Time                          = 4;
+}
+
+message Entities {
+	repeated bytes IDs            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message Targets {
+	repeated Entities Entities    = 1 [(gogoproto.nullable)   = false];
+	repeated Position Positions   = 2 [(gogoproto.nullable)   = false];
+}
 
 message HealDirect {
 	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+	Element Element               = 2;
+	repeated bytes Targets        = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message DamageDirect {
 	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+	Element Element               = 2;
+	repeated bytes Targets        = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message HealOverTime {
 	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
+	repeated bytes Targets        = 5 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message DamageOverTime {
 	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
+	repeated bytes Targets        = 5 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message Component {

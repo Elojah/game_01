@@ -38,14 +38,19 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 	}
 
 	// #Check cast was not interrupted.
-	if en.Cast == nil || en.Cast.AbilityID != cast.AbilityID || en.Cast.TS.Add(ab.CastTime) != e.TS {
+	if en.Cast == nil ||
+		en.Cast.AbilityID != cast.AbilityID ||
+		en.Cast.TS.Add(ab.CastTime) != e.TS {
 		log.Info().
 			Str("entity", id.String()).
 			Int64("ts", e.TS.UnixNano()).
 			Str("ability", ab.ID.String()).
 			Msg("interrupted cast")
+			// normal behavior, don't return errors
 		return nil
 	}
+
+	// switch ab
 
 	return nil
 }

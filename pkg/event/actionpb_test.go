@@ -12,6 +12,7 @@ import fmt "fmt"
 import go_parser "go/parser"
 import proto "github.com/gogo/protobuf/proto"
 import math "math"
+import _ "github.com/elojah/game_01/pkg/ability"
 import _ "github.com/elojah/game_01/pkg/geometry"
 import _ "github.com/gogo/protobuf/gogoproto"
 
