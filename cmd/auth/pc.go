@@ -10,8 +10,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
+	serrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -98,7 +98,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if left <= 0 {
-		err := account.ErrInvalidAction
+		err := serrors.ErrInvalidAction
 		logger.Error().Err(err).Msg("no more pc left")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

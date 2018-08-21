@@ -1,6 +1,7 @@
 package entity
 
 import (
+	"github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -25,7 +26,7 @@ type PC = E
 // Check checks if pc fields are valid.
 func (pc PC) Check() error {
 	if _, ok := pcNames[pc.Name]; !ok {
-		return ErrInvalidEntityType
+		return errors.ErrInvalidEntityType
 	}
 	return nil
 }

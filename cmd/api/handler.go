@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
+	serrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -82,7 +83,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	ts := time.Unix(0, msg.TS)
 	now := time.Now()
 	if ts.After(now) || now.Sub(ts) > h.tolerance {
-		err := account.ErrInvalidTS
+		err := serrors.ErrInvalidTS
 		logger.Error().Err(err).Str("status", "timeout").Int64("ts", ts.UnixNano()).Int64("now", now.UnixNano()).Msg("packet rejected")
 		return err
 	}

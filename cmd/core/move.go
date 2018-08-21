@@ -3,8 +3,6 @@ package main
 import (
 	"time"
 
-	"github.com/rs/zerolog/log"
-
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	serrors "github.com/elojah/game_01/pkg/errors"
@@ -12,6 +10,7 @@ import (
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 )
 
@@ -29,29 +28,23 @@ func (a *app) Move(id ulid.ID, e event.E) error {
 		Target: move.Source.String(),
 	})
 	if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
+		return errors.Wrapf(serrors.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 
 	if len(move.Targets) > maxTargets {
-		return errors.Wrapf(account.ErrInvalidAction, "too many targets %d", len(move.Targets))
+		return errors.Wrapf(serrors.ErrInvalidAction, "too many targets %d", len(move.Targets))
 	}
 
-	var nonblockErr error
+	var result *multierror.Error
 	for _, target := range move.Targets {
 		if err := a.MoveTarget(move, target, e.TS); err != nil {
-			log.Error().
-				Str("source", e.Source.String()).
-				Str("target", target.String()).
-				Str("event", e.ID.String()).
-				Str("action", "move").
-				Msg("failed to move")
-			nonblockErr = err
+			result = multierror.Append(result, err)
 		}
 	}
-	return nonblockErr
+	return result.ErrorOrNil()
 }
 
 func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error {
@@ -63,7 +56,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 			Target: targetID.String(),
 		})
 		if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), targetID.String())
+			return errors.Wrapf(serrors.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), targetID.String())
 		}
 		if err != nil {
 			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), targetID.String())
@@ -88,7 +81,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		// #Check if target has moved in correct boundaries in same sector.
 		if s.Out(target.Position.Coord) {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				serrors.ErrInvalidAction,
 				"check in sector %s (%f , %f , %f) from (%f , %f , %f) to (%f , %f , %f) for entity %s",
 				s.ID.String(),
 				s.Dim.X,
@@ -107,7 +100,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		// #Check if target has moved at a tolerable distance in same sector.
 		if geometry.Segment(target.Position.Coord, move.Position.Coord) > a.moveTolerance {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				serrors.ErrInvalidAction,
 				"check move tolerance %f from (%f , %f , %f) to (%f , %f , %f) for entity %s",
 				a.moveTolerance,
 				target.Position.Coord.X,
@@ -130,7 +123,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		neigh, ok := s.Neighbours[move.Position.SectorID.String()]
 		if !ok {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				serrors.ErrInvalidAction,
 				"invalid next neighbour sector %s with previous %s",
 				move.Position.SectorID.String(),
 				target.Position.SectorID.String(),
@@ -140,7 +133,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		// #Check if target has moved at a tolerable distance in different sectors.
 		if geometry.Segment(target.Position.Coord, move.Position.Coord.MoveReference(neigh)) > a.moveTolerance {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				serrors.ErrInvalidAction,
 				"check move tolerance %f from %s (%f , %f , %f) to %s (%f , %f , %f) for entity %s",
 				a.moveTolerance,
 				target.Position.SectorID.String(),

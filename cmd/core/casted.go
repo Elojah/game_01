@@ -5,7 +5,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/ability"
-	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	serrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
@@ -14,7 +13,7 @@ import (
 
 func (a *app) Casted(id ulid.ID, e event.E) error {
 
-	cast := e.Action.GetValue().(*event.Casted)
+	casted := e.Action.GetValue().(*event.Casted)
 
 	// #Retrieve entity
 	en, err := a.EntityStore.GetEntity(entity.Subset{
@@ -27,19 +26,19 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(ability.Subset{
-		ID:       cast.AbilityID,
+		ID:       casted.AbilityID,
 		EntityID: id,
 	})
 	if err == serrors.ErrNotFound {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), id.String())
+		return errors.Wrapf(serrors.ErrInsufficientACLs, "get ability %s for %s", casted.AbilityID.String(), id.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), id.String())
+		return errors.Wrapf(err, "get ability %s for %s", casted.AbilityID.String(), id.String())
 	}
 
 	// #Check cast was not interrupted.
 	if en.Cast == nil ||
-		en.Cast.AbilityID != cast.AbilityID ||
+		en.Cast.AbilityID != casted.AbilityID ||
 		en.Cast.TS.Add(ab.CastTime) != e.TS {
 		log.Info().
 			Str("entity", id.String()).
@@ -50,7 +49,18 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 		return nil
 	}
 
-	// switch ab
+	for _, c := range ab.Components {
+		switch c.GetValue().(type) {
+		case ability.DamageDirect:
+			return serrors.ErrNotImplementedYet
+		case ability.HealDirect:
+			return serrors.ErrNotImplementedYet
+		case ability.HealOverTime:
+			return serrors.ErrNotImplementedYet
+		case ability.DamageOverTime:
+			return serrors.ErrNotImplementedYet
+		}
+	}
 
 	return nil
 }

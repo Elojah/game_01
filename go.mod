@@ -9,6 +9,8 @@ require (
 	github.com/go-redis/redis v6.12.0+incompatible
 	github.com/gogo/protobuf v1.1.1
 	github.com/golang/protobuf v1.1.0
+	github.com/hashicorp/errwrap v0.0.0-20180715044906-d6c0cd880357 // indirect
+	github.com/hashicorp/go-multierror v0.0.0-20180717150148-3d5d8f294aa0
 	github.com/oklog/ulid v0.3.0
 	github.com/pkg/errors v0.8.0
 	github.com/pmezard/go-difflib v1.0.0
