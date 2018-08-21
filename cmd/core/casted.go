@@ -56,6 +56,8 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 			result = multierror.Append(result, serrors.ErrNotImplementedYet)
 		case ability.DamageOverTime:
 			result = multierror.Append(result, serrors.ErrNotImplementedYet)
+		default:
+			result = multierror.Append(result, serrors.ErrNotImplementedYet)
 		}
 	}
 

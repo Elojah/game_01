@@ -52,12 +52,13 @@ var Element_value = map[string]int32{
 }
 
 func (Element) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_component_5840d60edd84ecfd, []int{0}
+	return fileDescriptor_component_37f2491439ff1bb1, []int{0}
 }
 
 type HealDirect struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
 	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
+	Range                uint64   `protobuf:"varint,3,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
@@ -65,7 +66,7 @@ type HealDirect struct {
 func (m *HealDirect) Reset()      { *m = HealDirect{} }
 func (*HealDirect) ProtoMessage() {}
 func (*HealDirect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_5840d60edd84ecfd, []int{0}
+	return fileDescriptor_component_37f2491439ff1bb1, []int{0}
 }
 func (m *HealDirect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -108,9 +109,17 @@ func (m *HealDirect) GetElement() Element {
 	return Fire
 }
 
+func (m *HealDirect) GetRange() uint64 {
+	if m != nil {
+		return m.Range
+	}
+	return 0
+}
+
 type DamageDirect struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
 	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
+	Range                uint64   `protobuf:"varint,3,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
@@ -118,7 +127,7 @@ type DamageDirect struct {
 func (m *DamageDirect) Reset()      { *m = DamageDirect{} }
 func (*DamageDirect) ProtoMessage() {}
 func (*DamageDirect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_5840d60edd84ecfd, []int{1}
+	return fileDescriptor_component_37f2491439ff1bb1, []int{1}
 }
 func (m *DamageDirect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -161,11 +170,19 @@ func (m *DamageDirect) GetElement() Element {
 	return Fire
 }
 
+func (m *DamageDirect) GetRange() uint64 {
+	if m != nil {
+		return m.Range
+	}
+	return 0
+}
+
 type HealOverTime struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
 	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
 	Frequency            uint64   `protobuf:"varint,3,opt,name=Frequency,proto3" json:"Frequency,omitempty"`
 	Duration             uint64   `protobuf:"varint,4,opt,name=Duration,proto3" json:"Duration,omitempty"`
+	Range                uint64   `protobuf:"varint,5,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
@@ -173,7 +190,7 @@ type HealOverTime struct {
 func (m *HealOverTime) Reset()      { *m = HealOverTime{} }
 func (*HealOverTime) ProtoMessage() {}
 func (*HealOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_5840d60edd84ecfd, []int{2}
+	return fileDescriptor_component_37f2491439ff1bb1, []int{2}
 }
 func (m *HealOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -230,11 +247,19 @@ func (m *HealOverTime) GetDuration() uint64 {
 	return 0
 }
 
+func (m *HealOverTime) GetRange() uint64 {
+	if m != nil {
+		return m.Range
+	}
+	return 0
+}
+
 type DamageOverTime struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
 	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
 	Frequency            uint64   `protobuf:"varint,3,opt,name=Frequency,proto3" json:"Frequency,omitempty"`
 	Duration             uint64   `protobuf:"varint,4,opt,name=Duration,proto3" json:"Duration,omitempty"`
+	Range                uint64   `protobuf:"varint,5,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
@@ -242,7 +267,7 @@ type DamageOverTime struct {
 func (m *DamageOverTime) Reset()      { *m = DamageOverTime{} }
 func (*DamageOverTime) ProtoMessage() {}
 func (*DamageOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_5840d60edd84ecfd, []int{3}
+	return fileDescriptor_component_37f2491439ff1bb1, []int{3}
 }
 func (m *DamageOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -299,6 +324,13 @@ func (m *DamageOverTime) GetDuration() uint64 {
 	return 0
 }
 
+func (m *DamageOverTime) GetRange() uint64 {
+	if m != nil {
+		return m.Range
+	}
+	return 0
+}
+
 type Component struct {
 	HealDirect           *HealDirect     `protobuf:"bytes,1,opt,name=HealDirect" json:"HealDirect,omitempty"`
 	DamageDirect         *DamageDirect   `protobuf:"bytes,2,opt,name=DamageDirect" json:"DamageDirect,omitempty"`
@@ -311,7 +343,7 @@ type Component struct {
 func (m *Component) Reset()      { *m = Component{} }
 func (*Component) ProtoMessage() {}
 func (*Component) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_5840d60edd84ecfd, []int{4}
+	return fileDescriptor_component_37f2491439ff1bb1, []int{4}
 }
 func (m *Component) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -408,6 +440,9 @@ func (this *HealDirect) Equal(that interface{}) bool {
 	if this.Element != that1.Element {
 		return false
 	}
+	if this.Range != that1.Range {
+		return false
+	}
 	return true
 }
 func (this *DamageDirect) Equal(that interface{}) bool {
@@ -433,6 +468,9 @@ func (this *DamageDirect) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Element != that1.Element {
+		return false
+	}
+	if this.Range != that1.Range {
 		return false
 	}
 	return true
@@ -468,6 +506,9 @@ func (this *HealOverTime) Equal(that interface{}) bool {
 	if this.Duration != that1.Duration {
 		return false
 	}
+	if this.Range != that1.Range {
+		return false
+	}
 	return true
 }
 func (this *DamageOverTime) Equal(that interface{}) bool {
@@ -499,6 +540,9 @@ func (this *DamageOverTime) Equal(that interface{}) bool {
 		return false
 	}
 	if this.Duration != that1.Duration {
+		return false
+	}
+	if this.Range != that1.Range {
 		return false
 	}
 	return true
@@ -540,10 +584,11 @@ func (this *HealDirect) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
+	s := make([]string, 0, 7)
 	s = append(s, "&ability.HealDirect{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
 	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -551,10 +596,11 @@ func (this *DamageDirect) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
+	s := make([]string, 0, 7)
 	s = append(s, "&ability.DamageDirect{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
 	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -562,12 +608,13 @@ func (this *HealOverTime) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 9)
 	s = append(s, "&ability.HealOverTime{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
 	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
 	s = append(s, "Frequency: "+fmt.Sprintf("%#v", this.Frequency)+",\n")
 	s = append(s, "Duration: "+fmt.Sprintf("%#v", this.Duration)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -575,12 +622,13 @@ func (this *DamageOverTime) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 9)
 	s = append(s, "&ability.DamageOverTime{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
 	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
 	s = append(s, "Frequency: "+fmt.Sprintf("%#v", this.Frequency)+",\n")
 	s = append(s, "Duration: "+fmt.Sprintf("%#v", this.Duration)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -638,6 +686,11 @@ func (m *HealDirect) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Element))
 	}
+	if m.Range != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
+	}
 	return i, nil
 }
 
@@ -665,6 +718,11 @@ func (m *DamageDirect) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x10
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Element))
+	}
+	if m.Range != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
 	}
 	return i, nil
 }
@@ -704,6 +762,11 @@ func (m *HealOverTime) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Duration))
 	}
+	if m.Range != 0 {
+		dAtA[i] = 0x28
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
+	}
 	return i, nil
 }
 
@@ -741,6 +804,11 @@ func (m *DamageOverTime) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x20
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Duration))
+	}
+	if m.Range != 0 {
+		dAtA[i] = 0x28
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
 	}
 	return i, nil
 }
@@ -816,6 +884,7 @@ func NewPopulatedHealDirect(r randyComponent, easy bool) *HealDirect {
 	this := &HealDirect{}
 	this.Amount = uint64(uint64(r.Uint32()))
 	this.Element = Element([]int32{0, 1, 2, 3, 4}[r.Intn(5)])
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -825,6 +894,7 @@ func NewPopulatedDamageDirect(r randyComponent, easy bool) *DamageDirect {
 	this := &DamageDirect{}
 	this.Amount = uint64(uint64(r.Uint32()))
 	this.Element = Element([]int32{0, 1, 2, 3, 4}[r.Intn(5)])
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -836,6 +906,7 @@ func NewPopulatedHealOverTime(r randyComponent, easy bool) *HealOverTime {
 	this.Element = Element([]int32{0, 1, 2, 3, 4}[r.Intn(5)])
 	this.Frequency = uint64(uint64(r.Uint32()))
 	this.Duration = uint64(uint64(r.Uint32()))
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -847,6 +918,7 @@ func NewPopulatedDamageOverTime(r randyComponent, easy bool) *DamageOverTime {
 	this.Element = Element([]int32{0, 1, 2, 3, 4}[r.Intn(5)])
 	this.Frequency = uint64(uint64(r.Uint32()))
 	this.Duration = uint64(uint64(r.Uint32()))
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -949,6 +1021,9 @@ func (m *HealDirect) Size() (n int) {
 	if m.Element != 0 {
 		n += 1 + sovComponent(uint64(m.Element))
 	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
+	}
 	return n
 }
 
@@ -960,6 +1035,9 @@ func (m *DamageDirect) Size() (n int) {
 	}
 	if m.Element != 0 {
 		n += 1 + sovComponent(uint64(m.Element))
+	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
 	}
 	return n
 }
@@ -979,6 +1057,9 @@ func (m *HealOverTime) Size() (n int) {
 	if m.Duration != 0 {
 		n += 1 + sovComponent(uint64(m.Duration))
 	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
+	}
 	return n
 }
 
@@ -996,6 +1077,9 @@ func (m *DamageOverTime) Size() (n int) {
 	}
 	if m.Duration != 0 {
 		n += 1 + sovComponent(uint64(m.Duration))
+	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
 	}
 	return n
 }
@@ -1042,6 +1126,7 @@ func (this *HealDirect) String() string {
 	s := strings.Join([]string{`&HealDirect{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
 		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1053,6 +1138,7 @@ func (this *DamageDirect) String() string {
 	s := strings.Join([]string{`&DamageDirect{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
 		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1066,6 +1152,7 @@ func (this *HealOverTime) String() string {
 		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
 		`Frequency:` + fmt.Sprintf("%v", this.Frequency) + `,`,
 		`Duration:` + fmt.Sprintf("%v", this.Duration) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1079,6 +1166,7 @@ func (this *DamageOverTime) String() string {
 		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
 		`Frequency:` + fmt.Sprintf("%v", this.Frequency) + `,`,
 		`Duration:` + fmt.Sprintf("%v", this.Duration) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1202,6 +1290,25 @@ func (m *HealDirect) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipComponent(dAtA[iNdEx:])
@@ -1286,6 +1393,25 @@ func (m *DamageDirect) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Element |= (Element(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1416,6 +1542,25 @@ func (m *HealOverTime) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipComponent(dAtA[iNdEx:])
@@ -1538,6 +1683,25 @@ func (m *DamageOverTime) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Duration |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1850,34 +2014,35 @@ var (
 	ErrIntOverflowComponent   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("component.proto", fileDescriptor_component_5840d60edd84ecfd) }
+func init() { proto.RegisterFile("component.proto", fileDescriptor_component_37f2491439ff1bb1) }
 
-var fileDescriptor_component_5840d60edd84ecfd = []byte{
-	// 402 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x93, 0xbf, 0xcb, 0xd3, 0x40,
-	0x18, 0xc7, 0xf3, 0xbc, 0x8d, 0x6f, 0xdb, 0xcb, 0xeb, 0xdb, 0x70, 0x83, 0x84, 0x22, 0x67, 0xc9,
-	0x54, 0x14, 0x53, 0x1a, 0x07, 0x41, 0x5c, 0xaa, 0x6d, 0x29, 0x2e, 0x42, 0x10, 0x04, 0xb7, 0x24,
-	0x9c, 0xe9, 0x41, 0x93, 0xab, 0xc7, 0x45, 0xe8, 0xe6, 0x20, 0xce, 0xfe, 0x09, 0x8e, 0xfe, 0x09,
-	0x8e, 0x8e, 0x1d, 0x3b, 0xba, 0x08, 0xe6, 0x5c, 0x1c, 0x3b, 0x3a, 0x4a, 0xae, 0xbf, 0x92, 0xae,
-	0x0a, 0x6e, 0xf9, 0x7e, 0xee, 0x79, 0x1e, 0xbe, 0xcf, 0xf3, 0x25, 0xa8, 0x13, 0xf3, 0x74, 0xc9,
-	0x33, 0x9a, 0x49, 0x6f, 0x29, 0xb8, 0xe4, 0xdd, 0xfb, 0x09, 0x93, 0xf3, 0x3c, 0xf2, 0x62, 0x9e,
-	0x0e, 0x12, 0x9e, 0xf0, 0x81, 0xc6, 0x51, 0xfe, 0x5a, 0x2b, 0x2d, 0xf4, 0xd7, 0xae, 0xdc, 0x9d,
-	0x21, 0x34, 0xa3, 0xe1, 0x62, 0xcc, 0x04, 0x8d, 0x25, 0xbe, 0x85, 0x2e, 0x47, 0x29, 0xcf, 0x33,
-	0xe9, 0x40, 0x0f, 0xfa, 0x66, 0xb0, 0x57, 0xd8, 0x45, 0xcd, 0xc9, 0x82, 0xa6, 0x34, 0x93, 0xce,
-	0x45, 0x0f, 0xfa, 0xd7, 0x7e, 0xcb, 0xdb, 0xeb, 0xe0, 0xf0, 0xe0, 0x3e, 0x43, 0x57, 0xe3, 0x30,
-	0x0d, 0x13, 0xfa, 0x0f, 0x66, 0xbd, 0x07, 0x74, 0x55, 0xda, 0x7a, 0xfe, 0x96, 0x8a, 0x17, 0x2c,
-	0xa5, 0x7f, 0x33, 0x0c, 0xdf, 0x46, 0xed, 0xa9, 0xa0, 0x6f, 0x72, 0x9a, 0xc5, 0x2b, 0xa7, 0xa1,
-	0xdb, 0x4f, 0x00, 0x77, 0x51, 0x6b, 0x9c, 0x8b, 0x50, 0x32, 0x9e, 0x39, 0xa6, 0x7e, 0x3c, 0x6a,
-	0xf7, 0x03, 0xa0, 0xeb, 0xdd, 0x4e, 0xff, 0xd9, 0xc8, 0x77, 0x40, 0xed, 0xa7, 0x87, 0xa0, 0xf1,
-	0xbd, 0x6a, 0x66, 0xda, 0x87, 0xe5, 0x5b, 0xde, 0x09, 0x05, 0xd5, 0x48, 0x87, 0xf5, 0x58, 0xb4,
-	0x3b, 0xcb, 0xbf, 0xe9, 0x55, 0x61, 0x50, 0x4f, 0x6e, 0x58, 0x3f, 0xbe, 0xb6, 0x5a, 0xb6, 0x54,
-	0x61, 0x50, 0xcf, 0xe7, 0xe1, 0xf9, 0xa1, 0xf4, 0x0a, 0x96, 0xdf, 0xf1, 0xea, 0x38, 0x38, 0x2b,
-	0x7b, 0x64, 0xae, 0x3f, 0xdd, 0x81, 0xbb, 0x8f, 0x8f, 0xd7, 0xc3, 0x2d, 0x64, 0x4e, 0x99, 0xa0,
-	0xb6, 0x81, 0xdb, 0xe8, 0xc6, 0xcb, 0x50, 0x52, 0x61, 0x03, 0x6e, 0xa2, 0xc6, 0x88, 0x09, 0xfb,
-	0xa2, 0x64, 0x93, 0x50, 0xc8, 0xb9, 0xdd, 0x28, 0x0b, 0xcb, 0x09, 0xb6, 0xf9, 0x64, 0xb4, 0x29,
-	0x88, 0xf1, 0xad, 0x20, 0xc6, 0xb6, 0x20, 0xf0, 0xbb, 0x20, 0xf0, 0x4e, 0x11, 0xf8, 0xac, 0x08,
-	0x7c, 0x51, 0x04, 0xbe, 0x2a, 0x02, 0x6b, 0x45, 0x60, 0xa3, 0x08, 0xfc, 0x50, 0x04, 0x7e, 0x29,
-	0x62, 0x6c, 0x15, 0x81, 0x8f, 0x3f, 0x89, 0xf1, 0xaa, 0x19, 0x46, 0x6c, 0xc1, 0xe4, 0x2a, 0xba,
-	0xd4, 0x7f, 0xc3, 0x83, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x4a, 0x64, 0x4e, 0x42, 0x4f, 0x03,
-	0x00, 0x00,
+var fileDescriptor_component_37f2491439ff1bb1 = []byte{
+	// 419 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x53, 0xbf, 0xcb, 0xd3, 0x40,
+	0x18, 0xce, 0xfb, 0x35, 0xfd, 0xda, 0x5e, 0x3e, 0xbf, 0x2f, 0x1c, 0x22, 0xe1, 0x43, 0xce, 0x8f,
+	0x4e, 0x45, 0x31, 0xa5, 0x71, 0x10, 0xc4, 0xa5, 0xda, 0x16, 0x37, 0x21, 0x08, 0x82, 0x83, 0x78,
+	0x09, 0x67, 0x7a, 0xd0, 0xe4, 0xea, 0x71, 0x11, 0xba, 0xf9, 0x27, 0x38, 0x8b, 0x83, 0xa3, 0x7f,
+	0x82, 0xa3, 0x63, 0xc7, 0x8e, 0x2e, 0x82, 0x39, 0x17, 0xc7, 0x8e, 0x8e, 0x92, 0xeb, 0xaf, 0xa4,
+	0xab, 0x08, 0x6e, 0x79, 0x9e, 0x7b, 0x2f, 0xef, 0xf3, 0xbc, 0xcf, 0x7b, 0xe8, 0x22, 0x16, 0xe9,
+	0x5c, 0x64, 0x2c, 0x53, 0xfe, 0x5c, 0x0a, 0x25, 0x2e, 0xef, 0x26, 0x5c, 0x4d, 0xf3, 0xc8, 0x8f,
+	0x45, 0xda, 0x4f, 0x44, 0x22, 0xfa, 0x86, 0x8e, 0xf2, 0xd7, 0x06, 0x19, 0x60, 0xbe, 0x36, 0xe5,
+	0xdd, 0x97, 0x08, 0x3d, 0x61, 0x74, 0x36, 0xe2, 0x92, 0xc5, 0x0a, 0xdf, 0x40, 0xa7, 0xc3, 0x54,
+	0xe4, 0x99, 0xf2, 0xe0, 0x0a, 0x7a, 0x76, 0xb8, 0x45, 0xb8, 0x8b, 0x5a, 0xe3, 0x19, 0x4b, 0x59,
+	0xa6, 0xbc, 0x93, 0x2b, 0xe8, 0x9d, 0x07, 0x6d, 0x7f, 0x8b, 0xc3, 0xdd, 0x01, 0xbe, 0x8e, 0x9a,
+	0x21, 0xcd, 0x12, 0xe6, 0x35, 0xcc, 0xd5, 0x0d, 0xe8, 0xbe, 0x42, 0x67, 0x23, 0x9a, 0xd2, 0x84,
+	0xfd, 0xb3, 0x0e, 0x1f, 0x00, 0x9d, 0x95, 0x16, 0x9e, 0xbe, 0x65, 0xf2, 0x19, 0x4f, 0xd9, 0x5f,
+	0xb5, 0xb8, 0x89, 0x3a, 0x13, 0xc9, 0xde, 0xe4, 0x2c, 0x8b, 0x17, 0xdb, 0x36, 0x07, 0x02, 0x5f,
+	0xa2, 0xf6, 0x28, 0x97, 0x54, 0x71, 0x91, 0x79, 0xb6, 0x39, 0xdc, 0xe3, 0x83, 0xb8, 0x66, 0x55,
+	0xdc, 0x47, 0x40, 0xe7, 0x1b, 0xff, 0xff, 0xa5, 0xbc, 0xef, 0x80, 0x3a, 0x8f, 0x77, 0x0b, 0x84,
+	0xef, 0x54, 0x77, 0xc1, 0xa8, 0x73, 0x02, 0xc7, 0x3f, 0x50, 0x61, 0x75, 0x55, 0x06, 0xf5, 0x60,
+	0x8d, 0x66, 0x27, 0xb8, 0xe6, 0x57, 0xc9, 0xb0, 0x9e, 0xfd, 0xa0, 0x1e, 0x94, 0x31, 0x50, 0x5e,
+	0xa9, 0x92, 0x61, 0x3d, 0xcb, 0xfb, 0xc7, 0xe3, 0x33, 0xc6, 0x9c, 0xe0, 0xc2, 0xaf, 0xd3, 0xe1,
+	0x51, 0xd9, 0x03, 0x7b, 0xf9, 0xe9, 0x16, 0xdc, 0x7e, 0xb8, 0x9f, 0x29, 0x6e, 0x23, 0x7b, 0xc2,
+	0x25, 0x73, 0x2d, 0xdc, 0x41, 0xcd, 0xe7, 0x54, 0x31, 0xe9, 0x02, 0x6e, 0xa1, 0xc6, 0x90, 0x4b,
+	0xf7, 0xa4, 0xe4, 0xc6, 0x54, 0xaa, 0xa9, 0xdb, 0x28, 0x0b, 0xcb, 0x3f, 0xb8, 0xf6, 0xa3, 0xe1,
+	0xaa, 0x20, 0xd6, 0xb7, 0x82, 0x58, 0xeb, 0x82, 0xc0, 0xef, 0x82, 0xc0, 0x3b, 0x4d, 0xe0, 0xb3,
+	0x26, 0xf0, 0x45, 0x13, 0xf8, 0xaa, 0x09, 0x2c, 0x35, 0x81, 0x95, 0x26, 0xf0, 0x43, 0x13, 0xf8,
+	0xa5, 0x89, 0xb5, 0xd6, 0x04, 0xde, 0xff, 0x24, 0xd6, 0x8b, 0x16, 0x8d, 0xf8, 0x8c, 0xab, 0x45,
+	0x74, 0x6a, 0x5e, 0xd9, 0xbd, 0x3f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x0a, 0xc6, 0x6d, 0x6a, 0xa7,
+	0x03, 0x00, 0x00,
 }
