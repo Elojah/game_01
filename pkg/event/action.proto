@@ -30,6 +30,7 @@ message Feedback {
 
 message Casted {
 	bytes AbilityID            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	Targets Targets            = 2 [(gogoproto.nullable)   = false];
 }
 
 message Action {

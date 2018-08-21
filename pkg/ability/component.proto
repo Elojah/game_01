@@ -29,13 +29,11 @@ message Targets {
 message HealDirect {
 	uint64 Amount                 = 1;
 	Element Element               = 2;
-	repeated bytes Targets        = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message DamageDirect {
 	uint64 Amount                 = 1;
 	Element Element               = 2;
-	repeated bytes Targets        = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message HealOverTime {
@@ -43,7 +41,6 @@ message HealOverTime {
 	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
-	repeated bytes Targets        = 5 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message DamageOverTime {
@@ -51,7 +48,6 @@ message DamageOverTime {
 	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
-	repeated bytes Targets        = 5 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message Component {

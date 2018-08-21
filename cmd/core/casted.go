@@ -1,8 +1,8 @@
 package main
 
 import (
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/entity"
@@ -16,7 +16,7 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 	casted := e.Action.GetValue().(*event.Casted)
 
 	// #Retrieve entity
-	en, err := a.EntityStore.GetEntity(entity.Subset{
+	source, err := a.EntityStore.GetEntity(entity.Subset{
 		ID:    id,
 		MaxTS: e.TS.UnixNano(),
 	})
@@ -26,8 +26,7 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(ability.Subset{
-		ID:       casted.AbilityID,
-		EntityID: id,
+		ID: casted.AbilityID,
 	})
 	if err == serrors.ErrNotFound {
 		return errors.Wrapf(serrors.ErrInsufficientACLs, "get ability %s for %s", casted.AbilityID.String(), id.String())
@@ -37,30 +36,28 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 	}
 
 	// #Check cast was not interrupted.
-	if en.Cast == nil ||
-		en.Cast.AbilityID != casted.AbilityID ||
-		en.Cast.TS.Add(ab.CastTime) != e.TS {
-		log.Info().
-			Str("entity", id.String()).
-			Int64("ts", e.TS.UnixNano()).
-			Str("ability", ab.ID.String()).
-			Msg("interrupted cast")
-			// normal behavior, don't return errors
+	if source.Cast == nil ||
+		source.Cast.AbilityID != casted.AbilityID ||
+		source.Cast.TS.Add(ab.CastTime) != e.TS {
+		// normal behavior, don't return errors
 		return nil
 	}
 
-	for _, c := range ab.Components {
+	var result *multierror.Error
+	for i, c := range ab.Components {
 		switch c.GetValue().(type) {
 		case ability.DamageDirect:
-			return serrors.ErrNotImplementedYet
+			if err := a.DamageDirect(source, c, casted.Targets, e.TS); err != nil {
+				result = multierror.Append(result, errors.Wrapf(err, "damage direct component %d", i))
+			}
 		case ability.HealDirect:
-			return serrors.ErrNotImplementedYet
+			result = multierror.Append(result, serrors.ErrNotImplementedYet)
 		case ability.HealOverTime:
-			return serrors.ErrNotImplementedYet
+			result = multierror.Append(result, serrors.ErrNotImplementedYet)
 		case ability.DamageOverTime:
-			return serrors.ErrNotImplementedYet
+			result = multierror.Append(result, serrors.ErrNotImplementedYet)
 		}
 	}
 
-	return nil
+	return result.ErrorOrNil()
 }

@@ -39,7 +39,7 @@ type Move struct {
 func (m *Move) Reset()      { *m = Move{} }
 func (*Move) ProtoMessage() {}
 func (*Move) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_920f2fa28a2c10fb, []int{0}
+	return fileDescriptor_action_9431fa72823a9cbd, []int{0}
 }
 func (m *Move) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -86,7 +86,7 @@ type Cast struct {
 func (m *Cast) Reset()      { *m = Cast{} }
 func (*Cast) ProtoMessage() {}
 func (*Cast) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_920f2fa28a2c10fb, []int{1}
+	return fileDescriptor_action_9431fa72823a9cbd, []int{1}
 }
 func (m *Cast) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -133,7 +133,7 @@ type Feedback struct {
 func (m *Feedback) Reset()      { *m = Feedback{} }
 func (*Feedback) ProtoMessage() {}
 func (*Feedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_920f2fa28a2c10fb, []int{2}
+	return fileDescriptor_action_9431fa72823a9cbd, []int{2}
 }
 func (m *Feedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -164,6 +164,7 @@ var xxx_messageInfo_Feedback proto.InternalMessageInfo
 
 type Casted struct {
 	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=AbilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
+	Targets              ability.Targets                       `protobuf:"bytes,2,opt,name=Targets" json:"Targets"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
 }
@@ -171,7 +172,7 @@ type Casted struct {
 func (m *Casted) Reset()      { *m = Casted{} }
 func (*Casted) ProtoMessage() {}
 func (*Casted) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_920f2fa28a2c10fb, []int{3}
+	return fileDescriptor_action_9431fa72823a9cbd, []int{3}
 }
 func (m *Casted) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -200,6 +201,13 @@ func (m *Casted) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Casted proto.InternalMessageInfo
 
+func (m *Casted) GetTargets() ability.Targets {
+	if m != nil {
+		return m.Targets
+	}
+	return ability.Targets{}
+}
+
 type Action struct {
 	Move                 *Move     `protobuf:"bytes,1,opt,name=Move" json:"Move,omitempty"`
 	Cast                 *Cast     `protobuf:"bytes,2,opt,name=Cast" json:"Cast,omitempty"`
@@ -212,7 +220,7 @@ type Action struct {
 func (m *Action) Reset()      { *m = Action{} }
 func (*Action) ProtoMessage() {}
 func (*Action) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_920f2fa28a2c10fb, []int{4}
+	return fileDescriptor_action_9431fa72823a9cbd, []int{4}
 }
 func (m *Action) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -393,6 +401,9 @@ func (this *Casted) Equal(that interface{}) bool {
 	if !this.AbilityID.Equal(that1.AbilityID) {
 		return false
 	}
+	if !this.Targets.Equal(&that1.Targets) {
+		return false
+	}
 	return true
 }
 func (this *Action) Equal(that interface{}) bool {
@@ -468,9 +479,10 @@ func (this *Casted) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 5)
+	s := make([]string, 0, 6)
 	s = append(s, "&event.Casted{")
 	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
+	s = append(s, "Targets: "+strings.Replace(this.Targets.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -656,6 +668,14 @@ func (m *Casted) MarshalTo(dAtA []byte) (int, error) {
 		return 0, err
 	}
 	i += n9
+	dAtA[i] = 0x12
+	i++
+	i = encodeVarintAction(dAtA, i, uint64(m.Targets.Size()))
+	n10, err := m.Targets.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n10
 	return i, nil
 }
 
@@ -678,41 +698,41 @@ func (m *Action) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintAction(dAtA, i, uint64(m.Move.Size()))
-		n10, err := m.Move.MarshalTo(dAtA[i:])
-		if err != nil {
-			return 0, err
-		}
-		i += n10
-	}
-	if m.Cast != nil {
-		dAtA[i] = 0x12
-		i++
-		i = encodeVarintAction(dAtA, i, uint64(m.Cast.Size()))
-		n11, err := m.Cast.MarshalTo(dAtA[i:])
+		n11, err := m.Move.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n11
 	}
-	if m.Feedback != nil {
-		dAtA[i] = 0x1a
+	if m.Cast != nil {
+		dAtA[i] = 0x12
 		i++
-		i = encodeVarintAction(dAtA, i, uint64(m.Feedback.Size()))
-		n12, err := m.Feedback.MarshalTo(dAtA[i:])
+		i = encodeVarintAction(dAtA, i, uint64(m.Cast.Size()))
+		n12, err := m.Cast.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n12
 	}
-	if m.Casted != nil {
-		dAtA[i] = 0x22
+	if m.Feedback != nil {
+		dAtA[i] = 0x1a
 		i++
-		i = encodeVarintAction(dAtA, i, uint64(m.Casted.Size()))
-		n13, err := m.Casted.MarshalTo(dAtA[i:])
+		i = encodeVarintAction(dAtA, i, uint64(m.Feedback.Size()))
+		n13, err := m.Feedback.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n13
+	}
+	if m.Casted != nil {
+		dAtA[i] = 0x22
+		i++
+		i = encodeVarintAction(dAtA, i, uint64(m.Casted.Size()))
+		n14, err := m.Casted.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n14
 	}
 	return i, nil
 }
@@ -773,6 +793,8 @@ func NewPopulatedCasted(r randyAction, easy bool) *Casted {
 	this := &Casted{}
 	v11 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.AbilityID = *v11
+	v12 := ability.NewPopulatedTargets(r, easy)
+	this.Targets = *v12
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -813,9 +835,9 @@ func randUTF8RuneAction(r randyAction) rune {
 	return rune(ru + 61)
 }
 func randStringAction(r randyAction) string {
-	v12 := r.Intn(100)
-	tmps := make([]rune, v12)
-	for i := 0; i < v12; i++ {
+	v13 := r.Intn(100)
+	tmps := make([]rune, v13)
+	for i := 0; i < v13; i++ {
 		tmps[i] = randUTF8RuneAction(r)
 	}
 	return string(tmps)
@@ -837,11 +859,11 @@ func randFieldAction(dAtA []byte, r randyAction, fieldNumber int, wire int) []by
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateAction(dAtA, uint64(key))
-		v13 := r.Int63()
+		v14 := r.Int63()
 		if r.Intn(2) == 0 {
-			v13 *= -1
+			v14 *= -1
 		}
-		dAtA = encodeVarintPopulateAction(dAtA, uint64(v13))
+		dAtA = encodeVarintPopulateAction(dAtA, uint64(v14))
 	case 1:
 		dAtA = encodeVarintPopulateAction(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -910,6 +932,8 @@ func (m *Casted) Size() (n int) {
 	var l int
 	_ = l
 	l = m.AbilityID.Size()
+	n += 1 + l + sovAction(uint64(l))
+	l = m.Targets.Size()
 	n += 1 + l + sovAction(uint64(l))
 	return n
 }
@@ -991,6 +1015,7 @@ func (this *Casted) String() string {
 	}
 	s := strings.Join([]string{`&Casted{`,
 		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
+		`Targets:` + strings.Replace(strings.Replace(this.Targets.String(), "Targets", "ability.Targets", 1), `&`, ``, 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1528,6 +1553,36 @@ func (m *Casted) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAction
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Targets.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAction(dAtA[iNdEx:])
@@ -1836,10 +1891,10 @@ var (
 	ErrIntOverflowAction   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("action.proto", fileDescriptor_action_920f2fa28a2c10fb) }
+func init() { proto.RegisterFile("action.proto", fileDescriptor_action_9431fa72823a9cbd) }
 
-var fileDescriptor_action_920f2fa28a2c10fb = []byte{
-	// 452 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_action_9431fa72823a9cbd = []byte{
+	// 457 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x49, 0x4c, 0x2e, 0xc9,
 	0xcc, 0xcf, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d,
 	0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x0b, 0x27, 0x95, 0xa6, 0x81,
@@ -1857,16 +1912,16 @@ var fileDescriptor_action_920f2fa28a2c10fb = []byte{
 	0x90, 0xe7, 0x11, 0x84, 0x7e, 0xa4, 0x20, 0x61, 0xa2, 0x24, 0x48, 0x34, 0x10, 0x41, 0x02, 0xf1,
 	0x08, 0x87, 0x1e, 0x94, 0x0f, 0xf5, 0x07, 0x4c, 0x5a, 0xe9, 0x3a, 0x23, 0x17, 0x87, 0x5b, 0x6a,
 	0x6a, 0x4a, 0x52, 0x62, 0x72, 0xb6, 0x90, 0x2d, 0x17, 0x13, 0xb9, 0x7e, 0x60, 0xa2, 0x9e, 0xe3,
-	0x5d, 0xb9, 0xd8, 0x20, 0xae, 0x03, 0xbb, 0x9d, 0x74, 0x63, 0x20, 0x9a, 0x95, 0x42, 0xb9, 0xd8,
-	0x40, 0xf1, 0x93, 0x9a, 0x42, 0xd5, 0x18, 0x52, 0xea, 0x61, 0xe4, 0x62, 0x73, 0x04, 0xe7, 0x35,
-	0x21, 0x49, 0x48, 0x3a, 0x06, 0x1b, 0xc9, 0x6d, 0xc4, 0xaa, 0x07, 0xe2, 0x04, 0x41, 0x92, 0xb6,
-	0x24, 0x24, 0x71, 0x80, 0x03, 0x02, 0x24, 0x05, 0xe2, 0x04, 0x41, 0xd2, 0x8b, 0x2a, 0x22, 0xc0,
-	0xe1, 0xa9, 0x0c, 0x26, 0x10, 0x84, 0x88, 0x0b, 0x79, 0x98, 0xf3, 0x25, 0x58, 0xc0, 0x8a, 0xd8,
-	0xf5, 0x20, 0xdc, 0x20, 0xa8, 0xb0, 0x15, 0xcb, 0x89, 0x05, 0xf2, 0x8c, 0x4e, 0xf6, 0x17, 0x1e,
-	0xca, 0x31, 0xdc, 0x78, 0x28, 0xc7, 0xf0, 0xe1, 0xa1, 0x1c, 0xe3, 0x8f, 0x87, 0x72, 0x8c, 0x0d,
-	0x8f, 0xe4, 0x18, 0x57, 0x3c, 0x92, 0x63, 0xdc, 0xf1, 0x48, 0x8e, 0xf1, 0xc0, 0x23, 0x39, 0xc6,
-	0x13, 0x8f, 0xe4, 0x18, 0x2f, 0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39,
-	0x86, 0x0f, 0x8f, 0xe4, 0x18, 0x27, 0x3c, 0x96, 0x63, 0x88, 0x62, 0x4d, 0x2d, 0x4b, 0xcd, 0x2b,
-	0x49, 0x62, 0x03, 0x67, 0x4a, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x39, 0x82, 0xc0, 0x77,
-	0x41, 0x04, 0x00, 0x00,
+	0x5d, 0xb9, 0xd8, 0x20, 0xae, 0x03, 0xbb, 0x9d, 0x74, 0x63, 0x20, 0x9a, 0x95, 0xea, 0xb9, 0xd8,
+	0x40, 0xf1, 0x93, 0x9a, 0x42, 0xdd, 0x18, 0xd2, 0x40, 0x4e, 0x6d, 0x78, 0x83, 0xb6, 0x87, 0x91,
+	0x8b, 0xcd, 0x11, 0x9c, 0x2b, 0x85, 0x24, 0x21, 0x29, 0x1e, 0x6c, 0x39, 0xb7, 0x11, 0xab, 0x1e,
+	0x88, 0x13, 0x04, 0xc9, 0x04, 0x92, 0x90, 0x64, 0x04, 0x35, 0x8c, 0x55, 0x0f, 0xc4, 0x09, 0x82,
+	0xa4, 0x2c, 0x55, 0x44, 0xd4, 0xc0, 0xd3, 0x23, 0x4c, 0x20, 0x08, 0x11, 0x6b, 0xf2, 0x30, 0x8f,
+	0x4a, 0xb0, 0x80, 0x15, 0xb1, 0xeb, 0x41, 0xb8, 0x41, 0x50, 0x61, 0x2b, 0x96, 0x13, 0x0b, 0xe4,
+	0x19, 0x9d, 0xec, 0x2f, 0x3c, 0x94, 0x63, 0xb8, 0xf1, 0x50, 0x8e, 0xe1, 0xc3, 0x43, 0x39, 0xc6,
+	0x1f, 0x0f, 0xe5, 0x18, 0x1b, 0x1e, 0xc9, 0x31, 0xae, 0x78, 0x24, 0xc7, 0xb8, 0xe3, 0x91, 0x1c,
+	0xe3, 0x81, 0x47, 0x72, 0x8c, 0x27, 0x1e, 0xc9, 0x31, 0x5e, 0x78, 0x24, 0xc7, 0xf8, 0xe0, 0x91,
+	0x1c, 0xe3, 0x8b, 0x47, 0x72, 0x0c, 0x1f, 0x1e, 0xc9, 0x31, 0x4e, 0x78, 0x2c, 0xc7, 0x10, 0xc5,
+	0x9a, 0x5a, 0x96, 0x9a, 0x57, 0x92, 0xc4, 0x06, 0xce, 0xbe, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff,
+	0xff, 0x58, 0x65, 0xcb, 0x76, 0x6b, 0x04, 0x00, 0x00,
 }

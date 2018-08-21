@@ -57,7 +57,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 
 	// #Check CD validity. if LastUsed + CD < now.
 	if ab.LastUsed.Add(ab.CD).Before(e.TS) {
-		return errors.Wrapf(serrors.ErrInvalidAction, "cd up for skill %s ", ab.ID.String())
+		return errors.Wrapf(serrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
 	}
 
 	// #Set entity new state with decreased MP and casting up.
@@ -72,7 +72,10 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 		ID: ulid.NewID(),
 		TS: e.TS.Add(ab.CastTime),
 		Action: event.Action{
-			Casted: &event.Casted{AbilityID: ab.ID},
+			Casted: &event.Casted{
+				AbilityID: ab.ID,
+				Targets:   cast.Targets,
+			},
 		},
 	}, source.ID); err != nil {
 		return errors.Wrapf(err, "set casted event %s", e.ID.String())
