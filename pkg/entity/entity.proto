@@ -19,10 +19,11 @@ message E {
 	bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes Type                   = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	string Name                  = 3;
-	uint64 HP                    = 4;
-	uint64 MaxHP                 = 5;
-	uint64 MP                    = 6;
-	uint64 MaxMP                 = 7;
-	Position Position            = 8 [(gogoproto.nullable)   = false];
-	Cast Cast                    = 9 [(gogoproto.nullable)   = true];
+	bool Dead                    = 4;
+	uint64 HP                    = 5;
+	uint64 MaxHP                 = 6;
+	uint64 MP                    = 7;
+	uint64 MaxMP                 = 8;
+	Position Position            = 9 [(gogoproto.nullable)   = false];
+	Cast Cast                    = 10 [(gogoproto.nullable)   = true];
 }

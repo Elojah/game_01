@@ -16,13 +16,13 @@ enum Element {
 	Time                          = 4;
 }
 
-message HealDirect {
+message Heal {
 	uint64 Amount                 = 1;
 	Element Element               = 2;
 	uint64 Range                  = 3;
 }
 
-message DamageDirect {
+message Damage {
 	uint64 Amount                 = 1;
 	Element Element               = 2;
 	uint64 Range                  = 3;
@@ -46,8 +46,8 @@ message DamageOverTime {
 
 message Component {
 	option (gogoproto.onlyone)    = true;
-	HealDirect HealDirect         = 1;
-	DamageDirect DamageDirect     = 2;
+	Heal Heal         = 1;
+	Damage Damage     = 2;
 	HealOverTime HealOverTime     = 3;
 	DamageOverTime DamageOverTime = 4;
 }

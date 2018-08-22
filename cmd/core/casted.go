@@ -1,12 +1,11 @@
 package main
 
 import (
-	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/entity"
-	serrors "github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -28,8 +27,8 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 	ab, err := a.AbilityStore.GetAbility(ability.Subset{
 		ID: casted.AbilityID,
 	})
-	if err == serrors.ErrNotFound {
-		return errors.Wrapf(serrors.ErrInsufficientACLs, "get ability %s for %s", casted.AbilityID.String(), id.String())
+	if err == gerrors.ErrNotFound {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", casted.AbilityID.String(), id.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get ability %s for %s", casted.AbilityID.String(), id.String())
@@ -43,23 +42,10 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 		return nil
 	}
 
-	var result *multierror.Error
-	for i, c := range ab.Components {
-		switch c.GetValue().(type) {
-		case ability.DamageDirect:
-			if err := a.DamageDirect(source, c, casted.Targets, e.TS); err != nil {
-				result = multierror.Append(result, errors.Wrapf(err, "damage direct component %d", i))
-			}
-		case ability.HealDirect:
-			result = multierror.Append(result, serrors.ErrNotImplementedYet)
-		case ability.HealOverTime:
-			result = multierror.Append(result, serrors.ErrNotImplementedYet)
-		case ability.DamageOverTime:
-			result = multierror.Append(result, serrors.ErrNotImplementedYet)
-		default:
-			result = multierror.Append(result, serrors.ErrNotImplementedYet)
-		}
-	}
+	abApp := newAbilityApp(source, ab, casted, e.TS)
+	abApp.EntityStore = a.EntityStore
+
+	abApp.Run()
 
 	return result.ErrorOrNil()
 }

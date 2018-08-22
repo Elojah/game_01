@@ -24,23 +24,23 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
-type HealDirectFeedback struct {
+type HealFeedback struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *HealDirectFeedback) Reset()      { *m = HealDirectFeedback{} }
-func (*HealDirectFeedback) ProtoMessage() {}
-func (*HealDirectFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_8d50c1ae5571b1b4, []int{0}
+func (m *HealFeedback) Reset()      { *m = HealFeedback{} }
+func (*HealFeedback) ProtoMessage() {}
+func (*HealFeedback) Descriptor() ([]byte, []int) {
+	return fileDescriptor_component_feedback_d9c73a99913d592e, []int{0}
 }
-func (m *HealDirectFeedback) XXX_Unmarshal(b []byte) error {
+func (m *HealFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *HealDirectFeedback) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *HealFeedback) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_HealDirectFeedback.Marshal(b, m, deterministic)
+		return xxx_messageInfo_HealFeedback.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalTo(b)
@@ -50,42 +50,42 @@ func (m *HealDirectFeedback) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (dst *HealDirectFeedback) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_HealDirectFeedback.Merge(dst, src)
+func (dst *HealFeedback) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_HealFeedback.Merge(dst, src)
 }
-func (m *HealDirectFeedback) XXX_Size() int {
+func (m *HealFeedback) XXX_Size() int {
 	return m.Size()
 }
-func (m *HealDirectFeedback) XXX_DiscardUnknown() {
-	xxx_messageInfo_HealDirectFeedback.DiscardUnknown(m)
+func (m *HealFeedback) XXX_DiscardUnknown() {
+	xxx_messageInfo_HealFeedback.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_HealDirectFeedback proto.InternalMessageInfo
+var xxx_messageInfo_HealFeedback proto.InternalMessageInfo
 
-func (m *HealDirectFeedback) GetAmount() uint64 {
+func (m *HealFeedback) GetAmount() uint64 {
 	if m != nil {
 		return m.Amount
 	}
 	return 0
 }
 
-type DamageDirectFeedback struct {
+type DamageFeedback struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DamageDirectFeedback) Reset()      { *m = DamageDirectFeedback{} }
-func (*DamageDirectFeedback) ProtoMessage() {}
-func (*DamageDirectFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_8d50c1ae5571b1b4, []int{1}
+func (m *DamageFeedback) Reset()      { *m = DamageFeedback{} }
+func (*DamageFeedback) ProtoMessage() {}
+func (*DamageFeedback) Descriptor() ([]byte, []int) {
+	return fileDescriptor_component_feedback_d9c73a99913d592e, []int{1}
 }
-func (m *DamageDirectFeedback) XXX_Unmarshal(b []byte) error {
+func (m *DamageFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *DamageDirectFeedback) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *DamageFeedback) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_DamageDirectFeedback.Marshal(b, m, deterministic)
+		return xxx_messageInfo_DamageFeedback.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalTo(b)
@@ -95,19 +95,19 @@ func (m *DamageDirectFeedback) XXX_Marshal(b []byte, deterministic bool) ([]byte
 		return b[:n], nil
 	}
 }
-func (dst *DamageDirectFeedback) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DamageDirectFeedback.Merge(dst, src)
+func (dst *DamageFeedback) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_DamageFeedback.Merge(dst, src)
 }
-func (m *DamageDirectFeedback) XXX_Size() int {
+func (m *DamageFeedback) XXX_Size() int {
 	return m.Size()
 }
-func (m *DamageDirectFeedback) XXX_DiscardUnknown() {
-	xxx_messageInfo_DamageDirectFeedback.DiscardUnknown(m)
+func (m *DamageFeedback) XXX_DiscardUnknown() {
+	xxx_messageInfo_DamageFeedback.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DamageDirectFeedback proto.InternalMessageInfo
+var xxx_messageInfo_DamageFeedback proto.InternalMessageInfo
 
-func (m *DamageDirectFeedback) GetAmount() uint64 {
+func (m *DamageFeedback) GetAmount() uint64 {
 	if m != nil {
 		return m.Amount
 	}
@@ -123,7 +123,7 @@ type HealOverTimeFeedback struct {
 func (m *HealOverTimeFeedback) Reset()      { *m = HealOverTimeFeedback{} }
 func (*HealOverTimeFeedback) ProtoMessage() {}
 func (*HealOverTimeFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_8d50c1ae5571b1b4, []int{2}
+	return fileDescriptor_component_feedback_d9c73a99913d592e, []int{2}
 }
 func (m *HealOverTimeFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -168,7 +168,7 @@ type DamageOverTimeFeedback struct {
 func (m *DamageOverTimeFeedback) Reset()      { *m = DamageOverTimeFeedback{} }
 func (*DamageOverTimeFeedback) ProtoMessage() {}
 func (*DamageOverTimeFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_8d50c1ae5571b1b4, []int{3}
+	return fileDescriptor_component_feedback_d9c73a99913d592e, []int{3}
 }
 func (m *DamageOverTimeFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -205,8 +205,8 @@ func (m *DamageOverTimeFeedback) GetAmount() uint64 {
 }
 
 type ComponentFeedback struct {
-	HealDirectFeedback     *HealDirectFeedback     `protobuf:"bytes,1,opt,name=HealDirectFeedback" json:"HealDirectFeedback,omitempty"`
-	DamageDirectFeedback   *DamageDirectFeedback   `protobuf:"bytes,2,opt,name=DamageDirectFeedback" json:"DamageDirectFeedback,omitempty"`
+	HealFeedback           *HealFeedback           `protobuf:"bytes,1,opt,name=HealFeedback" json:"HealFeedback,omitempty"`
+	DamageFeedback         *DamageFeedback         `protobuf:"bytes,2,opt,name=DamageFeedback" json:"DamageFeedback,omitempty"`
 	HealOverTimeFeedback   *HealOverTimeFeedback   `protobuf:"bytes,3,opt,name=HealOverTimeFeedback" json:"HealOverTimeFeedback,omitempty"`
 	DamageOverTimeFeedback *DamageOverTimeFeedback `protobuf:"bytes,4,opt,name=DamageOverTimeFeedback" json:"DamageOverTimeFeedback,omitempty"`
 	XXX_NoUnkeyedLiteral   struct{}                `json:"-"`
@@ -216,7 +216,7 @@ type ComponentFeedback struct {
 func (m *ComponentFeedback) Reset()      { *m = ComponentFeedback{} }
 func (*ComponentFeedback) ProtoMessage() {}
 func (*ComponentFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_feedback_8d50c1ae5571b1b4, []int{4}
+	return fileDescriptor_component_feedback_d9c73a99913d592e, []int{4}
 }
 func (m *ComponentFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -245,16 +245,16 @@ func (m *ComponentFeedback) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ComponentFeedback proto.InternalMessageInfo
 
-func (m *ComponentFeedback) GetHealDirectFeedback() *HealDirectFeedback {
+func (m *ComponentFeedback) GetHealFeedback() *HealFeedback {
 	if m != nil {
-		return m.HealDirectFeedback
+		return m.HealFeedback
 	}
 	return nil
 }
 
-func (m *ComponentFeedback) GetDamageDirectFeedback() *DamageDirectFeedback {
+func (m *ComponentFeedback) GetDamageFeedback() *DamageFeedback {
 	if m != nil {
-		return m.DamageDirectFeedback
+		return m.DamageFeedback
 	}
 	return nil
 }
@@ -274,20 +274,20 @@ func (m *ComponentFeedback) GetDamageOverTimeFeedback() *DamageOverTimeFeedback 
 }
 
 func init() {
-	proto.RegisterType((*HealDirectFeedback)(nil), "HealDirectFeedback")
-	proto.RegisterType((*DamageDirectFeedback)(nil), "DamageDirectFeedback")
+	proto.RegisterType((*HealFeedback)(nil), "HealFeedback")
+	proto.RegisterType((*DamageFeedback)(nil), "DamageFeedback")
 	proto.RegisterType((*HealOverTimeFeedback)(nil), "HealOverTimeFeedback")
 	proto.RegisterType((*DamageOverTimeFeedback)(nil), "DamageOverTimeFeedback")
 	proto.RegisterType((*ComponentFeedback)(nil), "ComponentFeedback")
 }
-func (this *HealDirectFeedback) Equal(that interface{}) bool {
+func (this *HealFeedback) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*HealDirectFeedback)
+	that1, ok := that.(*HealFeedback)
 	if !ok {
-		that2, ok := that.(HealDirectFeedback)
+		that2, ok := that.(HealFeedback)
 		if ok {
 			that1 = &that2
 		} else {
@@ -304,14 +304,14 @@ func (this *HealDirectFeedback) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *DamageDirectFeedback) Equal(that interface{}) bool {
+func (this *DamageFeedback) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*DamageDirectFeedback)
+	that1, ok := that.(*DamageFeedback)
 	if !ok {
-		that2, ok := that.(DamageDirectFeedback)
+		that2, ok := that.(DamageFeedback)
 		if ok {
 			that1 = &that2
 		} else {
@@ -395,10 +395,10 @@ func (this *ComponentFeedback) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.HealDirectFeedback.Equal(that1.HealDirectFeedback) {
+	if !this.HealFeedback.Equal(that1.HealFeedback) {
 		return false
 	}
-	if !this.DamageDirectFeedback.Equal(that1.DamageDirectFeedback) {
+	if !this.DamageFeedback.Equal(that1.DamageFeedback) {
 		return false
 	}
 	if !this.HealOverTimeFeedback.Equal(that1.HealOverTimeFeedback) {
@@ -409,22 +409,22 @@ func (this *ComponentFeedback) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *HealDirectFeedback) GoString() string {
+func (this *HealFeedback) GoString() string {
 	if this == nil {
 		return "nil"
 	}
 	s := make([]string, 0, 5)
-	s = append(s, "&ability.HealDirectFeedback{")
+	s = append(s, "&ability.HealFeedback{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
-func (this *DamageDirectFeedback) GoString() string {
+func (this *DamageFeedback) GoString() string {
 	if this == nil {
 		return "nil"
 	}
 	s := make([]string, 0, 5)
-	s = append(s, "&ability.DamageDirectFeedback{")
+	s = append(s, "&ability.DamageFeedback{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -455,11 +455,11 @@ func (this *ComponentFeedback) GoString() string {
 	}
 	s := make([]string, 0, 8)
 	s = append(s, "&ability.ComponentFeedback{")
-	if this.HealDirectFeedback != nil {
-		s = append(s, "HealDirectFeedback: "+fmt.Sprintf("%#v", this.HealDirectFeedback)+",\n")
+	if this.HealFeedback != nil {
+		s = append(s, "HealFeedback: "+fmt.Sprintf("%#v", this.HealFeedback)+",\n")
 	}
-	if this.DamageDirectFeedback != nil {
-		s = append(s, "DamageDirectFeedback: "+fmt.Sprintf("%#v", this.DamageDirectFeedback)+",\n")
+	if this.DamageFeedback != nil {
+		s = append(s, "DamageFeedback: "+fmt.Sprintf("%#v", this.DamageFeedback)+",\n")
 	}
 	if this.HealOverTimeFeedback != nil {
 		s = append(s, "HealOverTimeFeedback: "+fmt.Sprintf("%#v", this.HealOverTimeFeedback)+",\n")
@@ -478,7 +478,7 @@ func valueToGoStringComponentFeedback(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
-func (m *HealDirectFeedback) Marshal() (dAtA []byte, err error) {
+func (m *HealFeedback) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -488,7 +488,7 @@ func (m *HealDirectFeedback) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *HealDirectFeedback) MarshalTo(dAtA []byte) (int, error) {
+func (m *HealFeedback) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -501,7 +501,7 @@ func (m *HealDirectFeedback) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
-func (m *DamageDirectFeedback) Marshal() (dAtA []byte, err error) {
+func (m *DamageFeedback) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -511,7 +511,7 @@ func (m *DamageDirectFeedback) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *DamageDirectFeedback) MarshalTo(dAtA []byte) (int, error) {
+func (m *DamageFeedback) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -585,21 +585,21 @@ func (m *ComponentFeedback) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.HealDirectFeedback != nil {
+	if m.HealFeedback != nil {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintComponentFeedback(dAtA, i, uint64(m.HealDirectFeedback.Size()))
-		n1, err := m.HealDirectFeedback.MarshalTo(dAtA[i:])
+		i = encodeVarintComponentFeedback(dAtA, i, uint64(m.HealFeedback.Size()))
+		n1, err := m.HealFeedback.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n1
 	}
-	if m.DamageDirectFeedback != nil {
+	if m.DamageFeedback != nil {
 		dAtA[i] = 0x12
 		i++
-		i = encodeVarintComponentFeedback(dAtA, i, uint64(m.DamageDirectFeedback.Size()))
-		n2, err := m.DamageDirectFeedback.MarshalTo(dAtA[i:])
+		i = encodeVarintComponentFeedback(dAtA, i, uint64(m.DamageFeedback.Size()))
+		n2, err := m.DamageFeedback.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
@@ -637,16 +637,16 @@ func encodeVarintComponentFeedback(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func NewPopulatedHealDirectFeedback(r randyComponentFeedback, easy bool) *HealDirectFeedback {
-	this := &HealDirectFeedback{}
+func NewPopulatedHealFeedback(r randyComponentFeedback, easy bool) *HealFeedback {
+	this := &HealFeedback{}
 	this.Amount = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
 }
 
-func NewPopulatedDamageDirectFeedback(r randyComponentFeedback, easy bool) *DamageDirectFeedback {
-	this := &DamageDirectFeedback{}
+func NewPopulatedDamageFeedback(r randyComponentFeedback, easy bool) *DamageFeedback {
+	this := &DamageFeedback{}
 	this.Amount = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
@@ -674,9 +674,9 @@ func NewPopulatedComponentFeedback(r randyComponentFeedback, easy bool) *Compone
 	fieldNum := r.Intn(4)
 	switch fieldNum {
 	case 0:
-		this.HealDirectFeedback = NewPopulatedHealDirectFeedback(r, easy)
+		this.HealFeedback = NewPopulatedHealFeedback(r, easy)
 	case 1:
-		this.DamageDirectFeedback = NewPopulatedDamageDirectFeedback(r, easy)
+		this.DamageFeedback = NewPopulatedDamageFeedback(r, easy)
 	case 2:
 		this.HealOverTimeFeedback = NewPopulatedHealOverTimeFeedback(r, easy)
 	case 3:
@@ -757,7 +757,7 @@ func encodeVarintPopulateComponentFeedback(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
-func (m *HealDirectFeedback) Size() (n int) {
+func (m *HealFeedback) Size() (n int) {
 	var l int
 	_ = l
 	if m.Amount != 0 {
@@ -766,7 +766,7 @@ func (m *HealDirectFeedback) Size() (n int) {
 	return n
 }
 
-func (m *DamageDirectFeedback) Size() (n int) {
+func (m *DamageFeedback) Size() (n int) {
 	var l int
 	_ = l
 	if m.Amount != 0 {
@@ -796,12 +796,12 @@ func (m *DamageOverTimeFeedback) Size() (n int) {
 func (m *ComponentFeedback) Size() (n int) {
 	var l int
 	_ = l
-	if m.HealDirectFeedback != nil {
-		l = m.HealDirectFeedback.Size()
+	if m.HealFeedback != nil {
+		l = m.HealFeedback.Size()
 		n += 1 + l + sovComponentFeedback(uint64(l))
 	}
-	if m.DamageDirectFeedback != nil {
-		l = m.DamageDirectFeedback.Size()
+	if m.DamageFeedback != nil {
+		l = m.DamageFeedback.Size()
 		n += 1 + l + sovComponentFeedback(uint64(l))
 	}
 	if m.HealOverTimeFeedback != nil {
@@ -828,21 +828,21 @@ func sovComponentFeedback(x uint64) (n int) {
 func sozComponentFeedback(x uint64) (n int) {
 	return sovComponentFeedback(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (this *HealDirectFeedback) String() string {
+func (this *HealFeedback) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&HealDirectFeedback{`,
+	s := strings.Join([]string{`&HealFeedback{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
 		`}`,
 	}, "")
 	return s
 }
-func (this *DamageDirectFeedback) String() string {
+func (this *DamageFeedback) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&DamageDirectFeedback{`,
+	s := strings.Join([]string{`&DamageFeedback{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
 		`}`,
 	}, "")
@@ -873,8 +873,8 @@ func (this *ComponentFeedback) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&ComponentFeedback{`,
-		`HealDirectFeedback:` + strings.Replace(fmt.Sprintf("%v", this.HealDirectFeedback), "HealDirectFeedback", "HealDirectFeedback", 1) + `,`,
-		`DamageDirectFeedback:` + strings.Replace(fmt.Sprintf("%v", this.DamageDirectFeedback), "DamageDirectFeedback", "DamageDirectFeedback", 1) + `,`,
+		`HealFeedback:` + strings.Replace(fmt.Sprintf("%v", this.HealFeedback), "HealFeedback", "HealFeedback", 1) + `,`,
+		`DamageFeedback:` + strings.Replace(fmt.Sprintf("%v", this.DamageFeedback), "DamageFeedback", "DamageFeedback", 1) + `,`,
 		`HealOverTimeFeedback:` + strings.Replace(fmt.Sprintf("%v", this.HealOverTimeFeedback), "HealOverTimeFeedback", "HealOverTimeFeedback", 1) + `,`,
 		`DamageOverTimeFeedback:` + strings.Replace(fmt.Sprintf("%v", this.DamageOverTimeFeedback), "DamageOverTimeFeedback", "DamageOverTimeFeedback", 1) + `,`,
 		`}`,
@@ -890,11 +890,11 @@ func valueToStringComponentFeedback(v interface{}) string {
 	return fmt.Sprintf("*%v", pv)
 }
 func (this *ComponentFeedback) GetValue() interface{} {
-	if this.HealDirectFeedback != nil {
-		return this.HealDirectFeedback
+	if this.HealFeedback != nil {
+		return this.HealFeedback
 	}
-	if this.DamageDirectFeedback != nil {
-		return this.DamageDirectFeedback
+	if this.DamageFeedback != nil {
+		return this.DamageFeedback
 	}
 	if this.HealOverTimeFeedback != nil {
 		return this.HealOverTimeFeedback
@@ -907,10 +907,10 @@ func (this *ComponentFeedback) GetValue() interface{} {
 
 func (this *ComponentFeedback) SetValue(value interface{}) bool {
 	switch vt := value.(type) {
-	case *HealDirectFeedback:
-		this.HealDirectFeedback = vt
-	case *DamageDirectFeedback:
-		this.DamageDirectFeedback = vt
+	case *HealFeedback:
+		this.HealFeedback = vt
+	case *DamageFeedback:
+		this.DamageFeedback = vt
 	case *HealOverTimeFeedback:
 		this.HealOverTimeFeedback = vt
 	case *DamageOverTimeFeedback:
@@ -920,7 +920,7 @@ func (this *ComponentFeedback) SetValue(value interface{}) bool {
 	}
 	return true
 }
-func (m *HealDirectFeedback) Unmarshal(dAtA []byte) error {
+func (m *HealFeedback) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -943,10 +943,10 @@ func (m *HealDirectFeedback) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: HealDirectFeedback: wiretype end group for non-group")
+			return fmt.Errorf("proto: HealFeedback: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: HealDirectFeedback: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: HealFeedback: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -989,7 +989,7 @@ func (m *HealDirectFeedback) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *DamageDirectFeedback) Unmarshal(dAtA []byte) error {
+func (m *DamageFeedback) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1012,10 +1012,10 @@ func (m *DamageDirectFeedback) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: DamageDirectFeedback: wiretype end group for non-group")
+			return fmt.Errorf("proto: DamageFeedback: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: DamageDirectFeedback: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: DamageFeedback: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1227,7 +1227,7 @@ func (m *ComponentFeedback) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field HealDirectFeedback", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field HealFeedback", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1251,16 +1251,16 @@ func (m *ComponentFeedback) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.HealDirectFeedback == nil {
-				m.HealDirectFeedback = &HealDirectFeedback{}
+			if m.HealFeedback == nil {
+				m.HealFeedback = &HealFeedback{}
 			}
-			if err := m.HealDirectFeedback.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.HealFeedback.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DamageDirectFeedback", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field DamageFeedback", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1284,10 +1284,10 @@ func (m *ComponentFeedback) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.DamageDirectFeedback == nil {
-				m.DamageDirectFeedback = &DamageDirectFeedback{}
+			if m.DamageFeedback == nil {
+				m.DamageFeedback = &DamageFeedback{}
 			}
-			if err := m.DamageDirectFeedback.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.DamageFeedback.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1484,28 +1484,28 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("component_feedback.proto", fileDescriptor_component_feedback_8d50c1ae5571b1b4)
+	proto.RegisterFile("component_feedback.proto", fileDescriptor_component_feedback_d9c73a99913d592e)
 }
 
-var fileDescriptor_component_feedback_8d50c1ae5571b1b4 = []byte{
-	// 299 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_component_feedback_d9c73a99913d592e = []byte{
+	// 295 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x48, 0xce, 0xcf, 0x2d,
 	0xc8, 0xcf, 0x4b, 0xcd, 0x2b, 0x89, 0x4f, 0x4b, 0x4d, 0x4d, 0x49, 0x4a, 0x4c, 0xce, 0xd6, 0x2b,
 	0x28, 0xca, 0x2f, 0xc9, 0x97, 0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf,
 	0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x0b, 0x27, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98,
-	0x05, 0x51, 0xae, 0xa4, 0xc3, 0x25, 0xe4, 0x91, 0x9a, 0x98, 0xe3, 0x92, 0x59, 0x94, 0x9a, 0x5c,
-	0xe2, 0x06, 0x35, 0x4a, 0x48, 0x8c, 0x8b, 0xcd, 0x31, 0x37, 0xbf, 0x34, 0xaf, 0x44, 0x82, 0x51,
-	0x81, 0x51, 0x83, 0x25, 0x08, 0xca, 0x53, 0xd2, 0xe3, 0x12, 0x71, 0x49, 0xcc, 0x4d, 0x4c, 0x4f,
-	0x25, 0x5e, 0x3d, 0xc8, 0x74, 0xff, 0xb2, 0xd4, 0xa2, 0x90, 0xcc, 0xdc, 0x54, 0x82, 0xea, 0x0d,
-	0xb8, 0xc4, 0x20, 0xe6, 0x13, 0xad, 0xe3, 0x28, 0x13, 0x97, 0xa0, 0x33, 0x2c, 0x2c, 0xe0, 0xaa,
-	0x9d, 0xb1, 0xf9, 0x0a, 0xac, 0x93, 0xdb, 0x48, 0x58, 0x0f, 0x53, 0x2a, 0x08, 0x5b, 0x20, 0x78,
-	0x62, 0xf7, 0xac, 0x04, 0x13, 0xd8, 0x18, 0x51, 0x3d, 0x6c, 0x92, 0x41, 0xd8, 0xc3, 0xc7, 0x13,
-	0x7b, 0x38, 0x48, 0x30, 0x43, 0x8d, 0xc2, 0x26, 0x19, 0x84, 0x3d, 0xe8, 0xfc, 0x71, 0x05, 0x91,
-	0x04, 0x0b, 0xd8, 0x30, 0x71, 0x3d, 0xec, 0xd2, 0x41, 0x38, 0xb4, 0x59, 0xb1, 0x9c, 0x58, 0x20,
-	0xcf, 0xe8, 0xe4, 0x78, 0xe1, 0xa1, 0x1c, 0xc3, 0x8d, 0x87, 0x72, 0x0c, 0x1f, 0x1e, 0xca, 0x31,
-	0xfe, 0x78, 0x28, 0xc7, 0xd8, 0xf0, 0x48, 0x8e, 0x71, 0xc5, 0x23, 0x39, 0xc6, 0x1d, 0x8f, 0xe4,
-	0x18, 0x0f, 0x3c, 0x92, 0x63, 0x3c, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f,
-	0xe4, 0x18, 0x5f, 0x3c, 0x92, 0x63, 0xf8, 0xf0, 0x48, 0x8e, 0x71, 0xc2, 0x63, 0x39, 0x86, 0x28,
-	0xf6, 0xc4, 0xa4, 0xcc, 0x9c, 0xcc, 0x92, 0xca, 0x24, 0x36, 0x70, 0x8a, 0x32, 0x06, 0x04, 0x00,
-	0x00, 0xff, 0xff, 0x99, 0x9c, 0x62, 0xe5, 0x9c, 0x02, 0x00, 0x00,
+	0x05, 0x51, 0xae, 0xa4, 0xc6, 0xc5, 0xe3, 0x91, 0x9a, 0x98, 0xe3, 0x06, 0x35, 0x44, 0x48, 0x8c,
+	0x8b, 0xcd, 0x31, 0x37, 0xbf, 0x34, 0xaf, 0x44, 0x82, 0x51, 0x81, 0x51, 0x83, 0x25, 0x08, 0xca,
+	0x53, 0xd2, 0xe0, 0xe2, 0x73, 0x49, 0xcc, 0x4d, 0x4c, 0x4f, 0x25, 0xa8, 0x52, 0x8f, 0x4b, 0x04,
+	0x64, 0xa2, 0x7f, 0x59, 0x6a, 0x51, 0x48, 0x66, 0x2e, 0x61, 0xf5, 0x06, 0x5c, 0x62, 0x10, 0x93,
+	0x89, 0xd6, 0xb1, 0x90, 0x89, 0x4b, 0xd0, 0x19, 0xe6, 0x7f, 0xb8, 0x6a, 0x43, 0x54, 0x9f, 0x80,
+	0xf5, 0x70, 0x1b, 0xf1, 0xea, 0x21, 0x0b, 0x06, 0xa1, 0x7a, 0xd6, 0x1c, 0xdd, 0x53, 0x12, 0x4c,
+	0x60, 0x4d, 0xfc, 0x7a, 0xa8, 0xc2, 0x41, 0xe8, 0x7e, 0xf7, 0xc4, 0xee, 0x47, 0x09, 0x66, 0xb0,
+	0x76, 0x51, 0x3d, 0x6c, 0x92, 0x41, 0xd8, 0x83, 0xc5, 0x1f, 0x97, 0xf7, 0x25, 0x58, 0xc0, 0x86,
+	0x89, 0xeb, 0x61, 0x97, 0x0e, 0xc2, 0xa1, 0xcd, 0x8a, 0xe5, 0xc4, 0x02, 0x79, 0x46, 0x27, 0xc7,
+	0x0b, 0x0f, 0xe5, 0x18, 0x6e, 0x3c, 0x94, 0x63, 0xf8, 0xf0, 0x50, 0x8e, 0xf1, 0xc7, 0x43, 0x39,
+	0xc6, 0x86, 0x47, 0x72, 0x8c, 0x2b, 0x1e, 0xc9, 0x31, 0xee, 0x78, 0x24, 0xc7, 0x78, 0xe0, 0x91,
+	0x1c, 0xe3, 0x89, 0x47, 0x72, 0x8c, 0x17, 0x1e, 0xc9, 0x31, 0x3e, 0x78, 0x24, 0xc7, 0xf8, 0xe2,
+	0x91, 0x1c, 0xc3, 0x87, 0x47, 0x72, 0x8c, 0x13, 0x1e, 0xcb, 0x31, 0x44, 0xb1, 0x27, 0x26, 0x65,
+	0xe6, 0x64, 0x96, 0x54, 0x26, 0xb1, 0x81, 0x53, 0x88, 0x31, 0x20, 0x00, 0x00, 0xff, 0xff, 0xa2,
+	0x8b, 0xdd, 0xc5, 0x6c, 0x02, 0x00, 0x00,
 }

@@ -1,22 +1,8 @@
 package ability
 
 import (
-	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/ulid"
 )
-
-// Affect applies ability a on target.
-func (a A) Affect(target *entity.E) Feedback {
-	fb := Feedback{
-		ID:         ulid.NewID(),
-		AbilityID:  a.ID,
-		Components: make([]ComponentFeedback, len(a.Components)),
-	}
-	// for i, component := range a.Components {
-	// fb.Components[i] = component.Affect(target)
-	// }
-	return fb
-}
 
 // Store is the communication interface for abilities.
 type Store interface {

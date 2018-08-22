@@ -9,7 +9,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	serrors "github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -37,10 +37,10 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 		return account.Token{}, errors.Wrapf(err, "get account with username %s", payload.Username)
 	}
 	if a.Password != payload.Password {
-		return account.Token{}, errors.Wrap(serrors.ErrWrongCredentials, "compare passwords")
+		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials, "compare passwords")
 	}
 	if !a.Token.IsZero() {
-		return account.Token{}, errors.Wrap(serrors.ErrMultipleLogin, "check existing account token")
+		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin, "check existing account token")
 	}
 
 	// #Identify origin IP
@@ -79,7 +79,7 @@ func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
 	expected, _, ee := net.SplitHostPort(t.IP)
 	actual, _, ea := net.SplitHostPort(addr)
 	if expected != actual || ee != nil || ea != nil {
-		return account.Token{}, errors.Wrapf(serrors.ErrWrongIP, "different ips %s != %s", expected, actual)
+		return account.Token{}, errors.Wrapf(gerrors.ErrWrongIP, "different ips %s != %s", expected, actual)
 	}
 	return t, nil
 }
@@ -115,7 +115,7 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	})
 	if err != nil {
 		// Token is valid but not connected to any entity.
-		if err == serrors.ErrNotFound {
+		if err == gerrors.ErrNotFound {
 			return result.ErrorOrNil()
 		}
 		return errors.Wrapf(err, "get entity %s", te.String())

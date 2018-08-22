@@ -8,11 +8,11 @@ option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-message HealDirectFeedback {
+message HealFeedback {
 	uint64 Amount                                 = 1;
 }
 
-message DamageDirectFeedback {
+message DamageFeedback {
 	uint64 Amount                                 = 1;
 }
 
@@ -26,8 +26,8 @@ message DamageOverTimeFeedback {
 
 message ComponentFeedback {
 	option (gogoproto.onlyone)                    = true;
-	HealDirectFeedback HealDirectFeedback         = 1;
-	DamageDirectFeedback DamageDirectFeedback     = 2;
+	HealFeedback HealFeedback         = 1;
+	DamageFeedback DamageFeedback     = 2;
 	HealOverTimeFeedback HealOverTimeFeedback     = 3;
 	DamageOverTimeFeedback DamageOverTimeFeedback = 4;
 }

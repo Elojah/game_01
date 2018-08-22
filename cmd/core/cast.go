@@ -6,7 +6,7 @@ import (
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	serrors "github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -20,8 +20,8 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 		Source: e.Source.String(),
 		Target: cast.Source.String(),
 	})
-	if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(serrors.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
@@ -32,8 +32,8 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
-	if err == serrors.ErrNotFound {
-		return errors.Wrapf(serrors.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
+	if err == gerrors.ErrNotFound {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
@@ -46,7 +46,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 	}
 	if source.MP < ab.MPConsumption {
 		return errors.Wrapf(
-			serrors.ErrInvalidAction,
+			gerrors.ErrInvalidAction,
 			"entity %s with MP %d for ability %s with MP: %d",
 			cast.Source.String(),
 			source.MP,
@@ -57,7 +57,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 
 	// #Check CD validity. if LastUsed + CD < now.
 	if ab.LastUsed.Add(ab.CD).Before(e.TS) {
-		return errors.Wrapf(serrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
+		return errors.Wrapf(gerrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
 	}
 
 	// #Set entity new state with decreased MP and casting up.

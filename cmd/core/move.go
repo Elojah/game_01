@@ -5,7 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	serrors "github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
@@ -27,15 +27,15 @@ func (a *app) Move(id ulid.ID, e event.E) error {
 		Source: e.Source.String(),
 		Target: move.Source.String(),
 	})
-	if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(serrors.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
+	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 
 	if len(move.Targets) > maxTargets {
-		return errors.Wrapf(serrors.ErrInvalidAction, "too many targets %d", len(move.Targets))
+		return errors.Wrapf(gerrors.ErrInvalidAction, "too many targets %d", len(move.Targets))
 	}
 
 	var result *multierror.Error
@@ -55,8 +55,8 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 			Source: move.Source.String(),
 			Target: targetID.String(),
 		})
-		if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return errors.Wrapf(serrors.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), targetID.String())
+		if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
+			return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), targetID.String())
 		}
 		if err != nil {
 			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), targetID.String())
@@ -81,7 +81,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		// #Check if target has moved in correct boundaries in same sector.
 		if s.Out(target.Position.Coord) {
 			return errors.Wrapf(
-				serrors.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"check in sector %s (%f , %f , %f) from (%f , %f , %f) to (%f , %f , %f) for entity %s",
 				s.ID.String(),
 				s.Dim.X,
@@ -100,7 +100,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		// #Check if target has moved at a tolerable distance in same sector.
 		if geometry.Segment(target.Position.Coord, move.Position.Coord) > a.moveTolerance {
 			return errors.Wrapf(
-				serrors.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"check move tolerance %f from (%f , %f , %f) to (%f , %f , %f) for entity %s",
 				a.moveTolerance,
 				target.Position.Coord.X,
@@ -123,7 +123,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		neigh, ok := s.Neighbours[move.Position.SectorID.String()]
 		if !ok {
 			return errors.Wrapf(
-				serrors.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"invalid next neighbour sector %s with previous %s",
 				move.Position.SectorID.String(),
 				target.Position.SectorID.String(),
@@ -133,7 +133,7 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 		// #Check if target has moved at a tolerable distance in different sectors.
 		if geometry.Segment(target.Position.Coord, move.Position.Coord.MoveReference(neigh)) > a.moveTolerance {
 			return errors.Wrapf(
-				serrors.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"check move tolerance %f from %s (%f , %f , %f) to %s (%f , %f , %f) for entity %s",
 				a.moveTolerance,
 				target.Position.SectorID.String(),

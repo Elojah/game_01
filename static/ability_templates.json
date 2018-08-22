@@ -8,7 +8,7 @@
         "current_cd": 0,
         "components": [
             {
-                "struct": "DamageDirect",
+                "struct": "Damage",
                 "amount": 10,
                 "type": 1
             }
@@ -23,7 +23,7 @@
         "current_cd": 0,
         "components": [
             {
-                "struct": "HealDirect",
+                "struct": "Heal",
                 "amount": 45,
                 "type": 1
             }

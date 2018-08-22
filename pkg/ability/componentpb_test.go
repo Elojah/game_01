@@ -19,15 +19,15 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-func TestHealDirectProto(t *testing.T) {
+func TestHealProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedHealDirect(popr, false)
+	p := NewPopulatedHeal(popr, false)
 	dAtA, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &HealDirect{}
+	msg := &Heal{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -50,10 +50,10 @@ func TestHealDirectProto(t *testing.T) {
 	}
 }
 
-func TestHealDirectMarshalTo(t *testing.T) {
+func TestHealMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedHealDirect(popr, false)
+	p := NewPopulatedHeal(popr, false)
 	size := p.Size()
 	dAtA := make([]byte, size)
 	for i := range dAtA {
@@ -63,7 +63,7 @@ func TestHealDirectMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &HealDirect{}
+	msg := &Heal{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -75,12 +75,12 @@ func TestHealDirectMarshalTo(t *testing.T) {
 	}
 }
 
-func BenchmarkHealDirectProtoMarshal(b *testing.B) {
+func BenchmarkHealProtoMarshal(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
-	pops := make([]*HealDirect, 10000)
+	pops := make([]*Heal, 10000)
 	for i := 0; i < 10000; i++ {
-		pops[i] = NewPopulatedHealDirect(popr, false)
+		pops[i] = NewPopulatedHeal(popr, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -93,18 +93,18 @@ func BenchmarkHealDirectProtoMarshal(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func BenchmarkHealDirectProtoUnmarshal(b *testing.B) {
+func BenchmarkHealProtoUnmarshal(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
 	datas := make([][]byte, 10000)
 	for i := 0; i < 10000; i++ {
-		dAtA, err := github_com_gogo_protobuf_proto.Marshal(NewPopulatedHealDirect(popr, false))
+		dAtA, err := github_com_gogo_protobuf_proto.Marshal(NewPopulatedHeal(popr, false))
 		if err != nil {
 			panic(err)
 		}
 		datas[i] = dAtA
 	}
-	msg := &HealDirect{}
+	msg := &Heal{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		total += len(datas[i%10000])
@@ -115,15 +115,15 @@ func BenchmarkHealDirectProtoUnmarshal(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func TestDamageDirectProto(t *testing.T) {
+func TestDamageProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDamageDirect(popr, false)
+	p := NewPopulatedDamage(popr, false)
 	dAtA, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DamageDirect{}
+	msg := &Damage{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -146,10 +146,10 @@ func TestDamageDirectProto(t *testing.T) {
 	}
 }
 
-func TestDamageDirectMarshalTo(t *testing.T) {
+func TestDamageMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDamageDirect(popr, false)
+	p := NewPopulatedDamage(popr, false)
 	size := p.Size()
 	dAtA := make([]byte, size)
 	for i := range dAtA {
@@ -159,7 +159,7 @@ func TestDamageDirectMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DamageDirect{}
+	msg := &Damage{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -171,12 +171,12 @@ func TestDamageDirectMarshalTo(t *testing.T) {
 	}
 }
 
-func BenchmarkDamageDirectProtoMarshal(b *testing.B) {
+func BenchmarkDamageProtoMarshal(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
-	pops := make([]*DamageDirect, 10000)
+	pops := make([]*Damage, 10000)
 	for i := 0; i < 10000; i++ {
-		pops[i] = NewPopulatedDamageDirect(popr, false)
+		pops[i] = NewPopulatedDamage(popr, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -189,18 +189,18 @@ func BenchmarkDamageDirectProtoMarshal(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func BenchmarkDamageDirectProtoUnmarshal(b *testing.B) {
+func BenchmarkDamageProtoUnmarshal(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
 	datas := make([][]byte, 10000)
 	for i := 0; i < 10000; i++ {
-		dAtA, err := github_com_gogo_protobuf_proto.Marshal(NewPopulatedDamageDirect(popr, false))
+		dAtA, err := github_com_gogo_protobuf_proto.Marshal(NewPopulatedDamage(popr, false))
 		if err != nil {
 			panic(err)
 		}
 		datas[i] = dAtA
 	}
-	msg := &DamageDirect{}
+	msg := &Damage{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		total += len(datas[i%10000])
@@ -499,16 +499,16 @@ func BenchmarkComponentProtoUnmarshal(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func TestHealDirectJSON(t *testing.T) {
+func TestHealJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedHealDirect(popr, true)
+	p := NewPopulatedHeal(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &HealDirect{}
+	msg := &Heal{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -517,16 +517,16 @@ func TestHealDirectJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestDamageDirectJSON(t *testing.T) {
+func TestDamageJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDamageDirect(popr, true)
+	p := NewPopulatedDamage(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &DamageDirect{}
+	msg := &Damage{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -589,12 +589,12 @@ func TestComponentJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestHealDirectProtoText(t *testing.T) {
+func TestHealProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedHealDirect(popr, true)
+	p := NewPopulatedHeal(popr, true)
 	dAtA := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &HealDirect{}
+	msg := &Heal{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -603,12 +603,12 @@ func TestHealDirectProtoText(t *testing.T) {
 	}
 }
 
-func TestHealDirectProtoCompactText(t *testing.T) {
+func TestHealProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedHealDirect(popr, true)
+	p := NewPopulatedHeal(popr, true)
 	dAtA := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &HealDirect{}
+	msg := &Heal{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -617,12 +617,12 @@ func TestHealDirectProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestDamageDirectProtoText(t *testing.T) {
+func TestDamageProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDamageDirect(popr, true)
+	p := NewPopulatedDamage(popr, true)
 	dAtA := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &DamageDirect{}
+	msg := &Damage{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -631,12 +631,12 @@ func TestDamageDirectProtoText(t *testing.T) {
 	}
 }
 
-func TestDamageDirectProtoCompactText(t *testing.T) {
+func TestDamageProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDamageDirect(popr, true)
+	p := NewPopulatedDamage(popr, true)
 	dAtA := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &DamageDirect{}
+	msg := &Damage{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -729,9 +729,9 @@ func TestComponentProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestHealDirectGoString(t *testing.T) {
+func TestHealGoString(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	p := NewPopulatedHealDirect(popr, false)
+	p := NewPopulatedHeal(popr, false)
 	s1 := p.GoString()
 	s2 := fmt.Sprintf("%#v", p)
 	if s1 != s2 {
@@ -742,9 +742,9 @@ func TestHealDirectGoString(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-func TestDamageDirectGoString(t *testing.T) {
+func TestDamageGoString(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	p := NewPopulatedDamageDirect(popr, false)
+	p := NewPopulatedDamage(popr, false)
 	s1 := p.GoString()
 	s2 := fmt.Sprintf("%#v", p)
 	if s1 != s2 {
@@ -794,10 +794,10 @@ func TestComponentGoString(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-func TestHealDirectSize(t *testing.T) {
+func TestHealSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedHealDirect(popr, true)
+	p := NewPopulatedHeal(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	dAtA, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -816,12 +816,12 @@ func TestHealDirectSize(t *testing.T) {
 	}
 }
 
-func BenchmarkHealDirectSize(b *testing.B) {
+func BenchmarkHealSize(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
-	pops := make([]*HealDirect, 1000)
+	pops := make([]*Heal, 1000)
 	for i := 0; i < 1000; i++ {
-		pops[i] = NewPopulatedHealDirect(popr, false)
+		pops[i] = NewPopulatedHeal(popr, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -830,10 +830,10 @@ func BenchmarkHealDirectSize(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func TestDamageDirectSize(t *testing.T) {
+func TestDamageSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedDamageDirect(popr, true)
+	p := NewPopulatedDamage(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	dAtA, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -852,12 +852,12 @@ func TestDamageDirectSize(t *testing.T) {
 	}
 }
 
-func BenchmarkDamageDirectSize(b *testing.B) {
+func BenchmarkDamageSize(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
-	pops := make([]*DamageDirect, 1000)
+	pops := make([]*Damage, 1000)
 	for i := 0; i < 1000; i++ {
-		pops[i] = NewPopulatedDamageDirect(popr, false)
+		pops[i] = NewPopulatedDamage(popr, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -974,18 +974,18 @@ func BenchmarkComponentSize(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func TestHealDirectStringer(t *testing.T) {
+func TestHealStringer(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	p := NewPopulatedHealDirect(popr, false)
+	p := NewPopulatedHeal(popr, false)
 	s1 := p.String()
 	s2 := fmt.Sprintf("%v", p)
 	if s1 != s2 {
 		t.Fatalf("String want %v got %v", s1, s2)
 	}
 }
-func TestDamageDirectStringer(t *testing.T) {
+func TestDamageStringer(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	p := NewPopulatedDamageDirect(popr, false)
+	p := NewPopulatedDamage(popr, false)
 	s1 := p.String()
 	s2 := fmt.Sprintf("%v", p)
 	if s1 != s2 {
