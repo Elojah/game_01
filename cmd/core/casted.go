@@ -42,10 +42,10 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 		return nil
 	}
 
-	abApp := newAbilityApp(source, ab, casted, e.TS)
+	abApp := NewAbilityApp(source, casted.Targets, e.TS)
 	abApp.EntityStore = a.EntityStore
 
-	abApp.Run()
-
-	return result.ErrorOrNil()
+	fb, err := abApp.Run(ab)
+	_ = fb
+	return err
 }

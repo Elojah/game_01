@@ -8,46 +8,51 @@ import (
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/event"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-type abilityApp struct {
+// AbilityApp wraps ability applications mechanism.
+type AbilityApp struct {
 	EntityStore entity.Store
 
 	Source  entity.E
-	Ability ability.A
 	Targets ability.Targets
 	TS      time.Time
-
-	Feedback ability.Feedback
-	err      *multierror.Error
 }
 
-func newAbilityApp(source entity.E, ab ability.A, casted *event.Casted, ts time.Time) *abilityApp {
-	return &abilityApp{
+// NewAbilityApp returns a new ability app ready to run.
+func NewAbilityApp(source entity.E, targets ability.Targets, ts time.Time) *AbilityApp {
+	return &AbilityApp{
 		Source:  source,
-		Ability: ab,
-		Targets: casted.Targets,
+		Targets: targets,
 		TS:      ts,
-		Feedback: ability.Feedback{
-			ID:         ulid.NewID(),
-			AbilityID:  ab.ID,
-			Components: make([]ability.ComponentFeedback, len(ab.Components)),
-		},
 	}
 
 }
 
-func (a *abilityApp) Run() {
+// Run applies the ability from source to targets at ts defined in NewAbilityApp.
+func (a *AbilityApp) Run(ab ability.A) (ability.Feedback, error) {
+
+	fb := ability.Feedback{
+		ID:         ulid.NewID(),
+		AbilityID:  ab.ID,
+		Components: make([]ability.ComponentFeedback, len(ab.Components)),
+	}
 
 	var result *multierror.Error
-	for i, c := range a.Ability.Components {
-		switch c.GetValue().(type) {
+	for i, comp := range ab.Components {
+		c := comp.GetValue()
+		switch c.(type) {
 		case ability.Damage:
-			if err := a.Damage(a.Source, c, a.Targets, a.TS); err != nil {
+			cfbs, err := a.ApplyDamage(c.(ability.Damage))
+			if err != nil {
 				result = multierror.Append(result, errors.Wrapf(err, "damage direct component %d", i))
+				continue
 			}
+
+			// TODO send back cfb
+			_ = cfbs
 		case ability.Heal:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
 		case ability.HealOverTime:
@@ -58,4 +63,6 @@ func (a *abilityApp) Run() {
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
 		}
 	}
+
+	return fb, result.ErrorOrNil()
 }

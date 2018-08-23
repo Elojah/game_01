@@ -1,7 +1,7 @@
 package main
 
 import (
-	"time"
+	"sync"
 
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
@@ -12,57 +12,64 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *abilityApp) Damage(source entity.E, c ability.Component, targets ability.Targets, ts time.Time) (ability.Feedback, error) {
+// ApplyDamage applies damage to all targets in ability app.
+func (a *AbilityApp) ApplyDamage(dd ability.Damage) ([]ability.DamageFeedback, error) {
 
 	// #Retrieve all targets
-	if len(targets.Positions) != 0 {
-		return ability.Feedback{}, gerrors.ErrNotImplementedYet
+	var dfbs []ability.DamageFeedback
+
+	if len(a.Targets.Positions) != 0 {
+		return nil, gerrors.ErrNotImplementedYet
 	}
 
-	feedback := ability.Feedback{
-		ID:         ulid.NewID(),
-		Components: make([]ability.ComponentFeedback),
-	}
-	fbC := make(chan ability.DamageFeedback, 0)
+	dfbC := make(chan ability.DamageFeedback, 0)
 	go func() {
-		for fb := range <-fbC {
-			feedback.Components = append(feedback.Components, fb)
+		for dfb := range dfbC {
+			dfbs = append(dfbs, dfb)
 		}
 	}()
 
 	var result *multierror.Error
-	errC := make(chan ability.DamageFeedback, 0)
+	errC := make(chan error, 0)
 	go func() {
-		for err := range <-errC {
+		for err := range errC {
 			result = multierror.Append(result, err)
 		}
 	}()
 
 	// #For all targeted entities
-	for _, e := range targets.Entities {
+	var wg sync.WaitGroup
+	wg.Add(len(a.Targets.Entities))
+	for _, e := range a.Targets.Entities {
 		for _, id := range e.IDs {
 			go func(id ulid.ID) {
-				fb, err := a.DamageOne(source, c, id, ts)
-				fbC <- fb
+				// #Apply damage to one entity async
+				dfb, err := a.ApplyDamageSingle(dd, id)
+				dfbC <- dfb
 				errC <- err
+				wg.Done()
 			}(id)
 		}
 	}
+	wg.Wait()
+	close(dfbC)
+	close(errC)
 
-	return nil
+	return dfbs, result.ErrorOrNil()
 }
 
-func (a *abilityApp) DamageOne(source entity.E, c ability.Component, id ulid.ID, ts time.Time) (ability.DamageFeedback, error) {
+// ApplyDamageSingle applies damage to target id.
+func (a *AbilityApp) ApplyDamageSingle(dd ability.Damage, id ulid.ID) (ability.DamageFeedback, error) {
 
 	// #Retrieve target entity
 	target, err := a.EntityStore.GetEntity(entity.Subset{
 		ID:    id,
-		MaxTS: ts.UnixNano(),
+		MaxTS: a.TS.UnixNano(),
 	})
 	if err != nil {
 		return ability.DamageFeedback{}, errors.Wrapf(err, "get entity %s", id.String())
 	}
 
 	// #Applies direct damage to target entity
-	return target.Damage(source, c), nil
+	return target.Damage(a.Source, dd), nil
 }
