@@ -5,7 +5,6 @@ import (
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -33,7 +32,7 @@ type Service interface {
 // CastAbility decreases MP (without check) and assign a new cast to entity.
 func (e *E) CastAbility(ab ability.A, ts time.Time) {
 	e.MP -= ab.MPConsumption
-	e.Cast = &entity.Cast{AbilityID: ab.ID, TS: e.TS}
+	e.Cast = &Cast{AbilityID: ab.ID, TS: ts}
 }
 
 // Damage applies a direct damage component dd from entity source to entity e.
