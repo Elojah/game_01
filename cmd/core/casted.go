@@ -42,10 +42,25 @@ func (a *app) Casted(id ulid.ID, e event.E) error {
 		return nil
 	}
 
+	// Initializes cast app.
 	abApp := NewAbilityApp(source, casted.Targets, e.TS)
 	abApp.EntityStore = a.EntityStore
 
+	// Run cast app and retrieve feedback.
 	fb, err := abApp.Run(ab)
-	_ = fb
-	return err
+	if err != nil {
+		return err
+	}
+
+	if err := a.EventQStore.PublishEvent(event.E{
+		ID: ulid.NewID(),
+		TS: e.TS.Add(ab.CastTime),
+		Action: event.Action{
+			Feedback: &fb,
+		},
+	}, source.ID); err != nil {
+		return err
+	}
+
+	return nil
 }

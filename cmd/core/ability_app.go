@@ -35,9 +35,8 @@ func NewAbilityApp(source entity.E, targets ability.Targets, ts time.Time) *Abil
 func (a *AbilityApp) Run(ab ability.A) (ability.Feedback, error) {
 
 	fb := ability.Feedback{
-		ID:         ulid.NewID(),
-		AbilityID:  ab.ID,
-		Components: make([]ability.ComponentFeedback, len(ab.Components)),
+		ID:        ulid.NewID(),
+		AbilityID: ab.ID,
 	}
 
 	var result *multierror.Error
@@ -50,9 +49,7 @@ func (a *AbilityApp) Run(ab ability.A) (ability.Feedback, error) {
 				result = multierror.Append(result, errors.Wrapf(err, "damage direct component %d", i))
 				continue
 			}
-
-			// TODO send back cfb
-			_ = cfbs
+			fb.Components = append(fb.Components, cfbs...)
 		case ability.Heal:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
 		case ability.HealOverTime:

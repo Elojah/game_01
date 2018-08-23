@@ -35,6 +35,13 @@ func (e *E) CastAbility(ab ability.A, ts time.Time) {
 	e.Cast = &Cast{AbilityID: ab.ID, TS: ts}
 }
 
+// Feedback applies a feedback effect to entity e.
+func (e *E) Feedback(fb ability.Feedback) {
+	// for _, cfb := range fb.Components {
+
+	// }
+}
+
 // Damage applies a direct damage component dd from entity source to entity e.
 func (e *E) Damage(source E, dd ability.Damage) ability.DamageFeedback {
 	if dd.Amount >= e.HP {

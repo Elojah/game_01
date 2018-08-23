@@ -13,10 +13,10 @@ import (
 )
 
 // ApplyDamage applies damage to all targets in ability app.
-func (a *AbilityApp) ApplyDamage(dd ability.Damage) ([]ability.DamageFeedback, error) {
+func (a *AbilityApp) ApplyDamage(dd ability.Damage) ([]ability.ComponentFeedback, error) {
 
 	// #Retrieve all targets
-	var dfbs []ability.DamageFeedback
+	var cfbs []ability.ComponentFeedback
 
 	if len(a.Targets.Positions) != 0 {
 		return nil, gerrors.ErrNotImplementedYet
@@ -25,7 +25,7 @@ func (a *AbilityApp) ApplyDamage(dd ability.Damage) ([]ability.DamageFeedback, e
 	dfbC := make(chan ability.DamageFeedback, 0)
 	go func() {
 		for dfb := range dfbC {
-			dfbs = append(dfbs, dfb)
+			cfbs = append(cfbs, ability.ComponentFeedback{DamageFeedback: &dfb})
 		}
 	}()
 
@@ -55,7 +55,7 @@ func (a *AbilityApp) ApplyDamage(dd ability.Damage) ([]ability.DamageFeedback, e
 	close(dfbC)
 	close(errC)
 
-	return dfbs, result.ErrorOrNil()
+	return cfbs, result.ErrorOrNil()
 }
 
 // ApplyDamageSingle applies damage to target id.

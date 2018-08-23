@@ -5,13 +5,7 @@
         "name": "fireball",
         "mp_consumption": 30,
         "cd": 4,
-        "current_cd": 0,
         "components": [
-            {
-                "struct": "Damage",
-                "amount": 10,
-                "type": 1
-            }
         ]
     },
     {
@@ -20,13 +14,7 @@
         "name": "divine light",
         "mp_consumption": 60,
         "cd": 9,
-        "current_cd": 0,
         "components": [
-            {
-                "struct": "Heal",
-                "amount": 45,
-                "type": 1
-            }
         ]
     }
 ]

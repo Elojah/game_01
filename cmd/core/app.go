@@ -26,8 +26,8 @@ type app struct {
 	infra.QListenerStore
 	infra.CoreStore
 
-	event.QStore
-	EventStore event.Store
+	EventQStore event.QStore
+	EventStore  event.Store
 
 	sector.EntitiesStore
 	SectorStore sector.Store
@@ -94,7 +94,7 @@ func (a *app) AddListener(msg *infra.Message) {
 		a.seqs[listener.ID].EntityStore = a.EntityStore
 		a.seqs[listener.ID].Run()
 
-		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)
+		a.subs[listener.ID] = a.EventQStore.SubscribeEvent(listener.ID)
 
 		go func(seq *Sequencer, sub *infra.Subscription) {
 			for msg := range sub.Channel() {

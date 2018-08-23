@@ -65,8 +65,8 @@ func run(prog string, filename string) {
 		QListenerStore: infraStore,
 		CoreStore:      infraStore,
 
-		QStore:     eventStore,
-		EventStore: eventStore,
+		EventQStore: eventStore,
+		EventStore:  eventStore,
 
 		EntitiesStore: sectorStore,
 		SectorStore:   sectorStore,

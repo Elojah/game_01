@@ -46,8 +46,8 @@ message DamageOverTime {
 
 message Component {
 	option (gogoproto.onlyone)    = true;
-	Heal Heal         = 1;
-	Damage Damage     = 2;
+	Heal Heal                     = 1;
+	Damage Damage                 = 2;
 	HealOverTime HealOverTime     = 3;
 	DamageOverTime DamageOverTime = 4;
 }

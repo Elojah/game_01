@@ -67,7 +67,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 	}
 
 	// #Add casted event to event set.
-	if err := a.EventStore.SetEvent(event.E{
+	if err := a.EventQStore.PublishEvent(event.E{
 		ID: ulid.NewID(),
 		TS: e.TS.Add(ab.CastTime),
 		Action: event.Action{
