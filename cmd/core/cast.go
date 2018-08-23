@@ -61,8 +61,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state with decreased MP and casting up.
-	source.MP -= ab.MPConsumption
-	source.Cast = &entity.Cast{AbilityID: ab.ID, TS: e.TS}
+	source.CastAbility(ab, e.TS)
 	if err := a.EntityStore.SetEntity(source, e.TS.UnixNano()); err != nil {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}

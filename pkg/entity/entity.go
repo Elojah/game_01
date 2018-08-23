@@ -1,8 +1,11 @@
 package entity
 
 import (
+	"time"
+
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -25,6 +28,12 @@ type Subset struct {
 // Service represents entity usecases.
 type Service interface {
 	Disconnect(id ulid.ID, tok account.Token) error
+}
+
+// CastAbility decreases MP (without check) and assign a new cast to entity.
+func (e *E) CastAbility(ab ability.A, ts time.Time) {
+	e.MP -= ab.MPConsumption
+	e.Cast = &entity.Cast{AbilityID: ab.ID, TS: e.TS}
 }
 
 // Damage applies a direct damage component dd from entity source to entity e.
