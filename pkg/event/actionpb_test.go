@@ -309,15 +309,15 @@ func BenchmarkFeedbackProtoUnmarshal(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func TestCastedProto(t *testing.T) {
+func TestPerformProto(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedCasted(popr, false)
+	p := NewPopulatedPerform(popr, false)
 	dAtA, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Casted{}
+	msg := &Perform{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -340,10 +340,10 @@ func TestCastedProto(t *testing.T) {
 	}
 }
 
-func TestCastedMarshalTo(t *testing.T) {
+func TestPerformMarshalTo(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedCasted(popr, false)
+	p := NewPopulatedPerform(popr, false)
 	size := p.Size()
 	dAtA := make([]byte, size)
 	for i := range dAtA {
@@ -353,7 +353,7 @@ func TestCastedMarshalTo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Casted{}
+	msg := &Perform{}
 	if err := github_com_gogo_protobuf_proto.Unmarshal(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -365,12 +365,12 @@ func TestCastedMarshalTo(t *testing.T) {
 	}
 }
 
-func BenchmarkCastedProtoMarshal(b *testing.B) {
+func BenchmarkPerformProtoMarshal(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
-	pops := make([]*Casted, 10000)
+	pops := make([]*Perform, 10000)
 	for i := 0; i < 10000; i++ {
-		pops[i] = NewPopulatedCasted(popr, false)
+		pops[i] = NewPopulatedPerform(popr, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -383,18 +383,18 @@ func BenchmarkCastedProtoMarshal(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func BenchmarkCastedProtoUnmarshal(b *testing.B) {
+func BenchmarkPerformProtoUnmarshal(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
 	datas := make([][]byte, 10000)
 	for i := 0; i < 10000; i++ {
-		dAtA, err := github_com_gogo_protobuf_proto.Marshal(NewPopulatedCasted(popr, false))
+		dAtA, err := github_com_gogo_protobuf_proto.Marshal(NewPopulatedPerform(popr, false))
 		if err != nil {
 			panic(err)
 		}
 		datas[i] = dAtA
 	}
-	msg := &Casted{}
+	msg := &Perform{}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		total += len(datas[i%10000])
@@ -555,16 +555,16 @@ func TestFeedbackJSON(t *testing.T) {
 		t.Fatalf("seed = %d, %#v !Json Equal %#v", seed, msg, p)
 	}
 }
-func TestCastedJSON(t *testing.T) {
+func TestPerformJSON(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedCasted(popr, true)
+	p := NewPopulatedPerform(popr, true)
 	marshaler := github_com_gogo_protobuf_jsonpb.Marshaler{}
 	jsondata, err := marshaler.MarshalToString(p)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
-	msg := &Casted{}
+	msg := &Perform{}
 	err = github_com_gogo_protobuf_jsonpb.UnmarshalString(jsondata, msg)
 	if err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
@@ -675,12 +675,12 @@ func TestFeedbackProtoCompactText(t *testing.T) {
 	}
 }
 
-func TestCastedProtoText(t *testing.T) {
+func TestPerformProtoText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedCasted(popr, true)
+	p := NewPopulatedPerform(popr, true)
 	dAtA := github_com_gogo_protobuf_proto.MarshalTextString(p)
-	msg := &Casted{}
+	msg := &Perform{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -689,12 +689,12 @@ func TestCastedProtoText(t *testing.T) {
 	}
 }
 
-func TestCastedProtoCompactText(t *testing.T) {
+func TestPerformProtoCompactText(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedCasted(popr, true)
+	p := NewPopulatedPerform(popr, true)
 	dAtA := github_com_gogo_protobuf_proto.CompactTextString(p)
-	msg := &Casted{}
+	msg := &Perform{}
 	if err := github_com_gogo_protobuf_proto.UnmarshalText(dAtA, msg); err != nil {
 		t.Fatalf("seed = %d, err = %v", seed, err)
 	}
@@ -770,9 +770,9 @@ func TestFeedbackGoString(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-func TestCastedGoString(t *testing.T) {
+func TestPerformGoString(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	p := NewPopulatedCasted(popr, false)
+	p := NewPopulatedPerform(popr, false)
 	s1 := p.GoString()
 	s2 := fmt.Sprintf("%#v", p)
 	if s1 != s2 {
@@ -904,10 +904,10 @@ func BenchmarkFeedbackSize(b *testing.B) {
 	b.SetBytes(int64(total / b.N))
 }
 
-func TestCastedSize(t *testing.T) {
+func TestPerformSize(t *testing.T) {
 	seed := time.Now().UnixNano()
 	popr := math_rand.New(math_rand.NewSource(seed))
-	p := NewPopulatedCasted(popr, true)
+	p := NewPopulatedPerform(popr, true)
 	size2 := github_com_gogo_protobuf_proto.Size(p)
 	dAtA, err := github_com_gogo_protobuf_proto.Marshal(p)
 	if err != nil {
@@ -926,12 +926,12 @@ func TestCastedSize(t *testing.T) {
 	}
 }
 
-func BenchmarkCastedSize(b *testing.B) {
+func BenchmarkPerformSize(b *testing.B) {
 	popr := math_rand.New(math_rand.NewSource(616))
 	total := 0
-	pops := make([]*Casted, 1000)
+	pops := make([]*Perform, 1000)
 	for i := 0; i < 1000; i++ {
-		pops[i] = NewPopulatedCasted(popr, false)
+		pops[i] = NewPopulatedPerform(popr, false)
 	}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -1003,9 +1003,9 @@ func TestFeedbackStringer(t *testing.T) {
 		t.Fatalf("String want %v got %v", s1, s2)
 	}
 }
-func TestCastedStringer(t *testing.T) {
+func TestPerformStringer(t *testing.T) {
 	popr := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
-	p := NewPopulatedCasted(popr, false)
+	p := NewPopulatedPerform(popr, false)
 	s1 := p.String()
 	s2 := fmt.Sprintf("%v", p)
 	if s1 != s2 {

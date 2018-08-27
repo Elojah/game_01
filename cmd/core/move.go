@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -14,11 +15,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-const (
-	maxTargets = 100
-)
-
 func (a *app) Move(id ulid.ID, e event.E) error {
+	if e.Action.GetValue().(*event.Move).Source.Compare(id) == 0 {
+		return a.MoveSource(id, e)
+	}
+	return a.MoveTarget(id, e)
+}
+
+func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	move := e.Action.GetValue().(*event.Move)
 
@@ -34,39 +38,45 @@ func (a *app) Move(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
 	}
 
-	if len(move.Targets) > maxTargets {
-		return errors.Wrapf(gerrors.ErrInvalidAction, "too many targets %d", len(move.Targets))
-	}
+	// #TODO Check if source is not stun or forbidden to move other entities
 
+	// #Send event to all targets
 	var result *multierror.Error
-	for _, target := range move.Targets {
-		if err := a.MoveTarget(move, target, e.TS); err != nil {
+	errC := make(chan error, 0)
+	go func() {
+		for err := range errC {
 			result = multierror.Append(result, err)
 		}
+	}()
+	var wg sync.WaitGroup
+	wg.Add(len(move.Targets))
+	for _, target := range move.Targets {
+		go func(target ulid.ID) {
+			if err := a.EventQStore.PublishEvent(event.E{
+				ID: ulid.NewID(),
+				TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
+				Action: event.Action{
+					Move: move,
+				},
+			}, id); err != nil {
+				errC <- err
+			}
+		}(target)
 	}
+	wg.Wait()
+	close(errC)
+
 	return result.ErrorOrNil()
 }
 
-func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error {
+func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 
-	// #Check permission source/target if source != target.
-	if move.Source != targetID {
-		permission, err := a.GetPermission(entity.PermissionSubset{
-			Source: move.Source.String(),
-			Target: targetID.String(),
-		})
-		if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), targetID.String())
-		}
-		if err != nil {
-			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), targetID.String())
-		}
-	}
+	move := e.Action.GetValue().(*event.Move)
 
 	// #Retrieve previous state target.
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: targetID, MaxTS: ts.UnixNano()})
+	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", targetID.String(), ts.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %s", id.String(), e.TS.UnixNano())
 	}
 
 	// #Retrieve current sector
@@ -161,5 +171,5 @@ func (a *app) MoveTarget(move *event.Move, targetID ulid.ID, ts time.Time) error
 	}
 
 	// #Write new target state.
-	return errors.Wrapf(a.EntityStore.SetEntity(target, ts.UnixNano()), "set entity %s for ts %d", target.ID.String(), ts.UnixNano())
+	return errors.Wrapf(a.EntityStore.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", target.ID.String(), e.TS.UnixNano())
 }

@@ -28,15 +28,16 @@ message Feedback {
 	bytes Target               = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
-message Casted {
+message Perform {
 	bytes AbilityID            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	Targets Targets            = 2 [(gogoproto.nullable)   = false];
+	bytes Source               = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	Targets Targets            = 3 [(gogoproto.nullable)   = false];
 }
 
 message Action {
 	option (gogoproto.onlyone) = true;
 	Move Move                  = 1;
 	Cast Cast                  = 2;
-	Feedback Feedback          = 3;
-	Casted Casted              = 4;
+	Perform Perform            = 3;
+	Feedback Feedback          = 4;
 }

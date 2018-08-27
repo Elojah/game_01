@@ -52,7 +52,7 @@ var Element_value = map[string]int32{
 }
 
 func (Element) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_component_ac61c88ca307d36e, []int{0}
+	return fileDescriptor_component_427926df3b7715e4, []int{0}
 }
 
 type Heal struct {
@@ -66,7 +66,7 @@ type Heal struct {
 func (m *Heal) Reset()      { *m = Heal{} }
 func (*Heal) ProtoMessage() {}
 func (*Heal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_ac61c88ca307d36e, []int{0}
+	return fileDescriptor_component_427926df3b7715e4, []int{0}
 }
 func (m *Heal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -127,7 +127,7 @@ type Damage struct {
 func (m *Damage) Reset()      { *m = Damage{} }
 func (*Damage) ProtoMessage() {}
 func (*Damage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_ac61c88ca307d36e, []int{1}
+	return fileDescriptor_component_427926df3b7715e4, []int{1}
 }
 func (m *Damage) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -190,7 +190,7 @@ type HealOverTime struct {
 func (m *HealOverTime) Reset()      { *m = HealOverTime{} }
 func (*HealOverTime) ProtoMessage() {}
 func (*HealOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_ac61c88ca307d36e, []int{2}
+	return fileDescriptor_component_427926df3b7715e4, []int{2}
 }
 func (m *HealOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -267,7 +267,7 @@ type DamageOverTime struct {
 func (m *DamageOverTime) Reset()      { *m = DamageOverTime{} }
 func (*DamageOverTime) ProtoMessage() {}
 func (*DamageOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_ac61c88ca307d36e, []int{3}
+	return fileDescriptor_component_427926df3b7715e4, []int{3}
 }
 func (m *DamageOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -343,7 +343,7 @@ type Component struct {
 func (m *Component) Reset()      { *m = Component{} }
 func (*Component) ProtoMessage() {}
 func (*Component) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_ac61c88ca307d36e, []int{4}
+	return fileDescriptor_component_427926df3b7715e4, []int{4}
 }
 func (m *Component) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -2014,9 +2014,9 @@ var (
 	ErrIntOverflowComponent   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("component.proto", fileDescriptor_component_ac61c88ca307d36e) }
+func init() { proto.RegisterFile("component.proto", fileDescriptor_component_427926df3b7715e4) }
 
-var fileDescriptor_component_ac61c88ca307d36e = []byte{
+var fileDescriptor_component_427926df3b7715e4 = []byte{
 	// 412 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x93, 0xbf, 0xcb, 0xd3, 0x40,
 	0x18, 0xc7, 0xf3, 0xbc, 0x4d, 0x9a, 0xf6, 0xa2, 0xef, 0x1b, 0x0e, 0x91, 0xf8, 0x22, 0xf7, 0x96,

@@ -71,10 +71,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 		ID: ulid.NewID(),
 		TS: e.TS.Add(ab.CastTime),
 		Action: event.Action{
-			Casted: &event.Casted{
-				AbilityID: ab.ID,
-				Targets:   cast.Targets,
-			},
+			Perform: (*event.Perform)(cast),
 		},
 	}, source.ID); err != nil {
 		return errors.Wrapf(err, "set casted event %s", e.ID.String())

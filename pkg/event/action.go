@@ -11,8 +11,8 @@ func (a Action) Type() string {
 	if a.Feedback != nil {
 		return "feedback"
 	}
-	if a.Casted != nil {
-		return "casted"
+	if a.Perform != nil {
+		return "perform"
 	}
 	return "null"
 }
