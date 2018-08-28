@@ -14,11 +14,79 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) Perform(id ulid.ID, e event.E) error {
-	if e.Action.GetValue().(*event.Perform).Source.Compare(id) == 0 {
-		return a.PerformSource(id, e)
+func (a *app) PerformSource(id ulid.ID, e event.E) error {
+
+	perform := e.Action.GetValue().(*event.PerformSource)
+
+	// #Retrieve entity
+	source, err := a.EntityStore.GetEntity(entity.Subset{
+		ID:    id,
+		MaxTS: e.TS.UnixNano(),
+	})
+	if err != nil {
+		return errors.Wrapf(err, "get entity %s", id.String())
 	}
-	return a.PerformTarget(id, e)
+
+	// #Retrieve ability.
+	ab, err := a.AbilityStore.GetAbility(ability.Subset{
+		ID: perform.AbilityID,
+	})
+	if err == gerrors.ErrNotFound {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", perform.AbilityID.String(), id.String())
+	}
+	if err != nil {
+		return errors.Wrapf(err, "get ability %s for %s", perform.AbilityID.String(), id.String())
+	}
+
+	// #Check cast was not interrupted.
+	if source.Cast == nil ||
+		source.Cast.AbilityID != perform.AbilityID ||
+		source.Cast.TS.Add(ab.CastTime) != e.TS {
+		// normal behavior, don't return errors
+		return nil
+	}
+
+	// #For all ability components.
+	for _, component := range ab.Components {
+
+		// #Retrieve targets for this component.
+
+		// #Send event to all targets
+		for _, target := range perform.Targets {
+			// #TODO check targets validity (range numbers, etc.)
+
+			if len(target.Positions) != 0 {
+				return gerrors.ErrNotImplementedYet
+			}
+			var result *multierror.Error
+			errC := make(chan error, 0)
+			go func() {
+				for err := range errC {
+					result = multierror.Append(result, err)
+				}
+			}()
+			var wg sync.WaitGroup
+			wg.Add(len(perform.Targets.Entities))
+			for _, ens := range perform.Targets.Entities {
+				for _, id := range ens.IDs {
+					go func(id ulid.ID) {
+						if err := a.EventQStore.PublishEvent(event.E{
+							ID: ulid.NewID(),
+							TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
+							Action: event.Action{
+								Perform: perform,
+							},
+						}, id); err != nil {
+							errC <- err
+						}
+					}(id)
+				}
+			}
+			wg.Wait()
+			close(errC)
+		}
+	}
+	return result.ErrorOrNil()
 }
 
 func (a *app) PerformTarget(id ulid.ID, e event.E) error {
@@ -84,70 +152,4 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		TS:     e.TS.Add(ab.CastTime),
 		Action: fb,
 	}, source.ID)
-}
-
-func (a *app) PerformSource(id ulid.ID, e event.E) error {
-
-	perform := e.Action.GetValue().(*event.Perform)
-
-	// #Retrieve entity
-	source, err := a.EntityStore.GetEntity(entity.Subset{
-		ID:    id,
-		MaxTS: e.TS.UnixNano(),
-	})
-	if err != nil {
-		return errors.Wrapf(err, "get entity %s", id.String())
-	}
-
-	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(ability.Subset{
-		ID: perform.AbilityID,
-	})
-	if err == gerrors.ErrNotFound {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", perform.AbilityID.String(), id.String())
-	}
-	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", perform.AbilityID.String(), id.String())
-	}
-
-	// #Check cast was not interrupted.
-	if source.Cast == nil ||
-		source.Cast.AbilityID != perform.AbilityID ||
-		source.Cast.TS.Add(ab.CastTime) != e.TS {
-		// normal behavior, don't return errors
-		return nil
-	}
-
-	// #Send event to all targets
-	if len(perform.Targets.Positions) != 0 {
-		return gerrors.ErrNotImplementedYet
-	}
-	var result *multierror.Error
-	errC := make(chan error, 0)
-	go func() {
-		for err := range errC {
-			result = multierror.Append(result, err)
-		}
-	}()
-	var wg sync.WaitGroup
-	wg.Add(len(perform.Targets.Entities))
-	for _, ens := range perform.Targets.Entities {
-		for _, id := range ens.IDs {
-			go func(id ulid.ID) {
-				if err := a.EventQStore.PublishEvent(event.E{
-					ID: ulid.NewID(),
-					TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
-					Action: event.Action{
-						Perform: perform,
-					},
-				}, id); err != nil {
-					errC <- err
-				}
-			}(id)
-		}
-	}
-	wg.Wait()
-	close(errC)
-
-	return result.ErrorOrNil()
 }

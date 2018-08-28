@@ -153,8 +153,6 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		if err := a.PerformTarget(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case *event.FeedbackSource:
-		logger.Error().Msg("not implemented")
 	case *event.FeedbackTarget:
 		logger.Error().Msg("not implemented")
 	default:

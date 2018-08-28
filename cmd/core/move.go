@@ -21,19 +21,19 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
+		Source: e.Token.String(),
 		Target: move.Source.String(),
 	})
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), move.Source.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), move.Source.String())
 	}
 
 	// #TODO Check if source is not stun or forbidden to move other entities
 
-	// #Send event to all targets
+	// #For all targets.
 	var result *multierror.Error
 	errC := make(chan error, 0)
 	go func() {
@@ -45,11 +45,30 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 	wg.Add(len(move.Targets))
 	for _, target := range move.Targets {
 		go func(target ulid.ID) {
+
+			// #Check permission source/target.
+			permission, err := a.GetPermission(entity.PermissionSubset{
+				Source: move.Source.String(),
+				Target: id.String(),
+			})
+			if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
+				errC <- errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), move.Source.String())
+				return
+			}
+			if err != nil {
+				errC <- errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), move.Source.String())
+				return
+			}
+
+			// #Publish move event to target.
 			if err := a.EventQStore.PublishEvent(event.E{
 				ID: ulid.NewID(),
 				TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
 				Action: event.Action{
-					Move: move,
+					MoveTarget: &event.MoveTarget{
+						Source:   move.Source,
+						Position: move.Position,
+					},
 				},
 			}, id); err != nil {
 				errC <- err

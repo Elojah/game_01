@@ -11,20 +11,20 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) Cast(id ulid.ID, e event.E) error {
+func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	cast := e.Action.GetValue().(*event.Cast)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
+		Source: e.Token.String(),
 		Target: cast.Source.String(),
 	})
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), cast.Source.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), cast.Source.String())
 	}
 
 	// #Retrieve ability.
@@ -66,14 +66,19 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
-	// #Add casted event to event set.
+	// #TODO check targets validity (range numbers, etc.)
+
+	// #Publish casted event to event set.
 	if err := a.EventQStore.PublishEvent(event.E{
 		ID: ulid.NewID(),
 		TS: e.TS.Add(ab.CastTime),
 		Action: event.Action{
-			Perform: (*event.Perform)(cast),
+			PerformSource: &event.PerformSource{
+				AbilityID: cast.AbilityID,
+				Targets:   cast.Targets,
+			},
 		},
-	}, source.ID); err != nil {
+	}, cast.Source); err != nil {
 		return errors.Wrapf(err, "set casted event %s", e.ID.String())
 	}
 
