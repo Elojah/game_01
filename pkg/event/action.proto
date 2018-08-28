@@ -19,7 +19,7 @@ message Move {
 message Cast {
 	bytes AbilityID            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes Source               = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	Targets Targets            = 3 [(gogoproto.nullable)   = false];
+	repeated Targets Targets   = 3 [(gogoproto.nullable)   = false];
 }
 
 message Feedback {
@@ -31,7 +31,7 @@ message Feedback {
 message Perform {
 	bytes AbilityID            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes Source               = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	Targets Targets            = 3 [(gogoproto.nullable)   = false];
+	repeated Targets Targets   = 3 [(gogoproto.nullable)   = false];
 }
 
 message Action {

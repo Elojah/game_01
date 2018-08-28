@@ -44,10 +44,19 @@ message DamageOverTime {
 	uint64 Range                  = 5;
 }
 
-message Component {
+message Effect {
 	option (gogoproto.onlyone)    = true;
 	Heal Heal                     = 1;
 	Damage Damage                 = 2;
 	HealOverTime HealOverTime     = 3;
 	DamageOverTime DamageOverTime = 4;
+}
+
+message Component {
+	repeated Effect Effects       = 1;
+	uint64 NTargets               = 2;
+	uint64 Range                  = 3;
+	uint64 NPositions             = 4;
+	uint64 PositionRange          = 5;
+	bytes Shape                   = 6 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
