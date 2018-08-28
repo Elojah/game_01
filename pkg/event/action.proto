@@ -46,7 +46,6 @@ message Action {
 	MoveSource MoveSource         = 1;
 	MoveTarget MoveTarget         = 2;
 	CastSource CastSource         = 3;
-	CastTarget CastTarget         = 4;
 	PerformSource PerformSource   = 5;
 	PerformTarget PerformTarget   = 6;
 	FeedbackSource FeedbackSource = 7;

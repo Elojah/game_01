@@ -133,20 +133,30 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Logger()
 
 	switch e.Action.GetValue().(type) {
-	case *event.Move:
-		if err := a.Move(id, e); err != nil {
+	case *event.MoveSource:
+		if err := a.MoveSource(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case *event.Cast:
-		if err := a.Cast(id, e); err != nil {
+	case *event.MoveTarget:
+		if err := a.MoveTarget(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case *event.Feedback:
+	case *event.CastSource:
+		if err := a.CastSource(id, e); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case *event.PerformSource:
+		if err := a.PerformSource(id, e); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case *event.PerformTarget:
+		if err := a.PerformTarget(id, e); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case *event.FeedbackSource:
 		logger.Error().Msg("not implemented")
-	case *event.Perform:
-		if err := a.Perform(id, e); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
+	case *event.FeedbackTarget:
+		logger.Error().Msg("not implemented")
 	default:
 		logger.Error().Msg("unrecognized action")
 	}
