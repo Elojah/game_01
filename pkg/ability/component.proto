@@ -13,7 +13,9 @@ enum Element {
 	Water                         = 1;
 	Air                           = 2;
 	Earth                         = 3;
-	Time                          = 4;
+	Light                         = 4;
+	Dark                          = 5;
+	Time                          = 6;
 }
 
 message Heal {
@@ -53,10 +55,10 @@ message Effect {
 }
 
 message Component {
-	repeated Effect Effects       = 1;
-	uint64 NTargets               = 2;
-	uint64 Range                  = 3;
-	uint64 NPositions             = 4;
-	uint64 PositionRange          = 5;
-	bytes Shape                   = 6 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	repeated Effect Effects       = 2;
+	uint64 NTargets               = 3;
+	uint64 Range                  = 4;
+	uint64 NPositions             = 5;
+	uint64 PositionRange          = 6;
+	bytes Shape                   = 7 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

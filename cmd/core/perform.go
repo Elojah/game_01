@@ -50,7 +50,6 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Initialize feedback.
 	fb := ability.Feedback{
-		ID:        ulid.NewID(),
 		AbilityID: ab.ID,
 	}
 	// #Apply all ability components.
@@ -76,7 +75,15 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		}
 	}
 
-	return nil
+	if err := a.EntityStore.SetEntity(target, e.TS.UnixNano()); err != nil {
+		return errors.Wrapf(err, "set entity %s", source.ID.String())
+	}
+
+	return a.EventQStore.PublishEvent(event.E{
+		ID:     ulid.NewID(),
+		TS:     e.TS.Add(ab.CastTime),
+		Action: fb,
+	}, source.ID)
 }
 
 func (a *app) PerformSource(id ulid.ID, e event.E) error {
