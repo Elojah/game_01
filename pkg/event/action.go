@@ -2,17 +2,24 @@ package event
 
 // Type returns the action type as string.
 func (a Action) Type() string {
-	if a.Move != nil {
-		return "move"
+
+	if a.MoveSource != nil {
+		return "move_source"
 	}
-	if a.Cast != nil {
-		return "cast"
+	if a.MoveTarget != nil {
+		return "move_target"
 	}
-	if a.Feedback != nil {
-		return "feedback"
+	if a.CastSource != nil {
+		return "cast_source"
 	}
-	if a.Perform != nil {
-		return "perform"
+	if a.PerformSource != nil {
+		return "perform_source"
 	}
-	return "null"
+	if a.PerformTarget != nil {
+		return "perform_target"
+	}
+	if a.FeedbackTarget != nil {
+		return "feedback_target"
+	}
+	return "unknown"
 }

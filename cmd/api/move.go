@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/rs/zerolog/log"
 
@@ -18,13 +17,16 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 		Str("action", "move").
 		Logger()
 
-	a := msg.Action.GetMove()
+	a := msg.Query.GetMove()
 	e := event.E{
-		ID:     ulid.NewID(),
-		Source: msg.Token,
-		TS:     time.Unix(0, msg.TS),
+		ID:    ulid.NewID(),
+		Token: msg.Token,
+		TS:    msg.TS,
 		Action: event.Action{
-			Move: a,
+			MoveSource: &event.MoveSource{
+				Targets:  a.Targets,
+				Position: a.Position,
+			},
 		},
 	}
 

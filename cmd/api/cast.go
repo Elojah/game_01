@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/rs/zerolog/log"
 
@@ -18,13 +17,16 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		Str("action", "cast").
 		Logger()
 
-	a := msg.Action.GetCast()
+	a := msg.Query.GetCast()
 	e := event.E{
 		ID:     ulid.NewID(),
 		Source: msg.Token,
-		TS:     time.Unix(0, msg.TS),
+		TS:     msg.TS,
 		Action: event.Action{
-			Cast: a,
+			CastSource: &event.CastSource{
+				AbilityID: a.AbilityID,
+				Targets:   a.Targets,
+			},
 		},
 	}
 

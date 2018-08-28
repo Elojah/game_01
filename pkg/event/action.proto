@@ -11,8 +11,8 @@ import "github.com/elojah/game_01/pkg/geometry/position.proto";
 import "github.com/elojah/game_01/pkg/ability/targets.proto";
 
 message MoveSource {
-	repeated bytes Targets     = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	Position Position          = 3 [(gogoproto.nullable)   = false];
+	repeated bytes Targets     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	Position Position          = 2 [(gogoproto.nullable)   = false];
 }
 
 message MoveTarget {
@@ -46,8 +46,7 @@ message Action {
 	MoveSource MoveSource         = 1;
 	MoveTarget MoveTarget         = 2;
 	CastSource CastSource         = 3;
-	PerformSource PerformSource   = 5;
-	PerformTarget PerformTarget   = 6;
-	FeedbackSource FeedbackSource = 7;
-	FeedbackTarget FeedbackTarget = 8;
+	PerformSource PerformSource   = 4;
+	PerformTarget PerformTarget   = 5;
+	FeedbackTarget FeedbackTarget = 6;
 }

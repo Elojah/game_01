@@ -15,13 +15,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (a *app) Move(id ulid.ID, e event.E) error {
-	if e.Action.GetValue().(*event.Move).Source.Compare(id) == 0 {
-		return a.MoveSource(id, e)
-	}
-	return a.MoveTarget(id, e)
-}
-
 func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	move := e.Action.GetValue().(*event.Move)
