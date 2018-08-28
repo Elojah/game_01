@@ -17,15 +17,15 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 		Str("action", "move").
 		Logger()
 
-	a := msg.Query.GetMove()
+	move := msg.Query.GetMove()
 	e := event.E{
 		ID:    ulid.NewID(),
 		Token: msg.Token,
 		TS:    msg.TS,
 		Action: event.Action{
 			MoveSource: &event.MoveSource{
-				Targets:  a.Targets,
-				Position: a.Position,
+				Targets:  move.Targets,
+				Position: move.Position,
 			},
 		},
 	}
@@ -33,10 +33,10 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 
 	go func() {
-		if err := h.PublishEvent(e, a.Source); err != nil {
+		if err := h.PublishEvent(e, move.Source); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-		logger.Info().Str("source", a.Source.String()).Msg("send event")
+		logger.Info().Str("source", move.Source.String()).Msg("send event")
 	}()
 
 	return nil
