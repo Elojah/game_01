@@ -7,11 +7,11 @@ option (gogoproto.benchgen_all) = true;
 option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "component_feedback.proto";
+import "effect_feedback.proto";
 
 message Feedback {
 	bytes    ID                           = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes    AbilityID                    = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes    ComponentID                  = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	repeated ComponentFeedback Components = 4 [(gogoproto.nullable)   = false];
+	repeated EffectFeedback Effects       = 4 [(gogoproto.nullable)   = false];
 }

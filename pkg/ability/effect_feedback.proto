@@ -24,7 +24,7 @@ message DamageOverTimeFeedback {
 	uint64 Amount                                 = 1;
 }
 
-message ComponentFeedback {
+message EffectFeedback {
 	option (gogoproto.onlyone)                    = true;
 	HealFeedback HealFeedback         = 1;
 	DamageFeedback DamageFeedback     = 2;

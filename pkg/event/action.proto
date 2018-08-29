@@ -11,34 +11,34 @@ import "github.com/elojah/game_01/pkg/geometry/position.proto";
 import "github.com/elojah/game_01/pkg/ability/targets.proto";
 
 message MoveSource {
-	repeated bytes Targets     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	Position Position          = 2 [(gogoproto.nullable)   = false];
+	repeated bytes Targets        = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	Position Position             = 2 [(gogoproto.nullable)   = false];
 }
 
 message MoveTarget {
-	bytes Source               = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	Position Position          = 2 [(gogoproto.nullable)   = false];
+	bytes Source                  = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	Position Position             = 2 [(gogoproto.nullable)   = false];
 }
 
 message CastSource {
-	bytes AbilityID            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	repeated Targets Targets   = 2 [(gogoproto.nullable)   = false];
+	bytes AbilityID               = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	map<string, Targets> Targets  = 2 [(gogoproto.nullable)   = false];
 }
 
 message FeedbackTarget {
-	bytes ID                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Source               = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ID                      = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Source                  = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message PerformSource {
-	bytes AbilityID            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	repeated Targets Targets   = 2 [(gogoproto.nullable)   = false];
+	bytes AbilityID               = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	map<string, Targets> Targets  = 2 [(gogoproto.nullable)   = false];
 }
 
 message PerformTarget {
-	bytes AbilityID            = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes ComponentID          = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Source               = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes AbilityID               = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ComponentID             = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Source                  = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message Action {

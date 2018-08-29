@@ -46,35 +46,50 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 		return nil
 	}
 
+	// #Set ability LastUsed
+	ab.LastUsed = e.TS
+	if err := a.AbilityStore.SetAbility(ab, source.ID); err != nil {
+		return errors.Wrapf(err, "set ability %s for %s", ab.ID.String(), source.ID.String())
+	}
+
 	// #For all ability components.
-	for _, component := range ab.Components {
+	var result *multierror.Error
+	errC := make(chan error, 0)
+	go func() {
+		for err := range errC {
+			result = multierror.Append(result, err)
+		}
+	}()
+	for cid := range ab.Components {
 
 		// #Retrieve targets for this component.
+		targets, ok := perform.Targets[cid]
+		if !ok {
+			return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
+		}
 
 		// #Send event to all targets
-		for _, target := range perform.Targets {
+		for _, target := range targets {
 			// #TODO check targets validity (range numbers, etc.)
 
 			if len(target.Positions) != 0 {
 				return gerrors.ErrNotImplementedYet
 			}
-			var result *multierror.Error
-			errC := make(chan error, 0)
-			go func() {
-				for err := range errC {
-					result = multierror.Append(result, err)
-				}
-			}()
+
 			var wg sync.WaitGroup
-			wg.Add(len(perform.Targets.Entities))
-			for _, ens := range perform.Targets.Entities {
+			wg.Add(len(target.Entities))
+			for _, ens := range target.Entities {
 				for _, id := range ens.IDs {
 					go func(id ulid.ID) {
 						if err := a.EventQStore.PublishEvent(event.E{
 							ID: ulid.NewID(),
 							TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
 							Action: event.Action{
-								Perform: perform,
+								PerformTarget: &event.PerformTarget{
+									AbilityID:   ab.ID,
+									ComponentID: cid,
+									Source:      source.ID,
+								},
 							},
 						}, id); err != nil {
 							errC <- err
@@ -91,7 +106,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 
 func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
-	perform := e.Action.GetValue().(*event.Perform)
+	perform := e.Action.GetValue().(*event.PerformTarget)
 
 	// #Retrieve source state.
 	source, err := a.EntityStore.GetEntity(entity.Subset{ID: perform.Source, MaxTS: e.TS.UnixNano()})
@@ -118,20 +133,27 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Initialize feedback.
 	fb := ability.Feedback{
-		AbilityID: ab.ID,
+		ID:          ulid.NewID(),
+		AbilityID:   ab.ID,
+		ComponentID: perform.ComponentID,
 	}
+
 	// #Apply all ability components.
+	component, ok := ab.Components[perform.ComponentID]
+	if !ok {
+		return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
+	}
 	var result *multierror.Error
-	for i, comp := range ab.Components {
-		c := comp.GetValue()
+	for i, effect := range component.Effects {
+		veffect := effect.GetValue()
 		switch c.(type) {
 		case ability.Damage:
-			cfb, err := target.Damage(source, c.(ability.Damage))
+			ddfb, err := target.Damage(source, veffect.(ability.Damage))
 			if err != nil {
 				result = multierror.Append(result, errors.Wrapf(err, "damage direct component %d", i))
 				continue
 			}
-			fb.Components = append(fb.Components, cfb)
+			fb.Effects = append(fb.Effects, ddfb)
 		case ability.Heal:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
 		case ability.HealOverTime:
@@ -143,13 +165,25 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		}
 	}
 
+	// #Set entity new state.
 	if err := a.EntityStore.SetEntity(target, e.TS.UnixNano()); err != nil {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
+	// #Set feedback.
+	if err := a.FeedbackStore.SetFeedback(fb); err != nil {
+		return errors.Wrapf(err, "set feedback %s from %s", fb.ID.String(), target.ID.String())
+	}
+
+	// #Publish feedback to source.
 	return a.EventQStore.PublishEvent(event.E{
-		ID:     ulid.NewID(),
-		TS:     e.TS.Add(ab.CastTime),
-		Action: fb,
+		ID: ulid.NewID(),
+		TS: e.TS.Add(ab.CastTime),
+		Action: event.Action{
+			FeedbackTarget: &event.FeedbackTarget{
+				ID:     fb.ID,
+				source: target.ID,
+			},
+		},
 	}, source.ID)
 }

@@ -77,7 +77,7 @@ func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
 }
 
 func (r *Recurrer) sendEntity(entityID ulid.ID, t time.Time) {
-	// TODO Use token ping instead of now()
+	// TODO Use now()-token ping instead of now()
 	e, err := r.EntityStore.GetEntity(entity.Subset{ID: entityID, MaxTS: t.UnixNano()})
 	if err != nil {
 		r.logger.Error().Err(err).Str("id", entityID.String()).Msg("failed to retrieve entity")

@@ -24,4 +24,6 @@ var (
 	ErrInvalidEntityType = errors.New("invalid entity type")
 	// ErrNotFound is raised when a mandatory resource is not found in storage.
 	ErrNotFound = errors.New("no results found")
+	// ErrMissingTarget is raised when a ability is performed with a missing component targets.
+	ErrMissingTarget = errors.New("target missing")
 )
