@@ -19,17 +19,20 @@ import (
 func TestSequencer(t *testing.T) {
 
 	now := time.Now()
+	cid := ulid.NewID().String()
 	eset := []event.E{
 		event.E{
 			ID: ulid.NewID(),
 			TS: now,
 			Action: event.Action{
-				Cast: &event.Cast{
-					Source: ulid.NewID(),
-					Targets: ability.Targets{
-						Entities: []ability.Entities{
-							ability.Entities{
-								IDs: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
+				CastSource: &event.CastSource{
+					AbilityID: ulid.NewID(),
+					Targets: map[string]ability.Targets{
+						cid: ability.Targets{
+							Entities: []ability.Entities{
+								ability.Entities{
+									IDs: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
+							},
 						},
 					},
 				},
@@ -39,21 +42,21 @@ func TestSequencer(t *testing.T) {
 			ID: ulid.NewID(),
 			TS: now.Add(-1 * time.Second),
 			Action: event.Action{
-				Move: &event.Move{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
 			},
 		},
 		event.E{
 			ID: ulid.NewID(),
 			TS: now.Add(-2 * time.Second),
 			Action: event.Action{
-				Move: &event.Move{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
 			},
 		},
 		event.E{
 			ID: ulid.NewID(),
 			TS: now.Add(-3 * time.Second),
 			Action: event.Action{
-				Move: &event.Move{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
 			},
 		},
 	}

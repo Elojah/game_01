@@ -75,10 +75,10 @@ func (r reader) Run() {
 			continue
 		}
 		e := event.DTO{
-			ID:     ulid.NewID(),
-			Token:  r.token,
-			TS:     time.Now().UnixNano(),
-			Action: input.Action,
+			ID:    ulid.NewID(),
+			Token: r.token,
+			TS:    time.Now(),
+			Query: input.Query,
 		}
 		raw, err := e.Marshal()
 		if err != nil {
@@ -97,7 +97,7 @@ func (r reader) HandleACK() {
 		case <-r.ticker.C:
 			now := time.Now()
 			for _, e := range r.events {
-				if now.Sub(time.Unix(0, e.TS)) < r.tolerance {
+				if now.Sub(e.TS) < r.tolerance {
 					continue
 				}
 				go func(e event.DTO) {

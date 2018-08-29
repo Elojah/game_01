@@ -43,12 +43,12 @@ func (e *E) Feedback(fb ability.Feedback) {
 }
 
 // Damage applies a direct damage component dd from entity source to entity e.
-func (e *E) Damage(source E, dd ability.Damage) ability.DamageFeedback {
+func (e *E) Damage(source E, dd ability.Damage) *ability.DamageFeedback {
 	if dd.Amount >= e.HP {
 		e.HP = 0
 		e.Dead = true
 	} else {
 		e.HP -= dd.Amount
 	}
-	return ability.DamageFeedback{Amount: dd.Amount}
+	return &ability.DamageFeedback{Amount: dd.Amount}
 }

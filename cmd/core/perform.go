@@ -63,43 +63,40 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	for cid := range ab.Components {
 
 		// #Retrieve targets for this component.
-		targets, ok := perform.Targets[cid]
+		target, ok := perform.Targets[cid]
 		if !ok {
 			return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
 		}
 
 		// #Send event to all targets
-		for _, target := range targets {
-			// #TODO check targets validity (range numbers, etc.)
 
-			if len(target.Positions) != 0 {
-				return gerrors.ErrNotImplementedYet
-			}
-
-			var wg sync.WaitGroup
-			wg.Add(len(target.Entities))
-			for _, ens := range target.Entities {
-				for _, id := range ens.IDs {
-					go func(id ulid.ID) {
-						if err := a.EventQStore.PublishEvent(event.E{
-							ID: ulid.NewID(),
-							TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
-							Action: event.Action{
-								PerformTarget: &event.PerformTarget{
-									AbilityID:   ab.ID,
-									ComponentID: cid,
-									Source:      source.ID,
-								},
-							},
-						}, id); err != nil {
-							errC <- err
-						}
-					}(id)
-				}
-			}
-			wg.Wait()
-			close(errC)
+		if len(target.Positions) != 0 {
+			return gerrors.ErrNotImplementedYet
 		}
+
+		var wg sync.WaitGroup
+		wg.Add(len(target.Entities))
+		for _, ens := range target.Entities {
+			for _, id := range ens.IDs {
+				go func(id ulid.ID) {
+					if err := a.EventQStore.PublishEvent(event.E{
+						ID: ulid.NewID(),
+						TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
+						Action: event.Action{
+							PerformTarget: &event.PerformTarget{
+								AbilityID:   ab.ID,
+								ComponentID: ulid.MustParse(cid),
+								Source:      source.ID,
+							},
+						},
+					}, id); err != nil {
+						errC <- err
+					}
+				}(id)
+			}
+		}
+		wg.Wait()
+		close(errC)
 	}
 	return result.ErrorOrNil()
 }
@@ -139,21 +136,19 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Apply all ability components.
-	component, ok := ab.Components[perform.ComponentID]
+	cid := perform.ComponentID.String()
+	component, ok := ab.Components[cid]
 	if !ok {
 		return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
 	}
 	var result *multierror.Error
-	for i, effect := range component.Effects {
+	for _, effect := range component.Effects {
 		veffect := effect.GetValue()
-		switch c.(type) {
+		switch veffect.(type) {
 		case ability.Damage:
-			ddfb, err := target.Damage(source, veffect.(ability.Damage))
-			if err != nil {
-				result = multierror.Append(result, errors.Wrapf(err, "damage direct component %d", i))
-				continue
-			}
-			fb.Effects = append(fb.Effects, ddfb)
+			fb.Effects = append(fb.Effects, ability.EffectFeedback{
+				DamageFeedback: target.Damage(source, veffect.(ability.Damage)),
+			})
 		case ability.Heal:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
 		case ability.HealOverTime:
@@ -182,8 +177,8 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		Action: event.Action{
 			FeedbackTarget: &event.FeedbackTarget{
 				ID:     fb.ID,
-				source: target.ID,
+				Source: target.ID,
 			},
 		},
-	}, source.ID)
+	}, perform.Source)
 }
