@@ -4,10 +4,10 @@
 	"Type"              : "01CP2Z53XMVH95E210QEWJTFRS",
 	"Animation"         : "01CP2Z58REGWW225VYXEZT984R",
 	"Name"              : "Ice shard",
-	"MPConsumption"     : "10",
-	"PostMPConsumption" : "0",
+	"MPConsumption"     : 10,
+	"PostMPConsumption" : 0,
 	"CD"                : "5s",
-	"LastUsed"          : "0",
+	"LastUsed"          : 0,
 	"CastTime"          : "1s",
 	"Components"        : {}
 	}

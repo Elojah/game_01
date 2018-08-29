@@ -29,9 +29,9 @@ func (a *A) UnmarshalJSON(data []byte) error {
 		Name              string
 		MPConsumption     uint64
 		PostMPConsumption uint64
-		LastUsed          time.Time
 		Components        map[string]Component
 
+		LastUsed int64
 		CD       string
 		CastTime string
 	}
@@ -44,7 +44,6 @@ func (a *A) UnmarshalJSON(data []byte) error {
 	a.Name = alias.Name
 	a.MPConsumption = alias.MPConsumption
 	a.PostMPConsumption = alias.PostMPConsumption
-	a.LastUsed = alias.LastUsed
 	a.Components = alias.Components
 	var err error
 	if a.CD, err = time.ParseDuration(alias.CD); err != nil {
@@ -53,5 +52,6 @@ func (a *A) UnmarshalJSON(data []byte) error {
 	if a.CastTime, err = time.ParseDuration(alias.CastTime); err != nil {
 		return err
 	}
+	a.LastUsed = time.Unix(0, alias.LastUsed)
 	return nil
 }
