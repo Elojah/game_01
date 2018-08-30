@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "ability";
+package ability;
 
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
@@ -10,6 +10,6 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_01/pkg/geometry/position.proto";
 
 message Targets {
-	repeated bytes Entities       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	repeated Position Positions   = 2 [(gogoproto.nullable)   = false];
+	repeated bytes Entities              = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	repeated geometry.Position Positions = 2 [(gogoproto.nullable)   = false];
 }

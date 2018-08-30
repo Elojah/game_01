@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "event";
+package event;
 
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
@@ -12,26 +12,26 @@ import "github.com/elojah/game_01/pkg/geometry/position.proto";
 import "github.com/elojah/game_01/pkg/ability/targets.proto";
 
 message Move {
-	bytes Source                 = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	repeated bytes Targets       = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	Position Position            = 3 [(gogoproto.nullable)   = false];
+	bytes Source                         = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	repeated bytes Targets               = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	geometry.Position Position           = 3 [(gogoproto.nullable)   = false];
 }
 
 message Cast {
-	bytes Source                 = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes AbilityID              = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	map<string, Targets> Targets = 3 [(gogoproto.nullable)   = false];
+	bytes Source                         = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes AbilityID                      = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	map<string, ability.Targets> Targets = 3 [(gogoproto.nullable)   = false];
 }
 
 message Query {
-	option (gogoproto.onlyone)   = true;
-	Move Move                    = 1;
-	Cast Cast                    = 2;
+	option (gogoproto.onlyone)           = true;
+	Move Move                            = 1;
+	Cast Cast                            = 2;
 }
 
 message DTO {
-	bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Token                  = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	google.protobuf.Timestamp TS = 3 [(gogoproto.stdtime)    = true, (gogoproto.nullable)                                    = false];
-	Query Query                  = 4 [(gogoproto.nullable)   = false];
+	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Token                          = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	google.protobuf.Timestamp TS         = 3 [(gogoproto.stdtime)    = true, (gogoproto.nullable)                                    = false];
+	Query Query                          = 4 [(gogoproto.nullable)   = false];
 }

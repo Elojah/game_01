@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "ability";
+package ability;
 
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;

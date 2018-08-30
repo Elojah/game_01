@@ -26,6 +26,7 @@ type Subset struct {
 func (a A) Check(targets map[string]Targets) error {
 	// #For all ability components.
 	for cid, comp := range a.Components {
+
 		// #Retrieve targets for this component.
 		target, ok := targets[cid]
 		if !ok {

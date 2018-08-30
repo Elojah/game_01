@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "event";
+package event;
 
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;

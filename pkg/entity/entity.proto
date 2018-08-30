@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "entity";
+package entity;
 
 option (gogoproto.testgen_all)  = true;
 option (gogoproto.benchgen_all) = true;
@@ -24,6 +24,6 @@ message E {
 	uint64 MaxHP                 = 6;
 	uint64 MP                    = 7;
 	uint64 MaxMP                 = 8;
-	Position Position            = 9 [(gogoproto.nullable)   = false];
-	Cast Cast                    = 10 [(gogoproto.nullable)   = true];
+	geometry.Position Position   = 9 [(gogoproto.nullable)   = false];
+	Cast Cast                    = 10 [(gogoproto.nullable)  = true];
 }
