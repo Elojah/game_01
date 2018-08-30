@@ -29,10 +29,7 @@ func TestSequencer(t *testing.T) {
 					AbilityID: ulid.NewID(),
 					Targets: map[string]ability.Targets{
 						cid: ability.Targets{
-							Entities: []ability.Entities{
-								ability.Entities{
-									IDs: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
-							},
+							Entities: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()},
 						},
 					},
 				},

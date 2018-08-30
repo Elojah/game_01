@@ -26,4 +26,6 @@ var (
 	ErrNotFound = errors.New("no results found")
 	// ErrMissingTarget is raised when a ability is performed with a missing component targets.
 	ErrMissingTarget = errors.New("target missing")
+	// ErrTooManyTargets is raised when a ability is casted/performed with too many targets for a component.
+	ErrTooManyTargets = errors.New("too many targets")
 )

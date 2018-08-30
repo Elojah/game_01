@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/pkg/errors"
+
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -18,6 +21,27 @@ type Store interface {
 type Subset struct {
 	ID       ulid.ID
 	EntityID ulid.ID
+}
+
+func (a A) Check(targets map[string]Targets) error {
+	// #For all ability components.
+	for cid, comp := range a.Components {
+		// #Retrieve targets for this component.
+		target, ok := targets[cid]
+		if !ok {
+			return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, a.ID.String())
+		}
+
+		if len(target.Positions) != 0 {
+			return gerrors.ErrNotImplementedYet
+		}
+
+		// #Check target numbers.
+		if uint64(len(target.Entities)) > comp.NTargets {
+			return errors.Wrapf(gerrors.ErrTooManyTargets, "component %s for ability %s with targets max %d and given %d", cid, a.ID.String(), len(target.Entities), comp.NTargets)
+		}
+	}
+
 }
 
 // UnmarshalJSON allows string as duration for cast time.

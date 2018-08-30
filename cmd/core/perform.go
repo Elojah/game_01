@@ -69,31 +69,28 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 		}
 
 		// #Send event to all targets
-
 		if len(target.Positions) != 0 {
 			return gerrors.ErrNotImplementedYet
 		}
 
 		var wg sync.WaitGroup
 		wg.Add(len(target.Entities))
-		for _, ens := range target.Entities {
-			for _, id := range ens.IDs {
-				go func(id ulid.ID) {
-					if err := a.EventQStore.PublishEvent(event.E{
-						ID: ulid.NewID(),
-						TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
-						Action: event.Action{
-							PerformTarget: &event.PerformTarget{
-								AbilityID:   ab.ID,
-								ComponentID: ulid.MustParse(cid),
-								Source:      source.ID,
-							},
+		for _, id := range target.Entities {
+			go func(id ulid.ID) {
+				if err := a.EventQStore.PublishEvent(event.E{
+					ID: ulid.NewID(),
+					TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
+					Action: event.Action{
+						PerformTarget: &event.PerformTarget{
+							AbilityID:   ab.ID,
+							ComponentID: ulid.MustParse(cid),
+							Source:      source.ID,
 						},
-					}, id); err != nil {
-						errC <- err
-					}
-				}(id)
-			}
+					},
+				}, id); err != nil {
+					errC <- err
+				}
+			}(id)
 		}
 		wg.Wait()
 		close(errC)
