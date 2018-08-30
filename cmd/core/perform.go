@@ -84,7 +84,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 						PerformTarget: &event.PerformTarget{
 							AbilityID:   ab.ID,
 							ComponentID: ulid.MustParse(cid),
-							Source:      source.ID,
+							Source:      source,
 						},
 					},
 				}, id); err != nil {
@@ -101,12 +101,6 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	perform := e.Action.GetValue().(*event.PerformTarget)
-
-	// #Retrieve source state.
-	source, err := a.EntityStore.GetEntity(entity.Subset{ID: perform.Source, MaxTS: e.TS.UnixNano()})
-	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", id.String(), e.TS.UnixNano())
-	}
 
 	// #Retrieve previous target state.
 	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
@@ -144,7 +138,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		switch veffect.(type) {
 		case ability.Damage:
 			fb.Effects = append(fb.Effects, ability.EffectFeedback{
-				DamageFeedback: target.Damage(source, veffect.(ability.Damage)),
+				DamageFeedback: target.Damage(perform.Source, veffect.(ability.Damage)),
 			})
 		case ability.Heal:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
@@ -159,7 +153,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Set entity new state.
 	if err := a.EntityStore.SetEntity(target, e.TS.UnixNano()); err != nil {
-		return errors.Wrapf(err, "set entity %s", source.ID.String())
+		return errors.Wrapf(err, "set entity %s", perform.Source.ID.String())
 	}
 
 	// #Set feedback.
@@ -177,5 +171,5 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 				Source: target.ID,
 			},
 		},
-	}, perform.Source)
+	}, perform.Source.ID)
 }
