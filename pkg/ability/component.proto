@@ -8,34 +8,57 @@ option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
-message HealDirect {
-	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+enum Element {
+	Fire                          = 0;
+	Water                         = 1;
+	Air                           = 2;
+	Earth                         = 3;
+	Light                         = 4;
+	Dark                          = 5;
+	Time                          = 6;
 }
 
-message DamageDirect {
+message Heal {
 	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+	Element Element               = 2;
+	uint64 Range                  = 3;
+}
+
+message Damage {
+	uint64 Amount                 = 1;
+	Element Element               = 2;
+	uint64 Range                  = 3;
 }
 
 message HealOverTime {
 	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
+	uint64 Range                  = 5;
 }
 
 message DamageOverTime {
 	uint64 Amount                 = 1;
-	uint32 Type                   = 2;
+	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
+	uint64 Range                  = 5;
+}
+
+message Effect {
+	option (gogoproto.onlyone)    = true;
+	Heal Heal                     = 1;
+	Damage Damage                 = 2;
+	HealOverTime HealOverTime     = 3;
+	DamageOverTime DamageOverTime = 4;
 }
 
 message Component {
-	option (gogoproto.onlyone)    = true;
-	HealDirect HealDirect         = 1;
-	DamageDirect DamageDirect     = 2;
-	HealOverTime HealOverTime     = 3;
-	DamageOverTime DamageOverTime = 4;
+	repeated Effect Effects       = 2;
+	uint64 NTargets               = 3;
+	uint64 Range                  = 4;
+	uint64 NPositions             = 5;
+	uint64 PositionRange          = 6;
+	bytes Shape                   = 7 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

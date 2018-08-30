@@ -12,7 +12,7 @@ import "google/protobuf/timestamp.proto";
 
 message E {
 	bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	google.protobuf.Timestamp TS = 2 [(gogoproto.stdtime)    = true, (gogoproto.nullable)                                    = false];
-	bytes Source                 = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Token                  = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	google.protobuf.Timestamp TS = 3 [(gogoproto.stdtime)    = true, (gogoproto.nullable)                                    = false];
 	Action Action                = 4 [(gogoproto.nullable)   = false];
 }

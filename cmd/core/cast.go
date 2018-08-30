@@ -6,25 +6,25 @@ import (
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	serrors "github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) Cast(id ulid.ID, e event.E) error {
+func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	cast := e.Action.GetValue().(*event.Cast)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
+		Source: e.Token.String(),
 		Target: cast.Source.String(),
 	})
-	if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), cast.Source.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), cast.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), cast.Source.String())
 	}
 
 	// #Retrieve ability.
@@ -32,8 +32,8 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 		ID:       cast.AbilityID,
 		EntityID: cast.Source,
 	})
-	if err == serrors.ErrNotFound {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
+	if err == gerrors.ErrNotFound {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
@@ -46,7 +46,7 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 	}
 	if source.MP < ab.MPConsumption {
 		return errors.Wrapf(
-			account.ErrInvalidAction,
+			gerrors.ErrInvalidAction,
 			"entity %s with MP %d for ability %s with MP: %d",
 			cast.Source.String(),
 			source.MP,
@@ -57,25 +57,31 @@ func (a *app) Cast(id ulid.ID, e event.E) error {
 
 	// #Check CD validity. if LastUsed + CD < now.
 	if ab.LastUsed.Add(ab.CD).Before(e.TS) {
-		return errors.Wrapf(account.ErrInvalidAction, "cd up for skill %s ", ab.ID.String())
+		return errors.Wrapf(gerrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
 	}
 
 	// #Set entity new state with decreased MP and casting up.
-	source.MP -= ab.MPConsumption
-	source.Cast = &entity.Cast{AbilityID: ab.ID, TS: e.TS}
+	source.CastAbility(ab, e.TS)
 	if err := a.EntityStore.SetEntity(source, e.TS.UnixNano()); err != nil {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
-	// #Add casted event to event set.
-	e = event.E{
+	// #Check targets validity (range numbers, etc.)
+	if err := ab.Check(cast.Targets); err != nil {
+		return errors.Wrap(err, "check targets")
+	}
+
+	// #Publish casted event to event set.
+	if err := a.EventQStore.PublishEvent(event.E{
 		ID: ulid.NewID(),
 		TS: e.TS.Add(ab.CastTime),
 		Action: event.Action{
-			Casted: (*event.Casted)(cast),
+			PerformSource: &event.PerformSource{
+				AbilityID: cast.AbilityID,
+				Targets:   cast.Targets,
+			},
 		},
-	}
-	if err := a.EventStore.SetEvent(e, source.ID); err != nil {
+	}, cast.Source); err != nil {
 		return errors.Wrapf(err, "set casted event %s", e.ID.String())
 	}
 

@@ -1,32 +1,14 @@
 [
-    {
-        "entity_id": "01CDSTJRVK0HMG6TREBJR7FG1N",
-        "id": "01CDSTJRVK0HMG6TREBJR7FG1N",
-        "name": "fireball",
-        "mp_consumption": 30,
-        "cd": 4,
-        "current_cd": 0,
-        "components": [
-            {
-                "struct": "DamageDirect",
-                "amount": 10,
-                "type": 1
-            }
-        ]
-    },
-    {
-        "entity_id": "01CE3J5M6QMP5A4C0GTTYFYANP",
-        "id": "01CE9RGYCY73VSQDS3RF2REBQV",
-        "name": "divine light",
-        "mp_consumption": 60,
-        "cd": 9,
-        "current_cd": 0,
-        "components": [
-            {
-                "struct": "HealDirect",
-                "amount": 45,
-                "type": 1
-            }
-        ]
-    }
+	{
+	"ID"                : "01CP2Z4SDEWZK8YF29E07GPDVC",
+	"Type"              : "01CP2Z53XMVH95E210QEWJTFRS",
+	"Animation"         : "01CP2Z58REGWW225VYXEZT984R",
+	"Name"              : "Ice shard",
+	"MPConsumption"     : 10,
+	"PostMPConsumption" : 0,
+	"CD"                : "5s",
+	"LastUsed"          : 0,
+	"CastTime"          : "1s",
+	"Components"        : {}
+	}
 ]

@@ -4,13 +4,14 @@ import (
 	"net"
 	"time"
 
+	multierror "github.com/hashicorp/go-multierror"
+	"github.com/pkg/errors"
+
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	serrors "github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
-
-	"github.com/pkg/errors"
 )
 
 // TokenService represents token usecases.
@@ -36,10 +37,10 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 		return account.Token{}, errors.Wrapf(err, "get account with username %s", payload.Username)
 	}
 	if a.Password != payload.Password {
-		return account.Token{}, errors.Wrap(account.ErrWrongCredentials, "compare passwords")
+		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials, "compare passwords")
 	}
 	if !a.Token.IsZero() {
-		return account.Token{}, errors.Wrap(account.ErrMultipleLogin, "check existing account token")
+		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin, "check existing account token")
 	}
 
 	// #Identify origin IP
@@ -78,7 +79,7 @@ func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
 	expected, _, ee := net.SplitHostPort(t.IP)
 	actual, _, ea := net.SplitHostPort(addr)
 	if expected != actual || ee != nil || ea != nil {
-		return account.Token{}, errors.Wrapf(account.ErrWrongIP, "different ips %s != %s", expected, actual)
+		return account.Token{}, errors.Wrapf(gerrors.ErrWrongIP, "different ips %s != %s", expected, actual)
 	}
 	return t, nil
 }
@@ -87,7 +88,7 @@ func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
 func (s TokenService) Disconnect(id ulid.ID) error {
 
 	// Disconnect must be permissive in case of infra failures.
-	var nonblockErr error
+	var result *multierror.Error
 
 	// #Retrieve token
 	t, err := s.AccountToken.GetToken(account.TokenSubset{ID: id})
@@ -97,14 +98,14 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 
 	// #Close token recurrer
 	if err := s.InfraRecurrerService.Remove(id); err != nil {
-		nonblockErr = errors.Wrapf(err, "remove recurrer %s", id.String())
+		result = multierror.Append(result, errors.Wrapf(err, "remove recurrer %s", id.String()))
 	}
 
 	// #Reset token entity.
 	te := t.Entity
 	t.Entity = ulid.ID{}
 	if err := s.AccountToken.SetToken(t); err != nil {
-		nonblockErr = errors.Wrapf(err, "set token %s", id.String())
+		result = multierror.Append(result, errors.Wrapf(err, "set token %s", id.String()))
 	}
 
 	// #Retrieve entity
@@ -114,8 +115,8 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	})
 	if err != nil {
 		// Token is valid but not connected to any entity.
-		if err == serrors.ErrNotFound {
-			return nil
+		if err == gerrors.ErrNotFound {
+			return result.ErrorOrNil()
 		}
 		return errors.Wrapf(err, "get entity %s", te.String())
 	}
@@ -135,9 +136,9 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	for _, p := range ps {
 		targetID := ulid.MustParse(p.Target)
 		if err := s.EntityService.Disconnect(targetID, t); err != nil {
-			nonblockErr = errors.Wrapf(err, "disconnect entity %s from token %s", targetID.String(), t.ID.String())
+			result = multierror.Append(result, errors.Wrapf(err, "disconnect entity %s from token %s", targetID.String(), t.ID.String()))
 		}
 	}
 
-	return nonblockErr
+	return result.ErrorOrNil()
 }

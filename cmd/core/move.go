@@ -1,71 +1,94 @@
 package main
 
 import (
+	"sync"
+	"time"
+
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
-	serrors "github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 )
 
-func (a *app) Move(id ulid.ID, e event.E) error {
-
-	move := e.Action.GetValue().(*event.Move)
-
-	if id.Compare(move.Source) == 0 {
-		return a.MoveSource(e)
-	}
-	if id.Compare(move.Target) == 0 {
-		return a.MoveTarget(e)
-	}
-	return nil
-}
-
-func (a *app) MoveSource(e event.E) error {
-	// TODO
-	// check if source is not stun/slience/unable to move units.
-	// in this case cancel (what mechanism ?) the move on both source + target.
-	// And if there is some bonus for moving one, add it here.
-	return nil
-}
-
-func (a *app) MoveTarget(e event.E) error {
+func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	move := e.Action.GetValue().(*event.Move)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
-		Source: e.Source.String(),
+		Source: e.Token.String(),
 		Target: move.Source.String(),
 	})
-	if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(account.ErrInsufficientACLs, "get permission token %s for %s", e.Source.String(), move.Source.String())
+	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), move.Source.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Source.String(), move.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), move.Source.String())
 	}
 
-	// #Check permission source/target if source != target.
-	if move.Source != move.Target {
-		permission, err := a.GetPermission(entity.PermissionSubset{
-			Source: move.Source.String(),
-			Target: move.Target.String(),
-		})
-		if err == serrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-			return errors.Wrapf(account.ErrInsufficientACLs, "get permission entity %s for %s", move.Source.String(), move.Target.String())
+	// #TODO Check if source is not stun or forbidden to move other entities
+
+	// #For all targets.
+	var result *multierror.Error
+	errC := make(chan error, 0)
+	go func() {
+		for err := range errC {
+			result = multierror.Append(result, err)
 		}
-		if err != nil {
-			return errors.Wrapf(err, "get permission entity %s for %s", move.Source.String(), move.Target.String())
-		}
+	}()
+	var wg sync.WaitGroup
+	wg.Add(len(move.Targets))
+	for _, target := range move.Targets {
+		go func(target ulid.ID) {
+
+			// #Check permission source/target.
+			permission, err := a.GetPermission(entity.PermissionSubset{
+				Source: move.Source.String(),
+				Target: id.String(),
+			})
+			if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
+				errC <- errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), move.Source.String())
+				return
+			}
+			if err != nil {
+				errC <- errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), move.Source.String())
+				return
+			}
+
+			// #Publish move event to target.
+			if err := a.EventQStore.PublishEvent(event.E{
+				ID: ulid.NewID(),
+				TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
+				Action: event.Action{
+					MoveTarget: &event.MoveTarget{
+						Source:   move.Source,
+						Position: move.Position,
+					},
+				},
+			}, id); err != nil {
+				errC <- err
+			}
+		}(target)
 	}
+	wg.Wait()
+	close(errC)
+
+	return result.ErrorOrNil()
+}
+
+func (a *app) MoveTarget(id ulid.ID, e event.E) error {
+
+	move := e.Action.GetValue().(*event.Move)
 
 	// #Retrieve previous state target.
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: move.Target, MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", move.Target.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %s", id.String(), e.TS.UnixNano())
 	}
 
 	// #Retrieve current sector
@@ -74,12 +97,13 @@ func (a *app) MoveTarget(e event.E) error {
 		return errors.Wrapf(err, "get sector %s", target.Position.SectorID.String())
 	}
 
+	// #If moved in same sector
 	if target.Position.SectorID.Compare(move.Position.SectorID) == 0 {
 
 		// #Check if target has moved in correct boundaries in same sector.
 		if s.Out(target.Position.Coord) {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"check in sector %s (%f , %f , %f) from (%f , %f , %f) to (%f , %f , %f) for entity %s",
 				s.ID.String(),
 				s.Dim.X,
@@ -98,7 +122,7 @@ func (a *app) MoveTarget(e event.E) error {
 		// #Check if target has moved at a tolerable distance in same sector.
 		if geometry.Segment(target.Position.Coord, move.Position.Coord) > a.moveTolerance {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"check move tolerance %f from (%f , %f , %f) to (%f , %f , %f) for entity %s",
 				a.moveTolerance,
 				target.Position.Coord.X,
@@ -114,13 +138,14 @@ func (a *app) MoveTarget(e event.E) error {
 		// #Move target
 		target.Position.Coord = move.Position.Coord
 
+		// #Else
 	} else {
 
 		// #Check if new sector is a neighbour.
 		neigh, ok := s.Neighbours[move.Position.SectorID.String()]
 		if !ok {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"invalid next neighbour sector %s with previous %s",
 				move.Position.SectorID.String(),
 				target.Position.SectorID.String(),
@@ -130,7 +155,7 @@ func (a *app) MoveTarget(e event.E) error {
 		// #Check if target has moved at a tolerable distance in different sectors.
 		if geometry.Segment(target.Position.Coord, move.Position.Coord.MoveReference(neigh)) > a.moveTolerance {
 			return errors.Wrapf(
-				account.ErrInvalidAction,
+				gerrors.ErrInvalidAction,
 				"check move tolerance %f from %s (%f , %f , %f) to %s (%f , %f , %f) for entity %s",
 				a.moveTolerance,
 				target.Position.SectorID.String(),

@@ -8,6 +8,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/elojah/game_01/pkg/ability"
 	entitymocks "github.com/elojah/game_01/pkg/entity/mocks"
 	"github.com/elojah/game_01/pkg/event"
 	eventmocks "github.com/elojah/game_01/pkg/event/mocks"
@@ -18,33 +19,41 @@ import (
 func TestSequencer(t *testing.T) {
 
 	now := time.Now()
+	cid := ulid.NewID().String()
 	eset := []event.E{
 		event.E{
 			ID: ulid.NewID(),
 			TS: now,
 			Action: event.Action{
-				Cast: &event.Cast{Source: ulid.NewID(), Targets: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()}},
+				CastSource: &event.CastSource{
+					AbilityID: ulid.NewID(),
+					Targets: map[string]ability.Targets{
+						cid: ability.Targets{
+							Entities: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()},
+						},
+					},
+				},
 			},
 		},
 		event.E{
 			ID: ulid.NewID(),
 			TS: now.Add(-1 * time.Second),
 			Action: event.Action{
-				Move: &event.Move{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
 			},
 		},
 		event.E{
 			ID: ulid.NewID(),
 			TS: now.Add(-2 * time.Second),
 			Action: event.Action{
-				Move: &event.Move{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
 			},
 		},
 		event.E{
 			ID: ulid.NewID(),
 			TS: now.Add(-3 * time.Second),
 			Action: event.Action{
-				Move: &event.Move{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
 			},
 		},
 	}

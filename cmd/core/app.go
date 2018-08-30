@@ -26,8 +26,8 @@ type app struct {
 	infra.QListenerStore
 	infra.CoreStore
 
-	event.QStore
-	EventStore event.Store
+	EventQStore event.QStore
+	EventStore  event.Store
 
 	sector.EntitiesStore
 	SectorStore sector.Store
@@ -94,7 +94,7 @@ func (a *app) AddListener(msg *infra.Message) {
 		a.seqs[listener.ID].EntityStore = a.EntityStore
 		a.seqs[listener.ID].Run()
 
-		a.subs[listener.ID] = a.SubscribeEvent(listener.ID)
+		a.subs[listener.ID] = a.EventQStore.SubscribeEvent(listener.ID)
 
 		go func(seq *Sequencer, sub *infra.Subscription) {
 			for msg := range sub.Channel() {
@@ -133,20 +133,28 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Logger()
 
 	switch e.Action.GetValue().(type) {
-	case *event.Move:
-		if err := a.Move(id, e); err != nil {
+	case *event.MoveSource:
+		if err := a.MoveSource(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case *event.Cast:
-		if err := a.Cast(id, e); err != nil {
+	case *event.MoveTarget:
+		if err := a.MoveTarget(id, e); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-	case *event.Feedback:
+	case *event.CastSource:
+		if err := a.CastSource(id, e); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case *event.PerformSource:
+		if err := a.PerformSource(id, e); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case *event.PerformTarget:
+		if err := a.PerformTarget(id, e); err != nil {
+			logger.Error().Err(err).Msg("event rejected")
+		}
+	case *event.FeedbackTarget:
 		logger.Error().Msg("not implemented")
-	case *event.Casted:
-		if err := a.Casted(id, e); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
 	default:
 		logger.Error().Msg("unrecognized action")
 	}

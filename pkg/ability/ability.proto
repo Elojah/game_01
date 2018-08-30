@@ -22,5 +22,5 @@ message A {
 	google.protobuf.Duration CD        = 7 [(gogoproto.stdduration) = true, (gogoproto.nullable)                                    = false];
 	google.protobuf.Timestamp LastUsed = 8 [(gogoproto.stdtime)     = true, (gogoproto.nullable)                                    = false];
 	google.protobuf.Duration CastTime  = 9 [(gogoproto.stdduration) = true, (gogoproto.nullable)                                    = false];
-	repeated Component Components      = 10 [(gogoproto.nullable)   = false];
+	map<string, Component> Components  = 10 [(gogoproto.nullable)   = false];
 }

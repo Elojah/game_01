@@ -1,6 +1,9 @@
 package entity
 
 import (
+	"time"
+
+	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -24,4 +27,28 @@ type Subset struct {
 // Service represents entity usecases.
 type Service interface {
 	Disconnect(id ulid.ID, tok account.Token) error
+}
+
+// CastAbility decreases MP (without check) and assign a new cast to entity.
+func (e *E) CastAbility(ab ability.A, ts time.Time) {
+	e.MP -= ab.MPConsumption
+	e.Cast = &Cast{AbilityID: ab.ID, TS: ts}
+}
+
+// Feedback applies a feedback effect to entity e.
+func (e *E) Feedback(fb ability.Feedback) {
+	// for _, cfb := range fb.Components {
+
+	// }
+}
+
+// Damage applies a direct damage component dd from entity source to entity e.
+func (e *E) Damage(source E, dd ability.Damage) *ability.DamageFeedback {
+	if dd.Amount >= e.HP {
+		e.HP = 0
+		e.Dead = true
+	} else {
+		e.HP -= dd.Amount
+	}
+	return &ability.DamageFeedback{Amount: dd.Amount}
 }

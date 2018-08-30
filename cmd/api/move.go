@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"time"
 
 	"github.com/rs/zerolog/log"
 
@@ -18,18 +17,15 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 		Str("action", "move").
 		Logger()
 
-	a := msg.Action.GetMove()
-	source := ulid.ID(a.Source)
-	target := ulid.ID(a.Target)
+	move := msg.Query.GetMove()
 	e := event.E{
-		ID:     ulid.NewID(),
-		Source: msg.Token,
-		TS:     time.Unix(0, msg.TS),
+		ID:    ulid.NewID(),
+		Token: msg.Token,
+		TS:    msg.TS,
 		Action: event.Action{
-			Move: &event.Move{
-				Source:   source,
-				Target:   target,
-				Position: a.Position,
+			MoveSource: &event.MoveSource{
+				Targets:  move.Targets,
+				Position: move.Position,
 			},
 		},
 	}
@@ -37,17 +33,10 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 
 	go func() {
-		if err := h.PublishEvent(e, source); err != nil {
+		if err := h.PublishEvent(e, move.Source); err != nil {
 			logger.Error().Err(err).Msg("event rejected")
 		}
-		logger.Info().Str("source", source.String()).Msg("send event")
-	}()
-
-	go func() {
-		if err := h.PublishEvent(e, target); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-		logger.Info().Str("target", target.String()).Msg("send event")
+		logger.Info().Str("source", move.Source.String()).Msg("send event")
 	}()
 
 	return nil

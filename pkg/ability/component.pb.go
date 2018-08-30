@@ -8,6 +8,10 @@ import fmt "fmt"
 import math "math"
 import _ "github.com/gogo/protobuf/gogoproto"
 
+import github_com_elojah_game_01_pkg_ulid "github.com/elojah/game_01/pkg/ulid"
+
+import strconv "strconv"
+
 import strings "strings"
 import reflect "reflect"
 
@@ -24,24 +28,60 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
-type HealDirect struct {
+type Element int32
+
+const (
+	Fire  Element = 0
+	Water Element = 1
+	Air   Element = 2
+	Earth Element = 3
+	Light Element = 4
+	Dark  Element = 5
+	Time  Element = 6
+)
+
+var Element_name = map[int32]string{
+	0: "Fire",
+	1: "Water",
+	2: "Air",
+	3: "Earth",
+	4: "Light",
+	5: "Dark",
+	6: "Time",
+}
+var Element_value = map[string]int32{
+	"Fire":  0,
+	"Water": 1,
+	"Air":   2,
+	"Earth": 3,
+	"Light": 4,
+	"Dark":  5,
+	"Time":  6,
+}
+
+func (Element) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_component_321db0c3df67f214, []int{0}
+}
+
+type Heal struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	Type                 uint32   `protobuf:"varint,2,opt,name=Type,proto3" json:"Type,omitempty"`
+	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
+	Range                uint64   `protobuf:"varint,3,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *HealDirect) Reset()      { *m = HealDirect{} }
-func (*HealDirect) ProtoMessage() {}
-func (*HealDirect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1802c4a9b3e06263, []int{0}
+func (m *Heal) Reset()      { *m = Heal{} }
+func (*Heal) ProtoMessage() {}
+func (*Heal) Descriptor() ([]byte, []int) {
+	return fileDescriptor_component_321db0c3df67f214, []int{0}
 }
-func (m *HealDirect) XXX_Unmarshal(b []byte) error {
+func (m *Heal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *HealDirect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Heal) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_HealDirect.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Heal.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalTo(b)
@@ -51,50 +91,58 @@ func (m *HealDirect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (dst *HealDirect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_HealDirect.Merge(dst, src)
+func (dst *Heal) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Heal.Merge(dst, src)
 }
-func (m *HealDirect) XXX_Size() int {
+func (m *Heal) XXX_Size() int {
 	return m.Size()
 }
-func (m *HealDirect) XXX_DiscardUnknown() {
-	xxx_messageInfo_HealDirect.DiscardUnknown(m)
+func (m *Heal) XXX_DiscardUnknown() {
+	xxx_messageInfo_Heal.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_HealDirect proto.InternalMessageInfo
+var xxx_messageInfo_Heal proto.InternalMessageInfo
 
-func (m *HealDirect) GetAmount() uint64 {
+func (m *Heal) GetAmount() uint64 {
 	if m != nil {
 		return m.Amount
 	}
 	return 0
 }
 
-func (m *HealDirect) GetType() uint32 {
+func (m *Heal) GetElement() Element {
 	if m != nil {
-		return m.Type
+		return m.Element
+	}
+	return Fire
+}
+
+func (m *Heal) GetRange() uint64 {
+	if m != nil {
+		return m.Range
 	}
 	return 0
 }
 
-type DamageDirect struct {
+type Damage struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	Type                 uint32   `protobuf:"varint,2,opt,name=Type,proto3" json:"Type,omitempty"`
+	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
+	Range                uint64   `protobuf:"varint,3,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *DamageDirect) Reset()      { *m = DamageDirect{} }
-func (*DamageDirect) ProtoMessage() {}
-func (*DamageDirect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1802c4a9b3e06263, []int{1}
+func (m *Damage) Reset()      { *m = Damage{} }
+func (*Damage) ProtoMessage() {}
+func (*Damage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_component_321db0c3df67f214, []int{1}
 }
-func (m *DamageDirect) XXX_Unmarshal(b []byte) error {
+func (m *Damage) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *DamageDirect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Damage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_DamageDirect.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Damage.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalTo(b)
@@ -104,37 +152,45 @@ func (m *DamageDirect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error)
 		return b[:n], nil
 	}
 }
-func (dst *DamageDirect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DamageDirect.Merge(dst, src)
+func (dst *Damage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Damage.Merge(dst, src)
 }
-func (m *DamageDirect) XXX_Size() int {
+func (m *Damage) XXX_Size() int {
 	return m.Size()
 }
-func (m *DamageDirect) XXX_DiscardUnknown() {
-	xxx_messageInfo_DamageDirect.DiscardUnknown(m)
+func (m *Damage) XXX_DiscardUnknown() {
+	xxx_messageInfo_Damage.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_DamageDirect proto.InternalMessageInfo
+var xxx_messageInfo_Damage proto.InternalMessageInfo
 
-func (m *DamageDirect) GetAmount() uint64 {
+func (m *Damage) GetAmount() uint64 {
 	if m != nil {
 		return m.Amount
 	}
 	return 0
 }
 
-func (m *DamageDirect) GetType() uint32 {
+func (m *Damage) GetElement() Element {
 	if m != nil {
-		return m.Type
+		return m.Element
+	}
+	return Fire
+}
+
+func (m *Damage) GetRange() uint64 {
+	if m != nil {
+		return m.Range
 	}
 	return 0
 }
 
 type HealOverTime struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	Type                 uint32   `protobuf:"varint,2,opt,name=Type,proto3" json:"Type,omitempty"`
+	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
 	Frequency            uint64   `protobuf:"varint,3,opt,name=Frequency,proto3" json:"Frequency,omitempty"`
 	Duration             uint64   `protobuf:"varint,4,opt,name=Duration,proto3" json:"Duration,omitempty"`
+	Range                uint64   `protobuf:"varint,5,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
@@ -142,7 +198,7 @@ type HealOverTime struct {
 func (m *HealOverTime) Reset()      { *m = HealOverTime{} }
 func (*HealOverTime) ProtoMessage() {}
 func (*HealOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1802c4a9b3e06263, []int{2}
+	return fileDescriptor_component_321db0c3df67f214, []int{2}
 }
 func (m *HealOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -178,11 +234,11 @@ func (m *HealOverTime) GetAmount() uint64 {
 	return 0
 }
 
-func (m *HealOverTime) GetType() uint32 {
+func (m *HealOverTime) GetElement() Element {
 	if m != nil {
-		return m.Type
+		return m.Element
 	}
-	return 0
+	return Fire
 }
 
 func (m *HealOverTime) GetFrequency() uint64 {
@@ -199,11 +255,19 @@ func (m *HealOverTime) GetDuration() uint64 {
 	return 0
 }
 
+func (m *HealOverTime) GetRange() uint64 {
+	if m != nil {
+		return m.Range
+	}
+	return 0
+}
+
 type DamageOverTime struct {
 	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
-	Type                 uint32   `protobuf:"varint,2,opt,name=Type,proto3" json:"Type,omitempty"`
+	Element              Element  `protobuf:"varint,2,opt,name=Element,proto3,enum=Element" json:"Element,omitempty"`
 	Frequency            uint64   `protobuf:"varint,3,opt,name=Frequency,proto3" json:"Frequency,omitempty"`
 	Duration             uint64   `protobuf:"varint,4,opt,name=Duration,proto3" json:"Duration,omitempty"`
+	Range                uint64   `protobuf:"varint,5,opt,name=Range,proto3" json:"Range,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
@@ -211,7 +275,7 @@ type DamageOverTime struct {
 func (m *DamageOverTime) Reset()      { *m = DamageOverTime{} }
 func (*DamageOverTime) ProtoMessage() {}
 func (*DamageOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1802c4a9b3e06263, []int{3}
+	return fileDescriptor_component_321db0c3df67f214, []int{3}
 }
 func (m *DamageOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -247,11 +311,11 @@ func (m *DamageOverTime) GetAmount() uint64 {
 	return 0
 }
 
-func (m *DamageOverTime) GetType() uint32 {
+func (m *DamageOverTime) GetElement() Element {
 	if m != nil {
-		return m.Type
+		return m.Element
 	}
-	return 0
+	return Fire
 }
 
 func (m *DamageOverTime) GetFrequency() uint64 {
@@ -268,19 +332,97 @@ func (m *DamageOverTime) GetDuration() uint64 {
 	return 0
 }
 
-type Component struct {
-	HealDirect           *HealDirect     `protobuf:"bytes,1,opt,name=HealDirect" json:"HealDirect,omitempty"`
-	DamageDirect         *DamageDirect   `protobuf:"bytes,2,opt,name=DamageDirect" json:"DamageDirect,omitempty"`
+func (m *DamageOverTime) GetRange() uint64 {
+	if m != nil {
+		return m.Range
+	}
+	return 0
+}
+
+type Effect struct {
+	Heal                 *Heal           `protobuf:"bytes,1,opt,name=Heal" json:"Heal,omitempty"`
+	Damage               *Damage         `protobuf:"bytes,2,opt,name=Damage" json:"Damage,omitempty"`
 	HealOverTime         *HealOverTime   `protobuf:"bytes,3,opt,name=HealOverTime" json:"HealOverTime,omitempty"`
 	DamageOverTime       *DamageOverTime `protobuf:"bytes,4,opt,name=DamageOverTime" json:"DamageOverTime,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
 	XXX_sizecache        int32           `json:"-"`
 }
 
+func (m *Effect) Reset()      { *m = Effect{} }
+func (*Effect) ProtoMessage() {}
+func (*Effect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_component_321db0c3df67f214, []int{4}
+}
+func (m *Effect) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Effect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Effect.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (dst *Effect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Effect.Merge(dst, src)
+}
+func (m *Effect) XXX_Size() int {
+	return m.Size()
+}
+func (m *Effect) XXX_DiscardUnknown() {
+	xxx_messageInfo_Effect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Effect proto.InternalMessageInfo
+
+func (m *Effect) GetHeal() *Heal {
+	if m != nil {
+		return m.Heal
+	}
+	return nil
+}
+
+func (m *Effect) GetDamage() *Damage {
+	if m != nil {
+		return m.Damage
+	}
+	return nil
+}
+
+func (m *Effect) GetHealOverTime() *HealOverTime {
+	if m != nil {
+		return m.HealOverTime
+	}
+	return nil
+}
+
+func (m *Effect) GetDamageOverTime() *DamageOverTime {
+	if m != nil {
+		return m.DamageOverTime
+	}
+	return nil
+}
+
+type Component struct {
+	Effects              []*Effect                             `protobuf:"bytes,2,rep,name=Effects" json:"Effects,omitempty"`
+	NTargets             uint64                                `protobuf:"varint,3,opt,name=NTargets,proto3" json:"NTargets,omitempty"`
+	Range                uint64                                `protobuf:"varint,4,opt,name=Range,proto3" json:"Range,omitempty"`
+	NPositions           uint64                                `protobuf:"varint,5,opt,name=NPositions,proto3" json:"NPositions,omitempty"`
+	PositionRange        uint64                                `protobuf:"varint,6,opt,name=PositionRange,proto3" json:"PositionRange,omitempty"`
+	Shape                github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,7,opt,name=Shape,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Shape"`
+	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
+	XXX_sizecache        int32                                 `json:"-"`
+}
+
 func (m *Component) Reset()      { *m = Component{} }
 func (*Component) ProtoMessage() {}
 func (*Component) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1802c4a9b3e06263, []int{4}
+	return fileDescriptor_component_321db0c3df67f214, []int{5}
 }
 func (m *Component) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -309,49 +451,65 @@ func (m *Component) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Component proto.InternalMessageInfo
 
-func (m *Component) GetHealDirect() *HealDirect {
+func (m *Component) GetEffects() []*Effect {
 	if m != nil {
-		return m.HealDirect
+		return m.Effects
 	}
 	return nil
 }
 
-func (m *Component) GetDamageDirect() *DamageDirect {
+func (m *Component) GetNTargets() uint64 {
 	if m != nil {
-		return m.DamageDirect
+		return m.NTargets
 	}
-	return nil
+	return 0
 }
 
-func (m *Component) GetHealOverTime() *HealOverTime {
+func (m *Component) GetRange() uint64 {
 	if m != nil {
-		return m.HealOverTime
+		return m.Range
 	}
-	return nil
+	return 0
 }
 
-func (m *Component) GetDamageOverTime() *DamageOverTime {
+func (m *Component) GetNPositions() uint64 {
 	if m != nil {
-		return m.DamageOverTime
+		return m.NPositions
 	}
-	return nil
+	return 0
+}
+
+func (m *Component) GetPositionRange() uint64 {
+	if m != nil {
+		return m.PositionRange
+	}
+	return 0
 }
 
 func init() {
-	proto.RegisterType((*HealDirect)(nil), "HealDirect")
-	proto.RegisterType((*DamageDirect)(nil), "DamageDirect")
+	proto.RegisterType((*Heal)(nil), "Heal")
+	proto.RegisterType((*Damage)(nil), "Damage")
 	proto.RegisterType((*HealOverTime)(nil), "HealOverTime")
 	proto.RegisterType((*DamageOverTime)(nil), "DamageOverTime")
+	proto.RegisterType((*Effect)(nil), "Effect")
 	proto.RegisterType((*Component)(nil), "Component")
+	proto.RegisterEnum("Element", Element_name, Element_value)
 }
-func (this *HealDirect) Equal(that interface{}) bool {
+func (x Element) String() string {
+	s, ok := Element_name[int32(x)]
+	if ok {
+		return s
+	}
+	return strconv.Itoa(int(x))
+}
+func (this *Heal) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*HealDirect)
+	that1, ok := that.(*Heal)
 	if !ok {
-		that2, ok := that.(HealDirect)
+		that2, ok := that.(Heal)
 		if ok {
 			that1 = &that2
 		} else {
@@ -366,19 +524,22 @@ func (this *HealDirect) Equal(that interface{}) bool {
 	if this.Amount != that1.Amount {
 		return false
 	}
-	if this.Type != that1.Type {
+	if this.Element != that1.Element {
+		return false
+	}
+	if this.Range != that1.Range {
 		return false
 	}
 	return true
 }
-func (this *DamageDirect) Equal(that interface{}) bool {
+func (this *Damage) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*DamageDirect)
+	that1, ok := that.(*Damage)
 	if !ok {
-		that2, ok := that.(DamageDirect)
+		that2, ok := that.(Damage)
 		if ok {
 			that1 = &that2
 		} else {
@@ -393,7 +554,10 @@ func (this *DamageDirect) Equal(that interface{}) bool {
 	if this.Amount != that1.Amount {
 		return false
 	}
-	if this.Type != that1.Type {
+	if this.Element != that1.Element {
+		return false
+	}
+	if this.Range != that1.Range {
 		return false
 	}
 	return true
@@ -420,13 +584,16 @@ func (this *HealOverTime) Equal(that interface{}) bool {
 	if this.Amount != that1.Amount {
 		return false
 	}
-	if this.Type != that1.Type {
+	if this.Element != that1.Element {
 		return false
 	}
 	if this.Frequency != that1.Frequency {
 		return false
 	}
 	if this.Duration != that1.Duration {
+		return false
+	}
+	if this.Range != that1.Range {
 		return false
 	}
 	return true
@@ -453,13 +620,49 @@ func (this *DamageOverTime) Equal(that interface{}) bool {
 	if this.Amount != that1.Amount {
 		return false
 	}
-	if this.Type != that1.Type {
+	if this.Element != that1.Element {
 		return false
 	}
 	if this.Frequency != that1.Frequency {
 		return false
 	}
 	if this.Duration != that1.Duration {
+		return false
+	}
+	if this.Range != that1.Range {
+		return false
+	}
+	return true
+}
+func (this *Effect) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Effect)
+	if !ok {
+		that2, ok := that.(Effect)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Heal.Equal(that1.Heal) {
+		return false
+	}
+	if !this.Damage.Equal(that1.Damage) {
+		return false
+	}
+	if !this.HealOverTime.Equal(that1.HealOverTime) {
+		return false
+	}
+	if !this.DamageOverTime.Equal(that1.DamageOverTime) {
 		return false
 	}
 	return true
@@ -483,39 +686,52 @@ func (this *Component) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.HealDirect.Equal(that1.HealDirect) {
+	if len(this.Effects) != len(that1.Effects) {
 		return false
 	}
-	if !this.DamageDirect.Equal(that1.DamageDirect) {
+	for i := range this.Effects {
+		if !this.Effects[i].Equal(that1.Effects[i]) {
+			return false
+		}
+	}
+	if this.NTargets != that1.NTargets {
 		return false
 	}
-	if !this.HealOverTime.Equal(that1.HealOverTime) {
+	if this.Range != that1.Range {
 		return false
 	}
-	if !this.DamageOverTime.Equal(that1.DamageOverTime) {
+	if this.NPositions != that1.NPositions {
+		return false
+	}
+	if this.PositionRange != that1.PositionRange {
+		return false
+	}
+	if !this.Shape.Equal(that1.Shape) {
 		return false
 	}
 	return true
 }
-func (this *HealDirect) GoString() string {
+func (this *Heal) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
-	s = append(s, "&ability.HealDirect{")
+	s := make([]string, 0, 7)
+	s = append(s, "&ability.Heal{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
-	s = append(s, "Type: "+fmt.Sprintf("%#v", this.Type)+",\n")
+	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
-func (this *DamageDirect) GoString() string {
+func (this *Damage) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 6)
-	s = append(s, "&ability.DamageDirect{")
+	s := make([]string, 0, 7)
+	s = append(s, "&ability.Damage{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
-	s = append(s, "Type: "+fmt.Sprintf("%#v", this.Type)+",\n")
+	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -523,12 +739,13 @@ func (this *HealOverTime) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 9)
 	s = append(s, "&ability.HealOverTime{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
-	s = append(s, "Type: "+fmt.Sprintf("%#v", this.Type)+",\n")
+	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
 	s = append(s, "Frequency: "+fmt.Sprintf("%#v", this.Frequency)+",\n")
 	s = append(s, "Duration: "+fmt.Sprintf("%#v", this.Duration)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -536,26 +753,27 @@ func (this *DamageOverTime) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 9)
 	s = append(s, "&ability.DamageOverTime{")
 	s = append(s, "Amount: "+fmt.Sprintf("%#v", this.Amount)+",\n")
-	s = append(s, "Type: "+fmt.Sprintf("%#v", this.Type)+",\n")
+	s = append(s, "Element: "+fmt.Sprintf("%#v", this.Element)+",\n")
 	s = append(s, "Frequency: "+fmt.Sprintf("%#v", this.Frequency)+",\n")
 	s = append(s, "Duration: "+fmt.Sprintf("%#v", this.Duration)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
-func (this *Component) GoString() string {
+func (this *Effect) GoString() string {
 	if this == nil {
 		return "nil"
 	}
 	s := make([]string, 0, 8)
-	s = append(s, "&ability.Component{")
-	if this.HealDirect != nil {
-		s = append(s, "HealDirect: "+fmt.Sprintf("%#v", this.HealDirect)+",\n")
+	s = append(s, "&ability.Effect{")
+	if this.Heal != nil {
+		s = append(s, "Heal: "+fmt.Sprintf("%#v", this.Heal)+",\n")
 	}
-	if this.DamageDirect != nil {
-		s = append(s, "DamageDirect: "+fmt.Sprintf("%#v", this.DamageDirect)+",\n")
+	if this.Damage != nil {
+		s = append(s, "Damage: "+fmt.Sprintf("%#v", this.Damage)+",\n")
 	}
 	if this.HealOverTime != nil {
 		s = append(s, "HealOverTime: "+fmt.Sprintf("%#v", this.HealOverTime)+",\n")
@@ -563,6 +781,23 @@ func (this *Component) GoString() string {
 	if this.DamageOverTime != nil {
 		s = append(s, "DamageOverTime: "+fmt.Sprintf("%#v", this.DamageOverTime)+",\n")
 	}
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Component) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 10)
+	s = append(s, "&ability.Component{")
+	if this.Effects != nil {
+		s = append(s, "Effects: "+fmt.Sprintf("%#v", this.Effects)+",\n")
+	}
+	s = append(s, "NTargets: "+fmt.Sprintf("%#v", this.NTargets)+",\n")
+	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
+	s = append(s, "NPositions: "+fmt.Sprintf("%#v", this.NPositions)+",\n")
+	s = append(s, "PositionRange: "+fmt.Sprintf("%#v", this.PositionRange)+",\n")
+	s = append(s, "Shape: "+fmt.Sprintf("%#v", this.Shape)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -574,7 +809,7 @@ func valueToGoStringComponent(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
-func (m *HealDirect) Marshal() (dAtA []byte, err error) {
+func (m *Heal) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -584,7 +819,7 @@ func (m *HealDirect) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *HealDirect) MarshalTo(dAtA []byte) (int, error) {
+func (m *Heal) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -594,15 +829,20 @@ func (m *HealDirect) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Amount))
 	}
-	if m.Type != 0 {
+	if m.Element != 0 {
 		dAtA[i] = 0x10
 		i++
-		i = encodeVarintComponent(dAtA, i, uint64(m.Type))
+		i = encodeVarintComponent(dAtA, i, uint64(m.Element))
+	}
+	if m.Range != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
 	}
 	return i, nil
 }
 
-func (m *DamageDirect) Marshal() (dAtA []byte, err error) {
+func (m *Damage) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -612,7 +852,7 @@ func (m *DamageDirect) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *DamageDirect) MarshalTo(dAtA []byte) (int, error) {
+func (m *Damage) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -622,10 +862,15 @@ func (m *DamageDirect) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Amount))
 	}
-	if m.Type != 0 {
+	if m.Element != 0 {
 		dAtA[i] = 0x10
 		i++
-		i = encodeVarintComponent(dAtA, i, uint64(m.Type))
+		i = encodeVarintComponent(dAtA, i, uint64(m.Element))
+	}
+	if m.Range != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
 	}
 	return i, nil
 }
@@ -650,10 +895,10 @@ func (m *HealOverTime) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Amount))
 	}
-	if m.Type != 0 {
+	if m.Element != 0 {
 		dAtA[i] = 0x10
 		i++
-		i = encodeVarintComponent(dAtA, i, uint64(m.Type))
+		i = encodeVarintComponent(dAtA, i, uint64(m.Element))
 	}
 	if m.Frequency != 0 {
 		dAtA[i] = 0x18
@@ -664,6 +909,11 @@ func (m *HealOverTime) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0x20
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Duration))
+	}
+	if m.Range != 0 {
+		dAtA[i] = 0x28
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
 	}
 	return i, nil
 }
@@ -688,10 +938,10 @@ func (m *DamageOverTime) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Amount))
 	}
-	if m.Type != 0 {
+	if m.Element != 0 {
 		dAtA[i] = 0x10
 		i++
-		i = encodeVarintComponent(dAtA, i, uint64(m.Type))
+		i = encodeVarintComponent(dAtA, i, uint64(m.Element))
 	}
 	if m.Frequency != 0 {
 		dAtA[i] = 0x18
@@ -703,10 +953,15 @@ func (m *DamageOverTime) MarshalTo(dAtA []byte) (int, error) {
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.Duration))
 	}
+	if m.Range != 0 {
+		dAtA[i] = 0x28
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
+	}
 	return i, nil
 }
 
-func (m *Component) Marshal() (dAtA []byte, err error) {
+func (m *Effect) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -716,26 +971,26 @@ func (m *Component) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Component) MarshalTo(dAtA []byte) (int, error) {
+func (m *Effect) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
 	_ = l
-	if m.HealDirect != nil {
+	if m.Heal != nil {
 		dAtA[i] = 0xa
 		i++
-		i = encodeVarintComponent(dAtA, i, uint64(m.HealDirect.Size()))
-		n1, err := m.HealDirect.MarshalTo(dAtA[i:])
+		i = encodeVarintComponent(dAtA, i, uint64(m.Heal.Size()))
+		n1, err := m.Heal.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
 		i += n1
 	}
-	if m.DamageDirect != nil {
+	if m.Damage != nil {
 		dAtA[i] = 0x12
 		i++
-		i = encodeVarintComponent(dAtA, i, uint64(m.DamageDirect.Size()))
-		n2, err := m.DamageDirect.MarshalTo(dAtA[i:])
+		i = encodeVarintComponent(dAtA, i, uint64(m.Damage.Size()))
+		n2, err := m.Damage.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
@@ -764,6 +1019,64 @@ func (m *Component) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
+func (m *Component) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Component) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	if len(m.Effects) > 0 {
+		for _, msg := range m.Effects {
+			dAtA[i] = 0x12
+			i++
+			i = encodeVarintComponent(dAtA, i, uint64(msg.Size()))
+			n, err := msg.MarshalTo(dAtA[i:])
+			if err != nil {
+				return 0, err
+			}
+			i += n
+		}
+	}
+	if m.NTargets != 0 {
+		dAtA[i] = 0x18
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.NTargets))
+	}
+	if m.Range != 0 {
+		dAtA[i] = 0x20
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.Range))
+	}
+	if m.NPositions != 0 {
+		dAtA[i] = 0x28
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.NPositions))
+	}
+	if m.PositionRange != 0 {
+		dAtA[i] = 0x30
+		i++
+		i = encodeVarintComponent(dAtA, i, uint64(m.PositionRange))
+	}
+	dAtA[i] = 0x3a
+	i++
+	i = encodeVarintComponent(dAtA, i, uint64(m.Shape.Size()))
+	n5, err := m.Shape.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n5
+	return i, nil
+}
+
 func encodeVarintComponent(dAtA []byte, offset int, v uint64) int {
 	for v >= 1<<7 {
 		dAtA[offset] = uint8(v&0x7f | 0x80)
@@ -773,19 +1086,21 @@ func encodeVarintComponent(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func NewPopulatedHealDirect(r randyComponent, easy bool) *HealDirect {
-	this := &HealDirect{}
+func NewPopulatedHeal(r randyComponent, easy bool) *Heal {
+	this := &Heal{}
 	this.Amount = uint64(uint64(r.Uint32()))
-	this.Type = uint32(r.Uint32())
+	this.Element = Element([]int32{0, 1, 2, 3, 4, 5, 6}[r.Intn(7)])
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
 }
 
-func NewPopulatedDamageDirect(r randyComponent, easy bool) *DamageDirect {
-	this := &DamageDirect{}
+func NewPopulatedDamage(r randyComponent, easy bool) *Damage {
+	this := &Damage{}
 	this.Amount = uint64(uint64(r.Uint32()))
-	this.Type = uint32(r.Uint32())
+	this.Element = Element([]int32{0, 1, 2, 3, 4, 5, 6}[r.Intn(7)])
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -794,9 +1109,10 @@ func NewPopulatedDamageDirect(r randyComponent, easy bool) *DamageDirect {
 func NewPopulatedHealOverTime(r randyComponent, easy bool) *HealOverTime {
 	this := &HealOverTime{}
 	this.Amount = uint64(uint64(r.Uint32()))
-	this.Type = uint32(r.Uint32())
+	this.Element = Element([]int32{0, 1, 2, 3, 4, 5, 6}[r.Intn(7)])
 	this.Frequency = uint64(uint64(r.Uint32()))
 	this.Duration = uint64(uint64(r.Uint32()))
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -805,26 +1121,47 @@ func NewPopulatedHealOverTime(r randyComponent, easy bool) *HealOverTime {
 func NewPopulatedDamageOverTime(r randyComponent, easy bool) *DamageOverTime {
 	this := &DamageOverTime{}
 	this.Amount = uint64(uint64(r.Uint32()))
-	this.Type = uint32(r.Uint32())
+	this.Element = Element([]int32{0, 1, 2, 3, 4, 5, 6}[r.Intn(7)])
 	this.Frequency = uint64(uint64(r.Uint32()))
 	this.Duration = uint64(uint64(r.Uint32()))
+	this.Range = uint64(uint64(r.Uint32()))
 	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedEffect(r randyComponent, easy bool) *Effect {
+	this := &Effect{}
+	fieldNum := r.Intn(4)
+	switch fieldNum {
+	case 0:
+		this.Heal = NewPopulatedHeal(r, easy)
+	case 1:
+		this.Damage = NewPopulatedDamage(r, easy)
+	case 2:
+		this.HealOverTime = NewPopulatedHealOverTime(r, easy)
+	case 3:
+		this.DamageOverTime = NewPopulatedDamageOverTime(r, easy)
 	}
 	return this
 }
 
 func NewPopulatedComponent(r randyComponent, easy bool) *Component {
 	this := &Component{}
-	fieldNum := r.Intn(4)
-	switch fieldNum {
-	case 0:
-		this.HealDirect = NewPopulatedHealDirect(r, easy)
-	case 1:
-		this.DamageDirect = NewPopulatedDamageDirect(r, easy)
-	case 2:
-		this.HealOverTime = NewPopulatedHealOverTime(r, easy)
-	case 3:
-		this.DamageOverTime = NewPopulatedDamageOverTime(r, easy)
+	if r.Intn(10) != 0 {
+		v1 := r.Intn(5)
+		this.Effects = make([]*Effect, v1)
+		for i := 0; i < v1; i++ {
+			this.Effects[i] = NewPopulatedEffect(r, easy)
+		}
+	}
+	this.NTargets = uint64(uint64(r.Uint32()))
+	this.Range = uint64(uint64(r.Uint32()))
+	this.NPositions = uint64(uint64(r.Uint32()))
+	this.PositionRange = uint64(uint64(r.Uint32()))
+	v2 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.Shape = *v2
+	if !easy && r.Intn(10) != 0 {
 	}
 	return this
 }
@@ -848,9 +1185,9 @@ func randUTF8RuneComponent(r randyComponent) rune {
 	return rune(ru + 61)
 }
 func randStringComponent(r randyComponent) string {
-	v1 := r.Intn(100)
-	tmps := make([]rune, v1)
-	for i := 0; i < v1; i++ {
+	v3 := r.Intn(100)
+	tmps := make([]rune, v3)
+	for i := 0; i < v3; i++ {
 		tmps[i] = randUTF8RuneComponent(r)
 	}
 	return string(tmps)
@@ -872,11 +1209,11 @@ func randFieldComponent(dAtA []byte, r randyComponent, fieldNumber int, wire int
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateComponent(dAtA, uint64(key))
-		v2 := r.Int63()
+		v4 := r.Int63()
 		if r.Intn(2) == 0 {
-			v2 *= -1
+			v4 *= -1
 		}
-		dAtA = encodeVarintPopulateComponent(dAtA, uint64(v2))
+		dAtA = encodeVarintPopulateComponent(dAtA, uint64(v4))
 	case 1:
 		dAtA = encodeVarintPopulateComponent(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -901,26 +1238,32 @@ func encodeVarintPopulateComponent(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
-func (m *HealDirect) Size() (n int) {
+func (m *Heal) Size() (n int) {
 	var l int
 	_ = l
 	if m.Amount != 0 {
 		n += 1 + sovComponent(uint64(m.Amount))
 	}
-	if m.Type != 0 {
-		n += 1 + sovComponent(uint64(m.Type))
+	if m.Element != 0 {
+		n += 1 + sovComponent(uint64(m.Element))
+	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
 	}
 	return n
 }
 
-func (m *DamageDirect) Size() (n int) {
+func (m *Damage) Size() (n int) {
 	var l int
 	_ = l
 	if m.Amount != 0 {
 		n += 1 + sovComponent(uint64(m.Amount))
 	}
-	if m.Type != 0 {
-		n += 1 + sovComponent(uint64(m.Type))
+	if m.Element != 0 {
+		n += 1 + sovComponent(uint64(m.Element))
+	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
 	}
 	return n
 }
@@ -931,14 +1274,17 @@ func (m *HealOverTime) Size() (n int) {
 	if m.Amount != 0 {
 		n += 1 + sovComponent(uint64(m.Amount))
 	}
-	if m.Type != 0 {
-		n += 1 + sovComponent(uint64(m.Type))
+	if m.Element != 0 {
+		n += 1 + sovComponent(uint64(m.Element))
 	}
 	if m.Frequency != 0 {
 		n += 1 + sovComponent(uint64(m.Frequency))
 	}
 	if m.Duration != 0 {
 		n += 1 + sovComponent(uint64(m.Duration))
+	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
 	}
 	return n
 }
@@ -949,8 +1295,8 @@ func (m *DamageOverTime) Size() (n int) {
 	if m.Amount != 0 {
 		n += 1 + sovComponent(uint64(m.Amount))
 	}
-	if m.Type != 0 {
-		n += 1 + sovComponent(uint64(m.Type))
+	if m.Element != 0 {
+		n += 1 + sovComponent(uint64(m.Element))
 	}
 	if m.Frequency != 0 {
 		n += 1 + sovComponent(uint64(m.Frequency))
@@ -958,18 +1304,21 @@ func (m *DamageOverTime) Size() (n int) {
 	if m.Duration != 0 {
 		n += 1 + sovComponent(uint64(m.Duration))
 	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
+	}
 	return n
 }
 
-func (m *Component) Size() (n int) {
+func (m *Effect) Size() (n int) {
 	var l int
 	_ = l
-	if m.HealDirect != nil {
-		l = m.HealDirect.Size()
+	if m.Heal != nil {
+		l = m.Heal.Size()
 		n += 1 + l + sovComponent(uint64(l))
 	}
-	if m.DamageDirect != nil {
-		l = m.DamageDirect.Size()
+	if m.Damage != nil {
+		l = m.Damage.Size()
 		n += 1 + l + sovComponent(uint64(l))
 	}
 	if m.HealOverTime != nil {
@@ -980,6 +1329,32 @@ func (m *Component) Size() (n int) {
 		l = m.DamageOverTime.Size()
 		n += 1 + l + sovComponent(uint64(l))
 	}
+	return n
+}
+
+func (m *Component) Size() (n int) {
+	var l int
+	_ = l
+	if len(m.Effects) > 0 {
+		for _, e := range m.Effects {
+			l = e.Size()
+			n += 1 + l + sovComponent(uint64(l))
+		}
+	}
+	if m.NTargets != 0 {
+		n += 1 + sovComponent(uint64(m.NTargets))
+	}
+	if m.Range != 0 {
+		n += 1 + sovComponent(uint64(m.Range))
+	}
+	if m.NPositions != 0 {
+		n += 1 + sovComponent(uint64(m.NPositions))
+	}
+	if m.PositionRange != 0 {
+		n += 1 + sovComponent(uint64(m.PositionRange))
+	}
+	l = m.Shape.Size()
+	n += 1 + l + sovComponent(uint64(l))
 	return n
 }
 
@@ -996,24 +1371,26 @@ func sovComponent(x uint64) (n int) {
 func sozComponent(x uint64) (n int) {
 	return sovComponent(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (this *HealDirect) String() string {
+func (this *Heal) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&HealDirect{`,
+	s := strings.Join([]string{`&Heal{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
-		`Type:` + fmt.Sprintf("%v", this.Type) + `,`,
+		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`}`,
 	}, "")
 	return s
 }
-func (this *DamageDirect) String() string {
+func (this *Damage) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&DamageDirect{`,
+	s := strings.Join([]string{`&Damage{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
-		`Type:` + fmt.Sprintf("%v", this.Type) + `,`,
+		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1024,9 +1401,10 @@ func (this *HealOverTime) String() string {
 	}
 	s := strings.Join([]string{`&HealOverTime{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
-		`Type:` + fmt.Sprintf("%v", this.Type) + `,`,
+		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
 		`Frequency:` + fmt.Sprintf("%v", this.Frequency) + `,`,
 		`Duration:` + fmt.Sprintf("%v", this.Duration) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1037,9 +1415,23 @@ func (this *DamageOverTime) String() string {
 	}
 	s := strings.Join([]string{`&DamageOverTime{`,
 		`Amount:` + fmt.Sprintf("%v", this.Amount) + `,`,
-		`Type:` + fmt.Sprintf("%v", this.Type) + `,`,
+		`Element:` + fmt.Sprintf("%v", this.Element) + `,`,
 		`Frequency:` + fmt.Sprintf("%v", this.Frequency) + `,`,
 		`Duration:` + fmt.Sprintf("%v", this.Duration) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Effect) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Effect{`,
+		`Heal:` + strings.Replace(fmt.Sprintf("%v", this.Heal), "Heal", "Heal", 1) + `,`,
+		`Damage:` + strings.Replace(fmt.Sprintf("%v", this.Damage), "Damage", "Damage", 1) + `,`,
+		`HealOverTime:` + strings.Replace(fmt.Sprintf("%v", this.HealOverTime), "HealOverTime", "HealOverTime", 1) + `,`,
+		`DamageOverTime:` + strings.Replace(fmt.Sprintf("%v", this.DamageOverTime), "DamageOverTime", "DamageOverTime", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1049,10 +1441,12 @@ func (this *Component) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&Component{`,
-		`HealDirect:` + strings.Replace(fmt.Sprintf("%v", this.HealDirect), "HealDirect", "HealDirect", 1) + `,`,
-		`DamageDirect:` + strings.Replace(fmt.Sprintf("%v", this.DamageDirect), "DamageDirect", "DamageDirect", 1) + `,`,
-		`HealOverTime:` + strings.Replace(fmt.Sprintf("%v", this.HealOverTime), "HealOverTime", "HealOverTime", 1) + `,`,
-		`DamageOverTime:` + strings.Replace(fmt.Sprintf("%v", this.DamageOverTime), "DamageOverTime", "DamageOverTime", 1) + `,`,
+		`Effects:` + strings.Replace(fmt.Sprintf("%v", this.Effects), "Effect", "Effect", 1) + `,`,
+		`NTargets:` + fmt.Sprintf("%v", this.NTargets) + `,`,
+		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
+		`NPositions:` + fmt.Sprintf("%v", this.NPositions) + `,`,
+		`PositionRange:` + fmt.Sprintf("%v", this.PositionRange) + `,`,
+		`Shape:` + fmt.Sprintf("%v", this.Shape) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -1065,12 +1459,12 @@ func valueToStringComponent(v interface{}) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
 }
-func (this *Component) GetValue() interface{} {
-	if this.HealDirect != nil {
-		return this.HealDirect
+func (this *Effect) GetValue() interface{} {
+	if this.Heal != nil {
+		return this.Heal
 	}
-	if this.DamageDirect != nil {
-		return this.DamageDirect
+	if this.Damage != nil {
+		return this.Damage
 	}
 	if this.HealOverTime != nil {
 		return this.HealOverTime
@@ -1081,12 +1475,12 @@ func (this *Component) GetValue() interface{} {
 	return nil
 }
 
-func (this *Component) SetValue(value interface{}) bool {
+func (this *Effect) SetValue(value interface{}) bool {
 	switch vt := value.(type) {
-	case *HealDirect:
-		this.HealDirect = vt
-	case *DamageDirect:
-		this.DamageDirect = vt
+	case *Heal:
+		this.Heal = vt
+	case *Damage:
+		this.Damage = vt
 	case *HealOverTime:
 		this.HealOverTime = vt
 	case *DamageOverTime:
@@ -1096,7 +1490,7 @@ func (this *Component) SetValue(value interface{}) bool {
 	}
 	return true
 }
-func (m *HealDirect) Unmarshal(dAtA []byte) error {
+func (m *Heal) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1119,10 +1513,10 @@ func (m *HealDirect) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: HealDirect: wiretype end group for non-group")
+			return fmt.Errorf("proto: Heal: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: HealDirect: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Heal: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1146,9 +1540,9 @@ func (m *HealDirect) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Element", wireType)
 			}
-			m.Type = 0
+			m.Element = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowComponent
@@ -1158,7 +1552,26 @@ func (m *HealDirect) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Type |= (uint32(b) & 0x7F) << shift
+				m.Element |= (Element(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1184,7 +1597,7 @@ func (m *HealDirect) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *DamageDirect) Unmarshal(dAtA []byte) error {
+func (m *Damage) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1207,10 +1620,10 @@ func (m *DamageDirect) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: DamageDirect: wiretype end group for non-group")
+			return fmt.Errorf("proto: Damage: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: DamageDirect: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Damage: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -1234,9 +1647,9 @@ func (m *DamageDirect) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Element", wireType)
 			}
-			m.Type = 0
+			m.Element = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowComponent
@@ -1246,7 +1659,26 @@ func (m *DamageDirect) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Type |= (uint32(b) & 0x7F) << shift
+				m.Element |= (Element(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1322,9 +1754,9 @@ func (m *HealOverTime) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Element", wireType)
 			}
-			m.Type = 0
+			m.Element = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowComponent
@@ -1334,7 +1766,7 @@ func (m *HealOverTime) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Type |= (uint32(b) & 0x7F) << shift
+				m.Element |= (Element(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1373,6 +1805,25 @@ func (m *HealOverTime) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Duration |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1448,9 +1899,9 @@ func (m *DamageOverTime) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Element", wireType)
 			}
-			m.Type = 0
+			m.Element = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowComponent
@@ -1460,7 +1911,7 @@ func (m *DamageOverTime) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Type |= (uint32(b) & 0x7F) << shift
+				m.Element |= (Element(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -1503,6 +1954,25 @@ func (m *DamageOverTime) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipComponent(dAtA[iNdEx:])
@@ -1524,7 +1994,7 @@ func (m *DamageOverTime) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *Component) Unmarshal(dAtA []byte) error {
+func (m *Effect) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -1547,15 +2017,15 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Component: wiretype end group for non-group")
+			return fmt.Errorf("proto: Effect: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Component: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Effect: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field HealDirect", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Heal", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1579,16 +2049,16 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.HealDirect == nil {
-				m.HealDirect = &HealDirect{}
+			if m.Heal == nil {
+				m.Heal = &Heal{}
 			}
-			if err := m.HealDirect.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Heal.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DamageDirect", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Damage", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -1612,10 +2082,10 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.DamageDirect == nil {
-				m.DamageDirect = &DamageDirect{}
+			if m.Damage == nil {
+				m.Damage = &Damage{}
 			}
-			if err := m.DamageDirect.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Damage.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1682,6 +2152,193 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 				m.DamageOverTime = &DamageOverTime{}
 			}
 			if err := m.DamageOverTime.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipComponent(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthComponent
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Component) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowComponent
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Component: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Component: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Effects", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthComponent
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Effects = append(m.Effects, &Effect{})
+			if err := m.Effects[len(m.Effects)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NTargets", wireType)
+			}
+			m.NTargets = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.NTargets |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
+			}
+			m.Range = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Range |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field NPositions", wireType)
+			}
+			m.NPositions = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.NPositions |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PositionRange", wireType)
+			}
+			m.PositionRange = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PositionRange |= (uint64(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Shape", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowComponent
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthComponent
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Shape.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1811,30 +2468,43 @@ var (
 	ErrIntOverflowComponent   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("component.proto", fileDescriptor_component_1802c4a9b3e06263) }
+func init() { proto.RegisterFile("component.proto", fileDescriptor_component_321db0c3df67f214) }
 
-var fileDescriptor_component_1802c4a9b3e06263 = []byte{
-	// 343 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4f, 0xce, 0xcf, 0x2d,
-	0xc8, 0xcf, 0x4b, 0xcd, 0x2b, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x97, 0xd2, 0x4d, 0xcf, 0x2c,
-	0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf, 0xd7, 0x07, 0x0b, 0x27,
-	0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0x51, 0xae, 0x64, 0xc1, 0xc5, 0xe5, 0x91, 0x9a,
-	0x98, 0xe3, 0x92, 0x59, 0x94, 0x9a, 0x5c, 0x22, 0x24, 0xc6, 0xc5, 0xe6, 0x98, 0x9b, 0x5f, 0x9a,
-	0x57, 0x22, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x12, 0x04, 0xe5, 0x09, 0x09, 0x71, 0xb1, 0x84, 0x54,
-	0x16, 0xa4, 0x4a, 0x30, 0x29, 0x30, 0x6a, 0xf0, 0x06, 0x81, 0xd9, 0x4a, 0x56, 0x5c, 0x3c, 0x2e,
-	0x89, 0xb9, 0x89, 0xe9, 0xa9, 0x64, 0xe8, 0x2d, 0xe1, 0xe2, 0x01, 0xd9, 0xea, 0x5f, 0x96, 0x5a,
-	0x14, 0x92, 0x99, 0x9b, 0x4a, 0x8a, 0x5e, 0x21, 0x19, 0x2e, 0x4e, 0xb7, 0xa2, 0xd4, 0xc2, 0xd2,
-	0xd4, 0xbc, 0xe4, 0x4a, 0x09, 0x66, 0xb0, 0x72, 0x84, 0x80, 0x90, 0x14, 0x17, 0x87, 0x4b, 0x69,
-	0x51, 0x62, 0x49, 0x66, 0x7e, 0x9e, 0x04, 0x0b, 0x58, 0x12, 0xce, 0x57, 0x2a, 0xe3, 0xe2, 0x83,
-	0xb8, 0x98, 0xce, 0xf6, 0xde, 0x65, 0xe4, 0xe2, 0x74, 0x86, 0x45, 0x93, 0x90, 0x36, 0x72, 0x88,
-	0x83, 0xed, 0xe5, 0x36, 0xe2, 0xd6, 0x43, 0x08, 0x05, 0x21, 0x47, 0x88, 0x21, 0x6a, 0x20, 0x83,
-	0x1d, 0xc4, 0x6d, 0xc4, 0xab, 0x87, 0x2c, 0x18, 0x84, 0x1a, 0x0f, 0x86, 0xa8, 0x61, 0x0b, 0x76,
-	0x2a, 0x48, 0x0b, 0xb2, 0x60, 0x10, 0x6a, 0xf0, 0x9b, 0xa3, 0x07, 0x0c, 0xd8, 0x0b, 0xdc, 0x46,
-	0xfc, 0x7a, 0xa8, 0xc2, 0x41, 0x68, 0xca, 0xac, 0x58, 0x4e, 0x2c, 0x90, 0x67, 0x74, 0x72, 0xbc,
-	0xf0, 0x50, 0x8e, 0xe1, 0xc6, 0x43, 0x39, 0x86, 0x0f, 0x0f, 0xe5, 0x18, 0x7f, 0x3c, 0x94, 0x63,
-	0x6c, 0x78, 0x24, 0xc7, 0xb8, 0xe2, 0x91, 0x1c, 0xe3, 0x8e, 0x47, 0x72, 0x8c, 0x07, 0x1e, 0xc9,
-	0x31, 0x9e, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c, 0xe3, 0x83, 0x47, 0x72, 0x8c, 0x2f, 0x1e,
-	0xc9, 0x31, 0x7c, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1, 0x1c, 0x43, 0x14, 0x7b, 0x62, 0x52, 0x66,
-	0x4e, 0x66, 0x49, 0x65, 0x12, 0x1b, 0x38, 0x35, 0x1a, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0xbc,
-	0xc6, 0x67, 0x52, 0xcf, 0x02, 0x00, 0x00,
+var fileDescriptor_component_321db0c3df67f214 = []byte{
+	// 550 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x94, 0x3f, 0x8b, 0x13, 0x41,
+	0x18, 0xc6, 0x77, 0x92, 0xfd, 0x93, 0xbc, 0xb9, 0x3f, 0xcb, 0x20, 0xb2, 0x1e, 0x32, 0x89, 0x41,
+	0x21, 0x08, 0xb7, 0xf1, 0x62, 0x21, 0xd8, 0xe5, 0x2e, 0x39, 0x14, 0xe4, 0xd4, 0xf5, 0x40, 0xb9,
+	0x46, 0x26, 0x71, 0xb2, 0x59, 0x2f, 0xbb, 0x13, 0x37, 0xb3, 0xc2, 0x75, 0x7e, 0x04, 0x6b, 0xb1,
+	0xb0, 0xf4, 0x13, 0x88, 0xa5, 0x65, 0xca, 0x2b, 0xc5, 0xe2, 0x30, 0x6b, 0x23, 0xd8, 0x5c, 0x69,
+	0x29, 0x3b, 0x9b, 0x4d, 0x36, 0xd7, 0x8a, 0x60, 0x37, 0xbf, 0x67, 0xe6, 0xcd, 0x3c, 0xf3, 0xbc,
+	0x6f, 0x16, 0x36, 0xfb, 0xdc, 0x1f, 0xf3, 0x80, 0x05, 0xc2, 0x1e, 0x87, 0x5c, 0xf0, 0xad, 0x6d,
+	0xd7, 0x13, 0xc3, 0xa8, 0x67, 0xf7, 0xb9, 0xdf, 0x74, 0xb9, 0xcb, 0x9b, 0x52, 0xee, 0x45, 0x03,
+	0x49, 0x12, 0xe4, 0x2a, 0x3d, 0x5e, 0x7f, 0x06, 0xea, 0x3d, 0x46, 0x47, 0xf8, 0x32, 0xe8, 0x6d,
+	0x9f, 0x47, 0x81, 0xb0, 0x50, 0x0d, 0x35, 0x54, 0x67, 0x4e, 0xb8, 0x0e, 0x46, 0x77, 0xc4, 0x7c,
+	0x16, 0x08, 0xab, 0x50, 0x43, 0x8d, 0x8d, 0x56, 0xc9, 0x9e, 0xb3, 0x93, 0x6d, 0xe0, 0x4b, 0xa0,
+	0x39, 0x34, 0x70, 0x99, 0x55, 0x94, 0xa5, 0x29, 0xd4, 0x8f, 0x40, 0xef, 0x50, 0x9f, 0xba, 0xec,
+	0x1f, 0xfc, 0xf6, 0x3b, 0x04, 0x6b, 0x89, 0xed, 0x87, 0xaf, 0x59, 0x78, 0xe8, 0xf9, 0x7f, 0x77,
+	0xc5, 0x55, 0x28, 0xef, 0x87, 0xec, 0x55, 0xc4, 0x82, 0xfe, 0xc9, 0xfc, 0x9a, 0xa5, 0x80, 0xb7,
+	0xa0, 0xd4, 0x89, 0x42, 0x2a, 0x3c, 0x1e, 0x58, 0xaa, 0xdc, 0x5c, 0xf0, 0xd2, 0x9c, 0x96, 0x37,
+	0xf7, 0x1e, 0xc1, 0x46, 0xfa, 0xf2, 0xff, 0xd2, 0xde, 0x27, 0x04, 0x7a, 0x77, 0x30, 0x60, 0x7d,
+	0x81, 0xaf, 0xa4, 0xcd, 0x97, 0xa6, 0x2a, 0x2d, 0xcd, 0x4e, 0xc0, 0x49, 0xe7, 0xa1, 0x9a, 0x75,
+	0x4f, 0x1a, 0xab, 0xb4, 0x0c, 0x3b, 0x45, 0x27, 0x6b, 0xea, 0xce, 0x6a, 0x07, 0xa4, 0xb3, 0x4a,
+	0x6b, 0xdd, 0xce, 0x8b, 0xce, 0x6a, 0x93, 0xee, 0x5c, 0xcc, 0x45, 0x3a, 0xae, 0xb4, 0x36, 0xed,
+	0x55, 0xd9, 0xb9, 0x70, 0xec, 0xae, 0x3a, 0xfd, 0x50, 0x45, 0xf5, 0x5f, 0x08, 0xca, 0x7b, 0xd9,
+	0xb4, 0xe3, 0x6b, 0x60, 0xa4, 0xaf, 0x98, 0x58, 0x85, 0x5a, 0x51, 0x3a, 0x4c, 0xd9, 0xc9, 0xf4,
+	0x24, 0x9b, 0x83, 0x43, 0x1a, 0xba, 0x4c, 0x4c, 0xe6, 0xc1, 0x2d, 0x78, 0x99, 0x8d, 0x9a, 0xcb,
+	0x06, 0x13, 0x80, 0x83, 0x47, 0x7c, 0xe2, 0x25, 0xf1, 0x4d, 0xe6, 0xb1, 0xe5, 0x14, 0x7c, 0x1d,
+	0xd6, 0x33, 0x48, 0xab, 0x75, 0x79, 0x64, 0x55, 0xc4, 0x7b, 0xa0, 0x3d, 0x19, 0xd2, 0x31, 0xb3,
+	0x8c, 0x1a, 0x6a, 0xac, 0xed, 0x6e, 0x4f, 0xcf, 0xaa, 0xca, 0xb7, 0xb3, 0xea, 0x8d, 0xdc, 0x3f,
+	0x93, 0x8d, 0xf8, 0x4b, 0x3a, 0x6c, 0xba, 0xd4, 0x67, 0xcf, 0x6f, 0xed, 0x34, 0xc7, 0xc7, 0x6e,
+	0x33, 0x1a, 0x79, 0x2f, 0xec, 0xfb, 0x1d, 0x27, 0xad, 0xbd, 0xf9, 0x78, 0x31, 0x1a, 0xb8, 0x04,
+	0xea, 0xbe, 0x17, 0x32, 0x53, 0xc1, 0x65, 0xd0, 0x9e, 0x52, 0xc1, 0x42, 0x13, 0x61, 0x03, 0x8a,
+	0x6d, 0x2f, 0x34, 0x0b, 0x89, 0xd6, 0xa5, 0xa1, 0x18, 0x9a, 0xc5, 0x64, 0xf9, 0xc0, 0x73, 0x87,
+	0xc2, 0x54, 0x93, 0x9a, 0x0e, 0x0d, 0x8f, 0x4d, 0x2d, 0x59, 0x25, 0x21, 0x9a, 0xfa, 0x6e, 0xfb,
+	0x74, 0x46, 0x94, 0xaf, 0x33, 0xa2, 0x9c, 0xcf, 0x08, 0xfa, 0x3d, 0x23, 0xe8, 0x4d, 0x4c, 0xd0,
+	0xc7, 0x98, 0xa0, 0xcf, 0x31, 0x41, 0x5f, 0x62, 0x82, 0xa6, 0x31, 0x41, 0xa7, 0x31, 0x41, 0xdf,
+	0x63, 0x82, 0x7e, 0xc6, 0x44, 0x39, 0x8f, 0x09, 0x7a, 0xfb, 0x83, 0x28, 0x47, 0x06, 0xed, 0x79,
+	0x23, 0x4f, 0x9c, 0xf4, 0x74, 0xf9, 0xd5, 0xb8, 0xfd, 0x27, 0x00, 0x00, 0xff, 0xff, 0x9a, 0x06,
+	0x82, 0x93, 0x77, 0x04, 0x00, 0x00,
 }

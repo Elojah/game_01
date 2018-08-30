@@ -1,22 +1,14 @@
 package ability
 
 import (
-	"github.com/elojah/game_01/pkg/entity"
+	"encoding/json"
+	"time"
+
+	"github.com/pkg/errors"
+
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
-
-// Affect applies ability a on target.
-func (a A) Affect(target *entity.E) Feedback {
-	fb := Feedback{
-		ID:         ulid.NewID(),
-		AbilityID:  a.ID,
-		Components: make([]ComponentFeedback, len(a.Components)),
-	}
-	// for i, component := range a.Components {
-	// fb.Components[i] = component.Affect(target)
-	// }
-	return fb
-}
 
 // Store is the communication interface for abilities.
 type Store interface {
@@ -31,55 +23,59 @@ type Subset struct {
 	EntityID ulid.ID
 }
 
-// // UnmarshalJSON adds a new field for components `struct` to determine component type.
-// func (a *Template) UnmarshalJSON(raw []byte) error {
-// 	type aliasA A
-// 	var alias struct {
-// 		aliasA
-// 		Components []json.RawMessage `json:"components"`
-// 	}
-// 	if err := json.Unmarshal(raw, &alias); err != nil {
-// 		return err
-// 	}
+func (a A) Check(targets map[string]Targets) error {
+	// #For all ability components.
+	for cid, comp := range a.Components {
+		// #Retrieve targets for this component.
+		target, ok := targets[cid]
+		if !ok {
+			return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, a.ID.String())
+		}
 
-// 	*a = Template(alias.aliasA)
-// 	a.Components = make([]Component, len(alias.Components))
+		if len(target.Positions) != 0 {
+			return gerrors.ErrNotImplementedYet
+		}
 
-// 	for i, component := range alias.Components {
-// 		var componentStruct struct {
-// 			Structure string `json:"struct"`
-// 		}
-// 		if err := json.Unmarshal([]byte(component), &componentStruct); err != nil {
-// 			return err
-// 		}
-// 		switch componentStruct.Structure {
-// 		case "HealDirect":
-// 			var s HealDirect
-// 			if err := json.Unmarshal([]byte(component), &s); err != nil {
-// 				return err
-// 			}
-// 			a.Components[i].SetValue(&s)
-// 		case "DamageDirect":
-// 			var s DamageDirect
-// 			if err := json.Unmarshal([]byte(component), &s); err != nil {
-// 				return err
-// 			}
-// 			a.Components[i].SetValue(&s)
-// 		case "HealOverTime":
-// 			var s HealOverTime
-// 			if err := json.Unmarshal([]byte(component), &s); err != nil {
-// 				return err
-// 			}
-// 			a.Components[i].SetValue(&s)
-// 		case "DamageOverTime":
-// 			var s DamageOverTime
-// 			if err := json.Unmarshal([]byte(component), &s); err != nil {
-// 				return err
-// 			}
-// 			a.Components[i].SetValue(&s)
-// 		default:
-// 			return &json.UnsupportedValueError{Str: "struct"}
-// 		}
-// 	}
-// 	return nil
-// }
+		// #Check target numbers.
+		if uint64(len(target.Entities)) > comp.NTargets {
+			return errors.Wrapf(gerrors.ErrTooManyTargets, "component %s for ability %s with targets max %d and given %d", cid, a.ID.String(), len(target.Entities), comp.NTargets)
+		}
+	}
+
+}
+
+// UnmarshalJSON allows string as duration for cast time.
+func (a *A) UnmarshalJSON(data []byte) error {
+	var alias struct {
+		ID                ulid.ID
+		Type              ulid.ID
+		Animation         ulid.ID
+		Name              string
+		MPConsumption     uint64
+		PostMPConsumption uint64
+		Components        map[string]Component
+
+		LastUsed int64
+		CD       string
+		CastTime string
+	}
+	if err := json.Unmarshal(data, &alias); err != nil {
+		return err
+	}
+	a.ID = alias.ID
+	a.Type = alias.Type
+	a.Animation = alias.Animation
+	a.Name = alias.Name
+	a.MPConsumption = alias.MPConsumption
+	a.PostMPConsumption = alias.PostMPConsumption
+	a.Components = alias.Components
+	var err error
+	if a.CD, err = time.ParseDuration(alias.CD); err != nil {
+		return err
+	}
+	if a.CastTime, err = time.ParseDuration(alias.CastTime); err != nil {
+		return err
+	}
+	a.LastUsed = time.Unix(0, alias.LastUsed)
+	return nil
+}

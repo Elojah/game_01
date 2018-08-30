@@ -98,8 +98,9 @@ proto:
 Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types,\
 Mgoogle/protobuf/duration.proto=github.com/gogo/protobuf/types:.\
 		ability.proto
-	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component_feedback.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. effect_feedback.proto
 	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. feedback.proto
+	$Q cd pkg/ability && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. targets.proto
 	$Q cd pkg/account && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. account.proto
 	$Q cd pkg/account && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. token.proto
 	$Q cd pkg/geometry && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. position.proto
