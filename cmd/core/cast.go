@@ -60,6 +60,20 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(gerrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
 	}
 
+	// Check targets validity (number and position number).
+	for cid, component := range ab.Components {
+		targets, ok := cast.Targets[cid]
+		if !ok {
+			return errors.Wrapf(gerrors.ErrMissingTarget, "ability %s component %s", ab.ID.String(), cid)
+		}
+		if uint64(len(targets.Entities)) > component.NTargets {
+			return errors.Wrapf(gerrors.ErrTooManyTargets, "%d entities for %d max for ability %s component %s", len(targets.Entities), component.NTargets, ab.ID.String(), cid)
+		}
+		if uint64(len(targets.Positions)) > component.NPositions {
+			return errors.Wrapf(gerrors.ErrTooManyTargets, "")
+		}
+	}
+
 	// #Set entity new state with decreased MP and casting up.
 	source.CastAbility(ab, e.TS)
 	if err := a.EntityStore.SetEntity(source, e.TS.UnixNano()); err != nil {

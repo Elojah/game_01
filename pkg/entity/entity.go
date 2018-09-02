@@ -37,11 +37,14 @@ func (e *E) CastAbility(ab ability.A, ts time.Time) {
 
 // Damage applies a direct damage component dd from entity source to entity e.
 func (e *E) Damage(source E, dd ability.Damage) *ability.DamageFeedback {
+	var amount uint64
 	if dd.Amount >= e.HP {
+		amount = e.HP
 		e.HP = 0
 		e.Dead = true
 	} else {
+		amount = dd.Amount
 		e.HP -= dd.Amount
 	}
-	return &ability.DamageFeedback{Amount: dd.Amount}
+	return &ability.DamageFeedback{Amount: amount}
 }
