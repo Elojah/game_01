@@ -11,7 +11,7 @@ func (v *Vec3) Add(p Vec3) {
 	v.Z += p.Z
 }
 
-// MoveReference returns  v position moved to a new reference ref relative to previous origin.
+// MoveReference returns v position moved to a new reference ref relative to previous origin.
 func (v Vec3) MoveReference(ref Vec3) Vec3 {
 	return Vec3{
 		X: v.X + ref.X,

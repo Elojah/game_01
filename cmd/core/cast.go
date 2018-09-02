@@ -66,11 +66,6 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
-	// #Check targets validity (range numbers, etc.)
-	if err := ab.Check(cast.Targets); err != nil {
-		return errors.Wrap(err, "check targets")
-	}
-
 	// #Publish casted event to event set.
 	if err := a.EventQStore.PublishEvent(event.E{
 		ID: ulid.NewID(),

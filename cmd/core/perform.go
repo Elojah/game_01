@@ -11,6 +11,8 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/geometry"
+	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -126,12 +128,68 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		ComponentID: perform.ComponentID,
 	}
 
-	// #Apply all ability components.
+	// #Check component validity.
 	cid := perform.ComponentID.String()
 	component, ok := ab.Components[cid]
 	if !ok {
 		return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
 	}
+
+	// #Check range validity.
+	if perform.Source.Position.SectorID.Compare(target.Position.SectorID) == 0 {
+		if geometry.Segment(perform.Source.Position.Coord, target.Position.Coord) > component.Range {
+			return errors.Wrapf(
+				gerrors.ErrOutOfRange,
+				"source %s (%f , %f , %f) out of range %f for target %s (%f , %f , %f)",
+				perform.Source.ID.String(),
+				perform.Source.Position.Coord.X,
+				perform.Source.Position.Coord.Y,
+				perform.Source.Position.Coord.Z,
+				component.Range,
+				target.ID.String(),
+				target.Position.Coord.X,
+				target.Position.Coord.Y,
+				target.Position.Coord.Z,
+			)
+		}
+	} else {
+		sec, err := a.SectorStore.GetSector(sector.Subset{
+			ID: perform.Source.Position.SectorID,
+		})
+		if err != nil {
+			return errors.Wrapf(err, "get sector %s", perform.Source.Position.SectorID)
+		}
+		neigh, ok := sec.Neighbours[target.Position.SectorID.String()]
+		if !ok {
+			return errors.Wrapf(
+				gerrors.ErrOutOfRange,
+				"source %s in sector %s not neighbour to target %s in sector %s",
+				perform.Source.ID.String(),
+				perform.Source.Position.SectorID.String(),
+				target.ID.String(),
+				target.Position.SectorID.String(),
+			)
+		}
+		if geometry.Segment(perform.Source.Position.Coord, target.Position.Coord.MoveReference(neigh)) > component.Range {
+			return errors.Wrapf(
+				gerrors.ErrOutOfRange,
+				"source %s sector %s (%f , %f , %f) out of range %f for target %s sector %s (%f , %f , %f)",
+				perform.Source.ID.String(),
+				perform.Source.Position.SectorID.String(),
+				perform.Source.Position.Coord.X,
+				perform.Source.Position.Coord.Y,
+				perform.Source.Position.Coord.Z,
+				component.Range,
+				target.ID.String(),
+				target.Position.SectorID.String(),
+				target.Position.Coord.X,
+				target.Position.Coord.Y,
+				target.Position.Coord.Z,
+			)
+		}
+	}
+
+	// #Apply all ability components.
 	var result *multierror.Error
 	for _, effect := range component.Effects {
 		veffect := effect.GetValue()

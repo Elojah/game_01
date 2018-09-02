@@ -57,7 +57,7 @@ message Effect {
 message Component {
 	repeated Effect Effects       = 2;
 	uint64 NTargets               = 3;
-	uint64 Range                  = 4;
+	double Range                  = 4;
 	uint64 NPositions             = 5;
 	uint64 PositionRange          = 6;
 	bytes Shape                   = 7 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
