@@ -92,7 +92,7 @@ func expectAbilityTemplates(a *LogAnalyzer) error {
 		},
 		Method:           "POST",
 		Route:            "/ability/template",
-		AbilityTemplates: 2,
+		AbilityTemplates: 1,
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var actual abilityTemplate

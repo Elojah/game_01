@@ -33,7 +33,7 @@ type HealFeedback struct {
 func (m *HealFeedback) Reset()      { *m = HealFeedback{} }
 func (*HealFeedback) ProtoMessage() {}
 func (*HealFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_effect_feedback_b2c193466039d07a, []int{0}
+	return fileDescriptor_effect_feedback_be5c89bc2d69bd4d, []int{0}
 }
 func (m *HealFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -78,7 +78,7 @@ type DamageFeedback struct {
 func (m *DamageFeedback) Reset()      { *m = DamageFeedback{} }
 func (*DamageFeedback) ProtoMessage() {}
 func (*DamageFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_effect_feedback_b2c193466039d07a, []int{1}
+	return fileDescriptor_effect_feedback_be5c89bc2d69bd4d, []int{1}
 }
 func (m *DamageFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -123,7 +123,7 @@ type HealOverTimeFeedback struct {
 func (m *HealOverTimeFeedback) Reset()      { *m = HealOverTimeFeedback{} }
 func (*HealOverTimeFeedback) ProtoMessage() {}
 func (*HealOverTimeFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_effect_feedback_b2c193466039d07a, []int{2}
+	return fileDescriptor_effect_feedback_be5c89bc2d69bd4d, []int{2}
 }
 func (m *HealOverTimeFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -168,7 +168,7 @@ type DamageOverTimeFeedback struct {
 func (m *DamageOverTimeFeedback) Reset()      { *m = DamageOverTimeFeedback{} }
 func (*DamageOverTimeFeedback) ProtoMessage() {}
 func (*DamageOverTimeFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_effect_feedback_b2c193466039d07a, []int{3}
+	return fileDescriptor_effect_feedback_be5c89bc2d69bd4d, []int{3}
 }
 func (m *DamageOverTimeFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -216,7 +216,7 @@ type EffectFeedback struct {
 func (m *EffectFeedback) Reset()      { *m = EffectFeedback{} }
 func (*EffectFeedback) ProtoMessage() {}
 func (*EffectFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_effect_feedback_b2c193466039d07a, []int{4}
+	return fileDescriptor_effect_feedback_be5c89bc2d69bd4d, []int{4}
 }
 func (m *EffectFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1484,10 +1484,10 @@ var (
 )
 
 func init() {
-	proto.RegisterFile("effect_feedback.proto", fileDescriptor_effect_feedback_b2c193466039d07a)
+	proto.RegisterFile("effect_feedback.proto", fileDescriptor_effect_feedback_be5c89bc2d69bd4d)
 }
 
-var fileDescriptor_effect_feedback_b2c193466039d07a = []byte{
+var fileDescriptor_effect_feedback_be5c89bc2d69bd4d = []byte{
 	// 309 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x12, 0x4d, 0x4d, 0x4b, 0x4b,
 	0x4d, 0x2e, 0x89, 0x4f, 0x4b, 0x4d, 0x4d, 0x49, 0x4a, 0x4c, 0xce, 0xd6, 0x2b, 0x28, 0xca, 0x2f,

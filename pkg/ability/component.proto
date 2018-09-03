@@ -21,13 +21,11 @@ enum Element {
 message Heal {
 	uint64 Amount                 = 1;
 	Element Element               = 2;
-	uint64 Range                  = 3;
 }
 
 message Damage {
 	uint64 Amount                 = 1;
 	Element Element               = 2;
-	uint64 Range                  = 3;
 }
 
 message HealOverTime {
@@ -35,7 +33,6 @@ message HealOverTime {
 	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
-	uint64 Range                  = 5;
 }
 
 message DamageOverTime {
@@ -43,7 +40,6 @@ message DamageOverTime {
 	Element Element               = 2;
 	uint64 Frequency              = 3;
 	uint64 Duration               = 4;
-	uint64 Range                  = 5;
 }
 
 message Effect {

@@ -1,14 +1,30 @@
 [
-	{
-	"ID"                : "01CP2Z4SDEWZK8YF29E07GPDVC",
-	"Type"              : "01CP2Z53XMVH95E210QEWJTFRS",
-	"Animation"         : "01CP2Z58REGWW225VYXEZT984R",
-	"Name"              : "Ice shard",
-	"MPConsumption"     : 10,
-	"PostMPConsumption" : 0,
-	"CD"                : "5s",
-	"LastUsed"          : 0,
-	"CastTime"          : "1s",
-	"Components"        : {}
-	}
+    {
+        "ID": "01CP2Z4SDEWZK8YF29E07GPDVC",
+        "Type": "01CP2Z53XMVH95E210QEWJTFRS",
+        "Animation": "01CP2Z58REGWW225VYXEZT984R",
+        "Name": "Fireball",
+        "MPConsumption": 10,
+        "PostMPConsumption": 0,
+        "CD": "5s",
+        "LastUsed": 0,
+        "CastTime": "1s",
+        "Components": {
+            "01CPFBN87EESQ4QA8N820RV924" : {
+                "Effects": [
+                {
+                    "Damage": {
+                        "Amount": 30,
+                        "Element": 0
+                    }
+                }
+                ],
+                "NTargets": 5,
+                "Range": 400,
+                "NPositions": 0,
+                "PositionRange": 0,
+                "Shape": "00000000000000000000000000"
+            }
+        }
+    }
 ]
