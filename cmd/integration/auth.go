@@ -421,32 +421,38 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 	})
 }
 
-func expectAuth(a *LogAnalyzer) (ulid.ID, error) {
+func expectAuthUp(a *LogAnalyzer) (account.Token, entity.E, error) {
 	// ignore certificate validity
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gas
 	if err := expectSubscribe(a); err != nil {
-		return ulid.ID{}, err
+		return account.Token{}, entity.E{}, err
 	}
 	tok, err := expectSignin(a)
 	if err != nil {
-		return ulid.ID{}, err
+		return account.Token{}, entity.E{}, err
 	}
 	if err := expectCreatePC(a, tok); err != nil {
-		return ulid.ID{}, err
+		return account.Token{}, entity.E{}, err
 	}
 	pc, err := expectListPC(a, tok)
 	if err != nil {
-		return ulid.ID{}, err
+		return account.Token{}, entity.E{}, err
 	}
 	e, err := expectConnectPC(a, tok, pc)
 	if err != nil {
-		return ulid.ID{}, err
+		return account.Token{}, entity.E{}, err
 	}
+	return tok, e, nil
+}
+
+func expectAuthDown(a *LogAnalyzer, tok account.Token) error {
+	// ignore certificate validity
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gas
 	if err := expectSignout(a, tok); err != nil {
-		return ulid.ID{}, err
+		return err
 	}
 	if err := expectUnsubscribe(a); err != nil {
-		return ulid.ID{}, err
+		return err
 	}
-	return e.ID, nil
+	return nil
 }

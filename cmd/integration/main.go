@@ -45,11 +45,24 @@ func main() {
 	}
 	log.Info().Msg("tool ok")
 
-	if _, err := expectAuth(a); err != nil {
-		log.Error().Err(err).Msg("auth")
+	tok, ent, err := expectAuthUp(a)
+	if err != nil {
+		log.Error().Err(err).Msg("auth up")
 		return
 	}
-	log.Info().Msg("auth ok")
+	log.Info().Msg("auth up ok")
+
+	if err := expectAPI(a, tok, ent); err != nil {
+		log.Error().Err(err).Msg("api")
+		return
+	}
+	log.Info().Msg("api ok")
+
+	if err := expectAuthDown(a, tok); err != nil {
+		log.Error().Err(err).Msg("auth down")
+		return
+	}
+	log.Info().Msg("auth down ok")
 
 	log.Info().Msg("integration ok")
 }
