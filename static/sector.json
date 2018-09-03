@@ -1,52 +1,34 @@
 [
     {
-        "id": "01CF001HTBA3CDR1ERJ6RF183A",
-        "dim": {
+        "ID": "01CF001HTBA3CDR1ERJ6RF183A",
+        "Dim": {
             "x": 1024,
             "y": 1024,
             "z": 1024
         },
-        "connections": [
-            {
-                "external": {
-                    "sector_id": "01CKQQPVZN5KQC8XC9Q9NK8YXQ",
-                    "coord": {
-                        "X": 0,
-                        "Y": 0,
-                        "Z": 0
-                    }
-                },
-                "coord": {
-                    "X": 1024,
-                    "Y": 1024,
-                    "Z": 0
-                }
+        "Exposed": ["01CKQQPVZN5KQC8XC9Q9NK8YXQ"],
+        "Neighbours": {
+            "01CKQQPVZN5KQC8XC9Q9NK8YXQ": {
+                "X": 1024,
+                "Y": 0,
+                "Z": 0
             }
-        ]
+        }
     },
     {
-        "id": "01CKQQPVZN5KQC8XC9Q9NK8YXQ",
-        "dim": {
+        "ID": "01CKQQPVZN5KQC8XC9Q9NK8YXQ",
+        "Dim": {
             "x": 1024,
             "y": 1024,
             "z": 1024
         },
-        "connections": [
-            {
-                "external": {
-                    "sector_id": "01CF001HTBA3CDR1ERJ6RF183A",
-                    "coord": {
-                        "X": 1024,
-                        "Y": 1024,
-                        "Z": 0
-                    }
-                },
-                "coord": {
-                    "X": 0,
-                    "Y": 0,
-                    "Z": 0
-                }
+        "Exposed": ["01CF001HTBA3CDR1ERJ6RF183A"],
+        "Neighbours": {
+            "01CF001HTBA3CDR1ERJ6RF183A": {
+                "X": -1024,
+                "Y": 0,
+                "Z": 0
             }
-        ]
+        }
     }
 ]

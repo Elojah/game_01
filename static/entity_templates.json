@@ -1,32 +1,47 @@
 [
     {
-        "id": "01CE3J52MCJEBQYAXQE4V3PEAH",
-        "name": "trickster",
-        "hp": 300,
-        "mp": 100
+        "ID": "01CE3J52MCJEBQYAXQE4V3PEAH",
+        "Name": "trickster",
+        "HP": 300,
+        "MaxHP": 300,
+        "MaxMP": 100,
+        "MP": 100,
+        "Dead": false
     },
     {
-        "id": "01CE3J5ASXJSVC405QTES4M221",
-        "name": "mesmerist",
-        "hp": 150,
-        "mp": 250
+        "ID": "01CE3J5ASXJSVC405QTES4M221",
+        "Name": "mesmerist",
+        "HP": 150,
+        "MaxHP": 150,
+        "MaxMP": 250,
+        "MP": 250,
+        "Dead": false
     },
     {
-        "id": "01CE3J5M6QMP5A4C0GTTYFYANP",
-        "name": "inquisitor",
-        "hp": 100,
-        "mp": 300
+        "ID": "01CE3J5M6QMP5A4C0GTTYFYANP",
+        "Name": "inquisitor",
+        "HP": 100,
+        "MaxHP": 100,
+        "MaxMP": 300,
+        "MP": 300,
+        "Dead": false
     },
     {
-        "id": "01CE3J5SRK72BBM7MYFANYA6EE",
-        "name": "totemist",
-        "hp": 300,
-        "mp": 200
+        "ID": "01CE3J5SRK72BBM7MYFANYA6EE",
+        "Name": "totemist",
+        "HP": 300,
+        "MaxHP": 300,
+        "MaxMP": 200,
+        "MP": 200,
+        "Dead": false
     },
     {
-        "id": "01CE3J622E95AQ2QS4XECMRFCV",
-        "name": "scavenger",
-        "hp": 100,
-        "mp": 400
+        "ID": "01CE3J622E95AQ2QS4XECMRFCV",
+        "Name": "scavenger",
+        "HP": 100,
+        "MaxHP": 100,
+        "MaxMP": 400,
+        "MP": 400,
+        "Dead": false
     }
 ]
