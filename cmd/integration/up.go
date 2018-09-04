@@ -13,6 +13,7 @@ func expectUp(a *LogAnalyzer) error {
 		common{Level: "info", Exe: "./bin/game_auth", Message: "auth up"},
 		common{Level: "info", Exe: "./bin/game_revoker", Message: "revoker up"},
 		common{Level: "info", Exe: "./bin/game_tool", Message: "tool up"},
+		common{Level: "info", Exe: "./bin/game_client", Message: "client up"},
 	}
 
 	fup := func(s string) (bool, error) {
