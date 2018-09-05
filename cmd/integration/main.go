@@ -21,7 +21,6 @@ func main() {
 		[]string{"./bin/game_auth", "./configs/config_auth.json"},
 		[]string{"./bin/game_revoker", "./configs/config_revoker.json"},
 		[]string{"./bin/game_tool", "./configs/config_tool.json"},
-		[]string{"./bin/game_client", "./configs/config_client.json"},
 	}
 
 	defer la.Close()
@@ -32,9 +31,9 @@ func main() {
 		}
 	}
 
-	clientLA := NewLogAnalyzer()
-	defer clientLA.Close()
-	if err := clientLA.Cmd(
+	laClient := NewLogAnalyzer()
+	defer laClient.Close()
+	if err := laClient.Cmd(
 		"./bin/game_client",
 		"./configs/config_client.json",
 	); err != nil {
@@ -46,6 +45,10 @@ func main() {
 
 	if err := expectUp(la); err != nil {
 		log.Error().Err(err).Msg("up")
+		return
+	}
+	if err := expectUpClient(laClient); err != nil {
+		log.Error().Err(err).Msg("client up")
 		return
 	}
 	log.Info().Msg("up ok")
@@ -62,6 +65,13 @@ func main() {
 		return
 	}
 	log.Info().Msg("auth up ok")
+
+	pos, err := expectClient(laClient)
+	if err != nil {
+		log.Error().Err(err).Msg("client")
+		return
+	}
+	_ = pos
 
 	if err := expectAPI(la, tok, ent); err != nil {
 		log.Error().Err(err).Msg("api")

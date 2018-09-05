@@ -13,7 +13,6 @@ func expectUp(a *LogAnalyzer) error {
 		common{Level: "info", Exe: "./bin/game_auth", Message: "auth up"},
 		common{Level: "info", Exe: "./bin/game_revoker", Message: "revoker up"},
 		common{Level: "info", Exe: "./bin/game_tool", Message: "tool up"},
-		common{Level: "info", Exe: "./bin/game_client", Message: "client up"},
 	}
 
 	fup := func(s string) (bool, error) {
@@ -38,6 +37,24 @@ func expectUp(a *LogAnalyzer) error {
 			return true, nil
 		}
 		return false, nil
+	}
+
+	return a.Expect(fup)
+}
+
+func expectUpClient(a *LogAnalyzer) error {
+
+	logup := common{Level: "info", Exe: "./bin/game_client", Message: "client up"}
+
+	fup := func(s string) (bool, error) {
+		var lup common
+		if err := json.Unmarshal([]byte(s), &lup); err != nil {
+			return false, err
+		}
+		if lup != logup {
+			return true, fmt.Errorf("unexpected log %s", s)
+		}
+		return true, nil
 	}
 
 	return a.Expect(fup)
