@@ -9,7 +9,7 @@ import (
 func expectClient(a *LogAnalyzer) (geometry.Position, error) {
 	var pos geometry.Position
 	err := a.Expect(func(s string) (bool, error) {
-		fmt.Println(s)
+		fmt.Printf("|___%s___|", s)
 		return true, nil
 	})
 	return pos, err

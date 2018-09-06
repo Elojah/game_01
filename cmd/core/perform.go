@@ -107,7 +107,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	// #Retrieve previous target state.
 	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", id.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
 	}
 
 	// #Retrieve ability.

@@ -88,7 +88,7 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 	// #Retrieve previous state target.
 	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %s", id.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
 	}
 
 	// #Retrieve current sector

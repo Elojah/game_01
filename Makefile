@@ -2,7 +2,7 @@ PACKAGE   = game
 DATE     ?= $(shell date +%FT%T%z)
 VERSION  ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
 
-GO        = vgo
+GO        = go1.11
 GODOC     = godoc
 GOFMT     = gofmt
 GOLINT    = gometalinter
@@ -119,17 +119,25 @@ Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:.\
 	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entities.proto
 	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sector.proto
 
+
+# Vendor
+.PHONY: vendor
+vendor:
+	$(info $(M) running go mod vendor…) @
+	$Q $(GO) mod vendor
+	$Q modvendor -copy="**/*.c **/*.h" -v
+
 # Check
 .PHONY: check
 check: lint test
 
-# Tests
+# Test
 .PHONY: test
 test:
 	$(info $(M) running go test…) @
 	$Q $(GO) test -cover -race -v ./...
 
-# Tools
+# Lint
 .PHONY: lint
 lint:
 	$(info $(M) running $(GOLINT)…) @
