@@ -1,18 +1,18 @@
 {
 	"ack": {
 		"addresses": ["127.0.0.1:42001"],
-		"middlewares": ["lz4"],
+		"middlewares": [],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
 	"entity": {
 		"addresses": ["127.0.0.1:42000"],
-		"middlewares": ["lz4"],
+		"middlewares": [],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
 	"client": {
-		"middlewares": ["lz4"],
+		"middlewares": [],
 		"packet_size": 1024
 	},
 	"reader": {

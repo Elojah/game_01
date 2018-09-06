@@ -6,12 +6,12 @@
 	},
 	"server": {
 		"addresses": ["127.0.0.1:3401"],
-		"middlewares": ["lz4"],
+		"middlewares": [],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
 	"client": {
-		"middlewares": ["lz4"],
+		"middlewares": [],
 		"packet_size": 1024
 	},
 	"redis": {

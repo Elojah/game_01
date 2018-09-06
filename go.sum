@@ -6,6 +6,8 @@ github.com/elojah/mux v0.0.0-20180703095927-5b6d44854550 h1:LnNrT5bwlcjVDgKgrcqa
 github.com/elojah/mux v0.0.0-20180703095927-5b6d44854550/go.mod h1:LLwl9qOk2vgwuAXa97y3GWhxzA4q5FxEf7PTJNYyFrA=
 github.com/elojah/mux v0.0.0-20180906125806-a41de115082b h1:WDebFTMa+tdoLpGSCaJQaE26oIYLkbQQuwrzsW69Uyc=
 github.com/elojah/mux v0.0.0-20180906125806-a41de115082b/go.mod h1:UxXDWQvgWzPCVeklynUMG7X8l22tdgvSmoTtSH0SHdg=
+github.com/elojah/mux v0.0.0-20180906140147-821d04ba4f5e h1:dAxBCjYL5uHSKKch2Uey6Sy9rJQwNIcrJxWlGtFyS3o=
+github.com/elojah/mux v0.0.0-20180906140147-821d04ba4f5e/go.mod h1:UxXDWQvgWzPCVeklynUMG7X8l22tdgvSmoTtSH0SHdg=
 github.com/elojah/redis v0.0.0-20180616130919-9ee006744ab5 h1:L0HA7oOluG41fqRpglJnU4x1e1a2f3IMYShM9KjmCB4=
 github.com/elojah/redis v0.0.0-20180616130919-9ee006744ab5/go.mod h1:+W3rGIyBmouPLl31HRAryfqVZ08DBZZn0mtxwPzFJUs=
 github.com/elojah/redis v0.0.0-20180906131853-60b4742de98b h1:JSQs50AjJhGup+mGVEhRAI5hZ7NrTKlmQrC85l4cAy0=
