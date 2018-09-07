@@ -2,7 +2,7 @@ module github.com/elojah/game_01
 
 require (
 	github.com/davecgh/go-spew v1.1.0 // indirect
-	github.com/elojah/mux v0.0.0-20180906140147-821d04ba4f5e
+	github.com/elojah/mux v0.0.0-20180907085152-5451a1ed0f6a
 	github.com/elojah/redis v0.0.0-20180906131853-60b4742de98b
 	github.com/elojah/services v0.0.0-20180906131424-7b238f138836
 	github.com/go-redis/redis v6.14.1+incompatible

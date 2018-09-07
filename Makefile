@@ -125,7 +125,6 @@ Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:.\
 vendor:
 	$(info $(M) running go mod vendor…) @
 	$Q $(GO) mod vendor
-	$Q modvendor -copy="**/*.c **/*.h" -v
 
 # Check
 .PHONY: check
