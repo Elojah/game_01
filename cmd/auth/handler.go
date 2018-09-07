@@ -30,7 +30,7 @@ type handler struct {
 	SectorStore sector.Store
 
 	account.TokenService
-	infra.ListenerService
+	infra.SequencerService
 	infra.RecurrerService
 
 	srv *http.Server

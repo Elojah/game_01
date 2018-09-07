@@ -9,7 +9,7 @@ option (gogoproto.populate_all) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "q_action.proto";
 
-message Listener {
+message Sequencer {
 	bytes ID       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	QAction Action = 2;
 	bytes Pool     = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];

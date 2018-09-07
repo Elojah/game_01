@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"io"
 	"os/exec"
 
 	"github.com/rs/zerolog/log"
@@ -48,6 +49,9 @@ func (a *LogAnalyzer) Cmd(args ...string) error {
 		r := bufio.NewReader(cmdout)
 		for {
 			s, err := r.ReadString('\n')
+			if err == io.EOF {
+				continue
+			}
 			if err != nil {
 				log.Error().Err(err).Msgf("failed to read out %s", args[0])
 				return

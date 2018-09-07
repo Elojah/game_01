@@ -84,7 +84,7 @@ func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
 	return t, nil
 }
 
-// Disconnect closes a token and all entities/listener/sync associated.
+// Disconnect closes a token and all entities/sequencer/sync associated.
 func (s TokenService) Disconnect(id ulid.ID) error {
 
 	// Disconnect must be permissive in case of infra failures.

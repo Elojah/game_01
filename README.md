@@ -71,7 +71,7 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 
 - infra.ACK
 - infra.Core (no marshal)
-- infra.Listener
+- infra.Sequencer
 - infra.Recurrer
 - infra.Sync (no marshal)
 
@@ -97,8 +97,8 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 - "event:"
 - "qevent:"
 - "core:"
-- "listener:"
-- "qlistener:"
+- "sequencer:"
+- "qsequencer:"
 - "qrecurrer:"
 - "recurrer:"
 - "sync:"

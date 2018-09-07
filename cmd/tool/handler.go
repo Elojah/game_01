@@ -20,7 +20,7 @@ type handler struct {
 	EntityStore         entity.Store
 	EntityTemplateStore entity.TemplateStore
 
-	infra.ListenerService
+	infra.SequencerService
 
 	SectorStore sector.Store
 	sector.EntitiesStore
@@ -43,7 +43,7 @@ func (h *handler) Dial(c Config) error {
 	mux.HandleFunc("/entity", h.entity)
 	mux.HandleFunc("/sector", h.sector)
 
-	mux.HandleFunc("/listener", h.listener)
+	mux.HandleFunc("/sequencer", h.sequencer)
 
 	h.srv = &http.Server{
 		Addr:    c.Address,

@@ -23,7 +23,7 @@ type app struct {
 	EntityStore         entity.Store
 	entity.PermissionStore
 
-	infra.QListenerStore
+	infra.QSequencerStore
 	infra.CoreStore
 
 	EventQStore event.QStore
@@ -53,10 +53,10 @@ func (a *app) Run() {
 	logger := log.With().Str("core", a.id.String()).Logger()
 
 	a.subs = make(map[ulid.ID]*infra.Subscription)
-	a.subs[a.id] = a.SubscribeListener(a.id)
+	a.subs[a.id] = a.SubscribeSequencer(a.id)
 	go func(sub *infra.Subscription) {
 		for msg := range sub.Channel() {
-			go a.AddListener(msg)
+			go a.Sequencer(msg)
 		}
 	}(a.subs[a.id])
 
@@ -77,40 +77,40 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) AddListener(msg *infra.Message) {
+func (a *app) Sequencer(msg *infra.Message) {
 	logger := log.With().Str("core", a.id.String()).Logger()
 
-	var listener infra.Listener
-	if err := listener.Unmarshal([]byte(msg.Payload)); err != nil {
-		logger.Error().Err(err).Msg("failed to unmarshal listener")
+	var sequencer infra.Sequencer
+	if err := sequencer.Unmarshal([]byte(msg.Payload)); err != nil {
+		logger.Error().Err(err).Msg("failed to unmarshal sequencer")
 		return
 	}
-	logger = logger.With().Str("listener", listener.ID.String()).Uint8("action", uint8(listener.Action)).Logger()
+	logger = logger.With().Str("sequencer", sequencer.ID.String()).Logger()
 
-	switch listener.Action {
+	switch sequencer.Action {
 	case infra.Open:
-		a.seqs[listener.ID] = NewSequencer(listener.ID, a.limit, a.Apply)
-		a.seqs[listener.ID].EventStore = a.EventStore
-		a.seqs[listener.ID].EntityStore = a.EntityStore
-		a.seqs[listener.ID].Run()
+		a.seqs[sequencer.ID] = NewSequencer(sequencer.ID, a.limit, a.Apply)
+		a.seqs[sequencer.ID].EventStore = a.EventStore
+		a.seqs[sequencer.ID].EntityStore = a.EntityStore
+		a.seqs[sequencer.ID].Run()
 
-		a.subs[listener.ID] = a.EventQStore.SubscribeEvent(listener.ID)
+		a.subs[sequencer.ID] = a.EventQStore.SubscribeEvent(sequencer.ID)
 
 		go func(seq *Sequencer, sub *infra.Subscription) {
 			for msg := range sub.Channel() {
 				seq.Handler(msg)
 			}
-		}(a.seqs[listener.ID], a.subs[listener.ID])
+		}(a.seqs[sequencer.ID], a.subs[sequencer.ID])
 
-		logger.Info().Msg("listening")
+		logger.Info().Msg("sequencer up")
 	case infra.Close:
-		seq, ok := a.seqs[listener.ID]
+		seq, ok := a.seqs[sequencer.ID]
 		if !ok {
-			logger.Error().Msg("listener not found")
+			logger.Error().Msg("sequencer not found")
 			return
 		}
 		seq.Close()
-		sub, ok := a.subs[listener.ID]
+		sub, ok := a.subs[sequencer.ID]
 		if !ok {
 			logger.Error().Msg("subscription not found")
 			return
@@ -119,15 +119,16 @@ func (a *app) AddListener(msg *infra.Message) {
 			logger.Error().Err(err).Msg("failed to unsubscribe")
 			return
 		}
-		delete(a.seqs, listener.ID)
-		delete(a.subs, listener.ID)
+		delete(a.seqs, sequencer.ID)
+		delete(a.subs, sequencer.ID)
+		logger.Info().Msg("sequencer down")
 	}
 }
 
 func (a *app) Apply(id ulid.ID, e event.E) {
 	logger := log.With().
 		Str("core", a.id.String()).
-		Str("listener", id.String()).
+		Str("sequencer", id.String()).
 		Int64("ts", e.TS.UnixNano()).
 		Str("type", e.Action.Type()).
 		Logger()

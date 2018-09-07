@@ -31,12 +31,44 @@ type accountLog struct {
 	Addr    string
 }
 
+func (expected accountLog) Equal(actual accountLog) error {
+	if actual.Exe != expected.Exe {
+		return fmt.Errorf("unexpected bin %s", actual.Exe)
+	}
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.Account); err != nil {
+		return fmt.Errorf("invalid log account %s", actual.Account)
+	}
+	if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+		return fmt.Errorf("invalid log addr %s", actual.Addr)
+	}
+	return nil
+}
+
 type tokenLog struct {
 	common
 	Method string
 	Route  string
 	Token  string
 	Addr   string
+}
+
+func (expected tokenLog) Equal(actual tokenLog) error {
+	if actual.Exe != expected.Exe {
+		return fmt.Errorf("unexpected exe %s", actual.Exe)
+	}
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.Token); err != nil {
+		return fmt.Errorf("invalid token %s", actual.Token)
+	}
+	if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+		return fmt.Errorf("invalid log addr %s", actual.Addr)
+	}
+	return nil
 }
 
 type createPCLog struct {
@@ -50,6 +82,22 @@ type createPCLog struct {
 	Sector   string
 }
 
+func (expected createPCLog) Equal(actual createPCLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.PC); err != nil {
+		return fmt.Errorf("invalid pc %s", actual.PC)
+	}
+	if _, err := ulid.Parse(actual.Sector); err != nil {
+		return fmt.Errorf("invalid sector %s", actual.Sector)
+	}
+	if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+		return fmt.Errorf("invalid log addr %s", actual.Addr)
+	}
+	return nil
+}
+
 type listPCLog struct {
 	common
 	Method  string
@@ -59,16 +107,51 @@ type listPCLog struct {
 	Account string
 }
 
+func (expected listPCLog) Equal(actual listPCLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.Account); err != nil {
+		return fmt.Errorf("invalid account %s", actual.Account)
+	}
+	if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+		return fmt.Errorf("invalid log addr %s", actual.Addr)
+	}
+	return nil
+}
+
 type connectPCLog struct {
 	common
-	Method   string
-	Route    string
-	Token    string
-	Addr     string
-	PC       string
-	Entity   string
-	Sector   string
-	Listener string
+	Method    string
+	Route     string
+	Token     string
+	Addr      string
+	PC        string
+	Entity    string
+	Sector    string
+	Sequencer string
+}
+
+func (expected connectPCLog) Equal(actual connectPCLog) error {
+	if actual.Exe != expected.Exe {
+		return fmt.Errorf("unexpected exe %s", actual.Exe)
+	}
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.Entity); err != nil {
+		return fmt.Errorf("invalid entity %s", actual.Entity)
+	}
+	if _, err := ulid.Parse(actual.Sector); err != nil {
+		return fmt.Errorf("invalid sector %s", actual.Sector)
+	}
+	if _, err := ulid.Parse(actual.Sequencer); err != nil {
+		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
+	}
+	if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
+		return fmt.Errorf("invalid log addr %s", actual.Addr)
+	}
+	return nil
 }
 
 type createPC struct {
@@ -84,6 +167,38 @@ type listPC struct {
 type connectPC struct {
 	Token  ulid.ID
 	Target ulid.ID
+}
+
+type recurrerLog struct {
+	common
+	Sync     string
+	Recurrer string
+	Addr     string
+	Time     int64
+	Message  string
+}
+
+func (expected recurrerLog) Equal(actual recurrerLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	return nil
+}
+
+type sequencerLog struct {
+	common
+	Core      string
+	Sequencer string
+	Addr      string
+	Time      int64
+	Message   string
+}
+
+func (expected sequencerLog) Equal(actual sequencerLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	return nil
 }
 
 type signoutAccount struct {
@@ -117,14 +232,8 @@ func expectSubscribe(a *LogAnalyzer) error {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expected.common {
-			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Account); err != nil {
-			return false, fmt.Errorf("invalid log account %s", s)
-		}
-		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-			return false, fmt.Errorf("invalid log addr %s", s)
+		if err := expected.Equal(actual); err != nil {
+			return false, err
 		}
 		return true, nil
 	})
@@ -161,14 +270,8 @@ func expectSignin(a *LogAnalyzer) (account.Token, error) {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expected.common {
-			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Token); err != nil {
-			return false, fmt.Errorf("invalid token %s", s)
-		}
-		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-			return false, fmt.Errorf("invalid log addr %s", s)
+		if err := expected.Equal(actual); err != nil {
+			return false, err
 		}
 		return true, nil
 	})
@@ -207,17 +310,8 @@ func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expected.common {
-			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.PC); err != nil {
-			return false, fmt.Errorf("invalid pc %s", s)
-		}
-		if _, err := ulid.Parse(actual.Sector); err != nil {
-			return false, fmt.Errorf("invalid sector %s", s)
-		}
-		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-			return false, fmt.Errorf("invalid log addr %s", s)
+		if err := expected.Equal(actual); err != nil {
+			return false, err
 		}
 		return true, nil
 	})
@@ -261,14 +355,8 @@ func expectListPC(a *LogAnalyzer, tok account.Token) (entity.PC, error) {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.common != expected.common {
-			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Account); err != nil {
-			return false, fmt.Errorf("invalid account %s", s)
-		}
-		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-			return false, fmt.Errorf("invalid log addr %s", s)
+		if err := expected.Equal(actual); err != nil {
+			return false, err
 		}
 		return true, nil
 	})
@@ -306,30 +394,48 @@ func expectConnectPC(a *LogAnalyzer, tok account.Token, pc entity.PC) (entity.E,
 		Token:  tok.ID.String(),
 		PC:     pc.ID.String(),
 	}
+	expectedRec := recurrerLog{}
+	expectedSeq := sequencerLog{}
+	n := 3
 	return e, a.Expect(func(s string) (bool, error) {
-		var actual connectPCLog
-		if err := json.Unmarshal([]byte(s), &actual); err != nil {
+		n--
+		var exeDispatch struct {
+			Exe string
+		}
+		if err := json.Unmarshal([]byte(s), &exeDispatch); err != nil {
 			return false, err
 		}
-		if actual.Exe != expected.Exe {
-			return false, nil
+		switch exeDispatch.Exe {
+		case "./bin/game_auth":
+			var actual connectPCLog
+			if err := json.Unmarshal([]byte(s), &actual); err != nil {
+				return n == 0, err
+			}
+			if err := expected.Equal(actual); err != nil {
+				return n == 0, err
+			}
+			return n == 0, nil
+		case "./bin/game_sync":
+			var actual recurrerLog
+			if err := json.Unmarshal([]byte(s), &actual); err != nil {
+				return n == 0, err
+			}
+			if err := expectedRec.Equal(actual); err != nil {
+				return n == 0, err
+			}
+			return n == 0, nil
+		case "./bin/game_core":
+			var actual sequencerLog
+			if err := json.Unmarshal([]byte(s), &actual); err != nil {
+				return n == 0, err
+			}
+			if err := expectedSeq.Equal(actual); err != nil {
+				return n == 0, err
+			}
+			return n == 0, nil
+		default:
+			return false, fmt.Errorf("unexpected exe %s", exeDispatch.Exe)
 		}
-		if actual.common != expected.common {
-			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Entity); err != nil {
-			return false, fmt.Errorf("invalid entity %s", s)
-		}
-		if _, err := ulid.Parse(actual.Sector); err != nil {
-			return false, fmt.Errorf("invalid sector %s", s)
-		}
-		if _, err := ulid.Parse(actual.Listener); err != nil {
-			return false, fmt.Errorf("invalid listener %s", s)
-		}
-		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-			return false, fmt.Errorf("invalid log addr %s", s)
-		}
-		return true, nil
 	})
 }
 
@@ -363,17 +469,8 @@ func expectSignout(a *LogAnalyzer, tok account.Token) error {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.Exe != expected.Exe {
-			return false, nil
-		}
-		if actual.common != expected.common {
-			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Token); err != nil {
-			return false, fmt.Errorf("invalid token %s", s)
-		}
-		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-			return false, fmt.Errorf("invalid log addr %s", s)
+		if err := expected.Equal(actual); err != nil {
+			return false, err
 		}
 		return true, nil
 	})
@@ -405,17 +502,8 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
 		}
-		if actual.Exe != expected.Exe {
-			return false, nil
-		}
-		if actual.common != expected.common {
-			return false, fmt.Errorf("unexpected log %s", s)
-		}
-		if _, err := ulid.Parse(actual.Account); err != nil {
-			return false, fmt.Errorf("invalid log account %s", s)
-		}
-		if _, err := net.ResolveTCPAddr("tcp", actual.Addr); err != nil {
-			return false, fmt.Errorf("invalid log addr %s", s)
+		if err := expected.Equal(actual); err != nil {
+			return false, err
 		}
 		return true, nil
 	})

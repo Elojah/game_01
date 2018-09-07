@@ -298,11 +298,11 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Creates a new listener for this entity.
-	listener, err := h.ListenerService.New(e.ID)
-	logger = logger.With().Str("listener", listener.ID.String()).Logger()
+	// #Creates a new sequencer for this entity.
+	sequencer, err := h.SequencerService.New(e.ID)
+	logger = logger.With().Str("sequencer", sequencer.ID.String()).Logger()
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to create entity listener")
+		logger.Error().Err(err).Msg("failed to create entity sequencer")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 	}
 
@@ -314,7 +314,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Update token with pool informations.
-	tok.CorePool = listener.Pool
+	tok.CorePool = sequencer.Pool
 	tok.SyncPool = recurrer.Pool
 	tok.PC = pc.ID
 	tok.Entity = e.ID

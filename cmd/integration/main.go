@@ -65,19 +65,20 @@ func main() {
 		return
 	}
 	log.Info().Msg("auth up ok")
+	_ = ent
 
-	pos, err := expectClient(laClient)
-	if err != nil {
-		log.Error().Err(err).Msg("client")
-		return
-	}
-	_ = pos
+	// pos, err := expectClient(laClient)
+	// if err != nil {
+	// 	log.Error().Err(err).Msg("client")
+	// 	return
+	// }
+	// _ = pos
 
-	if err := expectAPI(la, tok, ent); err != nil {
-		log.Error().Err(err).Msg("api")
-		return
-	}
-	log.Info().Msg("api ok")
+	// if err := expectAPI(la, tok, ent); err != nil {
+	// 	log.Error().Err(err).Msg("api")
+	// 	return
+	// }
+	// log.Info().Msg("api ok")
 
 	if err := expectAuthDown(la, tok); err != nil {
 		log.Error().Err(err).Msg("auth down")

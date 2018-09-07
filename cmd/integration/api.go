@@ -25,8 +25,7 @@ import (
 func expectAPI(a *LogAnalyzer, tok account.Token, ent entity.E) error {
 	var c client.C
 	c.Dial(client.Config{
-		Middlewares: []string{},
-		PacketSize:  1024,
+		PacketSize: 1024,
 	})
 
 	// #SUCCESS Move same sector

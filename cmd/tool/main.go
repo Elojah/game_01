@@ -56,10 +56,10 @@ func run(prog string, filename string) {
 		AccountStore:         accountStore,
 		EntityStore:          entityLRUStore,
 		EntityTemplateStore:  entityStore,
-		ListenerService: &infrasvc.ListenerService{
-			InfraQListener: infraStore,
-			InfraListener:  infraStore,
-			InfraCore:      infraStore,
+		SequencerService: &infrasvc.SequencerService{
+			InfraQSequencer: infraStore,
+			InfraSequencer:  infraStore,
+			InfraCore:       infraStore,
 		},
 		SectorStore:   sectorStore,
 		EntitiesStore: sectorStore,

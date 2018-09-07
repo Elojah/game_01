@@ -18,7 +18,7 @@ type Service struct {
 	EntityPermission entity.PermissionStore
 	SectorEntities   sector.EntitiesStore
 
-	ListenerService infra.ListenerService
+	SequencerService infra.SequencerService
 }
 
 // Disconnect disconnects an entity.
@@ -29,9 +29,9 @@ func (s Service) Disconnect(id ulid.ID, t account.Token) error {
 		return errors.Wrapf(err, "get entity %s", id.String())
 	}
 
-	// #Close entity listener
-	if err := s.ListenerService.Remove(id); err != nil {
-		return errors.Wrapf(err, "delete listener %s", id.String())
+	// #Close entity sequencer
+	if err := s.SequencerService.Remove(id); err != nil {
+		return errors.Wrapf(err, "delete sequencer %s", id.String())
 	}
 
 	// #Delete token permission on entity

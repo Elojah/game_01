@@ -75,10 +75,10 @@ func run(prog string, filename string) {
 				Entity:           entityLRUStore,
 				EntityPermission: entityStore,
 				SectorEntities:   sectorStore,
-				ListenerService: &infrasvc.ListenerService{
-					InfraQListener: infraStore,
-					InfraListener:  infraStore,
-					InfraCore:      infraStore,
+				SequencerService: &infrasvc.SequencerService{
+					InfraQSequencer: infraStore,
+					InfraSequencer:  infraStore,
+					InfraCore:       infraStore,
 				},
 			},
 			InfraRecurrerService: &infrasvc.RecurrerService{
@@ -87,10 +87,10 @@ func run(prog string, filename string) {
 				InfraSync:      infraStore,
 			},
 		},
-		ListenerService: &infrasvc.ListenerService{
-			InfraQListener: infraStore,
-			InfraListener:  infraStore,
-			InfraCore:      infraStore,
+		SequencerService: &infrasvc.SequencerService{
+			InfraQSequencer: infraStore,
+			InfraSequencer:  infraStore,
+			InfraCore:       infraStore,
 		},
 		RecurrerService: &infrasvc.RecurrerService{
 			InfraQRecurrer: infraStore,

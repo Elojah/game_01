@@ -66,13 +66,13 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		logger.Error().Err(err).Str("status", "internal").Msg("failed to marshal ack")
 		return err
 	}
-	address, err := net.ResolveUDPAddr("udp", tok.IP)
+	addr, err := net.ResolveUDPAddr("udp", tok.IP)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to parse ip")
 		return err
 	}
-	address.Port = int(h.port)
-	go h.Send(raw, address)
+	addr.Port = int(h.port)
+	go h.Send(raw, addr)
 
 	// #Check TS in tolerance range.
 	now := time.Now()

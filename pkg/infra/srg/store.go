@@ -6,8 +6,8 @@ import (
 )
 
 var _ infra.CoreStore = (*Store)(nil)
-var _ infra.ListenerStore = (*Store)(nil)
-var _ infra.QListenerStore = (*Store)(nil)
+var _ infra.SequencerStore = (*Store)(nil)
+var _ infra.QSequencerStore = (*Store)(nil)
 var _ infra.RecurrerStore = (*Store)(nil)
 var _ infra.QRecurrerStore = (*Store)(nil)
 var _ infra.SyncStore = (*Store)(nil)

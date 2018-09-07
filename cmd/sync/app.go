@@ -52,7 +52,7 @@ func (a *app) Run() {
 	a.sub = a.SubscribeRecurrer(a.id)
 	go func() {
 		for msg := range a.sub.Channel() {
-			go a.AddRecurrer(msg)
+			go a.Recurrer(msg)
 		}
 	}()
 
@@ -73,7 +73,7 @@ func (a *app) Close() {
 	}
 }
 
-func (a *app) AddRecurrer(msg *infra.Message) {
+func (a *app) Recurrer(msg *infra.Message) {
 	logger := log.With().Str("sync", a.id.String()).Logger()
 
 	var r infra.Recurrer
@@ -82,7 +82,7 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 		return
 	}
 
-	logger = logger.With().Str("r", r.TokenID.String()).Logger()
+	logger = logger.With().Str("recurrer", r.TokenID.String()).Logger()
 
 	if r.Action == infra.Close {
 		rec := a.recurrers[r.TokenID]
@@ -99,13 +99,13 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 		return
 	}
 
-	address, err := net.ResolveUDPAddr("udp", tok.IP)
+	addr, err := net.ResolveUDPAddr("udp", tok.IP)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to parse ip")
 		return
 	}
-	address.Port = int(a.port)
-	logger = logger.With().Str("address", address.String()).Logger()
+	addr.Port = int(a.port)
+	logger = logger.With().Str("addr", addr.String()).Logger()
 	rec := NewRecurrer(r, a.tickRate, func(e entity.E) {
 		raw, err := e.Marshal()
 		if err != nil {
@@ -113,7 +113,7 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 			return
 		}
 		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
-		a.Send(raw, address)
+		a.Send(raw, addr)
 	})
 	rec.EntityStore = a.EntityStore
 	rec.EntitiesStore = a.EntitiesStore
@@ -121,5 +121,5 @@ func (a *app) AddRecurrer(msg *infra.Message) {
 
 	go rec.Run()
 	a.recurrers[r.TokenID] = rec
-	logger.Info().Msg("sync up")
+	logger.Info().Msg("recurrer up")
 }

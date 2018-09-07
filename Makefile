@@ -114,7 +114,7 @@ Mgoogle/protobuf/timestamp.proto=github.com/gogo/protobuf/types:.\
 		event.proto
 	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ack.proto
 	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. q_action.proto
-	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. listener.proto
+	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sequencer.proto
 	$Q cd pkg/infra && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. recurrer.proto
 	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entities.proto
 	$Q cd pkg/sector && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sector.proto

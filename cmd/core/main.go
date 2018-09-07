@@ -62,8 +62,8 @@ func run(prog string, filename string) {
 		EntityTemplateStore: entityStore,
 		PermissionStore:     entityStore,
 
-		QListenerStore: infraStore,
-		CoreStore:      infraStore,
+		QSequencerStore: infraStore,
+		CoreStore:       infraStore,
 
 		EventQStore: eventStore,
 		EventStore:  eventStore,
