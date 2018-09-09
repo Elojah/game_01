@@ -275,7 +275,7 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_core",
-			Message: "event received",
+			Message: "fetch post events",
 		},
 		Current: now.UnixNano(),
 	}
@@ -283,7 +283,7 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_core",
-			Message: "event received",
+			Message: "apply",
 		},
 		TS: now.UnixNano(),
 	}
@@ -291,7 +291,7 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_core",
-			Message: "event received",
+			Message: "applied",
 		},
 		TS:   now.UnixNano(),
 		Type: "move_source",
