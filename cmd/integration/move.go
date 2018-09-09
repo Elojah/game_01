@@ -58,7 +58,7 @@ func (expected packetSentLog) Equal(actual packetSentLog) error {
 	return nil
 }
 
-type apiEventLog struct {
+type eventSendLog struct {
 	common
 	Packet string
 	Action string
@@ -67,21 +67,114 @@ type apiEventLog struct {
 	Time   int64
 }
 
-func (expected apiEventLog) Equal(actual apiEventLog) error {
+func (expected eventSendLog) Equal(actual eventSendLog) error {
 	if actual.common != expected.common {
 		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
 	}
-	if actual.Packet != expected.Packet {
+	if _, err := ulid.Parse(actual.Packet); err != nil {
 		return fmt.Errorf("invalid packet %s", actual.Packet)
 	}
 	if actual.Action != expected.Action {
 		return fmt.Errorf("invalid action %s", actual.Action)
 	}
 	if actual.Source != expected.Source {
-		return fmt.Errorf("invalid source %s", actual.Action)
+		return fmt.Errorf("invalid source %s", actual.Source)
 	}
 	if _, err := ulid.Parse(actual.Event); err != nil {
 		return fmt.Errorf("invalid event %s", actual.Event)
+	}
+
+	return nil
+}
+
+type eventReceivedLog struct {
+	common
+	Sequencer string
+	Event     string
+	Time      int64
+}
+
+func (expected eventReceivedLog) Equal(actual eventReceivedLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.Sequencer); err != nil {
+		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
+	}
+	if _, err := ulid.Parse(actual.Event); err != nil {
+		return fmt.Errorf("invalid event %s", actual.Event)
+	}
+
+	return nil
+}
+
+type fetchEventLog struct {
+	common
+	Sequencer string
+	Current   int64
+	Time      int64
+}
+
+func (expected fetchEventLog) Equal(actual fetchEventLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.Sequencer); err != nil {
+		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
+	}
+	if actual.Current != expected.Current {
+		return fmt.Errorf("invalid current %d", actual.Current)
+	}
+
+	return nil
+}
+
+type applyLog struct {
+	common
+	Sequencer string
+	Event     string
+	TS        int64
+	Time      int64
+}
+
+func (expected applyLog) Equal(actual applyLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := ulid.Parse(actual.Sequencer); err != nil {
+		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
+	}
+	if _, err := ulid.Parse(actual.Event); err != nil {
+		return fmt.Errorf("invalid event %s", actual.Event)
+	}
+	if actual.TS != expected.TS {
+		return fmt.Errorf("invalid ts %d", actual.TS)
+	}
+
+	return nil
+}
+
+type appliedLog struct {
+	common
+	Sequencer string
+	TS        int64
+	Type      string
+	Time      int64
+}
+
+func (expected appliedLog) Equal(actual appliedLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+
+	if _, err := ulid.Parse(actual.Sequencer); err != nil {
+		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
+	}
+	if actual.TS != expected.TS {
+		return fmt.Errorf("invalid ts %d", actual.TS)
+	}
+	if actual.Type != expected.Type {
+		return fmt.Errorf("invalid type %s", actual.Type)
 	}
 
 	return nil
@@ -95,75 +188,6 @@ func (expected apiEventLog) Equal(actual apiEventLog) error {
 - FAIL Move not neighbour sector
 - FAIL Move neighbour sector too far
 */
-
-func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
-	var c client.C
-	c.Dial(client.Config{
-		PacketSize: 1024,
-	})
-
-	// #SUCCESS Move same sector
-	newCoord := geometry.Vec3{
-		X: ent.Position.Coord.X + 33,
-		Y: ent.Position.Coord.Y + 33,
-		Z: ent.Position.Coord.Z + 33,
-	}
-	if newCoord.X > 1024 {
-		newCoord.X = 1024
-	}
-	if newCoord.Y > 1024 {
-		newCoord.Y = 1024
-	}
-	if newCoord.Z > 1024 {
-		newCoord.Z = 1024
-	}
-
-	moveSameSector := event.DTO{
-		ID:    ulid.NewID(),
-		Token: tok.ID,
-		TS:    time.Now(),
-		Query: event.Query{
-			Move: &event.Move{
-				Source:  ent.ID,
-				Targets: []ulid.ID{ent.ID},
-				Position: geometry.Position{
-					SectorID: ulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
-					Coord:    newCoord,
-				},
-			},
-		},
-	}
-	raw, err := moveSameSector.Marshal()
-	if err != nil {
-		return fmt.Errorf("failed to marshal payload")
-	}
-	addr, err := net.ResolveUDPAddr("udp", "127.0.0.1:3400")
-	if err != nil {
-		return err
-	}
-	c.Send(raw, addr)
-
-	tolerance := 200 * time.Millisecond
-	timer := time.NewTimer(tolerance)
-	defer timer.Stop()
-	return ac.Expect(func(s string) (bool, error) {
-		select {
-		case <-timer.C:
-			return false, fmt.Errorf("move not applied in %s", tolerance.String())
-		default:
-		}
-		var actual entity.E
-		if err := json.Unmarshal([]byte(s), &actual); err != nil {
-			return false, fmt.Errorf("invalid entity %s", s)
-		}
-		if actual.ID.Compare(ent.ID) == 0 &&
-			actual.Position.SectorID.Compare(ent.Position.SectorID) == 0 &&
-			actual.Position.Coord == ent.Position.Coord {
-			return true, nil
-		}
-		return false, nil
-	})
-}
 
 func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
 	var c client.C
@@ -187,10 +211,11 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		newCoord.Z = 1024
 	}
 
+	now := time.Now()
 	moveSameSector := event.DTO{
 		ID:    ulid.NewID(),
 		Token: tok.ID,
-		TS:    time.Now(),
+		TS:    now,
 		Query: event.Query{
 			Move: &event.Move{
 				Source:  ent.ID,
@@ -213,13 +238,14 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 	c.Send(raw, addr)
 
 	nAPI := 3
-	nCore := 3
+	nCore := 4
 	expectedPPLog := packetProcLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_api",
 			Message: "packet processed",
 		},
+		Status: "processed",
 	}
 	expectedPSLog := packetSentLog{
 		common: common{
@@ -229,22 +255,47 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		},
 		Bytes: 18,
 	}
-
-	/*{
-	      "packet": "01CPYXRKQ04MPQDHYDDQZA8AYK",
-	      "action": "move",
-	      "event": "01CPYXRKQ0MEK3H6XFB1YH5KQX",
-	      "source": "01CPYXRKKP0H7Y25K8B7XWPFX3",
-	  }
-	*/
-	expectedAPIEventLog := apiEventLog{
+	expectedESLog := eventSendLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_api",
 			Message: "send event",
 		},
+		Action: "move",
+		Source: ent.ID.String(),
 	}
-	_ = expectedAPIEventLog
+	expectedERLog := eventReceivedLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_core",
+			Message: "event received",
+		},
+	}
+	expectedFELog := fetchEventLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_core",
+			Message: "event received",
+		},
+		Current: now.UnixNano(),
+	}
+	expectedAPYLog := applyLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_core",
+			Message: "event received",
+		},
+		TS: now.UnixNano(),
+	}
+	expectedAPDLog := appliedLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_core",
+			Message: "event received",
+		},
+		TS:   now.UnixNano(),
+		Type: "move_source",
+	}
 	if err := a.Expect(func(s string) (bool, error) {
 		var c common
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
@@ -267,21 +318,50 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 				}
 				return nAPI == 0 && nCore == 0, expectedPSLog.Equal(psActual)
 			case 0:
-				// {"level":"info","exe":"./bin/game_api","packet":"01CPYXRKQ04MPQDHYDDQZA8AYK","action":"move","event":"01CPYXRKQ0MEK3H6XFB1YH5KQX","source":"01CPYXRKKP0H7Y25K8B7XWPFX3","time":1536488656,"message":"send event"}
-				return nAPI == 0 && nCore == 0, nil
+				var esActual eventSendLog
+				if err := json.Unmarshal([]byte(s), &esActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedESLog.Equal(esActual)
 			}
-			// dead code, for compile only
-			return false, nil
 		case "./bin/game_core":
-			fmt.Println(s)
+			nCore--
+			switch nCore {
+			case 3:
+				var erActual eventReceivedLog
+				if err := json.Unmarshal([]byte(s), &erActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedERLog.Equal(erActual)
+			case 2:
+				var feActual fetchEventLog
+				if err := json.Unmarshal([]byte(s), &feActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedFELog.Equal(feActual)
+			case 1:
+				var apyActual applyLog
+				if err := json.Unmarshal([]byte(s), &apyActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedAPYLog.Equal(apyActual)
+			case 0:
+				var apdActual appliedLog
+				if err := json.Unmarshal([]byte(s), &apdActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedAPDLog.Equal(apdActual)
+			}
+			return nAPI == 0 && nCore == 0, nil
 		case "./bin/game_sync":
 			// ignore
 		default:
 			return false, fmt.Errorf("unexpected exe %s", c.Exe)
 		}
+		// dead code for compile only
 		return false, nil
 	}); err != nil {
-
+		return err
 	}
 
 	tolerance := 200 * time.Millisecond

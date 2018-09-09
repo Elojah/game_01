@@ -159,5 +159,5 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 	default:
 		logger.Error().Msg("unrecognized action")
 	}
-	logger.Info().Msg("event applied")
+	logger.Info().Msg("applied")
 }

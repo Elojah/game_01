@@ -127,7 +127,7 @@ func (s *Sequencer) listenFetch() {
 
 func (s *Sequencer) listenProcess() {
 	for event := range s.process {
-		s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("run")
+		s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("apply")
 		s.callback(s.id, event)
 	}
 }

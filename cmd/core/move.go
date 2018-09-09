@@ -17,18 +17,18 @@ import (
 
 func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
-	move := e.Action.GetValue().(*event.Move)
+	move := e.Action.GetValue().(*event.MoveSource)
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
 		Source: e.Token.String(),
-		Target: move.Source.String(),
+		Target: id.String(),
 	})
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), move.Source.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), id.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), move.Source.String())
+		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), id.String())
 	}
 
 	// #TODO Check if source is not stun or forbidden to move other entities
@@ -48,15 +48,17 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 			// #Check permission source/target.
 			permission, err := a.GetPermission(entity.PermissionSubset{
-				Source: move.Source.String(),
-				Target: id.String(),
+				Source: id.String(),
+				Target: target.String(),
 			})
 			if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-				errC <- errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), move.Source.String())
+				errC <- errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", id.String(), target.String())
+				wg.Done()
 				return
 			}
 			if err != nil {
-				errC <- errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), move.Source.String())
+				errC <- errors.Wrapf(err, "get permission token %s for %s", id.String(), target.String())
+				wg.Done()
 				return
 			}
 
@@ -66,13 +68,14 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 				TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
 				Action: event.Action{
 					MoveTarget: &event.MoveTarget{
-						Source:   move.Source,
+						Source:   id,
 						Position: move.Position,
 					},
 				},
-			}, id); err != nil {
+			}, target); err != nil {
 				errC <- err
 			}
+			wg.Done()
 		}(target)
 	}
 	wg.Wait()
@@ -83,7 +86,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 
-	move := e.Action.GetValue().(*event.Move)
+	move := e.Action.GetValue().(*event.MoveTarget)
 
 	// #Retrieve previous state target.
 	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
