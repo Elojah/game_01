@@ -65,7 +65,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/create").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/pc/create").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var setPC SetPC
@@ -174,7 +174,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/list").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/pc/list").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var listPC ListPC
@@ -230,7 +230,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/connect").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/pc/connect").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var connectPC ConnectPC
@@ -350,7 +350,7 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/pc/disconnect").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/pc/disconnect").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var disconnectPC DisconnectPC

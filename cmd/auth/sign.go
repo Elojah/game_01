@@ -20,7 +20,7 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/signin").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/signin").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var ac Account
@@ -70,7 +70,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/signout").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/signout").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var ac SignoutAccount

@@ -105,7 +105,7 @@ func (a *app) Recurrer(msg *infra.Message) {
 		return
 	}
 	addr.Port = int(a.port)
-	logger = logger.With().Str("addr", addr.String()).Logger()
+	logger = logger.With().Str("address", addr.String()).Logger()
 	rec := NewRecurrer(r, a.tickRate, func(e entity.E) {
 		raw, err := e.Marshal()
 		if err != nil {

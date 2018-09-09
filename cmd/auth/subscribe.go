@@ -21,7 +21,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/subscribe").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/subscribe").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var ac Account
@@ -93,7 +93,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger := log.With().Str("route", "/unsubscribe").Str("method", "POST").Str("addr", r.RemoteAddr).Logger()
+	logger := log.With().Str("route", "/unsubscribe").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
 	var ac Account
