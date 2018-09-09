@@ -53,38 +53,37 @@ func main() {
 	}
 	log.Info().Msg("up ok")
 
-	if err := expectTool(la); err != nil {
-		log.Error().Err(err).Msg("tool")
+	if err := expectStatic(la); err != nil {
+		log.Error().Err(err).Msg("static")
 		return
 	}
-	log.Info().Msg("tool ok")
+	log.Info().Msg("static ok")
 
-	tok, ent, err := expectAuthUp(la)
+	tok, ent, err := expectConnect(la)
 	if err != nil {
-		log.Error().Err(err).Msg("auth up")
+		log.Error().Err(err).Msg("connect")
 		return
 	}
-	log.Info().Msg("auth up ok")
-	_ = ent
+	log.Info().Msg("connect ok")
 
-	// pos, err := expectClient(laClient)
-	// if err != nil {
-	// 	log.Error().Err(err).Msg("client")
-	// 	return
-	// }
-	// _ = pos
-
-	// if err := expectAPI(la, tok, ent); err != nil {
-	// 	log.Error().Err(err).Msg("api")
-	// 	return
-	// }
-	// log.Info().Msg("api ok")
-
-	if err := expectAuthDown(la, tok); err != nil {
-		log.Error().Err(err).Msg("auth down")
+	entClient, err := expectState(laClient, ent)
+	if err != nil {
+		log.Error().Err(err).Msg("state")
 		return
 	}
-	log.Info().Msg("auth down ok")
+	log.Info().Msg("state ok")
+
+	if err := expectMove(la, laClient, tok, entClient); err != nil {
+		log.Error().Err(err).Msg("move")
+		return
+	}
+	log.Info().Msg("move ok")
+
+	if err := expectDisconnect(la, tok); err != nil {
+		log.Error().Err(err).Msg("disconnect")
+		return
+	}
+	log.Info().Msg("disconnect ok")
 
 	log.Info().Msg("integration ok")
 }
