@@ -298,6 +298,17 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Add permission entity/entity.
+	if err := h.SetPermission(entity.Permission{
+		ID:     ulid.NewID(),
+		Source: e.ID.String(),
+		Target: e.ID.String(),
+	}); err != nil {
+		logger.Error().Err(err).Msg("failed to create permissions")
+		http.Error(w, "failed to create permissions", http.StatusInternalServerError)
+		return
+	}
+
 	// #Creates a new sequencer for this entity.
 	sequencer, err := h.SequencerService.New(e.ID)
 	logger = logger.With().Str("sequencer", sequencer.ID.String()).Logger()

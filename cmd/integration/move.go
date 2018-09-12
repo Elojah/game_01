@@ -298,7 +298,6 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 	}
 
 	if err := a.Expect(func(s string) (bool, error) {
-		fmt.Print(s)
 		var c common
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
 			return false, err
@@ -388,8 +387,6 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 			actual.Position.Coord == newCoord {
 			return true, nil
 		}
-		fmt.Println("actual:", actual.Position.Coord)
-		fmt.Println("newcoord:", newCoord)
 		return false, nil
 	})
 }
