@@ -119,6 +119,8 @@ func run(prog string, filename string) {
 			launchers.Up(filename)
 		case syscall.SIGINT:
 			launchers.Down()
+		case syscall.SIGKILL:
+			launchers.Down()
 			return
 		}
 	}

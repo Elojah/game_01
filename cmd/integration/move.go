@@ -377,11 +377,17 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, fmt.Errorf("invalid entity %s", s)
 		}
+		if actual.ID.IsZero() {
+			// wrong log type (packet processed)
+			return false, nil
+		}
 		if actual.ID.Compare(ent.ID) == 0 &&
 			actual.Position.SectorID.Compare(ent.Position.SectorID) == 0 &&
-			actual.Position.Coord == ent.Position.Coord {
+			actual.Position.Coord == newCoord {
 			return true, nil
 		}
+		fmt.Println("actual:", actual.Position.Coord)
+		fmt.Println("newcoord:", newCoord)
 		return false, nil
 	})
 }
