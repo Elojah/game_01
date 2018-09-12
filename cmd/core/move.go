@@ -36,10 +36,13 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 	// #For all targets.
 	var result *multierror.Error
 	errC := make(chan error, 0)
+	var wgResult sync.WaitGroup
+	wgResult.Add(1)
 	go func() {
 		for err := range errC {
 			result = multierror.Append(result, err)
 		}
+		wgResult.Done()
 	}()
 	var wg sync.WaitGroup
 	wg.Add(len(move.Targets))
@@ -80,6 +83,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 	}
 	wg.Wait()
 	close(errC)
+	wgResult.Wait()
 
 	return result.ErrorOrNil()
 }

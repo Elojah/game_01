@@ -296,7 +296,9 @@ func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		TS:   now.UnixNano(),
 		Type: "move_source",
 	}
+
 	if err := a.Expect(func(s string) (bool, error) {
+		fmt.Print(s)
 		var c common
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
 			return false, err
