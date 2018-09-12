@@ -14,6 +14,15 @@ import (
 	"github.com/elojah/mux/client"
 )
 
+/*
+#Test plan
+- SUCCESS Move same sector
+- FAIL Move same sector too far
+- SUCCESS Move neighbour sector
+- FAIL Move not neighbour sector
+- FAIL Move neighbour sector too far
+*/
+
 type packetProcLog struct {
 	common
 	Packet string
@@ -180,16 +189,7 @@ func (expected appliedLog) Equal(actual appliedLog) error {
 	return nil
 }
 
-/*
-#Test plan
-- SUCCESS Move same sector
-- FAIL Move same sector too far
-- SUCCESS Move neighbour sector
-- FAIL Move not neighbour sector
-- FAIL Move neighbour sector too far
-*/
-
-func expectMove(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
+func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
 	var c client.C
 	c.Dial(client.Config{
 		PacketSize: 1024,
