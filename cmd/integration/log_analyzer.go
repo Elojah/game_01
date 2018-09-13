@@ -8,37 +8,38 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type bin struct {
+type process struct {
 	Cmd    *exec.Cmd
 	In     io.WriteCloser
 	closer chan struct{}
 }
 
-func (b *bin) run(out chan string, args ...string) error {
+func newProcess(out chan<- string, args ...string) (*process, error) {
+	p := &process{}
 
-	b.Cmd = exec.Command(args[0], args[1:]...) // nolint: gas
+	p.Cmd = exec.Command(args[0], args[1:]...) // nolint: gas
 
-	stdout, err := b.Cmd.StdoutPipe()
+	stdout, err := p.Cmd.StdoutPipe()
 	if err != nil {
 		log.Error().Err(err).Str("cmd", args[0]).Msg("failed to pipe out")
-		return err
+		return nil, err
 	}
 
-	stdin, err := b.Cmd.StdinPipe()
+	stdin, err := p.Cmd.StdinPipe()
 	if err != nil {
 		log.Error().Err(err).Str("cmd", args[0]).Msg("failed to pipe in")
-		return err
+		return nil, err
 	}
-	b.In = stdin
+	p.In = stdin
 
-	b.closer = make(chan struct{}, 0)
+	p.closer = make(chan struct{}, 0)
 	go func() {
 		defer stdout.Close()
 		defer stdin.Close()
 		r := bufio.NewReader(stdout)
 		for {
 			select {
-			case <-b.closer:
+			case <-p.closer:
 				return
 			default:
 			}
@@ -54,22 +55,19 @@ func (b *bin) run(out chan string, args ...string) error {
 		}
 	}()
 
-	return b.Cmd.Start()
+	return p, p.Cmd.Start()
 }
 
-func (b *bin) close() error {
-	if err := b.Cmd.Process.Kill(); err != nil {
-		log.Error().Err(err).Str("cmd", b.Cmd.Path).Msg("failed to kill process")
-	}
-
-	return nil
+func (p *process) close() error {
+	p.closer <- struct{}{}
+	return p.Cmd.Process.Kill()
 }
 
 // LogAnalyzer receives log and analyze them with an Expect function.
 type LogAnalyzer struct {
 	c chan string
 
-	cmds []*exec.Cmd
+	processes map[string]*process
 }
 
 // NewLogAnalyzer returns a new valid log analyzer.
@@ -81,44 +79,20 @@ func NewLogAnalyzer() *LogAnalyzer {
 
 // Close kill all pipe processes started with Cmd method.
 func (a *LogAnalyzer) Close() {
-	for _, cmd := range a.cmds {
-		if cmd == nil || cmd.Process == nil {
-			continue
-		}
-		if err := cmd.Process.Kill(); err != nil {
-			log.Error().Err(err).Str("cmd", cmd.Path).Msg("failed to kill process")
+	for key, p := range a.processes {
+		if err := p.close(); err != nil {
+			log.Error().Err(err).Str("cmd", key).Msg("failed to kill process")
 		}
 	}
 }
 
-// Cmd runs a cmd and plug output (stdout) in analyzer chan.
-func (a *LogAnalyzer) Cmd(args ...string) error {
-	cmd := exec.Command(args[0], args[1:]...) // nolint: gas
-	a.cmds = append(a.cmds, cmd)
-
-	stdout, err := cmd.StdoutPipe()
+func (a *LogAnalyzer) NewProcess(name string, args ...string) error {
+	p, err := newProcess(a.c, args...)
 	if err != nil {
-		log.Error().Err(err).Str("cmd", args[0]).Msg("failed to pipe out")
 		return err
 	}
-
-	go func(stdout io.ReadCloser) {
-		defer stdout.Close()
-		r := bufio.NewReader(stdout)
-		for {
-			s, err := r.ReadString('\n')
-			if err == io.EOF {
-				continue
-			}
-			if err != nil {
-				log.Error().Err(err).Msgf("failed to read out %s", args[0])
-				return
-			}
-			a.c <- s
-		}
-	}(stdout)
-
-	return cmd.Start()
+	a.processes[name] = p
+	return nil
 }
 
 // Expect sends log into f and return error if f fail. Returns nil when f returns ok.
