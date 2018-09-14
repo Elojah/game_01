@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"time"
 
@@ -11,7 +12,6 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/elojah/mux/client"
 )
 
 /*
@@ -190,10 +190,6 @@ func (expected appliedLog) Equal(actual appliedLog) error {
 }
 
 func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
-	var c client.C
-	c.Dial(client.Config{
-		PacketSize: 1024,
-	})
 
 	// #SUCCESS Move same sector
 	newCoord := geometry.Vec3{
@@ -227,15 +223,15 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 			},
 		},
 	}
-	raw, err := moveSameSector.Marshal()
+	raw, err := json.Marshal(moveSameSector)
+	raw = append(raw, '\n')
 	if err != nil {
 		return fmt.Errorf("failed to marshal payload")
 	}
-	addr, err := net.ResolveUDPAddr("udp", "127.0.0.1:3400")
-	if err != nil {
+
+	if _, err := io.WriteString(ac.Processes["client"].In, string(raw)); err != nil {
 		return err
 	}
-	c.Send(raw, addr)
 
 	nAPI := 3
 	nCore := 4

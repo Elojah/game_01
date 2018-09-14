@@ -21,8 +21,7 @@ type reader struct {
 	logger zerolog.Logger
 	*bufio.Scanner
 
-	token ulid.ID
-	addr  net.Addr
+	addr net.Addr
 
 	ticker    *time.Ticker
 	tolerance time.Duration
@@ -38,6 +37,7 @@ func newReader(c *client.C, ack <-chan ulid.ID) *reader {
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 		event:   make(chan event.DTO),
+		events:  make(map[ulid.ID]event.DTO, 0),
 		ack:     ack,
 	}
 }
@@ -53,7 +53,6 @@ func (r *reader) Close() error {
 
 // Dial initialize a reader.
 func (r *reader) Dial(cfg Config) error {
-	r.token = cfg.Token
 	r.tolerance = cfg.Tolerance
 	var err error
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
@@ -69,23 +68,17 @@ func (r *reader) Dial(cfg Config) error {
 // Run starts to read JSON data from stdin and sends it to API.
 func (r reader) Run() {
 	for r.Scan() {
-		var input Input
+		var input event.DTO
 		if err := json.Unmarshal(r.Scanner.Bytes(), &input); err != nil {
 			r.logger.Error().Err(err).Msg("failed to decode input")
 			continue
 		}
-		e := event.DTO{
-			ID:    ulid.NewID(),
-			Token: r.token,
-			TS:    time.Now(),
-			Query: input.Query,
-		}
-		raw, err := e.Marshal()
+		raw, err := input.Marshal()
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to marshal action")
 			continue
 		}
-		r.event <- e
+		r.event <- input
 		go r.Send(raw, r.addr)
 	}
 }

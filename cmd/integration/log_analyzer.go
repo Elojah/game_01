@@ -67,31 +67,33 @@ func (p *process) close() error {
 type LogAnalyzer struct {
 	c chan string
 
-	processes map[string]*process
+	Processes map[string]*process
 }
 
 // NewLogAnalyzer returns a new valid log analyzer.
 func NewLogAnalyzer() *LogAnalyzer {
 	return &LogAnalyzer{
-		c: make(chan string, 1000),
+		c:         make(chan string, 1000),
+		Processes: make(map[string]*process, 0),
 	}
 }
 
 // Close kill all pipe processes started with Cmd method.
 func (a *LogAnalyzer) Close() {
-	for key, p := range a.processes {
+	for key, p := range a.Processes {
 		if err := p.close(); err != nil {
 			log.Error().Err(err).Str("cmd", key).Msg("failed to kill process")
 		}
 	}
 }
 
+// NewProcess launch a new process with log plugged on log analyzer.
 func (a *LogAnalyzer) NewProcess(name string, args ...string) error {
 	p, err := newProcess(a.c, args...)
 	if err != nil {
 		return err
 	}
-	a.processes[name] = p
+	a.Processes[name] = p
 	return nil
 }
 

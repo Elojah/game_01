@@ -15,17 +15,17 @@ func main() {
 	la := NewLogAnalyzer()
 
 	cmds := [][]string{
-		[]string{"./bin/game_sync", "./configs/config_sync.json"},
-		[]string{"./bin/game_core", "./configs/config_core.json"},
-		[]string{"./bin/game_api", "./configs/config_api.json"},
-		[]string{"./bin/game_auth", "./configs/config_auth.json"},
-		[]string{"./bin/game_revoker", "./configs/config_revoker.json"},
-		[]string{"./bin/game_tool", "./configs/config_tool.json"},
+		[]string{"sync", "./bin/game_sync", "./configs/config_sync.json"},
+		[]string{"core", "./bin/game_core", "./configs/config_core.json"},
+		[]string{"api", "./bin/game_api", "./configs/config_api.json"},
+		[]string{"auth", "./bin/game_auth", "./configs/config_auth.json"},
+		[]string{"revoker", "./bin/game_revoker", "./configs/config_revoker.json"},
+		[]string{"tool", "./bin/game_tool", "./configs/config_tool.json"},
 	}
 
 	defer la.Close()
 	for _, args := range cmds {
-		if err := la.Cmd(args...); err != nil {
+		if err := la.NewProcess(args[0], args[1:]...); err != nil {
 			log.Error().Err(err).Msg("failed to start")
 			return
 		}
@@ -33,7 +33,8 @@ func main() {
 
 	laClient := NewLogAnalyzer()
 	defer laClient.Close()
-	if err := laClient.Cmd(
+	if err := laClient.NewProcess(
+		"client",
 		"./bin/game_client",
 		"./configs/config_client.json",
 	); err != nil {
