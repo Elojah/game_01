@@ -19,12 +19,12 @@ func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 	if err != nil {
 		return err
 	}
-	return s.ZAddNX(
+	return redis.NewIntCmd(
+		"ZADD",
 		eventKey+id.String(),
-		redis.Z{
-			Score:  float64(e.TS.UnixNano()),
-			Member: raw,
-		},
+		"NX",
+		e.TS.UnixNano(),
+		raw,
 	).Err()
 }
 

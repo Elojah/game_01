@@ -129,6 +129,7 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 	logger := log.With().
 		Str("core", a.id.String()).
 		Str("sequencer", id.String()).
+		Str("event", e.ID.String()).
 		Int64("ts", e.TS.UnixNano()).
 		Str("type", e.Action.Type()).
 		Logger()

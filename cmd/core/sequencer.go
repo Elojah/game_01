@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -86,6 +88,7 @@ func (s *Sequencer) listenFetch() {
 			s.logger.Error().Err(err).Msg("failed to clear entities")
 			continue
 		}
+		fmt.Println("MIN ", t)
 		events, err := s.EventStore.ListEvent(event.Subset{
 			Key: s.id.String(),
 			Min: t,
@@ -94,6 +97,7 @@ func (s *Sequencer) listenFetch() {
 			s.logger.Error().Err(err).Msg("failed to fetch events")
 			continue
 		}
+		fmt.Println(len(events))
 		for i, event := range events {
 			select {
 			case _ = <-s.interrupt:
@@ -146,6 +150,7 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}
+	fmt.Println("SET EVENT ", e.TS.UnixNano())
 	if err := s.EventStore.SetEvent(e, s.id); err != nil {
 		s.logger.Error().Err(err).Msg("error creating event")
 		return

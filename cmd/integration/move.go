@@ -165,7 +165,9 @@ func (expected applyLog) Equal(actual applyLog) error {
 
 type appliedLog struct {
 	common
+	Core      string
 	Sequencer string
+	Event     string
 	TS        int64
 	Type      string
 	Time      int64
@@ -176,8 +178,14 @@ func (expected appliedLog) Equal(actual appliedLog) error {
 		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
 	}
 
+	if _, err := ulid.Parse(actual.Core); err != nil {
+		return fmt.Errorf("invalid core %s", actual.Core)
+	}
 	if _, err := ulid.Parse(actual.Sequencer); err != nil {
 		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
+	}
+	if _, err := ulid.Parse(actual.Event); err != nil {
+		return fmt.Errorf("invalid event %s", actual.Event)
 	}
 	if actual.TS != expected.TS {
 		return fmt.Errorf("invalid ts %d", actual.TS)
@@ -384,7 +392,7 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		// dead code for compile only
 		return false, nil
 	}); err != nil {
-		return err
+		// return err
 	}
 
 	// Check new position received and echoed by client.
