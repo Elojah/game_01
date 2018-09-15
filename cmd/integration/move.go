@@ -132,7 +132,7 @@ func (expected fetchEventLog) Equal(actual fetchEventLog) error {
 		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
 	}
 	if actual.Current != expected.Current {
-		return fmt.Errorf("invalid current actual %d", actual.Current)
+		return fmt.Errorf("invalid current %d", actual.Current)
 	}
 
 	return nil
@@ -233,8 +233,6 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		return err
 	}
 
-	nAPI := 3
-	nCore := 4
 	expectedPPLog := packetProcLog{
 		common: common{
 			Level:   "info",
@@ -293,6 +291,8 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		Type: "move_source",
 	}
 
+	nAPI := 3
+	nCore := 8
 	if err := a.Expect(func(s string) (bool, error) {
 		var c common
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
@@ -324,6 +324,30 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		case "./bin/game_core":
 			nCore--
 			switch nCore {
+			case 7:
+				var erActual eventReceivedLog
+				if err := json.Unmarshal([]byte(s), &erActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedERLog.Equal(erActual)
+			case 6:
+				var feActual fetchEventLog
+				if err := json.Unmarshal([]byte(s), &feActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedFELog.Equal(feActual)
+			case 5:
+				var apyActual applyLog
+				if err := json.Unmarshal([]byte(s), &apyActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedAPYLog.Equal(apyActual)
+			case 4:
+				var apdActual appliedLog
+				if err := json.Unmarshal([]byte(s), &apdActual); err != nil {
+					return nAPI == 0 && nCore == 0, err
+				}
+				return nAPI == 0 && nCore == 0, expectedAPDLog.Equal(apdActual)
 			case 3:
 				var erActual eventReceivedLog
 				if err := json.Unmarshal([]byte(s), &erActual); err != nil {
@@ -335,6 +359,8 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 				if err := json.Unmarshal([]byte(s), &feActual); err != nil {
 					return nAPI == 0 && nCore == 0, err
 				}
+				// Add one to fetch event because move apply at ts+1
+				expectedFELog.Current += 1
 				return nAPI == 0 && nCore == 0, expectedFELog.Equal(feActual)
 			case 1:
 				var apyActual applyLog
