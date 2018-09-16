@@ -10,12 +10,9 @@ import _ "github.com/gogo/protobuf/gogoproto"
 import _ "github.com/gogo/protobuf/types"
 
 import github_com_elojah_game_01_pkg_ulid "github.com/elojah/game_01/pkg/ulid"
-import time "time"
 
 import strings "strings"
 import reflect "reflect"
-
-import github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
 
 import io "io"
 
@@ -23,7 +20,6 @@ import io "io"
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
-var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -34,8 +30,7 @@ const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 type E struct {
 	ID                   github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,json=iD,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
 	Token                github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=Token,json=token,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Token"`
-	TS                   time.Time                             `protobuf:"bytes,3,opt,name=TS,json=tS,stdtime" json:"TS"`
-	Action               Action                                `protobuf:"bytes,4,opt,name=Action,json=action" json:"Action"`
+	Action               Action                                `protobuf:"bytes,3,opt,name=Action,json=action" json:"Action"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
 }
@@ -43,7 +38,7 @@ type E struct {
 func (m *E) Reset()      { *m = E{} }
 func (*E) ProtoMessage() {}
 func (*E) Descriptor() ([]byte, []int) {
-	return fileDescriptor_event_c93a73882467eee6, []int{0}
+	return fileDescriptor_event_610019737be26e48, []int{0}
 }
 func (m *E) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -71,13 +66,6 @@ func (m *E) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_E proto.InternalMessageInfo
-
-func (m *E) GetTS() time.Time {
-	if m != nil {
-		return m.TS
-	}
-	return time.Time{}
-}
 
 func (m *E) GetAction() Action {
 	if m != nil {
@@ -114,9 +102,6 @@ func (this *E) Equal(that interface{}) bool {
 	if !this.Token.Equal(that1.Token) {
 		return false
 	}
-	if !this.TS.Equal(that1.TS) {
-		return false
-	}
 	if !this.Action.Equal(&that1.Action) {
 		return false
 	}
@@ -126,11 +111,10 @@ func (this *E) GoString() string {
 	if this == nil {
 		return "nil"
 	}
-	s := make([]string, 0, 8)
+	s := make([]string, 0, 7)
 	s = append(s, "&event.E{")
 	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "Token: "+fmt.Sprintf("%#v", this.Token)+",\n")
-	s = append(s, "TS: "+fmt.Sprintf("%#v", this.TS)+",\n")
 	s = append(s, "Action: "+strings.Replace(this.Action.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -176,20 +160,12 @@ func (m *E) MarshalTo(dAtA []byte) (int, error) {
 	i += n2
 	dAtA[i] = 0x1a
 	i++
-	i = encodeVarintEvent(dAtA, i, uint64(github_com_gogo_protobuf_types.SizeOfStdTime(m.TS)))
-	n3, err := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.TS, dAtA[i:])
+	i = encodeVarintEvent(dAtA, i, uint64(m.Action.Size()))
+	n3, err := m.Action.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n3
-	dAtA[i] = 0x22
-	i++
-	i = encodeVarintEvent(dAtA, i, uint64(m.Action.Size()))
-	n4, err := m.Action.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n4
 	return i, nil
 }
 
@@ -208,10 +184,8 @@ func NewPopulatedE(r randyEvent, easy bool) *E {
 	this.ID = *v1
 	v2 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.Token = *v2
-	v3 := github_com_gogo_protobuf_types.NewPopulatedStdTime(r, easy)
-	this.TS = *v3
-	v4 := NewPopulatedAction(r, easy)
-	this.Action = *v4
+	v3 := NewPopulatedAction(r, easy)
+	this.Action = *v3
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -236,9 +210,9 @@ func randUTF8RuneEvent(r randyEvent) rune {
 	return rune(ru + 61)
 }
 func randStringEvent(r randyEvent) string {
-	v5 := r.Intn(100)
-	tmps := make([]rune, v5)
-	for i := 0; i < v5; i++ {
+	v4 := r.Intn(100)
+	tmps := make([]rune, v4)
+	for i := 0; i < v4; i++ {
 		tmps[i] = randUTF8RuneEvent(r)
 	}
 	return string(tmps)
@@ -260,11 +234,11 @@ func randFieldEvent(dAtA []byte, r randyEvent, fieldNumber int, wire int) []byte
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateEvent(dAtA, uint64(key))
-		v6 := r.Int63()
+		v5 := r.Int63()
 		if r.Intn(2) == 0 {
-			v6 *= -1
+			v5 *= -1
 		}
-		dAtA = encodeVarintPopulateEvent(dAtA, uint64(v6))
+		dAtA = encodeVarintPopulateEvent(dAtA, uint64(v5))
 	case 1:
 		dAtA = encodeVarintPopulateEvent(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -296,8 +270,6 @@ func (m *E) Size() (n int) {
 	n += 1 + l + sovEvent(uint64(l))
 	l = m.Token.Size()
 	n += 1 + l + sovEvent(uint64(l))
-	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.TS)
-	n += 1 + l + sovEvent(uint64(l))
 	l = m.Action.Size()
 	n += 1 + l + sovEvent(uint64(l))
 	return n
@@ -323,7 +295,6 @@ func (this *E) String() string {
 	s := strings.Join([]string{`&E{`,
 		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`Token:` + fmt.Sprintf("%v", this.Token) + `,`,
-		`TS:` + strings.Replace(strings.Replace(this.TS.String(), "Timestamp", "types.Timestamp", 1), `&`, ``, 1) + `,`,
 		`Action:` + strings.Replace(strings.Replace(this.Action.String(), "Action", "Action", 1), `&`, ``, 1) + `,`,
 		`}`,
 	}, "")
@@ -427,36 +398,6 @@ func (m *E) Unmarshal(dAtA []byte) error {
 			}
 			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field TS", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvent
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvent
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.TS, dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Action", wireType)
 			}
@@ -612,28 +553,26 @@ var (
 	ErrIntOverflowEvent   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("event.proto", fileDescriptor_event_c93a73882467eee6) }
+func init() { proto.RegisterFile("event.proto", fileDescriptor_event_610019737be26e48) }
 
-var fileDescriptor_event_c93a73882467eee6 = []byte{
-	// 309 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_event_610019737be26e48 = []byte{
+	// 275 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4e, 0x2d, 0x4b, 0xcd,
 	0x2b, 0xd1, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x05, 0x73, 0xa4, 0x74, 0xd3, 0x33, 0x4b,
 	0x32, 0x4a, 0x93, 0xf4, 0x92, 0xf3, 0x73, 0xf5, 0xd3, 0xf3, 0xd3, 0xf3, 0xf5, 0xc1, 0xb2, 0x49,
 	0xa5, 0x69, 0x60, 0x1e, 0x98, 0x03, 0x66, 0x41, 0x74, 0x49, 0xf1, 0x24, 0x26, 0x97, 0x64, 0xe6,
 	0xe7, 0x41, 0x79, 0xf2, 0xe9, 0xf9, 0xf9, 0xe9, 0x39, 0xa9, 0x08, 0x3d, 0x25, 0x99, 0xb9, 0xa9,
-	0xc5, 0x25, 0x89, 0xb9, 0x05, 0x10, 0x05, 0x4a, 0xaf, 0x18, 0xb9, 0x18, 0x5d, 0x85, 0x6c, 0xb9,
+	0xc5, 0x25, 0x89, 0xb9, 0x05, 0x10, 0x05, 0x4a, 0x5b, 0x18, 0xb9, 0x18, 0x5d, 0x85, 0x6c, 0xb9,
 	0x98, 0x3c, 0x5d, 0x24, 0x18, 0x15, 0x18, 0x35, 0x78, 0x9c, 0x74, 0x4f, 0xdc, 0x93, 0x67, 0xb8,
 	0x75, 0x4f, 0x5e, 0x15, 0xc9, 0xde, 0xd4, 0x9c, 0xfc, 0xac, 0xc4, 0x0c, 0xfd, 0xf4, 0xc4, 0xdc,
 	0xd4, 0x78, 0x03, 0x43, 0xfd, 0x82, 0xec, 0x74, 0xfd, 0xd2, 0x9c, 0xcc, 0x14, 0x3d, 0x4f, 0x97,
 	0x20, 0xa6, 0x4c, 0x17, 0x21, 0x67, 0x2e, 0xd6, 0x90, 0xfc, 0xec, 0xd4, 0x3c, 0x09, 0x26, 0x72,
-	0x4c, 0x60, 0x2d, 0x01, 0xe9, 0x15, 0x32, 0xe1, 0x62, 0x0a, 0x09, 0x96, 0x60, 0x56, 0x60, 0xd4,
-	0xe0, 0x36, 0x92, 0xd2, 0x83, 0xb8, 0x5b, 0x0f, 0xe6, 0x6e, 0xbd, 0x10, 0x98, 0xbb, 0x9d, 0x38,
-	0x40, 0xa6, 0x4f, 0xb8, 0x2f, 0xcf, 0x18, 0xc4, 0x54, 0x12, 0x2c, 0xa4, 0xcd, 0xc5, 0xe6, 0x08,
-	0xf6, 0xb0, 0x04, 0x0b, 0x58, 0x27, 0xaf, 0x1e, 0x24, 0x08, 0x21, 0x82, 0x4e, 0x2c, 0x20, 0xc5,
-	0x41, 0x6c, 0x90, 0x30, 0x71, 0xb2, 0xb8, 0xf0, 0x50, 0x8e, 0xe1, 0xc6, 0x43, 0x39, 0x86, 0x0f,
-	0x0f, 0xe5, 0x18, 0x7f, 0x3c, 0x94, 0x63, 0x6c, 0x78, 0x24, 0xc7, 0xb8, 0xe2, 0x91, 0x1c, 0xe3,
-	0x8e, 0x47, 0x72, 0x8c, 0x07, 0x1e, 0xc9, 0x31, 0x9e, 0x78, 0x24, 0xc7, 0x78, 0xe1, 0x91, 0x1c,
-	0xe3, 0x83, 0x47, 0x72, 0x8c, 0x2f, 0x1e, 0xc9, 0x31, 0x7c, 0x78, 0x24, 0xc7, 0x38, 0xe1, 0xb1,
-	0x1c, 0x43, 0x12, 0x1b, 0xd8, 0x21, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xfd, 0x39, 0x14,
-	0xff, 0xa1, 0x01, 0x00, 0x00,
+	0x4c, 0x60, 0x2d, 0x01, 0xe9, 0x15, 0xd2, 0xe6, 0x62, 0x73, 0x04, 0x3b, 0x5d, 0x82, 0x59, 0x81,
+	0x51, 0x83, 0xdb, 0x88, 0x57, 0x0f, 0x12, 0x18, 0x10, 0x41, 0x27, 0x16, 0x90, 0xa1, 0x41, 0x6c,
+	0x10, 0xdf, 0x39, 0x59, 0x5c, 0x78, 0x28, 0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72,
+	0x8c, 0x3f, 0x1e, 0xca, 0x31, 0x36, 0x3c, 0x92, 0x63, 0x5c, 0xf1, 0x48, 0x8e, 0x71, 0xc7, 0x23,
+	0x39, 0xc6, 0x03, 0x8f, 0xe4, 0x18, 0x4f, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1,
+	0x23, 0x39, 0xc6, 0x17, 0x8f, 0xe4, 0x18, 0x3e, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0x21,
+	0x89, 0x0d, 0xec, 0x6f, 0x63, 0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x2a, 0xce, 0xb0, 0xbd, 0x6b,
+	0x01, 0x00, 0x00,
 }

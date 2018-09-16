@@ -2,13 +2,13 @@ package main
 
 import (
 	"errors"
-	"time"
 )
 
-// Config is web quic server structure config.
+// Config is client config.
+// Tolerance in milliseconds.
 type Config struct {
-	Address   string        `json:"address"`
-	Tolerance time.Duration `json:"tolerance"`
+	Address   string `json:"address"`
+	Tolerance uint64 `json:"tolerance"`
 }
 
 // Equal returns is both configs are equal.
@@ -37,14 +37,11 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("missing key tolerance")
 	}
-	cToleranceString, ok := cTolerance.(string)
+	cToleranceFloat, ok := cTolerance.(float64)
 	if !ok {
-		return errors.New("key tolerance invalid. must be string")
+		return errors.New("key tolerance invalid. must be numeric")
 	}
-	c.Tolerance, err = time.ParseDuration(cToleranceString)
-	if err != nil {
-		return err
-	}
+	c.Tolerance = uint64(cToleranceFloat)
 
 	return nil
 }

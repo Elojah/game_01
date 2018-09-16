@@ -16,6 +16,11 @@ func NewID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
 }
 
+// NewTimeID returns a new random ID based on time t.
+func NewTimeID(t uint64) ID {
+	return ID(ulid.MustNew(t, rand.Reader))
+}
+
 // MustParse alias ulid.MustParse. Panics if s is invalid.
 func MustParse(s string) ID {
 	return ID(ulid.MustParse(s))
@@ -25,6 +30,11 @@ func MustParse(s string) ID {
 func Parse(s string) (ID, error) {
 	id, err := ulid.Parse(s)
 	return ID(id), err
+}
+
+// Time returns ms time of ID.
+func (id ID) Time() uint64 {
+	return ulid.ULID(id).Time()
 }
 
 // IsZero returns if id is zero.

@@ -24,7 +24,7 @@ type reader struct {
 	addr net.Addr
 
 	ticker    *time.Ticker
-	tolerance time.Duration
+	tolerance uint64
 
 	events map[ulid.ID]event.DTO
 	ack    <-chan ulid.ID
@@ -59,7 +59,8 @@ func (r *reader) Dial(cfg Config) error {
 		return err
 	}
 
-	r.ticker = time.NewTicker(r.tolerance)
+	d := time.Duration(r.tolerance * 1000)
+	r.ticker = time.NewTicker(d)
 	go r.Run()
 	go r.HandleACK()
 	return nil
@@ -88,9 +89,10 @@ func (r reader) HandleACK() {
 	for {
 		select {
 		case <-r.ticker.C:
-			now := time.Now()
+			now := uint64(time.Now().Unix())
 			for _, e := range r.events {
-				if now.Sub(e.TS) < r.tolerance {
+				t := e.ID.Time()
+				if t > now || now-t < r.tolerance {
 					continue
 				}
 				go func(e event.DTO) {
