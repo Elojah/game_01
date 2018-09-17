@@ -6,7 +6,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
 
@@ -19,9 +18,8 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 
 	move := msg.Query.GetMove()
 	e := event.E{
-		ID:    ulid.NewID(),
+		ID:    msg.ID,
 		Token: msg.Token,
-		TS:    msg.TS,
 		Action: event.Action{
 			MoveSource: &event.MoveSource{
 				Targets:  move.Targets,

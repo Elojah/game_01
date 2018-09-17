@@ -23,7 +23,7 @@ func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 		"ZADD",
 		eventKey+id.String(),
 		"NX",
-		e.TS.UnixNano(),
+		e.ID.Time(),
 		raw,
 	).Err()
 }

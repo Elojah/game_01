@@ -23,7 +23,7 @@ type handler struct {
 	account.TokenService
 
 	port      uint
-	tolerance time.Duration
+	tolerance uint64
 }
 
 func (h *handler) Dial(c Config) error {
@@ -75,10 +75,11 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	go h.Send(raw, addr)
 
 	// #Check TS in tolerance range.
-	now := time.Now()
-	if msg.TS.After(now) || now.Sub(msg.TS) > h.tolerance {
+	now := uint64(time.Now().Unix())
+	ts := msg.ID.Time()
+	if ts > now || now-ts < h.tolerance {
 		err := gerrors.ErrInvalidTS
-		logger.Error().Err(err).Str("status", "timeout").Int64("ts", msg.TS.UnixNano()).Int64("now", now.UnixNano()).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "timeout").Uint64("ts", ts).Uint64("now", now).Msg("packet rejected")
 		return err
 	}
 

@@ -2,13 +2,13 @@ package main
 
 import (
 	"errors"
-	"time"
 )
 
 // Config is the udp server structure config.
+// Tolerance in ms.
 type Config struct {
-	Tolerance time.Duration `json:"tolerance"`
-	ACKPort   uint          `json:"ack_port"`
+	Tolerance uint64 `json:"tolerance"`
+	ACKPort   uint   `json:"ack_port"`
 }
 
 // Equal returns is both configs are equal.
@@ -18,7 +18,6 @@ func (c Config) Equal(rhs Config) bool {
 
 // Dial set the config from a config namespace.
 func (c *Config) Dial(fileconf interface{}) error {
-	var err error
 	fconf, ok := fileconf.(map[string]interface{})
 	if !ok {
 		return errors.New("namespace empty")
@@ -27,14 +26,11 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("missing key tolerance")
 	}
-	cToleranceString, ok := cTolerance.(string)
+	cToleranceFloat, ok := cTolerance.(float64)
 	if !ok {
-		return errors.New("key tolerance invalid. must be string")
+		return errors.New("key tolerance invalid. must be numeric")
 	}
-	c.Tolerance, err = time.ParseDuration(cToleranceString)
-	if err != nil {
-		return err
-	}
+	c.Tolerance = uint64(cToleranceFloat)
 
 	cACKPort, ok := fconf["ack_port"]
 	if !ok {

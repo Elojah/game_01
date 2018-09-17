@@ -6,7 +6,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 )
 
@@ -19,9 +18,8 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 
 	cast := msg.Query.GetCast()
 	e := event.E{
-		ID:    ulid.NewID(),
+		ID:    msg.ID,
 		Token: msg.Token,
-		TS:    msg.TS,
 		Action: event.Action{
 			CastSource: &event.CastSource{
 				AbilityID: cast.AbilityID,

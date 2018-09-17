@@ -19,7 +19,6 @@ func (c Config) Equal(rhs Config) bool {
 
 // Dial set the config from a config namespace.
 func (c *Config) Dial(fileconf interface{}) error {
-	var err error
 	fconf, ok := fileconf.(map[string]interface{})
 	if !ok {
 		return errors.New("namespace empty")
