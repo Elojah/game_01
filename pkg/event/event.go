@@ -20,5 +20,5 @@ type Store interface {
 // Subset is a subset for actions. Internally usage done with ZRangeWithScores.
 type Subset struct {
 	Key string
-	Min int64
+	Min ulid.ID
 }

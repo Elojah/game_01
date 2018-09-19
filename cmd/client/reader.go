@@ -24,7 +24,7 @@ type reader struct {
 	addr net.Addr
 
 	ticker    *time.Ticker
-	tolerance uint64
+	tolerance int64
 
 	events map[ulid.ID]event.DTO
 	ack    <-chan ulid.ID
@@ -89,7 +89,7 @@ func (r reader) HandleACK() {
 	for {
 		select {
 		case <-r.ticker.C:
-			now := uint64(time.Now().Unix())
+			now := time.Now().Unix()
 			for _, e := range r.events {
 				t := e.ID.Time()
 				if t > now || now-t < r.tolerance {

@@ -217,9 +217,8 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 
 	now := time.Now()
 	moveSameSector := event.DTO{
-		ID:    ulid.NewID(),
+		ID:    ulid.NewTimeID(now.Unix()),
 		Token: tok.ID,
-		TS:    now,
 		Query: event.Query{
 			Move: &event.Move{
 				Source:  ent.ID,
@@ -442,9 +441,8 @@ func expectMoveSameSectorTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Tok
 
 	now := time.Now()
 	moveSameSector := event.DTO{
-		ID:    ulid.NewID(),
+		ID:    ulid.NewTimeID(now.Unix()),
 		Token: tok.ID,
-		TS:    now,
 		Query: event.Query{
 			Move: &event.Move{
 				Source:  ent.ID,

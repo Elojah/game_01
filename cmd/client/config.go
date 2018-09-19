@@ -8,7 +8,7 @@ import (
 // Tolerance in milliseconds.
 type Config struct {
 	Address   string `json:"address"`
-	Tolerance uint64 `json:"tolerance"`
+	Tolerance int64  `json:"tolerance"`
 }
 
 // Equal returns is both configs are equal.
@@ -40,7 +40,7 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key tolerance invalid. must be numeric")
 	}
-	c.Tolerance = uint64(cToleranceFloat)
+	c.Tolerance = int64(cToleranceFloat)
 
 	return nil
 }

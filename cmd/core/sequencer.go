@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -12,7 +10,7 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-type tick chan int64
+type tick chan ulid.ID
 
 // Sequencer is an ordering/event extractor layer between two consumers.
 type Sequencer struct {
@@ -61,77 +59,59 @@ func NewSequencer(id ulid.ID, limit int, callback func(ulid.ID, event.E)) *Seque
 }
 
 func (s *Sequencer) listenInput() {
-	var last int64
+	var last ulid.ID
 	for {
 		select {
-		case t, ok := <-s.input:
+		case id, ok := <-s.input:
 			if !ok {
 				return
 			}
-			if t < last {
-				s.logger.Info().Int64("current", t).Int64("last", last).Msg("interrupt")
+			if id.Compare(last) == -1 {
+				s.logger.Info().Str("event", id.String()).Str("last", last.String()).Msg("interrupt")
 				s.interrupt <- struct{}{}
 			}
-			s.logger.Info().Int64("current", t).Msg("fetch post events")
-			s.min <- t
-			s.fetch <- t
-		case t := <-s.last:
-			last = t
+			s.logger.Info().Str("event", id.String()).Msg("fetch post events")
+			s.fetch <- id
+		case id := <-s.last:
+			last = id
 		}
 	}
 }
 
 func (s *Sequencer) listenFetch() {
-	var min int64
-	for t := range s.fetch {
-		if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: t}); err != nil {
+	for id := range s.fetch {
+		if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: id.Time()}); err != nil {
 			s.logger.Error().Err(err).Msg("failed to clear entities")
 			continue
 		}
-		fmt.Println("MIN ", t)
 		events, err := s.EventStore.ListEvent(event.Subset{
 			Key: s.id.String(),
-			Min: t,
+			Min: id,
 		})
 		if err != nil {
 			s.logger.Error().Err(err).Msg("failed to fetch events")
 			continue
 		}
-		fmt.Println(len(events))
 		for i, event := range events {
 			select {
 			case _ = <-s.interrupt:
-				// Case where interrupt ticks at previous last run.
+				// Case where interrupt ticks at previous last run but not consumed. e.g: on last iteration
 				if i != 0 {
-					s.last <- 0
+					s.last <- ulid.ID{}
 					break
-				}
-			case m := <-s.min:
-				// Case where min is the tick from same event.
-				if m == t {
-					m = 0
-				}
-				if min == 0 || m < min {
-					min = m
 				}
 			default:
 			}
-			ts := event.TS.UnixNano()
-			if min != 0 && ts > min {
-				s.logger.Info().Int64("ts", ts).Int64("min", min).Msg("skip")
-				s.last <- 0
-				break
-			}
-			s.last <- ts
+			s.last <- event.ID
 			s.process <- event
 		}
-		s.last <- 0
+		s.last <- ulid.Zero()
 	}
 }
 
 func (s *Sequencer) listenProcess() {
 	for event := range s.process {
-		s.logger.Info().Str("event", event.ID.String()).Int64("ts", event.TS.UnixNano()).Msg("apply")
+		s.logger.Info().Str("event", event.ID.String()).Msg("apply")
 		s.callback(s.id, event)
 	}
 }
@@ -150,11 +130,10 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}
-	fmt.Println("SET EVENT ", e.TS.UnixNano())
 	if err := s.EventStore.SetEvent(e, s.id); err != nil {
 		s.logger.Error().Err(err).Msg("error creating event")
 		return
 	}
 	s.logger.Info().Str("event", e.ID.String()).Msg("event received")
-	s.input <- e.TS.UnixNano()
+	s.input <- e.ID
 }

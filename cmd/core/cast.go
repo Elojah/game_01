@@ -14,6 +14,7 @@ import (
 func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	cast := e.Action.GetValue().(*event.Cast)
+	ts := e.ID.Time()
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
@@ -40,9 +41,9 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Check MP consumption
-	source, err := a.EntityStore.GetEntity(entity.Subset{ID: cast.Source, MaxTS: e.TS.UnixNano()})
+	source, err := a.EntityStore.GetEntity(entity.Subset{ID: cast.Source, MaxTS: ts})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), ts)
 	}
 	if source.MP < ab.MPConsumption {
 		return errors.Wrapf(
@@ -56,7 +57,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Check CD validity. if LastUsed + CD < now.
-	if ab.LastUsed.Add(ab.CD).Before(e.TS) {
+	if ab.LastUsed+ab.CD < ts {
 		return errors.Wrapf(gerrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
 	}
 
@@ -75,15 +76,14 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state with decreased MP and casting up.
-	source.CastAbility(ab, e.TS)
-	if err := a.EntityStore.SetEntity(source, e.TS.UnixNano()); err != nil {
+	source.CastAbility(ab, ts)
+	if err := a.EntityStore.SetEntity(source, ts); err != nil {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
 	// #Publish casted event to event set.
 	if err := a.EventQStore.PublishEvent(event.E{
-		ID: ulid.NewID(),
-		TS: e.TS.Add(ab.CastTime),
+		ID: ulid.NewTimeID(ts + ab.CastTime),
 		Action: event.Action{
 			PerformSource: &event.PerformSource{
 				AbilityID: cast.AbilityID,

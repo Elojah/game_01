@@ -2,7 +2,6 @@ package main
 
 import (
 	"sync"
-	"time"
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
@@ -18,6 +17,7 @@ import (
 func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	move := e.Action.GetValue().(*event.MoveSource)
+	ts := e.ID.Time()
 
 	// #Check permission token/source.
 	permission, err := a.GetPermission(entity.PermissionSubset{
@@ -67,8 +67,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 			// #Publish move event to target.
 			if err := a.EventQStore.PublishEvent(event.E{
-				ID: ulid.NewID(),
-				TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply move
+				ID: ulid.NewTimeID(ts),
 				Action: event.Action{
 					MoveTarget: &event.MoveTarget{
 						Source:   id,
@@ -91,11 +90,12 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 
 	move := e.Action.GetValue().(*event.MoveTarget)
+	ts := e.ID.Time()
 
 	// #Retrieve previous state target.
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: ts})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
 	}
 
 	// #Retrieve current sector
@@ -190,5 +190,5 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Write new target state.
-	return errors.Wrapf(a.EntityStore.SetEntity(target, e.TS.UnixNano()), "set entity %s for ts %d", target.ID.String(), e.TS.UnixNano())
+	return errors.Wrapf(a.EntityStore.SetEntity(target, ts), "set entity %s for ts %d", target.ID.String(), ts)
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"sync"
-	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
@@ -19,11 +18,12 @@ import (
 func (a *app) PerformSource(id ulid.ID, e event.E) error {
 
 	perform := e.Action.GetValue().(*event.PerformSource)
+	ts := e.ID.Time()
 
 	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(entity.Subset{
 		ID:    id,
-		MaxTS: e.TS.UnixNano(),
+		MaxTS: ts,
 	})
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s", id.String())
@@ -43,13 +43,13 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	// #Check cast was not interrupted.
 	if source.Cast == nil ||
 		source.Cast.AbilityID != perform.AbilityID ||
-		source.Cast.TS.Add(ab.CastTime) != e.TS {
+		source.Cast.TS+ab.CastTime != ts {
 		// normal behavior, don't return errors
 		return nil
 	}
 
 	// #Set ability LastUsed
-	ab.LastUsed = e.TS
+	ab.LastUsed = ts
 	if err := a.AbilityStore.SetAbility(ab, source.ID); err != nil {
 		return errors.Wrapf(err, "set ability %s for %s", ab.ID.String(), source.ID.String())
 	}
@@ -80,8 +80,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 		for _, id := range target.Entities {
 			go func(id ulid.ID) {
 				if err := a.EventQStore.PublishEvent(event.E{
-					ID: ulid.NewID(),
-					TS: e.TS.Add(time.Nanosecond), // Add TS + 1 ns to apply damage
+					ID: ulid.NewTimeID(ts),
 					Action: event.Action{
 						PerformTarget: &event.PerformTarget{
 							AbilityID:   ab.ID,
@@ -103,11 +102,12 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	perform := e.Action.GetValue().(*event.PerformTarget)
+	ts := e.ID.Time()
 
 	// #Retrieve previous target state.
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: e.TS.UnixNano()})
+	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: ts})
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), e.TS.UnixNano())
+		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
 	}
 
 	// #Retrieve ability.
@@ -210,7 +210,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state.
-	if err := a.EntityStore.SetEntity(target, e.TS.UnixNano()); err != nil {
+	if err := a.EntityStore.SetEntity(target, ts); err != nil {
 		return errors.Wrapf(err, "set entity %s", perform.Source.ID.String())
 	}
 
@@ -221,8 +221,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Publish feedback to source.
 	return a.EventQStore.PublishEvent(event.E{
-		ID: ulid.NewID(),
-		TS: e.TS.Add(ab.CastTime),
+		ID: ulid.NewTimeID(ts),
 		Action: event.Action{
 			FeedbackTarget: &event.FeedbackTarget{
 				ID:     fb.ID,

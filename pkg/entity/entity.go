@@ -1,8 +1,6 @@
 package entity
 
 import (
-	"time"
-
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -30,7 +28,7 @@ type Service interface {
 }
 
 // CastAbility decreases MP (without check) and assign a new cast to entity.
-func (e *E) CastAbility(ab ability.A, ts time.Time) {
+func (e *E) CastAbility(ab ability.A, ts int64) {
 	e.MP -= ab.MPConsumption
 	e.Cast = &Cast{AbilityID: ab.ID, TS: ts}
 }

@@ -1,8 +1,6 @@
 package srg
 
 import (
-	"strconv"
-
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01/pkg/event"
@@ -19,25 +17,24 @@ func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 	if err != nil {
 		return err
 	}
-	return redis.NewIntCmd(
-		"ZADD",
+	return s.ZAddNX(
 		eventKey+id.String(),
-		"NX",
-		e.ID.Time(),
-		raw,
+		redis.Z{
+			Score:  0, // default key for all events, must be the same for lexico order
+			Member: raw,
+		},
 	).Err()
 }
 
 // ListEvent retrieves event in Redis using ZRangeWithScores.
 func (s *Store) ListEvent(subset event.Subset) ([]event.E, error) {
-	cmd := s.ZRangeByScore(
+	vals, err := s.ZRangeByLex(
 		eventKey+subset.Key,
 		redis.ZRangeBy{
-			Min: strconv.FormatInt(subset.Min, 10),
-			Max: "+inf",
+			Min: "[" + subset.Min.String(),
+			Max: "+",
 		},
-	)
-	vals, err := cmd.Result()
+	).Result()
 	if err != nil {
 		return nil, err
 	}
