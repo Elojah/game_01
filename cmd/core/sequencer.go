@@ -66,11 +66,12 @@ func (s *Sequencer) listenInput() {
 			if !ok {
 				return
 			}
-			if id.Compare(last) == -1 {
+			if id.Compare(last) < 0 {
 				s.logger.Info().Str("event", id.String()).Str("last", last.String()).Msg("interrupt")
 				s.interrupt <- struct{}{}
 			}
 			s.logger.Info().Str("event", id.String()).Msg("fetch post events")
+			s.min <- id
 			s.fetch <- id
 		case id := <-s.last:
 			last = id
@@ -79,6 +80,7 @@ func (s *Sequencer) listenInput() {
 }
 
 func (s *Sequencer) listenFetch() {
+	var min ulid.ID
 	for id := range s.fetch {
 		if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: id.Time()}); err != nil {
 			s.logger.Error().Err(err).Msg("failed to clear entities")
@@ -92,15 +94,30 @@ func (s *Sequencer) listenFetch() {
 			s.logger.Error().Err(err).Msg("failed to fetch events")
 			continue
 		}
+	Event:
 		for i, event := range events {
 			select {
 			case _ = <-s.interrupt:
 				// Case where interrupt ticks at previous last run but not consumed. e.g: on last iteration
 				if i != 0 {
-					s.last <- ulid.ID{}
-					break
+					s.last <- ulid.Zero()
+					break Event
+				}
+			case m := <-s.min:
+				// min is the currently consumed event so we reset min value.
+				s.logger.Info().Str("m", m.String()).Str("min", min.String()).Msg("m equal min ?")
+				if m.Equal(min) {
+					min = ulid.Zero()
+				}
+				// if min is not set yet or new value is inferior to min.
+				if min.IsZero() || m.Compare(min) < 0 {
+					min = m
 				}
 			default:
+			}
+			if !min.IsZero() && min.Compare(event.ID) < 0 {
+				s.logger.Info().Msg("skip for earlier value in queue")
+				break
 			}
 			s.last <- event.ID
 			s.process <- event

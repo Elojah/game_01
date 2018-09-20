@@ -367,7 +367,7 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 					return nAPI == 0 && nCore == 0, err
 				}
 				// Add one to fetch event because move apply at ts+1
-				expectedFELog.Current += 1
+				expectedFELog.Current++
 				return nAPI == 0 && nCore == 0, expectedFELog.Equal(feActual)
 			case 1:
 				var apyActual applyLog
