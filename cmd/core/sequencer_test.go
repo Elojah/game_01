@@ -60,11 +60,11 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), subset.Key)
+		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key)
 			switch eventStore.ListEventCount {
 			case 0:
-				assert.Equal(t, eset[0].ID.String(), subset.Min.String())
+				assert.Equal(t, eset[0].ID.String(), min.String())
 			}
 			return []event.E{eset[0]}, nil
 		}
@@ -95,9 +95,9 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), subset.Key)
-			switch subset.Min.String() {
+		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key)
+			switch min.String() {
 			case eset[0].ID.String():
 				return []event.E{eset[0]}, nil
 			case eset[1].ID.String():
@@ -139,9 +139,9 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), subset.Key)
-			switch subset.Min.String() {
+		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key)
+			switch min.String() {
 			case eset[0].ID.String():
 				return []event.E{eset[0], eset[1]}, nil
 			case eset[2].ID.String():
@@ -192,9 +192,9 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(subset event.Subset) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), subset.Key)
-			switch subset.Min.String() {
+		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key)
+			switch min.String() {
 			case eset[0].ID.String():
 				return []event.E{eset[0], eset[1]}, nil
 			case eset[2].ID.String():

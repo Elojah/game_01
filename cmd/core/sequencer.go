@@ -73,10 +73,7 @@ func (s *Sequencer) listenFetch() {
 			s.logger.Error().Err(err).Msg("failed to clear entities")
 			continue
 		}
-		events, err := s.EventStore.ListEvent(event.Subset{
-			Key: s.id.String(),
-			Min: id,
-		})
+		events, err := s.EventStore.ListEvent(s.id.String(), id)
 		if err != nil {
 			s.logger.Error().Err(err).Msg("failed to fetch events")
 			continue

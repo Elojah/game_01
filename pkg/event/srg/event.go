@@ -26,12 +26,12 @@ func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 	).Err()
 }
 
-// ListEvent retrieves event in Redis using ZRangeWithScores.
-func (s *Store) ListEvent(subset event.Subset) ([]event.E, error) {
+// ListEvent list events in redis set key from min (included).
+func (s *Store) ListEvent(key string, min ulid.ID) ([]event.E, error) {
 	vals, err := s.ZRangeByLex(
-		eventKey+subset.Key,
+		eventKey+key,
 		redis.ZRangeBy{
-			Min: "[" + subset.Min.String(),
+			Min: "[" + min.String(),
 			Max: "+",
 		},
 	).Result()
