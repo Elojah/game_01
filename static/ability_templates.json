@@ -6,9 +6,9 @@
         "Name": "Fireball",
         "MPConsumption": 10,
         "PostMPConsumption": 0,
-        "CD": "5s",
+        "CD": 5000,
         "LastUsed": 0,
-        "CastTime": "1s",
+        "CastTime": 1000,
         "Components": {
             "01CPFBN87EESQ4QA8N820RV924" : {
                 "Effects": [

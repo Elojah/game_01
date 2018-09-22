@@ -82,7 +82,6 @@ func main() {
 
 	n := 20
 	la.Expect(func(s string) (bool, error) {
-		// fmt.Println("\t", s)
 		n--
 		return n == 0, nil
 	})
