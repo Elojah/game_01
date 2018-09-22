@@ -146,14 +146,14 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete all associated PCs.
-	pcs, err := h.ListPC(entity.PCSubset{AccountID: a.ID})
+	pcs, err := h.ListPC(a.ID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to list pcs")
 		http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 		return
 	}
 	for _, pc := range pcs {
-		if err := h.DelPC(entity.PCSubset{AccountID: a.ID, ID: pc.ID}); err != nil {
+		if err := h.DelPC(a.ID, pc.ID); err != nil {
 			logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to delete pc")
 			http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 			return
@@ -161,7 +161,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete PC left number.
-	if err := h.DelPCLeft(entity.PCLeftSubset{AccountID: a.ID}); err != nil {
+	if err := h.DelPCLeft(a.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to delete pc left")
 		http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 		return

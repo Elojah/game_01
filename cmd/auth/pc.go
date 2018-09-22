@@ -91,7 +91,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Check user permission to create a new PC.
-	left, err := h.GetPCLeft(entity.PCLeftSubset{AccountID: tok.Account})
+	left, err := h.GetPCLeft(tok.Account)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -197,7 +197,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("account", tok.Account.String()).Logger()
 
 	// #Retrieve PCs by account.
-	pcs, err := h.ListPC(entity.PCSubset{AccountID: tok.Account})
+	pcs, err := h.ListPC(tok.Account)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve PCs")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -259,10 +259,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve PC for this account.
-	pc, err := h.GetPC(entity.PCSubset{
-		AccountID: tok.Account,
-		ID:        connectPC.Target,
-	})
+	pc, err := h.GetPC(tok.Account, connectPC.Target)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve PC")
 		http.Error(w, "failed to connect", http.StatusBadRequest)
