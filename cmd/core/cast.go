@@ -4,7 +4,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -16,10 +15,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Check permission token/source.
-	permission, err := a.GetPermission(entity.PermissionSubset{
-		Source: e.Token.String(),
-		Target: cast.Source.String(),
-	})
+	permission, err := a.GetPermission(e.Token.String(), cast.Source.String())
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), cast.Source.String())
 	}

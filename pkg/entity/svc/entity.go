@@ -35,10 +35,7 @@ func (s Service) Disconnect(id ulid.ID, t account.Token) error {
 	}
 
 	// #Delete token permission on entity
-	if err := s.EntityPermission.DelPermission(entity.PermissionSubset{
-		Source: t.ID.String(),
-		Target: id.String(),
-	}); err != nil {
+	if err := s.EntityPermission.DelPermission(t.ID.String(), id.String()); err != nil {
 		return errors.Wrapf(err, "delete permission %s %s", t.ID.String(), id.String())
 	}
 

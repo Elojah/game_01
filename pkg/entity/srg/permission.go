@@ -15,8 +15,8 @@ const (
 )
 
 // GetPermission implemented with redis.
-func (s *Store) GetPermission(subset entity.PermissionSubset) (entity.Permission, error) {
-	val, err := s.Get(permissionKey + subset.Source + ":" + subset.Target).Result()
+func (s *Store) GetPermission(source string, target string) (entity.Permission, error) {
+	val, err := s.Get(permissionKey + source + ":" + target).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.Permission{}, err
@@ -25,8 +25,8 @@ func (s *Store) GetPermission(subset entity.PermissionSubset) (entity.Permission
 	}
 
 	permission := entity.Permission{
-		Source: subset.Source,
-		Target: subset.Target,
+		Source: source,
+		Target: target,
 	}
 	value, err := strconv.Atoi(val)
 	permission.Value = value
@@ -39,20 +39,20 @@ func (s *Store) SetPermission(permission entity.Permission) error {
 }
 
 // DelPermission implemented with redis.
-func (s *Store) DelPermission(subset entity.PermissionSubset) error {
-	return s.Del(permissionKey + subset.Source + ":" + subset.Target).Err()
+func (s *Store) DelPermission(source string, target string) error {
+	return s.Del(permissionKey + source + ":" + target).Err()
 }
 
 // ListPermission list all entity permissions of a source.
-func (s *Store) ListPermission(subset entity.PermissionSubset) ([]entity.Permission, error) {
-	vals, err := s.Keys(permissionKey + subset.Source + ":*").Result()
+func (s *Store) ListPermission(source string) ([]entity.Permission, error) {
+	vals, err := s.Keys(permissionKey + source + ":*").Result()
 	if err != nil {
 		return nil, err
 	}
 	permissions := make([]entity.Permission, len(vals))
 	for i, val := range vals {
 		permissions[i] = entity.Permission{
-			Source: subset.Source,
+			Source: source,
 			Target: strings.Split(val, ":")[2],
 		}
 	}

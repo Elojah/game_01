@@ -13,13 +13,7 @@ type Permission struct {
 // PermissionStore defines Permission operations.
 type PermissionStore interface {
 	SetPermission(Permission) error
-	GetPermission(PermissionSubset) (Permission, error)
-	ListPermission(PermissionSubset) ([]Permission, error)
-	DelPermission(PermissionSubset) error
-}
-
-// PermissionSubset is the subset to retrieve a Permission.
-type PermissionSubset struct {
-	Source string
-	Target string
+	GetPermission(string, string) (Permission, error)
+	ListPermission(string) ([]Permission, error)
+	DelPermission(string, string) error
 }

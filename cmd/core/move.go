@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
@@ -20,10 +19,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Check permission token/source.
-	permission, err := a.GetPermission(entity.PermissionSubset{
-		Source: e.Token.String(),
-		Target: id.String(),
-	})
+	permission, err := a.GetPermission(e.Token.String(), id.String())
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), id.String())
 	}
@@ -50,10 +46,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 		go func(target ulid.ID) {
 
 			// #Check permission source/target.
-			permission, err := a.GetPermission(entity.PermissionSubset{
-				Source: id.String(),
-				Target: target.String(),
-			})
+			permission, err := a.GetPermission(id.String(), target.String())
 			if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 				errC <- errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", id.String(), target.String())
 				wg.Done()

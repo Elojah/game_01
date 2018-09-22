@@ -124,7 +124,7 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	}
 
 	// # Disconnect all entitis associated with token.
-	ps, err := s.EntityPermission.ListPermission(entity.PermissionSubset{Source: t.ID.String()})
+	ps, err := s.EntityPermission.ListPermission(t.ID.String())
 	if err != nil {
 		return errors.Wrapf(err, "list permissions for token %s", t.ID.String())
 	}
