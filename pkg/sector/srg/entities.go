@@ -10,10 +10,9 @@ const (
 )
 
 // GetEntities implemented with redis.
-func (s *Store) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
-	sectorEntities := sector.Entities{SectorID: subset.SectorID}
-	cmd := s.SMembers(sectorEntitiesKey + subset.SectorID.String())
-	vals, err := cmd.Result()
+func (s *Store) GetEntities(sectorID ulid.ID) (sector.Entities, error) {
+	sectorEntities := sector.Entities{SectorID: sectorID}
+	vals, err := s.SMembers(sectorEntitiesKey + sectorID.String()).Result()
 	if err != nil {
 		return sector.Entities{}, err
 	}

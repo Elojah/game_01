@@ -13,7 +13,6 @@ import (
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -134,14 +133,14 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	pc.Name = setPC.Name
 
 	// #Retrieve a random starter sector.
-	start, err := h.GetRandomStarter(sector.StarterSubset{})
+	start, err := h.GetRandomStarter()
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to pick random starter")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	logger = logger.With().Str("sector", start.SectorID.String()).Logger()
-	sec, err := h.SectorStore.GetSector(sector.Subset{ID: start.SectorID})
+	sec, err := h.SectorStore.GetSector(start.SectorID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

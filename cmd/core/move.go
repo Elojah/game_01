@@ -7,7 +7,6 @@ import (
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
@@ -92,7 +91,7 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve current sector
-	s, err := a.SectorStore.GetSector(sector.Subset{ID: target.Position.SectorID})
+	s, err := a.SectorStore.GetSector(target.Position.SectorID)
 	if err != nil {
 		return errors.Wrapf(err, "get sector %s", target.Position.SectorID.String())
 	}

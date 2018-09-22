@@ -11,12 +11,7 @@ type Starter struct {
 
 // StarterStore interfaces starter data interactions.
 type StarterStore interface {
-	GetRandomStarter(StarterSubset) (Starter, error)
+	GetRandomStarter() (Starter, error)
 	SetStarter(Starter) error
-	DelStarter(StarterSubset) error
-}
-
-// StarterSubset retrieves a Starter by ID.
-type StarterSubset struct {
-	ID ulid.ID
+	DelStarter(ulid.ID) error
 }

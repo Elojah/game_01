@@ -13,7 +13,7 @@ const (
 )
 
 // GetRandomStarter redis implementation.
-func (s *Store) GetRandomStarter(subset sector.StarterSubset) (sector.Starter, error) {
+func (s *Store) GetRandomStarter() (sector.Starter, error) {
 	val, err := s.SRandMember(starterKey).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -34,9 +34,9 @@ func (s *Store) SetStarter(starter sector.Starter) error {
 }
 
 // DelStarter redis implementation.
-func (s *Store) DelStarter(subset sector.StarterSubset) error {
+func (s *Store) DelStarter(id ulid.ID) error {
 	return s.SRem(
 		starterKey,
-		subset.ID.String(),
+		id.String(),
 	).Err()
 }

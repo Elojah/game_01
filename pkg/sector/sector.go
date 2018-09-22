@@ -18,10 +18,5 @@ func (s S) Out(coord geometry.Vec3) bool {
 // Store is the service for S.
 type Store interface {
 	SetSector(S) error
-	GetSector(Subset) (S, error)
-}
-
-// Subset allows to retrieve on sector by ID.
-type Subset struct {
-	ID ulid.ID
+	GetSector(ulid.ID) (S, error)
 }

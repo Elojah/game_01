@@ -9,7 +9,7 @@ import (
 
 // EntitiesStore mocks sector.EntitiesStore.
 type EntitiesStore struct {
-	GetEntitiesFunc             func(sector.EntitiesSubset) (sector.Entities, error)
+	GetEntitiesFunc             func(ulid.ID) (sector.Entities, error)
 	GetEntitiesCount            int32
 	AddEntityToSectorFunc       func(ulid.ID, ulid.ID) error
 	AddEntityToSectorCount      int32
@@ -18,12 +18,12 @@ type EntitiesStore struct {
 }
 
 // GetEntities mocks sector.EntitiesStore.
-func (s *EntitiesStore) GetEntities(subset sector.EntitiesSubset) (sector.Entities, error) {
+func (s *EntitiesStore) GetEntities(sectorID ulid.ID) (sector.Entities, error) {
 	atomic.AddInt32(&s.GetEntitiesCount, 1)
 	if s.GetEntitiesFunc == nil {
 		return sector.Entities{}, nil
 	}
-	return s.GetEntitiesFunc(subset)
+	return s.GetEntitiesFunc(sectorID)
 }
 
 // AddEntityToSector mocks sector.EntitiesStore.

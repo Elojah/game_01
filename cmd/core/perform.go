@@ -10,7 +10,6 @@ import (
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -145,9 +144,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 			)
 		}
 	} else {
-		sec, err := a.SectorStore.GetSector(sector.Subset{
-			ID: perform.Source.Position.SectorID,
-		})
+		sec, err := a.SectorStore.GetSector(perform.Source.Position.SectorID)
 		if err != nil {
 			return errors.Wrapf(err, "get sector %s", perform.Source.Position.SectorID)
 		}

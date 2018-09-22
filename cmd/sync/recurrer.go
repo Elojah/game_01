@@ -52,7 +52,7 @@ func (r *Recurrer) Run() {
 			r.logger.Error().Err(err).Msg("failed to retrieve entity")
 			continue
 		}
-		sector, err := r.SectorStore.GetSector(sector.Subset{ID: en.Position.SectorID})
+		sector, err := r.SectorStore.GetSector(en.Position.SectorID)
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve current sector")
 			continue
@@ -65,7 +65,7 @@ func (r *Recurrer) Run() {
 }
 
 func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
-	se, err := r.GetEntities(sector.EntitiesSubset{SectorID: sectorID})
+	se, err := r.GetEntities(sectorID)
 	if err != nil {
 		r.logger.Error().Err(err).Str("id", sectorID.String()).Msg("failed to retrieve sector")
 		return
