@@ -9,17 +9,9 @@ import (
 // Store is an interface for E object.
 type Store interface {
 	SetEntity(E, int64) error
-	GetEntity(Subset) (E, error)
-	DelEntity(Subset) error
-}
-
-// Subset is a subset to retrieve one entity.
-type Subset struct {
-	ID     ulid.ID
-	MinTS  int64
-	MaxTS  int64
-	Cursor uint64
-	Count  int64
+	GetEntity(ulid.ID, int64) (E, error)
+	DelEntity(ulid.ID) error
+	DelEntityByTS(ulid.ID, int64) error
 }
 
 // Service represents entity usecases.

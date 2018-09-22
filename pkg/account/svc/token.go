@@ -101,16 +101,13 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 
 	// #Reset token entity.
 	te := t.Entity
-	t.Entity = ulid.ID{}
+	t.Entity = ulid.Zero()
 	if err := s.AccountToken.SetToken(t); err != nil {
 		result = multierror.Append(result, errors.Wrapf(err, "set token %s", id.String()))
 	}
 
 	// #Retrieve entity
-	e, err := s.Entity.GetEntity(entity.Subset{
-		ID:    te,
-		MaxTS: time.Now().UnixNano(),
-	})
+	e, err := s.Entity.GetEntity(te, time.Now().Unix())
 	if err != nil {
 		// Token is valid but not connected to any entity.
 		if err == gerrors.ErrNotFound {

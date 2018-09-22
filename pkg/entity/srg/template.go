@@ -5,6 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/errors"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -12,8 +13,8 @@ const (
 )
 
 // GetTemplate implemented with redis.
-func (s *Store) GetTemplate(subset entity.TemplateSubset) (entity.Template, error) {
-	val, err := s.Get(templateKey + subset.Type.String()).Result()
+func (s *Store) GetTemplate(id ulid.ID) (entity.Template, error) {
+	val, err := s.Get(templateKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.Template{}, err

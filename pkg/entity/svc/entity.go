@@ -24,7 +24,7 @@ type Service struct {
 // Disconnect disconnects an entity.
 func (s Service) Disconnect(id ulid.ID, t account.Token) error {
 
-	e, err := s.Entity.GetEntity(entity.Subset{ID: id, MaxTS: time.Now().UnixNano()})
+	e, err := s.Entity.GetEntity(id, time.Now().Unix())
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s", id.String())
 	}
@@ -48,7 +48,7 @@ func (s Service) Disconnect(id ulid.ID, t account.Token) error {
 	}
 
 	// #Delete pc entity
-	if err := s.Entity.DelEntity(entity.Subset{ID: id}); err != nil {
+	if err := s.Entity.DelEntity(id); err != nil {
 		return errors.Wrapf(err, "delete entity %s", id.String())
 	}
 

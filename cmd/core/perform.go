@@ -7,7 +7,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/ability"
-	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
@@ -21,10 +20,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve entity
-	source, err := a.EntityStore.GetEntity(entity.Subset{
-		ID:    id,
-		MaxTS: ts,
-	})
+	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s", id.String())
 	}
@@ -103,7 +99,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve previous target state.
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: ts})
+	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
 	}

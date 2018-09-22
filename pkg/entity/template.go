@@ -9,11 +9,6 @@ type Template = E
 // TemplateStore is an interface for Template object.
 type TemplateStore interface {
 	SetTemplate(Template) error
-	GetTemplate(TemplateSubset) (Template, error)
+	GetTemplate(ulid.ID) (Template, error)
 	ListTemplate() ([]Template, error)
-}
-
-// TemplateSubset is a subset to retrieve one template.
-type TemplateSubset struct {
-	Type ulid.ID
 }

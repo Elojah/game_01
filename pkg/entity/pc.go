@@ -34,15 +34,9 @@ func (pc PC) Check() error {
 // PCStore is an interface to create a new PC.
 type PCStore interface {
 	SetPC(PC, ulid.ID) error
-	GetPC(PCSubset) (PC, error)
-	ListPC(PCSubset) ([]PC, error)
-	DelPC(PCSubset) error
-}
-
-// PCSubset represents a subset of PC by account ID.
-type PCSubset struct {
-	ID        ulid.ID
-	AccountID ulid.ID
+	GetPC(ulid.ID, ulid.ID) (PC, error)
+	ListPC(ulid.ID) ([]PC, error)
+	DelPC(ulid.ID, ulid.ID) error
 }
 
 // PCLeft represents the number of character an account can still create.
@@ -51,11 +45,6 @@ type PCLeft int
 // PCLeftStore interfaces creation/retrieval of PCLeft.
 type PCLeftStore interface {
 	SetPCLeft(PCLeft, ulid.ID) error
-	GetPCLeft(PCLeftSubset) (PCLeft, error)
-	DelPCLeft(PCLeftSubset) error
-}
-
-// PCLeftSubset represents a subset of PCLeft per account.
-type PCLeftSubset struct {
-	AccountID ulid.ID
+	GetPCLeft(ulid.ID) (PCLeft, error)
+	DelPCLeft(ulid.ID) error
 }

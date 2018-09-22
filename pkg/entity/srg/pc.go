@@ -16,8 +16,8 @@ const (
 )
 
 // ListPC implemented with redis.
-func (s *Store) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
-	keys, err := s.Keys(pcKey + subset.AccountID.String() + "*").Result()
+func (s *Store) ListPC(accountID ulid.ID) ([]entity.PC, error) {
+	keys, err := s.Keys(pcKey + accountID.String() + "*").Result()
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +37,8 @@ func (s *Store) ListPC(subset entity.PCSubset) ([]entity.PC, error) {
 }
 
 // GetPC implemented with redis.
-func (s *Store) GetPC(subset entity.PCSubset) (entity.PC, error) {
-	val, err := s.Get(pcKey + subset.AccountID.String() + ":" + subset.ID.String()).Result()
+func (s *Store) GetPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
+	val, err := s.Get(pcKey + accountID.String() + ":" + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.PC{}, err
@@ -63,8 +63,8 @@ func (s *Store) SetPC(pc entity.PC, accountID ulid.ID) error {
 }
 
 // DelPC implemented with redis.
-func (s *Store) DelPC(subset entity.PCSubset) error {
-	return s.Del(pcKey + subset.AccountID.String() + ":" + subset.ID.String()).Err()
+func (s *Store) DelPC(accountID ulid.ID, id ulid.ID) error {
+	return s.Del(pcKey + accountID.String() + ":" + id.String()).Err()
 }
 
 // SetPCLeft implemented with redis.
@@ -73,8 +73,8 @@ func (s *Store) SetPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
 }
 
 // GetPCLeft implemented with redis.
-func (s *Store) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
-	val, err := s.Get(pcLeftKey + subset.AccountID.String()).Result()
+func (s *Store) GetPCLeft(accountID ulid.ID) (entity.PCLeft, error) {
+	val, err := s.Get(pcLeftKey + accountID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return entity.PCLeft(0), err
@@ -87,6 +87,6 @@ func (s *Store) GetPCLeft(subset entity.PCLeftSubset) (entity.PCLeft, error) {
 }
 
 // DelPCLeft implemented with redis.
-func (s *Store) DelPCLeft(subset entity.PCLeftSubset) error {
-	return s.Del(pcLeftKey + subset.AccountID.String()).Err()
+func (s *Store) DelPCLeft(accountID ulid.ID) error {
+	return s.Del(pcLeftKey + accountID.String()).Err()
 }

@@ -37,7 +37,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Check MP consumption
-	source, err := a.EntityStore.GetEntity(entity.Subset{ID: cast.Source, MaxTS: ts})
+	source, err := a.EntityStore.GetEntity(cast.Source, ts)
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), ts)
 	}

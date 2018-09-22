@@ -47,7 +47,7 @@ func (r *Recurrer) Close() {
 // Run starts to read the ticker and send entities.
 func (r *Recurrer) Run() {
 	for t := range r.ticker.C {
-		en, err := r.EntityStore.GetEntity(entity.Subset{ID: r.entityID, MaxTS: t.UnixNano()})
+		en, err := r.EntityStore.GetEntity(r.entityID, t.Unix())
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve entity")
 			continue
@@ -77,7 +77,7 @@ func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
 
 func (r *Recurrer) sendEntity(entityID ulid.ID, t time.Time) {
 	// TODO Use now()-token ping instead of now()
-	e, err := r.EntityStore.GetEntity(entity.Subset{ID: entityID, MaxTS: t.UnixNano()})
+	e, err := r.EntityStore.GetEntity(entityID, t.Unix())
 	if err != nil {
 		r.logger.Error().Err(err).Str("id", entityID.String()).Msg("failed to retrieve entity")
 		return

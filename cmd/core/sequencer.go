@@ -69,7 +69,7 @@ func (s *Sequencer) listenFetch() {
 			s.logger.Info().Str("id", id.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
 			continue
 		}
-		if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: id.Time()}); err != nil {
+		if err := s.EntityStore.DelEntityByTS(s.id, id.Time()); err != nil {
 			s.logger.Error().Err(err).Msg("failed to clear entities")
 			continue
 		}

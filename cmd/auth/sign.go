@@ -102,7 +102,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 
 	// #Reset account token
 	tokID := a.Token
-	a.Token = ulid.ID{}
+	a.Token = ulid.Zero()
 	if err := h.AccountStore.SetAccount(a); err != nil {
 		logger.Error().Err(err).Msg("failed to set account")
 		http.Error(w, "failed to reset account token", http.StatusInternalServerError)

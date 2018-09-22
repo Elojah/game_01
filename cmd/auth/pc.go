@@ -114,7 +114,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("template", setPC.Type.String()).Logger()
 
 	// #Retrieve entity template for new PC.
-	template, err := h.GetTemplate(entity.TemplateSubset{Type: setPC.Type})
+	template, err := h.GetTemplate(setPC.Type)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve template")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -273,7 +273,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	e := entity.E(pc)
 	e.ID = ulid.NewID()
 	logger = logger.With().Str("entity", e.ID.String()).Logger()
-	if err := h.EntityStore.SetEntity(e, time.Now().UnixNano()); err != nil {
+	if err := h.EntityStore.SetEntity(e, time.Now().Unix()); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return

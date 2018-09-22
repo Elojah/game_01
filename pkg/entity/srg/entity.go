@@ -7,6 +7,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/errors"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -29,13 +30,13 @@ func (s *Store) SetEntity(e entity.E, ts int64) error {
 }
 
 // GetEntity retrieves entity in Redis using ZRangeWithScores.
-func (s *Store) GetEntity(subset entity.Subset) (entity.E, error) {
+func (s *Store) GetEntity(id ulid.ID, maxTS int64) (entity.E, error) {
 	cmd := s.ZRevRangeByScore(
-		entityKey+subset.ID.String(),
+		entityKey+id.String(),
 		redis.ZRangeBy{
 			Count: 1,
 			Min:   "-inf",
-			Max:   strconv.FormatInt(subset.MaxTS, 10),
+			Max:   strconv.FormatInt(maxTS, 10),
 		},
 	)
 	vals, err := cmd.Result()
@@ -52,14 +53,16 @@ func (s *Store) GetEntity(subset entity.Subset) (entity.E, error) {
 	return e, nil
 }
 
-// DelEntity deletes entity in redis.
-func (s *Store) DelEntity(subset entity.Subset) error {
-	if subset.MinTS == 0 {
-		return s.Del(entityKey + subset.ID.String()).Err()
-	}
+// DelEntity deletes all entity states in redis.
+func (s *Store) DelEntity(id ulid.ID) error {
+	return s.Del(entityKey + id.String()).Err()
+}
+
+// DelEntityByTS deletes entity states in redis from minTS to +inf.
+func (s *Store) DelEntityByTS(id ulid.ID, minTS int64) error {
 	return s.ZRemRangeByScore(
-		entityKey+subset.ID.String(),
-		strconv.FormatInt(subset.MinTS, 10),
+		entityKey+id.String(),
+		strconv.FormatInt(minTS, 10),
 		"+inf",
 	).Err()
 }

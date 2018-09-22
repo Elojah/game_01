@@ -93,7 +93,7 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve previous state target.
-	target, err := a.EntityStore.GetEntity(entity.Subset{ID: id, MaxTS: ts})
+	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
 	}
