@@ -11,12 +11,7 @@ type Sync struct {
 
 // SyncStore maps sync data interactions.
 type SyncStore interface {
-	GetRandomSync(SyncSubset) (Sync, error)
+	GetRandomSync() (Sync, error)
 	SetSync(Sync) error
-	DelSync(SyncSubset) error
-}
-
-// SyncSubset retrieves a randomly assigned core.
-type SyncSubset struct {
-	ID ulid.ID
+	DelSync(ulid.ID) error
 }

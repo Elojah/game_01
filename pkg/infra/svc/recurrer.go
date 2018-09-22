@@ -18,7 +18,7 @@ type RecurrerService struct {
 func (s RecurrerService) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer, error) {
 
 	// #Open recurrer on a random sync
-	sy, err := s.InfraSync.GetRandomSync(infra.SyncSubset{})
+	sy, err := s.InfraSync.GetRandomSync()
 	if err != nil {
 		return infra.Recurrer{}, errors.Wrap(err, "get random sync")
 	}
@@ -43,7 +43,7 @@ func (s RecurrerService) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer,
 func (s RecurrerService) Remove(id ulid.ID) error {
 
 	// #Retrieve and close recurrer
-	r, err := s.InfraRecurrer.GetRecurrer(infra.RecurrerSubset{TokenID: id})
+	r, err := s.InfraRecurrer.GetRecurrer(id)
 	if err != nil {
 		return errors.Wrapf(err, "get recurrer %s", id.String())
 	}
@@ -53,7 +53,7 @@ func (s RecurrerService) Remove(id ulid.ID) error {
 	}
 
 	// #Delete recurrer
-	if err := s.InfraRecurrer.DelRecurrer(infra.RecurrerSubset{TokenID: r.TokenID}); err != nil {
+	if err := s.InfraRecurrer.DelRecurrer(r.TokenID); err != nil {
 		return errors.Wrapf(err, "delete recurrer for token %s", r.TokenID.String())
 	}
 	return nil

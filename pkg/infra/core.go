@@ -11,12 +11,7 @@ type Core struct {
 
 // CoreStore maps core data interactions.
 type CoreStore interface {
-	GetRandomCore(CoreSubset) (Core, error)
+	GetRandomCore() (Core, error)
 	SetCore(Core) error
-	DelCore(CoreSubset) error
-}
-
-// CoreSubset retrieves a randomly assigned core.
-type CoreSubset struct {
-	ID ulid.ID
+	DelCore(ulid.ID) error
 }

@@ -18,7 +18,7 @@ type SequencerService struct {
 func (s *SequencerService) New(id ulid.ID) (infra.Sequencer, error) {
 
 	// #Open sequencer on a random core
-	c, err := s.InfraCore.GetRandomCore(infra.CoreSubset{})
+	c, err := s.InfraCore.GetRandomCore()
 	if err != nil {
 		return infra.Sequencer{}, errors.Wrap(err, "get random core")
 	}
@@ -38,7 +38,7 @@ func (s *SequencerService) New(id ulid.ID) (infra.Sequencer, error) {
 func (s *SequencerService) Remove(id ulid.ID) error {
 
 	// #Retrieve and close sequencer
-	seq, err := s.InfraSequencer.GetSequencer(infra.SequencerSubset{ID: id})
+	seq, err := s.InfraSequencer.GetSequencer(id)
 	if err != nil {
 		return errors.Wrapf(err, "get sequencer %s", id.String())
 	}
@@ -48,7 +48,7 @@ func (s *SequencerService) Remove(id ulid.ID) error {
 	}
 
 	// #Delete sequencer
-	if err := s.InfraSequencer.DelSequencer(infra.SequencerSubset{ID: seq.ID}); err != nil {
+	if err := s.InfraSequencer.DelSequencer(seq.ID); err != nil {
 		return errors.Wrapf(err, "delete sequencer %s", seq.ID.String())
 	}
 	return nil

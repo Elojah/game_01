@@ -5,6 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/infra"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -12,8 +13,8 @@ const (
 )
 
 // GetSequencer redis implementation.
-func (s *Store) GetSequencer(subset infra.SequencerSubset) (infra.Sequencer, error) {
-	val, err := s.Get(sequencerKey + subset.ID.String()).Result()
+func (s *Store) GetSequencer(id ulid.ID) (infra.Sequencer, error) {
+	val, err := s.Get(sequencerKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return infra.Sequencer{}, err
@@ -38,6 +39,6 @@ func (s *Store) SetSequencer(sequencer infra.Sequencer) error {
 }
 
 // DelSequencer deletes sequencer in redis.
-func (s *Store) DelSequencer(subset infra.SequencerSubset) error {
-	return s.Del(sequencerKey + subset.ID.String()).Err()
+func (s *Store) DelSequencer(id ulid.ID) error {
+	return s.Del(sequencerKey + id.String()).Err()
 }

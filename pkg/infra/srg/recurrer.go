@@ -5,6 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/infra"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -12,8 +13,8 @@ const (
 )
 
 // GetRecurrer redis implementation.
-func (s *Store) GetRecurrer(subset infra.RecurrerSubset) (infra.Recurrer, error) {
-	val, err := s.Get(recurrerKey + subset.TokenID.String()).Result()
+func (s *Store) GetRecurrer(tokenID ulid.ID) (infra.Recurrer, error) {
+	val, err := s.Get(recurrerKey + tokenID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return infra.Recurrer{}, err
@@ -38,6 +39,6 @@ func (s *Store) SetRecurrer(recurrer infra.Recurrer) error {
 }
 
 // DelRecurrer deletes recurrer in redis.
-func (s *Store) DelRecurrer(subset infra.RecurrerSubset) error {
-	return s.Del(recurrerKey + subset.TokenID.String()).Err()
+func (s *Store) DelRecurrer(tokenID ulid.ID) error {
+	return s.Del(recurrerKey + tokenID.String()).Err()
 }

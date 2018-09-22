@@ -13,7 +13,7 @@ const (
 )
 
 // GetRandomSync redis implementation.
-func (s *Store) GetRandomSync(subset infra.SyncSubset) (infra.Sync, error) {
+func (s *Store) GetRandomSync() (infra.Sync, error) {
 	val, err := s.SRandMember(syncKey).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -34,9 +34,9 @@ func (s *Store) SetSync(sync infra.Sync) error {
 }
 
 // DelSync redis implementation.
-func (s *Store) DelSync(subset infra.SyncSubset) error {
+func (s *Store) DelSync(id ulid.ID) error {
 	return s.SRem(
 		syncKey,
-		subset.ID.String(),
+		id.String(),
 	).Err()
 }

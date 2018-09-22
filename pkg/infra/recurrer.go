@@ -13,13 +13,8 @@ type QRecurrerStore interface {
 // RecurrerStore handles set/get methods for recurrers.
 type RecurrerStore interface {
 	SetRecurrer(Recurrer) error
-	GetRecurrer(RecurrerSubset) (Recurrer, error)
-	DelRecurrer(RecurrerSubset) error
-}
-
-// RecurrerSubset retrieves recurrer by Token ID.
-type RecurrerSubset struct {
-	TokenID ulid.ID
+	GetRecurrer(ulid.ID) (Recurrer, error)
+	DelRecurrer(ulid.ID) error
 }
 
 // RecurrerService represents recurrer usecases.

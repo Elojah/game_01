@@ -13,13 +13,8 @@ type QSequencerStore interface {
 // SequencerStore handle sequencer data interactions.
 type SequencerStore interface {
 	SetSequencer(Sequencer) error
-	GetSequencer(SequencerSubset) (Sequencer, error)
-	DelSequencer(SequencerSubset) error
-}
-
-// SequencerSubset retrieves sequencer per ID.
-type SequencerSubset struct {
-	ID ulid.ID
+	GetSequencer(ulid.ID) (Sequencer, error)
+	DelSequencer(ulid.ID) error
 }
 
 // SequencerService represents sequencer usecases.

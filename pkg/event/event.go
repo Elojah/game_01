@@ -16,9 +16,3 @@ type Store interface {
 	SetEvent(E, ulid.ID) error
 	ListEvent(string, ulid.ID) ([]E, error)
 }
-
-// Subset is a subset for actions. Internally usage done with ZRangeWithScores.
-type Subset struct {
-	Key string
-	Min ulid.ID
-}
