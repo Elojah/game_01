@@ -104,20 +104,22 @@ func (s *Sequencer) listenFetch() {
 					break Event
 				}
 			case m := <-s.min:
-				// min is the currently consumed event so we reset min value.
-				s.logger.Info().Str("m", m.String()).Str("min", min.String()).Msg("m equal min ?")
-				if m.Equal(min) {
-					min = ulid.Zero()
-				}
 				// if min is not set yet or new value is inferior to min.
 				if min.IsZero() || m.Compare(min) < 0 {
 					min = m
 				}
 			default:
 			}
-			if !min.IsZero() && min.Compare(event.ID) < 0 {
-				s.logger.Info().Msg("skip for earlier value in queue")
-				break
+			switch min.Compare(event.ID) {
+			case 0:
+				// min is the currently consumed event so we reset min value.
+				min = ulid.Zero()
+			case -1:
+				if !min.IsZero() {
+					s.logger.Info().Str("event", event.ID.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
+					s.last <- ulid.Zero()
+					break Event
+				}
 			}
 			s.last <- event.ID
 			s.process <- event

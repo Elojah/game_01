@@ -164,6 +164,7 @@ func TestSequencer(t *testing.T) {
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
+				fmt.Println(e.ID.String())
 				assert.False(t, e.Equal(eset[3]))
 				if e.Equal(eset[1]) {
 					wg.Done()
@@ -187,7 +188,6 @@ func TestSequencer(t *testing.T) {
 		seq.Handler(msg2)
 		seq.Handler(msg0)
 
-		fmt.Println("wait")
 		wg.Wait()
 
 		seq.Close()
