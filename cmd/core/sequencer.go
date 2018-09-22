@@ -25,9 +25,7 @@ type Sequencer struct {
 	fetch   tick
 	process chan event.E
 
-	min       tick
-	last      tick
-	interrupt chan struct{}
+	min tick
 
 	callback func(ulid.ID, event.E)
 }
@@ -50,38 +48,27 @@ func NewSequencer(id ulid.ID, limit int, callback func(ulid.ID, event.E)) *Seque
 		fetch:   make(tick, limit),
 		process: make(chan event.E, limit),
 
-		min:       make(tick, limit),
-		last:      make(tick, limit),
-		interrupt: make(chan struct{}, 1),
+		min: make(tick, limit),
 
 		callback: callback,
 	}
 }
 
 func (s *Sequencer) listenInput() {
-	var last ulid.ID
-	for {
-		select {
-		case id, ok := <-s.input:
-			if !ok {
-				return
-			}
-			if id.Compare(last) < 0 {
-				s.logger.Info().Str("event", id.String()).Str("last", last.String()).Msg("interrupt")
-				s.interrupt <- struct{}{}
-			}
-			s.logger.Info().Str("event", id.String()).Msg("fetch post events")
-			s.min <- id
-			s.fetch <- id
-		case id := <-s.last:
-			last = id
-		}
+	for id := range s.input {
+		s.logger.Info().Str("event", id.String()).Msg("fetch post events")
+		s.min <- id
+		s.fetch <- id
 	}
 }
 
 func (s *Sequencer) listenFetch() {
 	var min ulid.ID
 	for id := range s.fetch {
+		if !min.IsZero() && min.Compare(id) < 0 {
+			s.logger.Info().Str("id", id.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
+			continue
+		}
 		if err := s.EntityStore.DelEntity(entity.Subset{ID: s.id, MinTS: id.Time()}); err != nil {
 			s.logger.Error().Err(err).Msg("failed to clear entities")
 			continue
@@ -95,14 +82,8 @@ func (s *Sequencer) listenFetch() {
 			continue
 		}
 	Event:
-		for i, event := range events {
+		for _, event := range events {
 			select {
-			case _ = <-s.interrupt:
-				// Case where interrupt ticks at previous last run but not consumed. e.g: on last iteration
-				if i != 0 {
-					s.last <- ulid.Zero()
-					break Event
-				}
 			case m := <-s.min:
 				// if min is not set yet or new value is inferior to min.
 				if min.IsZero() || m.Compare(min) < 0 {
@@ -117,14 +98,11 @@ func (s *Sequencer) listenFetch() {
 			case -1:
 				if !min.IsZero() {
 					s.logger.Info().Str("event", event.ID.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
-					s.last <- ulid.Zero()
 					break Event
 				}
 			}
-			s.last <- event.ID
 			s.process <- event
 		}
-		s.last <- ulid.Zero()
 	}
 }
 
