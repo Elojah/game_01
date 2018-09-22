@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"sync"
 	"testing"
@@ -55,10 +54,6 @@ func TestSequencer(t *testing.T) {
 			},
 		},
 	}
-	fmt.Println(0, eset[0].ID.String())
-	fmt.Println(1, eset[1].ID.String())
-	fmt.Println(2, eset[2].ID.String())
-	fmt.Println(3, eset[3].ID.String())
 
 	t.Run("simple", func(t *testing.T) {
 
@@ -164,7 +159,6 @@ func TestSequencer(t *testing.T) {
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32,
 			func(id ulid.ID, e event.E) {
-				fmt.Println(e.ID.String())
 				assert.False(t, e.Equal(eset[3]))
 				if e.Equal(eset[1]) {
 					wg.Done()
@@ -174,7 +168,7 @@ func TestSequencer(t *testing.T) {
 		seq.EventStore = eventStore
 		seq.EntityStore = entityStore
 		seq.logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
-		// seq.logger = zerolog.Nop()
+		seq.logger = zerolog.Nop()
 		seq.Run()
 
 		raw2, err := eset[2].Marshal()

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/pkg/errors"
 
-	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
@@ -29,10 +28,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(ability.Subset{
-		ID:       cast.AbilityID,
-		EntityID: cast.Source,
-	})
+	ab, err := a.AbilityStore.GetAbility(cast.Source, cast.AbilityID)
 	if err == gerrors.ErrNotFound {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
 	}

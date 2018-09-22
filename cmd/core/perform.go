@@ -30,9 +30,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(ability.Subset{
-		ID: perform.AbilityID,
-	})
+	ab, err := a.AbilityStore.GetAbility(source.ID, perform.AbilityID)
 	if err == gerrors.ErrNotFound {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", perform.AbilityID.String(), id.String())
 	}
@@ -111,14 +109,12 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(ability.Subset{
-		ID: perform.AbilityID,
-	})
+	ab, err := a.AbilityStore.GetAbility(perform.Source.ID, perform.AbilityID)
 	if err == gerrors.ErrNotFound {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", perform.AbilityID.String(), id.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", perform.AbilityID.String(), perform.Source.ID.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", perform.AbilityID.String(), id.String())
+		return errors.Wrapf(err, "get ability %s for %s", perform.AbilityID.String(), perform.Source.ID.String())
 	}
 
 	// #Initialize feedback.
