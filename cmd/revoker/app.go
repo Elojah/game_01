@@ -32,7 +32,7 @@ func (a *app) Close() error {
 func (a *app) Run() {
 	logger := log.With().Str("revoker", "").Logger()
 
-	tokenIDs, err := a.ListTokenHC(account.TokenHCSubset{MaxTS: time.Now().Add(-a.lifespan).Unix()})
+	tokenIDs, err := a.ListTokenHC(time.Now().Add(-a.lifespan).Unix())
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
 	}

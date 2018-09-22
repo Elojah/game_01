@@ -6,7 +6,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -83,7 +82,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("username", ac.Username).Logger()
 
 	// #Retrieve account by username.
-	a, err := h.AccountStore.GetAccount(account.Subset{Username: ac.Username})
+	a, err := h.AccountStore.GetAccount(ac.Username)
 	if err != nil {
 		if err == errors.ErrNotFound {
 			logger.Error().Err(err).Msg("invalid username")
@@ -126,7 +125,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete token
-	if err := h.DelToken(account.TokenSubset{ID: tok.ID}); err != nil {
+	if err := h.DelToken(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to delete token")
 		http.Error(w, "failed to delete token", http.StatusInternalServerError)
 		return

@@ -93,7 +93,7 @@ func (a *app) Recurrer(msg *infra.Message) {
 		return
 	}
 
-	tok, err := a.GetToken(account.TokenSubset{ID: r.TokenID})
+	tok, err := a.GetToken(r.TokenID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		return

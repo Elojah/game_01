@@ -12,8 +12,8 @@ const (
 )
 
 // GetAccount implemented with redis.
-func (s *Store) GetAccount(subset account.Subset) (account.A, error) {
-	val, err := s.Get(accountKey + subset.Username).Result()
+func (s *Store) GetAccount(username string) (account.A, error) {
+	val, err := s.Get(accountKey + username).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return account.A{}, err
@@ -38,6 +38,6 @@ func (s *Store) SetAccount(a account.A) error {
 }
 
 // DelAccount redis implementation.
-func (s *Store) DelAccount(subset account.Subset) error {
-	return s.Del(accountKey + subset.Username).Err()
+func (s *Store) DelAccount(username string) error {
+	return s.Del(accountKey + username).Err()
 }

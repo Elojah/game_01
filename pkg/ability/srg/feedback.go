@@ -5,6 +5,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/errors"
+	"github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -12,8 +13,8 @@ const (
 )
 
 // GetFeedback implemented with redis.
-func (s *Store) GetFeedback(subset ability.FeedbackSubset) (ability.Feedback, error) {
-	val, err := s.Get(feedbackKey + subset.ID.String()).Result()
+func (s *Store) GetFeedback(id ulid.ID) (ability.Feedback, error) {
+	val, err := s.Get(feedbackKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return ability.Feedback{}, err

@@ -7,24 +7,14 @@ import (
 // TokenStore is the service gate for Token resource.
 type TokenStore interface {
 	SetToken(Token) error
-	GetToken(TokenSubset) (Token, error)
-	DelToken(TokenSubset) error
-}
-
-// TokenSubset retrieves a token per ID.
-type TokenSubset struct {
-	ID ulid.ID
+	GetToken(ulid.ID) (Token, error)
+	DelToken(ulid.ID) error
 }
 
 // TokenHCStore is the service gate for Token health check.
 type TokenHCStore interface {
 	SetTokenHC(ulid.ID, int64) error
-	ListTokenHC(TokenHCSubset) ([]ulid.ID, error)
-}
-
-// TokenHCSubset retrieves token healthchecks based on last tick.
-type TokenHCSubset struct {
-	MaxTS int64
+	ListTokenHC(int64) ([]ulid.ID, error)
 }
 
 // TokenService represents token usecases.

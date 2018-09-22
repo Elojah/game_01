@@ -16,8 +16,8 @@ const (
 )
 
 // GetToken redis implementation.
-func (s *Store) GetToken(subset account.TokenSubset) (account.Token, error) {
-	val, err := s.Get(tokenKey + subset.ID.String()).Result()
+func (s *Store) GetToken(id ulid.ID) (account.Token, error) {
+	val, err := s.Get(tokenKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
 			return account.Token{}, err
@@ -42,8 +42,8 @@ func (s *Store) SetToken(t account.Token) error {
 }
 
 // DelToken redis implementation.
-func (s *Store) DelToken(subset account.TokenSubset) error {
-	return s.Del(tokenKey + subset.ID.String()).Err()
+func (s *Store) DelToken(id ulid.ID) error {
+	return s.Del(tokenKey + id.String()).Err()
 }
 
 // SetTokenHC redis implementation.
@@ -58,12 +58,12 @@ func (s *Store) SetTokenHC(id ulid.ID, hc int64) error {
 }
 
 // ListTokenHC redis implementation.
-func (s *Store) ListTokenHC(subset account.TokenHCSubset) ([]ulid.ID, error) {
+func (s *Store) ListTokenHC(maxTS int64) ([]ulid.ID, error) {
 	cmd := s.ZRangeByScore(
 		tokenHCKey,
 		redis.ZRangeBy{
 			Min: "-inf",
-			Max: strconv.FormatInt(subset.MaxTS, 10),
+			Max: strconv.FormatInt(maxTS, 10),
 		},
 	)
 	vals, err := cmd.Result()

@@ -30,9 +30,7 @@ type TokenService struct {
 func (s TokenService) New(payload account.A, addr string) (account.Token, error) {
 
 	// #Search account in redis
-	a, err := s.Account.GetAccount(account.Subset{
-		Username: payload.Username,
-	})
+	a, err := s.Account.GetAccount(payload.Username)
 	if err != nil {
 		return account.Token{}, errors.Wrapf(err, "get account with username %s", payload.Username)
 	}
@@ -70,7 +68,7 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
 
 	// #Search message UUID in storage.
-	t, err := s.AccountToken.GetToken(account.TokenSubset{ID: id})
+	t, err := s.AccountToken.GetToken(id)
 	if err != nil {
 		return account.Token{}, errors.Wrapf(err, "get token %s", id.String())
 	}
@@ -91,7 +89,7 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 	var result *multierror.Error
 
 	// #Retrieve token
-	t, err := s.AccountToken.GetToken(account.TokenSubset{ID: id})
+	t, err := s.AccountToken.GetToken(id)
 	if err != nil {
 		return errors.Wrapf(err, "get token %s", id.String())
 	}
