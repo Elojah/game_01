@@ -60,8 +60,8 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), key)
+		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key.String())
 			switch eventStore.ListEventCount {
 			case 0:
 				assert.Equal(t, eset[0].ID.String(), min.String())
@@ -95,8 +95,8 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), key)
+		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
 			case eset[0].ID.String():
 				return []event.E{eset[0]}, nil
@@ -139,8 +139,8 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), key)
+		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
 			case eset[0].ID.String():
 				return []event.E{eset[0], eset[1]}, nil
@@ -192,8 +192,8 @@ func TestSequencer(t *testing.T) {
 		seqID := ulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key string, min ulid.ID) ([]event.E, error) {
-			assert.Equal(t, seqID.String(), key)
+		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
 			case eset[0].ID.String():
 				return []event.E{eset[0], eset[1]}, nil

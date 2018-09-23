@@ -120,8 +120,7 @@ func (expected eventReceivedLog) Equal(actual eventReceivedLog) error {
 type fetchEventLog struct {
 	common
 	Sequencer string
-	Current   int64
-	Time      int64
+	Event     ulid.ID
 }
 
 func (expected fetchEventLog) Equal(actual fetchEventLog) error {
@@ -131,8 +130,8 @@ func (expected fetchEventLog) Equal(actual fetchEventLog) error {
 	if _, err := ulid.Parse(actual.Sequencer); err != nil {
 		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
 	}
-	if actual.Current != expected.Current {
-		return fmt.Errorf("invalid current %d", actual.Current)
+	if !actual.Event.Equal(expected.Event) {
+		return fmt.Errorf("invalid event %s", actual.Event.String())
 	}
 
 	return nil
@@ -142,7 +141,6 @@ type applyLog struct {
 	common
 	Sequencer string
 	Event     string
-	TS        int64
 	Time      int64
 }
 
@@ -156,9 +154,6 @@ func (expected applyLog) Equal(actual applyLog) error {
 	if _, err := ulid.Parse(actual.Event); err != nil {
 		return fmt.Errorf("invalid event %s", actual.Event)
 	}
-	if actual.TS != expected.TS {
-		return fmt.Errorf("invalid ts %d", actual.TS)
-	}
 
 	return nil
 }
@@ -168,7 +163,6 @@ type appliedLog struct {
 	Core      string
 	Sequencer string
 	Event     string
-	TS        int64
 	Type      string
 	Time      int64
 }
@@ -186,9 +180,6 @@ func (expected appliedLog) Equal(actual appliedLog) error {
 	}
 	if _, err := ulid.Parse(actual.Event); err != nil {
 		return fmt.Errorf("invalid event %s", actual.Event)
-	}
-	if actual.TS != expected.TS {
-		return fmt.Errorf("invalid ts %d", actual.TS)
 	}
 	if actual.Type != expected.Type {
 		return fmt.Errorf("invalid type %s", actual.Type)
@@ -278,7 +269,7 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 			Exe:     "./bin/game_core",
 			Message: "fetch post events",
 		},
-		Current: now.UnixNano(),
+		Event: moveSameSector.ID,
 	}
 	expectedAPYLog := applyLog{
 		common: common{
@@ -286,7 +277,6 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 			Exe:     "./bin/game_core",
 			Message: "apply",
 		},
-		TS: now.UnixNano(),
 	}
 	expectedAPDLog := appliedLog{
 		common: common{
@@ -294,7 +284,6 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 			Exe:     "./bin/game_core",
 			Message: "applied",
 		},
-		TS:   now.UnixNano(),
 		Type: "move_source",
 	}
 
@@ -367,7 +356,6 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 					return nAPI == 0 && nCore == 0, err
 				}
 				// Add one to fetch event because move apply at ts+1
-				expectedFELog.Current++
 				return nAPI == 0 && nCore == 0, expectedFELog.Equal(feActual)
 			case 1:
 				var apyActual applyLog
@@ -388,10 +376,9 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		default:
 			return false, fmt.Errorf("unexpected exe %s", c.Exe)
 		}
-		// dead code for compile only
 		return false, nil
 	}); err != nil {
-		// return err
+		return err
 	}
 
 	// Check new position received and echoed by client.
@@ -421,6 +408,7 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 	})
 }
 
+/*
 func expectMoveSameSectorTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
 
 	// #SUCCESS Move same sector
@@ -504,7 +492,7 @@ func expectMoveSameSectorTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Tok
 			Exe:     "./bin/game_core",
 			Message: "fetch post events",
 		},
-		Current: now.UnixNano(),
+		Current: now.Unix(),
 	}
 	expectedAPYLog := applyLog{
 		common: common{
@@ -512,7 +500,7 @@ func expectMoveSameSectorTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Tok
 			Exe:     "./bin/game_core",
 			Message: "apply",
 		},
-		TS: now.UnixNano(),
+		TS: now.Unix(),
 	}
 	expectedAPDLog := appliedLog{
 		common: common{
@@ -520,7 +508,7 @@ func expectMoveSameSectorTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Tok
 			Exe:     "./bin/game_core",
 			Message: "applied",
 		},
-		TS:   now.UnixNano(),
+		TS:   now.Unix(),
 		Type: "move_source",
 	}
 
@@ -618,3 +606,4 @@ func expectMoveSameSectorTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Tok
 		return false, nil
 	})
 }
+*/

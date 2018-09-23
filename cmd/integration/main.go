@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/rs/zerolog"
@@ -80,11 +81,13 @@ func main() {
 	}
 	log.Info().Msg("move same sector ok")
 
+	fmt.Println("empty buffer")
 	n := 20
 	la.Expect(func(s string) (bool, error) {
 		n--
 		return n == 0, nil
 	})
+	fmt.Println("end buffer emptyage")
 
 	// if err := expectMoveSameSectorTooFar(la, laClient, tok, entClient); err != nil {
 	// 	log.Error().Err(err).Msg("move same sector too far")

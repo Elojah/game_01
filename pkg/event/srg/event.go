@@ -1,6 +1,8 @@
 package srg
 
 import (
+	"strconv"
+
 	"github.com/go-redis/redis"
 
 	"github.com/elojah/game_01/pkg/event"
@@ -20,19 +22,19 @@ func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 	return s.ZAddNX(
 		eventKey+id.String(),
 		redis.Z{
-			Score:  0, // default key for all events, must be the same for lexico order
+			Score:  float64(e.ID.Time()),
 			Member: raw,
 		},
 	).Err()
 }
 
 // ListEvent list events in redis set key from min (included).
-func (s *Store) ListEvent(key string, min ulid.ID) ([]event.E, error) {
-	vals, err := s.ZRangeByLex(
-		eventKey+key,
+func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
+	vals, err := s.ZRangeByScore(
+		eventKey+id.String(),
 		redis.ZRangeBy{
-			Min: "[" + min.String(),
-			Max: "+",
+			Min: strconv.FormatInt(min.Time(), 10),
+			Max: "+inf",
 		},
 	).Result()
 	if err != nil {
