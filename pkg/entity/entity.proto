@@ -11,7 +11,7 @@ import "github.com/elojah/game_01/pkg/geometry/position.proto";
 
 message Cast {
 	bytes AbilityID              = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	int64 TS                     = 2;
+	uint64 TS                    = 2;
 }
 
 message E {

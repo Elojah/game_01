@@ -59,7 +59,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 			// #Publish move event to target.
 			if err := a.EventQStore.PublishEvent(event.E{
-				ID: ulid.NewTimeID(ts),
+				ID: ulid.NewTimeID(ts + 1),
 				Action: event.Action{
 					MoveTarget: &event.MoveTarget{
 						Source:   id,

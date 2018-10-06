@@ -6,21 +6,21 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
-	"time"
 
+	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // SetPC represents the payload to send to create a new PC.
 type SetPC struct {
-	Token ulid.ID
+	Token gulid.ID
 	Name  string
-	Type  ulid.ID
+	Type  gulid.ID
 }
 
 // Check checks setpc validity.
@@ -36,23 +36,23 @@ func (spc SetPC) Check() error {
 
 // ListPC represents the payload to list token PCs.
 type ListPC struct {
-	Token ulid.ID
+	Token gulid.ID
 }
 
 // ConnectPC represents the payload to connect to an existing PC.
 type ConnectPC struct {
-	Token  ulid.ID
-	Target ulid.ID
+	Token  gulid.ID
+	Target gulid.ID
 }
 
 // DisconnectPC represents the payload to disconnect a token.
 type DisconnectPC struct {
-	Token ulid.ID
+	Token gulid.ID
 }
 
 // EntityPC represents the response when connecting to an existing PC.
 type EntityPC struct {
-	ID ulid.ID
+	ID gulid.ID
 }
 
 func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +123,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	// #Create PC from the template.
 	pc := entity.PC(template)
 	pc.Type = pc.ID
-	pc.ID = ulid.NewID()
+	pc.ID = gulid.NewID()
 	logger = logger.With().Str("pc", pc.ID.String()).Logger()
 	if err := pc.Check(); err != nil {
 		logger.Error().Err(err).Msg("wrong pc")
@@ -267,9 +267,9 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Creates entity cloned from pc.
 	e := entity.E(pc)
-	e.ID = ulid.NewID()
+	e.ID = gulid.NewID()
 	logger = logger.With().Str("entity", e.ID.String()).Logger()
-	if err := h.EntityStore.SetEntity(e, time.Now().Unix()); err != nil {
+	if err := h.EntityStore.SetEntity(e, ulid.Now()); err != nil {
 		logger.Error().Err(err).Msg("failed to create entity from PC")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
@@ -285,7 +285,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Add permission token/entity.
 	if err := h.SetPermission(entity.Permission{
-		ID:     ulid.NewID(),
+		ID:     gulid.NewID(),
 		Source: tok.ID.String(),
 		Target: e.ID.String(),
 	}); err != nil {
@@ -296,7 +296,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Add permission entity/entity.
 	if err := h.SetPermission(entity.Permission{
-		ID:     ulid.NewID(),
+		ID:     gulid.NewID(),
 		Source: e.ID.String(),
 		Target: e.ID.String(),
 	}); err != nil {

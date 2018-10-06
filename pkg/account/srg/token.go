@@ -47,7 +47,7 @@ func (s *Store) DelToken(id ulid.ID) error {
 }
 
 // SetTokenHC redis implementation.
-func (s *Store) SetTokenHC(id ulid.ID, hc int64) error {
+func (s *Store) SetTokenHC(id ulid.ID, hc uint64) error {
 	return s.ZAddNX(
 		tokenHCKey,
 		redis.Z{
@@ -58,12 +58,12 @@ func (s *Store) SetTokenHC(id ulid.ID, hc int64) error {
 }
 
 // ListTokenHC redis implementation.
-func (s *Store) ListTokenHC(maxTS int64) ([]ulid.ID, error) {
+func (s *Store) ListTokenHC(maxTS uint64) ([]ulid.ID, error) {
 	cmd := s.ZRangeByScore(
 		tokenHCKey,
 		redis.ZRangeBy{
 			Min: "-inf",
-			Max: strconv.FormatInt(maxTS, 10),
+			Max: strconv.FormatUint(maxTS, 10),
 		},
 	)
 	vals, err := cmd.Result()

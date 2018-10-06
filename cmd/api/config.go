@@ -7,8 +7,8 @@ import (
 // Config is the udp server structure config.
 // Tolerance in ms.
 type Config struct {
-	Tolerance int64 `json:"tolerance"`
-	ACKPort   uint  `json:"ack_port"`
+	Tolerance uint64 `json:"tolerance"`
+	ACKPort   uint   `json:"ack_port"`
 }
 
 // Equal returns is both configs are equal.
@@ -30,7 +30,7 @@ func (c *Config) Dial(fileconf interface{}) error {
 	if !ok {
 		return errors.New("key tolerance invalid. must be numeric")
 	}
-	c.Tolerance = int64(cToleranceFloat)
+	c.Tolerance = uint64(cToleranceFloat)
 
 	cACKPort, ok := fconf["ack_port"]
 	if !ok {

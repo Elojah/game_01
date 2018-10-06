@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -74,6 +75,8 @@ func main() {
 		return
 	}
 	log.Info().Msg("state ok")
+
+	time.Sleep(1 * time.Millisecond)
 
 	if err := expectMoveSameSector(la, laClient, tok, entClient); err != nil {
 		log.Error().Err(err).Msg("move same sector")

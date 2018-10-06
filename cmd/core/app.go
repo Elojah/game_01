@@ -130,30 +130,30 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Str("core", a.id.String()).
 		Str("sequencer", id.String()).
 		Str("event", e.ID.String()).
-		Int64("ts", id.Time()).
+		Uint64("ts", id.Time()).
 		Str("type", e.Action.Type()).
 		Logger()
 
 	switch e.Action.GetValue().(type) {
 	case *event.MoveSource:
 		if err := a.MoveSource(id, e); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
+			logger.Error().Err(err).Msg("move source rejected")
 		}
 	case *event.MoveTarget:
 		if err := a.MoveTarget(id, e); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
+			logger.Error().Err(err).Msg("move target rejected")
 		}
 	case *event.CastSource:
 		if err := a.CastSource(id, e); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
+			logger.Error().Err(err).Msg("cast source rejected")
 		}
 	case *event.PerformSource:
 		if err := a.PerformSource(id, e); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
+			logger.Error().Err(err).Msg("perform source rejected")
 		}
 	case *event.PerformTarget:
 		if err := a.PerformTarget(id, e); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
+			logger.Error().Err(err).Msg("perform target rejected")
 		}
 	case *event.FeedbackTarget:
 		logger.Error().Msg("not implemented")

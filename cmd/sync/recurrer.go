@@ -3,13 +3,14 @@ package main
 import (
 	"time"
 
+	"github.com/oklog/ulid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // Recurrer retrieves entity data associated to pc id and send it at regular ticks.
@@ -19,8 +20,8 @@ type Recurrer struct {
 	sector.EntitiesStore
 
 	logger   zerolog.Logger
-	id       ulid.ID
-	entityID ulid.ID
+	id       gulid.ID
+	entityID gulid.ID
 
 	ticker   *time.Ticker
 	callback func(entity.E)
@@ -47,7 +48,7 @@ func (r *Recurrer) Close() {
 // Run starts to read the ticker and send entities.
 func (r *Recurrer) Run() {
 	for t := range r.ticker.C {
-		en, err := r.EntityStore.GetEntity(r.entityID, t.Unix())
+		en, err := r.EntityStore.GetEntity(r.entityID, ulid.Timestamp(t))
 		if err != nil {
 			r.logger.Error().Err(err).Msg("failed to retrieve entity")
 			continue
@@ -64,7 +65,7 @@ func (r *Recurrer) Run() {
 	}
 }
 
-func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
+func (r *Recurrer) sendSector(sectorID gulid.ID, t time.Time) {
 	se, err := r.GetEntities(sectorID)
 	if err != nil {
 		r.logger.Error().Err(err).Str("id", sectorID.String()).Msg("failed to retrieve sector")
@@ -75,9 +76,9 @@ func (r *Recurrer) sendSector(sectorID ulid.ID, t time.Time) {
 	}
 }
 
-func (r *Recurrer) sendEntity(entityID ulid.ID, t time.Time) {
-	// TODO Use now()-token ping instead of now()
-	e, err := r.EntityStore.GetEntity(entityID, t.Unix())
+func (r *Recurrer) sendEntity(entityID gulid.ID, t time.Time) {
+	// TODO Use t-token ping instead of t.
+	e, err := r.EntityStore.GetEntity(entityID, ulid.Timestamp(t))
 	if err != nil {
 		r.logger.Error().Err(err).Str("id", entityID.String()).Msg("failed to retrieve entity")
 		return

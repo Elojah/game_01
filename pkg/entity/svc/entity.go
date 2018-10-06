@@ -1,13 +1,12 @@
 package svc
 
 import (
-	"time"
-
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
+	"github.com/oklog/ulid"
 
 	"github.com/pkg/errors"
 )
@@ -22,9 +21,9 @@ type Service struct {
 }
 
 // Disconnect disconnects an entity.
-func (s Service) Disconnect(id ulid.ID, t account.Token) error {
+func (s Service) Disconnect(id gulid.ID, t account.Token) error {
 
-	e, err := s.Entity.GetEntity(id, time.Now().Unix())
+	e, err := s.Entity.GetEntity(id, ulid.Now())
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s", id.String())
 	}

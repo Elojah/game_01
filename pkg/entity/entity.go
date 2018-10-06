@@ -8,10 +8,10 @@ import (
 
 // Store is an interface for E object.
 type Store interface {
-	SetEntity(E, int64) error
-	GetEntity(ulid.ID, int64) (E, error)
+	SetEntity(E, uint64) error
+	GetEntity(ulid.ID, uint64) (E, error)
 	DelEntity(ulid.ID) error
-	DelEntityByTS(ulid.ID, int64) error
+	DelEntityByTS(ulid.ID, uint64) error
 }
 
 // Service represents entity usecases.
@@ -20,7 +20,7 @@ type Service interface {
 }
 
 // CastAbility decreases MP (without check) and assign a new cast to entity.
-func (e *E) CastAbility(ab ability.A, ts int64) {
+func (e *E) CastAbility(ab ability.A, ts uint64) {
 	e.MP -= ab.MPConsumption
 	e.Cast = &Cast{AbilityID: ab.ID, TS: ts}
 }

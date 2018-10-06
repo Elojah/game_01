@@ -15,7 +15,7 @@ const (
 )
 
 // SetEntity implemented with redis.
-func (s *Store) SetEntity(e entity.E, ts int64) error {
+func (s *Store) SetEntity(e entity.E, ts uint64) error {
 	raw, err := e.Marshal()
 	if err != nil {
 		return err
@@ -29,14 +29,14 @@ func (s *Store) SetEntity(e entity.E, ts int64) error {
 	).Err()
 }
 
-// GetEntity retrieves entity in Redis using ZRangeWithScores.
-func (s *Store) GetEntity(id ulid.ID, max int64) (entity.E, error) {
+// GetEntity retrieves entity in Redis using ZRevRangeByScore.
+func (s *Store) GetEntity(id ulid.ID, max uint64) (entity.E, error) {
 	vals, err := s.ZRevRangeByScore(
 		entityKey+id.String(),
 		redis.ZRangeBy{
 			Count: 1,
 			Min:   "-inf",
-			Max:   strconv.FormatInt(max, 10),
+			Max:   strconv.FormatUint(max, 10),
 		},
 	).Result()
 	if err != nil {
@@ -58,10 +58,10 @@ func (s *Store) DelEntity(id ulid.ID) error {
 }
 
 // DelEntityByTS deletes entity states in redis from minTS to +inf.
-func (s *Store) DelEntityByTS(id ulid.ID, min int64) error {
+func (s *Store) DelEntityByTS(id ulid.ID, min uint64) error {
 	return s.ZRemRangeByScore(
 		entityKey+id.String(),
-		strconv.FormatInt(min, 10),
+		strconv.FormatUint(min, 10),
 		"+inf",
 	).Err()
 }

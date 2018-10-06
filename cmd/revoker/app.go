@@ -1,11 +1,11 @@
 package main
 
 import (
-	"time"
+	"github.com/oklog/ulid"
+	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
-	"github.com/elojah/game_01/pkg/ulid"
-	"github.com/rs/zerolog/log"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 type app struct {
@@ -13,7 +13,7 @@ type app struct {
 
 	TokenService account.TokenService
 
-	lifespan time.Duration
+	lifespan uint64
 }
 
 // Dial starts the auth server.
@@ -32,12 +32,12 @@ func (a *app) Close() error {
 func (a *app) Run() {
 	logger := log.With().Str("revoker", "").Logger()
 
-	tokenIDs, err := a.ListTokenHC(time.Now().Add(-a.lifespan).Unix())
+	tokenIDs, err := a.ListTokenHC(ulid.Now() - a.lifespan)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
 	}
 	for _, tokenID := range tokenIDs {
-		go func(tokenID ulid.ID) {
+		go func(tokenID gulid.ID) {
 			a.TokenService.Disconnect(tokenID)
 		}(tokenID)
 	}

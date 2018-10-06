@@ -3,10 +3,11 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"time"
+
+	"github.com/oklog/ulid"
+	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/rs/zerolog/log"
 )
 
 func (h *handler) entity(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +36,7 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("entities", len(entities)).Msg("found")
 
 	for _, e := range entities {
-		if err := h.EntityStore.SetEntity(e, time.Now().Unix()); err != nil {
+		if err := h.EntityStore.SetEntity(e, ulid.Now()); err != nil {
 			logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to set entity")
 			return
 		}

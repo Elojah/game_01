@@ -142,24 +142,24 @@ curl -k -X POST https://127.0.0.1:8081/sector/starter -d @static/sector_starter.
 # Obtain access token
 curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "testtest"}'
 curl -k -X POST https://127.0.0.1:8080/signin -d '{"username": "test", "password": "testtest"}'
-{"ID":"01CPQKFM4EEQ8MWW3D6RDRAJ5M"}
-curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CPQKFM4EEQ8MWW3D6RDRAJ5M","type":"01CE3J5ASXJSVC405QTES4M221", "name": "roger_lemour"}'
+{"ID":"01CRQZF39HF3JYKRX1SGARGQBN"}
+curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CRQZF39HF3JYKRX1SGARGQBN","type":"01CE3J5ASXJSVC405QTES4M221", "name": "roger_lemour"}'
 # Token is token obtained at signin and type is an entity ID described in templates/entity_templates.json.
-curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CPQKFM4EEQ8MWW3D6RDRAJ5M"}'
-[{"id":"01CPQKG8N8547802266NYRQH2T","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CPQKFM4EEQ8MWW3D6RDRAJ5M","target":"01CPQKG8N8547802266NYRQH2T"}'
+curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CRQZF39HF3JYKRX1SGARGQBN"}'
+[{"id":"01CRQZFPT8NV61SEGDXAF07EEX","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
+curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CRQZF39HF3JYKRX1SGARGQBN","target":"01CRQZFPT8NV61SEGDXAF07EEX"}'
 {"ID":"01CKEKJQE019KNYENTM5XDG63V"}
 # Target is a PC ID in /list results
 
-# Paste token in config_client.json: {... "app": {"token": 01CPQKFM4EEQ8MWW3D6RDRAJ5M,...}}
+# Paste token in config_client.json: {... "app": {"token": 01CRQZF39HF3JYKRX1SGARGQBN,...}}
 make client && bin/game_client configs/config_client.json
 {"type":"move","action":{"source":"01CKEKJQE019KNYENTM5XDG63V","target":"01CKEKJQE019KNYENTM5XDG63V","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
 ...
 
 # Disconnect PC only (may reconnect with same token)
-curl -k -X POST https://127.0.0.1:8080/pc/disconnect -d '{"token": "01CPQKFM4EEQ8MWW3D6RDRAJ5M"}'
+curl -k -X POST https://127.0.0.1:8080/pc/disconnect -d '{"token": "01CRQZF39HF3JYKRX1SGARGQBN"}'
 # Signout
-curl -k -X POST https://127.0.0.1:8080/signout -d '{"username": "test", "token": "01CPQKFM4EEQ8MWW3D6RDRAJ5M"}'
+curl -k -X POST https://127.0.0.1:8080/signout -d '{"username": "test", "token": "01CRQZF39HF3JYKRX1SGARGQBN"}'
 
 ```
 

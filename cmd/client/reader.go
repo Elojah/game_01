@@ -7,11 +7,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/oklog/ulid"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux/client"
 )
 
@@ -24,20 +25,20 @@ type reader struct {
 	addr net.Addr
 
 	ticker    *time.Ticker
-	tolerance int64
+	tolerance uint64
 
-	events map[ulid.ID]event.DTO
-	ack    <-chan ulid.ID
+	events map[gulid.ID]event.DTO
+	ack    <-chan gulid.ID
 	event  chan event.DTO
 }
 
-func newReader(c *client.C, ack <-chan ulid.ID) *reader {
+func newReader(c *client.C, ack <-chan gulid.ID) *reader {
 	return &reader{
 		C:       c,
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 		event:   make(chan event.DTO),
-		events:  make(map[ulid.ID]event.DTO, 0),
+		events:  make(map[gulid.ID]event.DTO, 0),
 		ack:     ack,
 	}
 }
@@ -89,7 +90,7 @@ func (r reader) HandleACK() {
 	for {
 		select {
 		case <-r.ticker.C:
-			now := time.Now().Unix()
+			now := ulid.Now()
 			for _, e := range r.events {
 				t := e.ID.Time()
 				if t > now || now-t < r.tolerance {

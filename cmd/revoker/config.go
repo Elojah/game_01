@@ -2,12 +2,11 @@ package main
 
 import (
 	"errors"
-	"time"
 )
 
 // Config is web quic server structure config.
 type Config struct {
-	Lifespan time.Duration
+	Lifespan uint64
 }
 
 // Equal returns is both configs are equal.
@@ -22,18 +21,15 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("namespace empty")
 	}
 
-	var err error
 	cLifespan, ok := fconf["lifespan"]
 	if !ok {
 		return errors.New("missing key lifespan")
 	}
-	cLifespanString, ok := cLifespan.(string)
+	cLifespanFloat64, ok := cLifespan.(float64)
 	if !ok {
-		return errors.New("key lifespan invalid. must be string")
+		return errors.New("key lifespan invalid. must be numeric")
 	}
-	if c.Lifespan, err = time.ParseDuration(cLifespanString); err != nil {
-		return err
-	}
+	c.Lifespan = uint64(cLifespanFloat64)
 
 	return nil
 }

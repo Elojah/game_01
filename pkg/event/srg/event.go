@@ -33,7 +33,7 @@ func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
 	vals, err := s.ZRangeByScore(
 		eventKey+id.String(),
 		redis.ZRangeBy{
-			Min: strconv.FormatInt(min.Time(), 10),
+			Min: strconv.FormatUint(min.Time(), 10),
 			Max: "+inf",
 		},
 	).Result()

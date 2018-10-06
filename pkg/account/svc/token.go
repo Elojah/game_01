@@ -2,16 +2,16 @@ package svc
 
 import (
 	"net"
-	"time"
 
 	multierror "github.com/hashicorp/go-multierror"
+	"github.com/oklog/ulid"
 	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // TokenService represents token usecases.
@@ -49,7 +49,7 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 
 	// #Set a new token
 	t := account.Token{
-		ID:      ulid.NewID(),
+		ID:      gulid.NewID(),
 		Account: a.ID,
 		IP:      ip.String(),
 	}
@@ -65,7 +65,7 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 }
 
 // Access retrieves a token and check IP validity.
-func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
+func (s TokenService) Access(id gulid.ID, addr string) (account.Token, error) {
 
 	// #Search message UUID in storage.
 	t, err := s.AccountToken.GetToken(id)
@@ -83,7 +83,7 @@ func (s TokenService) Access(id ulid.ID, addr string) (account.Token, error) {
 }
 
 // Disconnect closes a token and all entities/sequencer/sync associated.
-func (s TokenService) Disconnect(id ulid.ID) error {
+func (s TokenService) Disconnect(id gulid.ID) error {
 
 	// Disconnect must be permissive in case of infra failures.
 	var result *multierror.Error
@@ -101,13 +101,13 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 
 	// #Reset token entity.
 	te := t.Entity
-	t.Entity = ulid.Zero()
+	t.Entity = gulid.Zero()
 	if err := s.AccountToken.SetToken(t); err != nil {
 		result = multierror.Append(result, errors.Wrapf(err, "set token %s", id.String()))
 	}
 
 	// #Retrieve entity
-	e, err := s.Entity.GetEntity(te, time.Now().Unix())
+	e, err := s.Entity.GetEntity(te, ulid.Now())
 	if err != nil {
 		// Token is valid but not connected to any entity.
 		if err == gerrors.ErrNotFound {
@@ -129,7 +129,7 @@ func (s TokenService) Disconnect(id ulid.ID) error {
 		return errors.Wrapf(err, "list permissions for token %s", t.ID.String())
 	}
 	for _, p := range ps {
-		targetID := ulid.MustParse(p.Target)
+		targetID := gulid.MustParse(p.Target)
 		if err := s.EntityService.Disconnect(targetID, t); err != nil {
 			result = multierror.Append(result, errors.Wrapf(err, "disconnect entity %s from token %s", targetID.String(), t.ID.String()))
 		}

@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"net"
-	"time"
 
+	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -23,7 +23,7 @@ type handler struct {
 	account.TokenService
 
 	port      uint
-	tolerance int64
+	tolerance uint64
 }
 
 func (h *handler) Dial(c Config) error {
@@ -75,11 +75,11 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	go h.Send(raw, addr)
 
 	// #Check TS in tolerance range.
-	now := time.Now().Unix()
+	now := ulid.Now()
 	ts := msg.ID.Time()
 	if ts > now || now-ts > h.tolerance {
 		err := gerrors.ErrInvalidTS
-		logger.Error().Err(err).Str("status", "timeout").Int64("ts", ts).Int64("now", now).Msg("packet rejected")
+		logger.Error().Err(err).Str("status", "timeout").Uint64("ts", ts).Uint64("now", now).Msg("packet rejected")
 		return err
 	}
 

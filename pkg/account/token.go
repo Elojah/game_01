@@ -13,8 +13,8 @@ type TokenStore interface {
 
 // TokenHCStore is the service gate for Token health check.
 type TokenHCStore interface {
-	SetTokenHC(ulid.ID, int64) error
-	ListTokenHC(int64) ([]ulid.ID, error)
+	SetTokenHC(ulid.ID, uint64) error
+	ListTokenHC(uint64) ([]ulid.ID, error)
 }
 
 // TokenService represents token usecases.

@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/oklog/ulid"
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
@@ -14,53 +15,53 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	eventmocks "github.com/elojah/game_01/pkg/event/mocks"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 func TestSequencer(t *testing.T) {
 
-	now := time.Now()
-	cid := ulid.NewID().String()
+	now := ulid.Now()
+	cid := gulid.NewID().String()
 	eset := []event.E{
 		event.E{
-			ID: ulid.NewTimeID(now.Unix()),
+			ID: gulid.NewTimeID(now),
 			Action: event.Action{
 				CastSource: &event.CastSource{
-					AbilityID: ulid.NewID(),
+					AbilityID: gulid.NewID(),
 					Targets: map[string]ability.Targets{
 						cid: ability.Targets{
-							Entities: []ulid.ID{ulid.NewID(), ulid.NewID(), ulid.NewID()},
+							Entities: []gulid.ID{gulid.NewID(), gulid.NewID(), gulid.NewID()},
 						},
 					},
 				},
 			},
 		},
 		event.E{
-			ID: ulid.NewTimeID(now.Add(1 * time.Second).Unix()),
+			ID: gulid.NewTimeID(now + 1),
 			Action: event.Action{
-				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: gulid.NewID()},
 			},
 		},
 		event.E{
-			ID: ulid.NewTimeID(now.Add(2 * time.Second).Unix()),
+			ID: gulid.NewTimeID(now + 2),
 			Action: event.Action{
-				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: gulid.NewID()},
 			},
 		},
 		event.E{
-			ID: ulid.NewTimeID(now.Add(3 * time.Second).Unix()),
+			ID: gulid.NewTimeID(now + 3),
 			Action: event.Action{
-				MoveTarget: &event.MoveTarget{Source: ulid.NewID()},
+				MoveTarget: &event.MoveTarget{Source: gulid.NewID()},
 			},
 		},
 	}
 
 	t.Run("simple", func(t *testing.T) {
 
-		seqID := ulid.NewID()
+		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch eventStore.ListEventCount {
 			case 0:
@@ -72,7 +73,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32,
-			func(id ulid.ID, e event.E) {
+			func(id gulid.ID, e event.E) {
 				assert.True(t, eset[0].Equal(e))
 				wg.Done()
 			},
@@ -92,10 +93,10 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("two", func(t *testing.T) {
 
-		seqID := ulid.NewID()
+		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
 			case eset[0].ID.String():
@@ -109,7 +110,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(2)
 		seq := NewSequencer(seqID, 32,
-			func(id ulid.ID, e event.E) {
+			func(id gulid.ID, e event.E) {
 				wg.Done()
 			},
 		)
@@ -136,10 +137,10 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("cancel", func(t *testing.T) {
 
-		seqID := ulid.NewID()
+		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
 			case eset[0].ID.String():
@@ -158,7 +159,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 32,
-			func(id ulid.ID, e event.E) {
+			func(id gulid.ID, e event.E) {
 				assert.False(t, e.Equal(eset[3]))
 				if e.Equal(eset[1]) {
 					wg.Done()
@@ -189,10 +190,10 @@ func TestSequencer(t *testing.T) {
 
 	t.Run("interrupt", func(t *testing.T) {
 
-		seqID := ulid.NewID()
+		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
-		eventStore.ListEventFunc = func(key ulid.ID, min ulid.ID) ([]event.E, error) {
+		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
 			case eset[0].ID.String():
@@ -211,7 +212,7 @@ func TestSequencer(t *testing.T) {
 		var wg sync.WaitGroup
 		wg.Add(1)
 		seq := NewSequencer(seqID, 1,
-			func(id ulid.ID, e event.E) {
+			func(id gulid.ID, e event.E) {
 				if e.Equal(eset[2]) {
 					time.Sleep(5 * time.Millisecond)
 				}
