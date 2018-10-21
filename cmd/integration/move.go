@@ -384,9 +384,6 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		return err
 	}
 
-	// DBG
-	return nil
-
 	// Check new position received and echoed by client.
 	tolerance := 200 * time.Millisecond
 	timer := time.NewTimer(tolerance)
