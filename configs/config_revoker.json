@@ -1,6 +1,6 @@
 {
 	"revoker": {
-		"lifespan": "20m"
+		"lifespan": 72000
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",

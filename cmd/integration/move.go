@@ -367,7 +367,7 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 				return nAPI == 0 && nCore == 0, expectedAPYLog.Equal(apyActual)
 			case 0:
 				var apdActual appliedLog
-				apdActual.Type = "move_target"
+				expectedAPDLog.Type = "move_target"
 				if err := json.Unmarshal([]byte(s), &apdActual); err != nil {
 					return nAPI == 0 && nCore == 0, err
 				}
