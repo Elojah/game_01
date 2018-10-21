@@ -4,176 +4,32 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
-	"net"
 	"time"
+
+	"github.com/oklog/ulid"
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	gulid "github.com/elojah/game_01/pkg/ulid"
-	"github.com/oklog/ulid"
 )
 
-/*
-#Test plan
-- SUCCESS Move same sector
-- FAIL Move same sector too far
-- SUCCESS Move neighbour sector
-- FAIL Move not neighbour sector
-- FAIL Move neighbour sector too far
-*/
-
-type packetProcLog struct {
-	common
-	Packet string
-	Addr   string
-	Status string
-	Time   int64
-}
-
-func (expected packetProcLog) Equal(actual packetProcLog) error {
-	if actual.common != expected.common {
-		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
-	}
-	if _, err := gulid.Parse(actual.Packet); err != nil {
-		return fmt.Errorf("invalid packet %s", actual.Packet)
-	}
-	if actual.Status != expected.Status {
-		return fmt.Errorf("invalid status %s", actual.Status)
-	}
-	if _, err := net.ResolveUDPAddr("udp", actual.Addr); err != nil {
-		return fmt.Errorf("invalid addr %s", actual.Addr)
-	}
-	return nil
-}
-
-type packetSentLog struct {
-	common
-	Bytes   int
-	Address string
-	Time    int64
-}
-
-func (expected packetSentLog) Equal(actual packetSentLog) error {
-	if actual.common != expected.common {
-		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
-	}
-	if actual.Bytes != expected.Bytes {
-		return fmt.Errorf("invalid bytes %d", actual.Bytes)
-	}
-	if _, err := net.ResolveUDPAddr("udp", actual.Address); err != nil {
-		return fmt.Errorf("invalid addr %s", actual.Address)
-	}
-	return nil
-}
-
-type eventSendLog struct {
-	common
-	Packet string
-	Action string
-	Event  string
-	Source string
-	Time   int64
-}
-
-func (expected eventSendLog) Equal(actual eventSendLog) error {
-	if actual.common != expected.common {
-		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
-	}
-	if _, err := gulid.Parse(actual.Packet); err != nil {
-		return fmt.Errorf("invalid packet %s", actual.Packet)
-	}
-	if actual.Action != expected.Action {
-		return fmt.Errorf("invalid action %s", actual.Action)
-	}
-	if actual.Source != expected.Source {
-		return fmt.Errorf("invalid source %s", actual.Source)
-	}
-	if _, err := gulid.Parse(actual.Event); err != nil {
-		return fmt.Errorf("invalid event %s", actual.Event)
-	}
-
-	return nil
-}
-
-type eventReceivedLog struct {
-	common
-	Sequencer string
-	Event     string
-	Time      int64
-}
-
-func (expected eventReceivedLog) Equal(actual eventReceivedLog) error {
-	if actual.common != expected.common {
-		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
-	}
-	if _, err := gulid.Parse(actual.Sequencer); err != nil {
-		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
-	}
-	if _, err := gulid.Parse(actual.Event); err != nil {
-		return fmt.Errorf("invalid event %s", actual.Event)
-	}
-
-	return nil
-}
-
-type fetchEventLog struct {
-	common
-	Sequencer string
-	Event     gulid.ID
-}
-
-func (expected fetchEventLog) Equal(actual fetchEventLog) error {
-	if actual.common != expected.common {
-		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
-	}
-	if _, err := gulid.Parse(actual.Sequencer); err != nil {
-		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
-	}
-	if !actual.Event.Equal(expected.Event) {
-		return fmt.Errorf("invalid event %s", actual.Event.String())
-	}
-
-	return nil
-}
-
-type applyLog struct {
-	common
-	Sequencer string
-	Event     string
-	Time      int64
-}
-
-func (expected applyLog) Equal(actual applyLog) error {
-	if actual.common != expected.common {
-		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
-	}
-	if _, err := gulid.Parse(actual.Sequencer); err != nil {
-		return fmt.Errorf("invalid sequencer %s", actual.Sequencer)
-	}
-	if _, err := gulid.Parse(actual.Event); err != nil {
-		return fmt.Errorf("invalid event %s", actual.Event)
-	}
-
-	return nil
-}
-
-type appliedLog struct {
+type invalidActionLog struct {
 	common
 	Core      string
 	Sequencer string
 	Event     string
+	TS        int64
 	Type      string
-	Time      int64
+	// Error     int64
+	Time int64
 }
 
-func (expected appliedLog) Equal(actual appliedLog) error {
+func (expected invalidActionLog) Equal(actual invalidActionLog) error {
 	if actual.common != expected.common {
 		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
 	}
-
 	if _, err := gulid.Parse(actual.Core); err != nil {
 		return fmt.Errorf("invalid core %s", actual.Core)
 	}
@@ -186,17 +42,25 @@ func (expected appliedLog) Equal(actual appliedLog) error {
 	if actual.Type != expected.Type {
 		return fmt.Errorf("invalid type %s", actual.Type)
 	}
-
 	return nil
 }
 
-func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
+func expectMoveSameSectorTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
 
-	// #SUCCESS Move same sector
+	// #FAIL Move same sector too far
 	newCoord := geometry.Vec3{
-		X: math.Min(ent.Position.Coord.X+33, 1024),
-		Y: math.Min(ent.Position.Coord.Y+33, 1024),
-		Z: math.Min(ent.Position.Coord.Z+33, 1024),
+		X: ent.Position.Coord.X + 33,
+		Y: ent.Position.Coord.Y + 33,
+		Z: ent.Position.Coord.Z + 35,
+	}
+	if newCoord.X > 1024 {
+		newCoord.X -= 2 * 33
+	}
+	if newCoord.Y > 1024 {
+		newCoord.Y -= 2 * 33
+	}
+	if newCoord.Z > 1024 {
+		newCoord.Z -= 2 * 35
 	}
 
 	now := ulid.Now()
@@ -270,6 +134,14 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 			Exe:     "./bin/game_core",
 			Message: "apply",
 		},
+	}
+	expectedIALog := invalidActionLog{
+		common: common{
+			Level:   "error",
+			Exe:     "./bin/game_core",
+			Message: "move target rejected",
+		},
+		Type: "move_target",
 	}
 	expectedAPDLog := appliedLog{
 		common: common{
@@ -358,12 +230,11 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 				}
 				return nAPI == 0 && nCore == 0, expectedAPYLog.Equal(apyActual)
 			case 0:
-				var apdActual appliedLog
-				expectedAPDLog.Type = "move_target"
-				if err := json.Unmarshal([]byte(s), &apdActual); err != nil {
+				var iaActual invalidActionLog
+				if err := json.Unmarshal([]byte(s), &iaActual); err != nil {
 					return nAPI == 0 && nCore == 0, err
 				}
-				return nAPI == 0 && nCore == 0, expectedAPDLog.Equal(apdActual)
+				return nAPI == 0 && nCore == 0, expectedIALog.Equal(iaActual)
 			}
 			return nAPI == 0 && nCore == 0, nil
 		case "./bin/game_sync":
@@ -383,7 +254,7 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 	return ac.Expect(func(s string) (bool, error) {
 		select {
 		case <-timer.C:
-			return false, fmt.Errorf("move not applied in %s", tolerance.String())
+			return false, fmt.Errorf("sync not received in %s", tolerance.String())
 		default:
 		}
 		var actual entity.E
@@ -396,7 +267,7 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		}
 		if actual.ID.Compare(ent.ID) == 0 &&
 			actual.Position.SectorID.Compare(ent.Position.SectorID) == 0 &&
-			actual.Position.Coord == newCoord {
+			actual.Position.Coord == ent.Position.Coord {
 			return true, nil
 		}
 		return false, nil

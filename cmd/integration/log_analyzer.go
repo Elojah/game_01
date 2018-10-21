@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os/exec"
 
@@ -32,7 +33,7 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 	}
 	p.In = stdin
 
-	p.closer = make(chan struct{}, 0)
+	p.closer = make(chan struct{}, 1)
 	go func() {
 		defer stdout.Close()
 		defer stdin.Close()
@@ -100,6 +101,7 @@ func (a *LogAnalyzer) NewProcess(name string, args ...string) error {
 // Expect sends log into f and return error if f fail. Returns nil when f returns ok.
 func (a *LogAnalyzer) Expect(f func(string) (bool, error)) error {
 	for s := range a.c {
+		fmt.Println(s)
 		ok, err := f(s)
 		if err != nil {
 			return err
