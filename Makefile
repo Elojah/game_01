@@ -122,12 +122,6 @@ vendor:
 .PHONY: check
 check: lint test
 
-# Test
-.PHONY: test
-test:
-	$(info $(M) running go test…) @
-	$Q $(GO) test -cover -race -v ./...
-
 # Lint
 .PHONY: lint
 lint:
@@ -139,8 +133,13 @@ lint:
 					"--disable=goconst" \
 					"--fast" \
 					"--json" \
-					"./..." \
-			| grep -v schema.gen.go
+					"./...
+
+# Test
+.PHONY: test
+test:
+	$(info $(M) running go test…) @
+	$Q $(GO) test -cover -race -v ./...
 
 .PHONY: fmt
 fmt:

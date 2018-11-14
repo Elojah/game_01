@@ -21,6 +21,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: install linters
+          command: curl -L https://git.io/vp6lP | sh
+      - run:
           name: unit tests
           command: make check
 
