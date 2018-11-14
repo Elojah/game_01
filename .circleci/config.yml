@@ -21,6 +21,8 @@ jobs:
   deploy:
     docker:
       - image: circleci/golang:1.11
+    steps:
+      - checkout
 
 workflows:
   version: 2
