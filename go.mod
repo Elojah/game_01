@@ -7,7 +7,7 @@ require (
 	github.com/elojah/services v0.0.0-20180906131424-7b238f138836
 	github.com/go-redis/redis v6.14.1+incompatible
 	github.com/gogo/protobuf v1.1.1
-	github.com/golang/protobuf v1.1.0
+	github.com/golang/protobuf v1.1.0 // indirect
 	github.com/hashicorp/errwrap v0.0.0-20180715044906-d6c0cd880357 // indirect
 	github.com/hashicorp/go-multierror v0.0.0-20180717150148-3d5d8f294aa0
 	github.com/oklog/ulid v1.0.0
