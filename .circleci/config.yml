@@ -24,7 +24,7 @@ jobs:
       - checkout
       - run:
           name: Install linters
-          command: cd $GOPATH && curl -L https://git.io/vp6lP | sh
+          command: go get -u github.com/alecthomas/gometalinter && gometalinter --install --update
       - run:
           name: Run unit
           command: make check
