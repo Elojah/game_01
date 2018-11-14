@@ -22,8 +22,7 @@ jobs:
       - checkout
       - run:
           name: Install linters
-          command: |
-            curl -L https://git.io/vp6lP | sh
+          command: go get -u github.com/alecthomas/gometalinter
       - run:
           name: Run unit tests
           command: make check
