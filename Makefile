@@ -128,7 +128,7 @@ lint:
 	$(info $(M) running $(GOLINT)…) @
 	$Q GO_VENDOR=1 $(GOLINT)\
 					"--vendor" \
-					"--deadline" \
+					"--deadline=1m" \
 					"--disable=gotype" \
 					"--disable=vetshadow" \
 					"--disable=gocyclo" \
