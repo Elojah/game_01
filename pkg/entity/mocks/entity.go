@@ -9,18 +9,18 @@ import (
 
 // Store mocks entity.Store.
 type Store struct {
-	SetEntityFunc      func(entity.E, int64) error
+	SetEntityFunc      func(entity.E, uint64) error
 	SetEntityCount     int32
-	GetEntityFunc      func(ulid.ID, int64) (entity.E, error)
+	GetEntityFunc      func(ulid.ID, uint64) (entity.E, error)
 	GetEntityCount     int32
 	DelEntityFunc      func(ulid.ID) error
 	DelEntityCount     int32
-	DelEntityByTSFunc  func(ulid.ID, int64) error
+	DelEntityByTSFunc  func(ulid.ID, uint64) error
 	DelEntityByTSCount int32
 }
 
 // SetEntity mocks entity.Store.
-func (s *Store) SetEntity(e entity.E, ts int64) error {
+func (s *Store) SetEntity(e entity.E, ts uint64) error {
 	atomic.AddInt32(&s.SetEntityCount, 1)
 	if s.SetEntityFunc == nil {
 		return nil
@@ -29,7 +29,7 @@ func (s *Store) SetEntity(e entity.E, ts int64) error {
 }
 
 // GetEntity mocks entity.Store.
-func (s *Store) GetEntity(id ulid.ID, maxTS int64) (entity.E, error) {
+func (s *Store) GetEntity(id ulid.ID, maxTS uint64) (entity.E, error) {
 	atomic.AddInt32(&s.GetEntityCount, 1)
 	if s.GetEntityFunc == nil {
 		return entity.E{}, nil
@@ -47,7 +47,7 @@ func (s *Store) DelEntity(id ulid.ID) error {
 }
 
 // DelEntityByTS mocks entity.Store.
-func (s *Store) DelEntityByTS(id ulid.ID, minTS int64) error {
+func (s *Store) DelEntityByTS(id ulid.ID, minTS uint64) error {
 	atomic.AddInt32(&s.DelEntityByTSCount, 1)
 	if s.DelEntityByTSFunc == nil {
 		return nil
