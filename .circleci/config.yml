@@ -24,8 +24,7 @@ jobs:
       - checkout
       - run:
           name: Install linters
-          command: |
-            curl -L https://git.io/vp6lP | sh
+          command: cd $GOPATH && curl -L https://git.io/vp6lP | sh
       - run:
           name: Run unit
           command: make check
