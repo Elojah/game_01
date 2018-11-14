@@ -12,7 +12,7 @@ jobs:
           name: dependencies
           command: make vendor
           environment:
-            GO111MODULE: adjaisodjsaio
+            GO111MODULE: on
 
   test:
     docker:
