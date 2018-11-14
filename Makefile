@@ -126,7 +126,9 @@ check: lint test
 .PHONY: lint
 lint:
 	$(info $(M) running $(GOLINT)…) @
-	$Q GO_VENDOR=1 $(GOLINT) "--vendor" \
+	$Q GO_VENDOR=1 $(GOLINT)\
+					"--vendor" \
+					"--deadline" \
 					"--disable=gotype" \
 					"--disable=vetshadow" \
 					"--disable=gocyclo" \
