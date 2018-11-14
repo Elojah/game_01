@@ -53,11 +53,14 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("signin success")
-
 	// #Write response
 	w.WriteHeader(http.StatusOK)
-	w.Write(raw)
+	if _, err := w.Write(raw); err != nil {
+		logger.Error().Err(err).Msg("failed to write response")
+		return
+	}
+
+	logger.Info().Msg("signin success")
 }
 
 func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
@@ -131,8 +134,8 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("signout success")
-
 	// #Write response
 	w.WriteHeader(http.StatusOK)
+
+	logger.Info().Msg("signout success")
 }

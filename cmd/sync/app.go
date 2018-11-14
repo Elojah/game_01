@@ -3,6 +3,7 @@ package main
 import (
 	"net"
 
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -64,13 +65,20 @@ func (a *app) Run() {
 	}
 }
 
-func (a *app) Close() {
-	a.sub.Unsubscribe()
+func (a *app) Close() error {
+	var result *multierror.Error
+
+	if err := a.sub.Unsubscribe(); err != nil {
+		return err
+	}
 	for _, r := range a.recurrers {
 		if r != nil {
-			r.Close()
+			if err := r.Close(); err != nil {
+				result = multierror.Append(result, err)
+			}
 		}
 	}
+	return result.ErrorOrNil()
 }
 
 func (a *app) Recurrer(msg *infra.Message) {
@@ -87,7 +95,10 @@ func (a *app) Recurrer(msg *infra.Message) {
 	if r.Action == infra.Close {
 		rec := a.recurrers[r.TokenID]
 		if rec != nil {
-			rec.Close()
+			if err := rec.Close(); err != nil {
+				logger.Error().Err(err).Msg("failed to close recurrer")
+				return
+			}
 		}
 		delete(a.recurrers, r.TokenID)
 		return

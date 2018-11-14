@@ -38,7 +38,9 @@ func (a *app) Run() {
 	}
 	for _, tokenID := range tokenIDs {
 		go func(tokenID gulid.ID) {
-			a.TokenService.Disconnect(tokenID)
+			if err := a.TokenService.Disconnect(tokenID); err != nil {
+				logger.Error().Err(err).Str("token", tokenID.String()).Msg("failed to disconnect expired token")
+			}
 		}(tokenID)
 	}
 }

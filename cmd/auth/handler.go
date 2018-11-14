@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
@@ -54,7 +56,11 @@ func (h *handler) Dial(c Config) error {
 		Addr:    c.Address,
 		Handler: mux,
 	}
-	go func() { _ = h.srv.ListenAndServeTLS(c.Cert, c.Key) }()
+	go func() {
+		if err := h.srv.ListenAndServeTLS(c.Cert, c.Key); err != nil {
+			log.Error().Err(err).Msg("failed to start server")
+		}
+	}()
 	return nil
 }
 

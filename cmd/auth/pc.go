@@ -158,10 +158,10 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("pc creation success")
-
 	// Write response
 	w.WriteHeader(http.StatusOK)
+
+	logger.Info().Msg("pc creation success")
 }
 
 func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
@@ -211,11 +211,14 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("pc list success")
-
 	// #Write response
 	w.WriteHeader(http.StatusOK)
-	w.Write(raw)
+	if _, err := w.Write(raw); err != nil {
+		logger.Error().Err(err).Msg("failed to write response")
+		return
+	}
+
+	logger.Info().Msg("pc list success")
 }
 
 // ConnectPC creates an entity from h PC.
@@ -339,11 +342,14 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("connect pc success")
-
 	// #Write response
 	w.WriteHeader(http.StatusOK)
-	w.Write(raw)
+	if _, err := w.Write(raw); err != nil {
+		logger.Error().Err(err).Msg("failed to write response")
+		return
+	}
+
+	logger.Info().Msg("connect pc success")
 }
 
 // disconnectPC disconnects a PC.
@@ -383,8 +389,8 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	logger.Info().Msg("disconnect success")
-
 	// #Write response
 	w.WriteHeader(http.StatusOK)
+
+	logger.Info().Msg("disconnect success")
 }

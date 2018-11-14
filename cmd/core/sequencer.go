@@ -31,11 +31,12 @@ type Sequencer struct {
 }
 
 // Close kills both fetch/input goroutines.
-func (s *Sequencer) Close() {
+func (s *Sequencer) Close() error {
 	s.logger.Info().Msg("close sequencer")
 	close(s.input)
 	close(s.fetch)
 	close(s.process)
+	return nil
 }
 
 // NewSequencer returns a new sequencer with two listening goroutines to fetch/order events.

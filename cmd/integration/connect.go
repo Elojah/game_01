@@ -531,7 +531,7 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 
 func expectConnect(a *LogAnalyzer) (account.Token, entity.E, error) {
 	// ignore certificate validity
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gas
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
 	if err := expectSubscribe(a); err != nil {
 		return account.Token{}, entity.E{}, err
 	}
@@ -555,7 +555,7 @@ func expectConnect(a *LogAnalyzer) (account.Token, entity.E, error) {
 
 func expectDisconnect(a *LogAnalyzer, tok account.Token) error {
 	// ignore certificate validity
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gas
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
 	if err := expectSignout(a, tok); err != nil {
 		return err
 	}

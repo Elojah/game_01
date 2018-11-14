@@ -18,7 +18,7 @@ type process struct {
 func newProcess(out chan<- string, args ...string) (*process, error) {
 	p := &process{}
 
-	p.Cmd = exec.Command(args[0], args[1:]...) // nolint: gas
+	p.Cmd = exec.Command(args[0], args[1:]...) // nolint: gosec
 
 	stdout, err := p.Cmd.StdoutPipe()
 	if err != nil {

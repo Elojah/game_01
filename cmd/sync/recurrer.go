@@ -40,9 +40,10 @@ func NewRecurrer(rec infra.Recurrer, tick uint32, callback func(entity.E)) *Recu
 }
 
 // Close close the tick sender.
-func (r *Recurrer) Close() {
+func (r *Recurrer) Close() error {
 	r.logger.Info().Msg("close recurrer")
 	r.ticker.Stop()
+	return nil
 }
 
 // Run starts to read the ticker and send entities.

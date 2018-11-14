@@ -1,6 +1,7 @@
 package main
 
 import (
+	multierror "github.com/hashicorp/go-multierror"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/ability"
@@ -68,13 +69,20 @@ func (a *app) Run() {
 	}
 }
 
-func (a *app) Close() {
+func (a *app) Close() error {
+	var result *multierror.Error
+
 	for _, s := range a.subs {
-		s.Unsubscribe()
+		if err := s.Unsubscribe(); err != nil {
+			result = multierror.Append(result, err)
+		}
 	}
 	for _, s := range a.seqs {
-		s.Close()
+		if err := s.Close(); err != nil {
+			result = multierror.Append(result, err)
+		}
 	}
+	return result.ErrorOrNil()
 }
 
 func (a *app) Sequencer(msg *infra.Message) {
@@ -106,17 +114,20 @@ func (a *app) Sequencer(msg *infra.Message) {
 	case infra.Close:
 		seq, ok := a.seqs[sequencer.ID]
 		if !ok {
-			logger.Error().Msg("sequencer not found")
+			logger.Error().Str("sequencer", sequencer.ID.String()).Msg("sequencer not found")
 			return
 		}
-		seq.Close()
+		if err := seq.Close(); err != nil {
+			logger.Error().Err(err).Str("sequencer", sequencer.ID.String()).Msg("failed to close sequencer")
+			return
+		}
 		sub, ok := a.subs[sequencer.ID]
 		if !ok {
-			logger.Error().Msg("subscription not found")
+			logger.Error().Str("subscription", sequencer.ID.String()).Msg("subscription not found")
 			return
 		}
 		if err := sub.Unsubscribe(); err != nil {
-			logger.Error().Err(err).Msg("failed to unsubscribe")
+			logger.Error().Err(err).Str("subscription", sequencer.ID.String()).Msg("failed to unsubscribe")
 			return
 		}
 		delete(a.seqs, sequencer.ID)
