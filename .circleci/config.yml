@@ -8,7 +8,12 @@ jobs:
     working_directory: /go/src/github.com/elojah/game_01
     steps:
       - checkout
-      - run: make vendor
+      - run:
+        name: dependencies
+        command: make vendor
+        environment:
+          GO111MODULE: on
+
 
   test:
     docker:
@@ -16,7 +21,9 @@ jobs:
     working_directory: /go/src/github.com/elojah/game_01
     steps:
       - checkout
-      - run: make check
+      - run:
+          name: unit tests
+          command: make check
 
   deploy:
     docker:
