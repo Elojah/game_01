@@ -17,8 +17,6 @@ jobs:
   test:
     docker:
       - image: circleci/golang:1.11
-        environment:
-          GO111MODULE: "on"
     working_directory: /go/src/github.com/elojah/game_01
     steps:
       - checkout
@@ -28,6 +26,8 @@ jobs:
       - run:
           name: Run unit
           command: make check
+          environment:
+            GO111MODULE: "on"
 
   deploy:
     docker:
