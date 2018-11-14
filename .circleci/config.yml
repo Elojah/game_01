@@ -9,7 +9,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: dependencies
+          name: Install dependencies
           command: make vendor
           environment:
             GO111MODULE: "on"
@@ -21,10 +21,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: install linters
-          command: curl -L https://git.io/vp6lP | sh
+          name: Install linters
+          command: |
+            curl -L https://git.io/vp6lP | sh
       - run:
-          name: unit tests
+          name: Run unit tests
           command: make check
 
   deploy:
