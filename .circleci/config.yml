@@ -1,0 +1,28 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.11
+
+    working_directory: /go/src/github.com/elojah/game_01
+    steps:
+      - checkout
+      - run: make vendor
+      - run: make check
+
+  deploy:
+    docker:
+      - image: circleci/golang:1.11
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
