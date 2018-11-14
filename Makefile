@@ -133,7 +133,7 @@ lint:
 					"--disable=goconst" \
 					"--fast" \
 					"--json" \
-					"./...
+					"./..."
 
 # Test
 .PHONY: test
