@@ -22,9 +22,9 @@ jobs:
       - checkout
       - run:
           name: Install linters
-          command: go get -u github.com/alecthomas/gometalinter
+          command: go get -u github.com/alecthomas/gometalinter && gometalinter --install
       - run:
-          name: Run unit tests
+          name: Run unit
           command: make check
 
   deploy:
