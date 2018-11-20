@@ -2,7 +2,7 @@ PACKAGE   = game
 DATE     ?= $(shell date +%FT%T%z)
 VERSION  ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
 
-GO        = /snap/bin/go
+GO        = go
 GODOC     = godoc
 GOFMT     = gofmt
 GOLINT    = gometalinter
