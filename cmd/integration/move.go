@@ -18,8 +18,8 @@ import (
 
 /*
 #Test plan
-- SUCCESS Move same sector
 - FAIL Move same sector too far
+- SUCCESS Move same sector
 - SUCCESS Move neighbour sector
 - FAIL Move not neighbour sector
 - FAIL Move neighbour sector too far

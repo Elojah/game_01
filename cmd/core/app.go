@@ -149,27 +149,34 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 	case *event.MoveSource:
 		if err := a.MoveSource(id, e); err != nil {
 			logger.Error().Err(err).Msg("move source rejected")
+			return
 		}
 	case *event.MoveTarget:
 		if err := a.MoveTarget(id, e); err != nil {
 			logger.Error().Err(err).Msg("move target rejected")
+			return
 		}
 	case *event.CastSource:
 		if err := a.CastSource(id, e); err != nil {
 			logger.Error().Err(err).Msg("cast source rejected")
+			return
 		}
 	case *event.PerformSource:
 		if err := a.PerformSource(id, e); err != nil {
 			logger.Error().Err(err).Msg("perform source rejected")
+			return
 		}
 	case *event.PerformTarget:
 		if err := a.PerformTarget(id, e); err != nil {
 			logger.Error().Err(err).Msg("perform target rejected")
+			return
 		}
 	case *event.FeedbackTarget:
 		logger.Error().Msg("not implemented")
+		return
 	default:
 		logger.Error().Msg("unrecognized action")
+		return
 	}
 	logger.Info().Msg("applied")
 }
