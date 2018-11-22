@@ -92,7 +92,7 @@ func main() {
 	}
 	log.Info().Msg("move same sector too far ok")
 
-	if err := expectMoveSameSector(la, laClient, tok, entClient); err != nil {
+	if entClient, err = expectMoveSameSector(la, laClient, tok, entClient); err != nil {
 		log.Error().Err(err).Msg("move same sector")
 		return
 	}
@@ -102,7 +102,7 @@ func main() {
 		log.Error().Err(err).Msg("move same sector")
 		return
 	}
-	log.Info().Msg("move same sector ok")
+	log.Info().Msg("move not neighbour sector ok")
 
 	// if err := expectDisconnect(la, tok); err != nil {
 	// 	log.Error().Err(err).Msg("disconnect")

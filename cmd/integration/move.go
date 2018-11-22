@@ -181,7 +181,7 @@ func (expected appliedLog) Equal(actual appliedLog) error {
 	return nil
 }
 
-func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
+func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) (entity.E, error) {
 
 	// #SUCCESS Move same sector
 	newCoord := geometry.Vec3{
@@ -208,11 +208,11 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 	raw, err := json.Marshal(moveSameSector)
 	raw = append(raw, '\n')
 	if err != nil {
-		return fmt.Errorf("failed to marshal payload")
+		return ent, fmt.Errorf("failed to marshal payload")
 	}
 
 	if _, err := io.WriteString(ac.Processes["client"].In, string(raw)); err != nil {
-		return err
+		return ent, err
 	}
 
 	expectedPPLog := packetProcLog{
@@ -364,20 +364,21 @@ func expectMoveSameSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, en
 		}
 		return false, nil
 	}); err != nil {
-		return err
+		return ent, err
 	}
 
 	// Check new position received and echoed by client.
 	tolerance := 200 * time.Millisecond
 	timer := time.NewTimer(tolerance)
+
+	var actual entity.E
 	defer timer.Stop()
-	return ac.Expect(func(s string) (bool, error) {
+	return actual, ac.Expect(func(s string) (bool, error) {
 		select {
 		case <-timer.C:
 			return false, fmt.Errorf("move not applied in %s", tolerance.String())
 		default:
 		}
-		var actual entity.E
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, fmt.Errorf("invalid entity %s", s)
 		}
