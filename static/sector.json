@@ -30,5 +30,21 @@
                 "Z": 0
             }
         }
+    },
+    {
+        "ID": "01CWY2SBVN1GNCNA7HC8XT4W2V",
+        "Dim": {
+            "x": 1024,
+            "y": 1024,
+            "z": 1024
+        },
+        "Exposed": ["01CKQQPVZN5KQC8XC9Q9NK8YXQ"],
+        "Neighbours": {
+            "01CKQQPVZN5KQC8XC9Q9NK8YXQ": {
+                "X": -1024,
+                "Y": 0,
+                "Z": 0
+            }
+        }
     }
 ]

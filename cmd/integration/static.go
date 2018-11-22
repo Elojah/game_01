@@ -127,7 +127,7 @@ func expectSector(a *LogAnalyzer) error {
 		},
 		Method:  "POST",
 		Route:   "/sector",
-		Sectors: 2,
+		Sectors: 3,
 	}
 	return a.Expect(func(s string) (bool, error) {
 		var actual sector

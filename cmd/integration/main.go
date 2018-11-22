@@ -77,6 +77,15 @@ func main() {
 
 	time.Sleep(1 * time.Millisecond)
 
+	/*
+		#Test plan
+		- FAIL Move same sector too far
+		- SUCCESS Move same sector
+		- FAIL Move not neighbour sector
+		- FAIL Move neighbour sector too far
+		- SUCCESS Move neighbour sector
+	*/
+
 	if err := expectMoveSameSectorTooFar(la, laClient, tok, entClient); err != nil {
 		log.Error().Err(err).Msg("move same sector too far")
 		return
@@ -84,6 +93,12 @@ func main() {
 	log.Info().Msg("move same sector too far ok")
 
 	if err := expectMoveSameSector(la, laClient, tok, entClient); err != nil {
+		log.Error().Err(err).Msg("move same sector")
+		return
+	}
+	log.Info().Msg("move same sector ok")
+
+	if err := expectMoveNotNeighbourSector(la, laClient, tok, entClient); err != nil {
 		log.Error().Err(err).Msg("move same sector")
 		return
 	}
