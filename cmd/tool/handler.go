@@ -47,6 +47,8 @@ func (h *handler) Dial(c Config) error {
 
 	mux.HandleFunc("/sequencer", h.sequencer)
 
+	mux.HandleFunc("/entity/move", h.entityMove)
+
 	h.srv = &http.Server{
 		Addr:    c.Address,
 		Handler: mux,
