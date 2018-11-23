@@ -1,51 +1,31 @@
 package main
 
 import (
-	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"time"
-
-	"github.com/oklog/ulid"
 
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	gulid "github.com/elojah/game_01/pkg/ulid"
+	"github.com/oklog/ulid"
 )
 
-func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
+func expectMoveNeighbourSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) (entity.E, error) {
 
-	// #FAIL Move neighbour sector too far
-
-	// #Force move via tool entity at current sector frontier.
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
-
-	raw, err := json.Marshal(event.MoveSource{
-		Targets: []gulid.ID{ent.ID},
-		Position: geometry.Position{
-			Coord:    geometry.Vec3{X: 1024, Y: 1024, Z: 1024},
-			SectorID: gulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
-		},
-	})
-	if err != nil {
-		return err
+	// #SUCCESS Move neighbour sector
+	newCoord := geometry.Vec3{
+		X: 33,
+		Y: 34,
+		Z: 33,
 	}
-	resp, err := http.Post("https://localhost:8081/entity/move", "application/json", bytes.NewReader(raw))
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("invalid status code %d", resp.StatusCode)
-	}
+	newSectorID := gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ")
 
-	// #Move via api
 	now := ulid.Now()
-	moveNotNeighbourSector := event.DTO{
+	moveNeighbourSector := event.DTO{
 		ID:    gulid.NewTimeID(now),
 		Token: tok.ID,
 		Query: event.Query{
@@ -53,20 +33,20 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 				Source:  ent.ID,
 				Targets: []gulid.ID{ent.ID},
 				Position: geometry.Position{
-					SectorID: gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ"),
-					Coord:    geometry.Vec3{X: 34, Y: 34, Z: 33},
+					SectorID: newSectorID,
+					Coord:    newCoord,
 				},
 			},
 		},
 	}
-	raw, err = json.Marshal(moveNotNeighbourSector)
+	raw, err := json.Marshal(moveNeighbourSector)
 	raw = append(raw, '\n')
 	if err != nil {
-		return fmt.Errorf("failed to marshal payload")
+		return ent, fmt.Errorf("failed to marshal payload")
 	}
 
 	if _, err := io.WriteString(ac.Processes["client"].In, string(raw)); err != nil {
-		return err
+		return ent, err
 	}
 
 	expectedPPLog := packetProcLog{
@@ -107,7 +87,7 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 			Exe:     "./bin/game_core",
 			Message: "fetch post events",
 		},
-		Event: moveNotNeighbourSector.ID,
+		Event: moveNeighbourSector.ID,
 	}
 	expectedAPYLog := applyLog{
 		common: common{
@@ -115,14 +95,6 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 			Exe:     "./bin/game_core",
 			Message: "apply",
 		},
-	}
-	expectedIALog := invalidActionLog{
-		common: common{
-			Level:   "error",
-			Exe:     "./bin/game_core",
-			Message: "move target rejected",
-		},
-		Type: "move_target",
 	}
 	expectedAPDLog := appliedLog{
 		common: common{
@@ -211,36 +183,36 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 				}
 				return nAPI == 0 && nCore == 0, expectedAPYLog.Equal(apyActual)
 			case 0:
-				var iaActual invalidActionLog
-				if err := json.Unmarshal([]byte(s), &iaActual); err != nil {
+				var apdActual appliedLog
+				expectedAPDLog.Type = "move_target"
+				if err := json.Unmarshal([]byte(s), &apdActual); err != nil {
 					return nAPI == 0 && nCore == 0, err
 				}
-				return nAPI == 0 && nCore == 0, expectedIALog.Equal(iaActual)
+				return nAPI == 0 && nCore == 0, expectedAPDLog.Equal(apdActual)
 			}
 			return nAPI == 0 && nCore == 0, nil
 		case "./bin/game_sync":
-			// ignore
-		case "./bin/game_tool":
 			// ignore
 		default:
 			return false, fmt.Errorf("unexpected exe %s", c.Exe)
 		}
 		return false, nil
 	}); err != nil {
-		return err
+		return ent, err
 	}
 
 	// Check new position received and echoed by client.
 	tolerance := 200 * time.Millisecond
 	timer := time.NewTimer(tolerance)
+
+	var actual entity.E
 	defer timer.Stop()
-	return ac.Expect(func(s string) (bool, error) {
+	return actual, ac.Expect(func(s string) (bool, error) {
 		select {
 		case <-timer.C:
-			return false, fmt.Errorf("sync not received in %s", tolerance.String())
+			return false, fmt.Errorf("move not applied in %s", tolerance.String())
 		default:
 		}
-		var actual entity.E
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, fmt.Errorf("invalid entity %s", s)
 		}
@@ -249,8 +221,8 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 			return false, nil
 		}
 		if actual.ID.Compare(ent.ID) == 0 &&
-			actual.Position.SectorID.Compare(ent.Position.SectorID) == 0 &&
-			actual.Position.Coord == ent.Position.Coord {
+			actual.Position.SectorID.Compare(newSectorID) == 0 &&
+			actual.Position.Coord == newCoord {
 			return true, nil
 		}
 		return false, nil

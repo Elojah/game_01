@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 	"os/exec"
 
@@ -100,6 +101,7 @@ func (a *LogAnalyzer) NewProcess(name string, args ...string) error {
 // Expect sends log into f and return error if f fail. Returns nil when f returns ok.
 func (a *LogAnalyzer) Expect(f func(string) (bool, error)) error {
 	for s := range a.c {
+		fmt.Print(s)
 		ok, err := f(s)
 		if err != nil {
 			return err

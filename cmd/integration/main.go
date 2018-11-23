@@ -110,6 +110,13 @@ func main() {
 	}
 	log.Info().Msg("move neighbour sector too far ok")
 
+	if entClient, err = expectMoveNeighbourSector(la, laClient, tok, entClient); err != nil {
+		log.Error().Err(err).Msg("move neighbour sector")
+		return
+	}
+	log.Info().Msg("move neighbour sector ok")
+
+	_ = entClient
 	// if err := expectDisconnect(la, tok); err != nil {
 	// 	log.Error().Err(err).Msg("disconnect")
 	// 	return
