@@ -39,4 +39,5 @@ func (h *handler) postAbilityTemplates(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	w.WriteHeader(http.StatusOK)
 }

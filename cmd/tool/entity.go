@@ -41,4 +41,5 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	w.WriteHeader(http.StatusOK)
 }
