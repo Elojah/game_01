@@ -34,7 +34,7 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post("https://localhost:8081/sector", "application/json", bytes.NewReader(raw))
+	resp, err := http.Post("https://localhost:8081/entity/move", "application/json", bytes.NewReader(raw))
 	if err != nil {
 		return err
 	}
