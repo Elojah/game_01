@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"time"
 
 	"github.com/oklog/ulid"
@@ -19,6 +22,27 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 
 	// #FAIL Move neighbour sector too far
 
+	// #Force move via tool entity at current sector frontier.
+	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
+
+	raw, err := json.Marshal(event.MoveSource{
+		Position: geometry.Position{
+			Coord:    geometry.Vec3{X: 1024, Y: 1024, Z: 1024},
+			SectorID: gulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
+		},
+	})
+	if err != nil {
+		return err
+	}
+	resp, err := http.Post("https://localhost:8081/sector", "application/json", bytes.NewReader(raw))
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("invalid status code %d", resp.StatusCode)
+	}
+
+	// #Move via api
 	now := ulid.Now()
 	moveNotNeighbourSector := event.DTO{
 		ID:    gulid.NewTimeID(now),
@@ -29,12 +53,12 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 				Targets: []gulid.ID{ent.ID},
 				Position: geometry.Position{
 					SectorID: gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ"),
-					Coord:    ent.Position.Coord,
+					Coord:    geometry.Vec3{X: 34, Y: 34, Z: 33},
 				},
 			},
 		},
 	}
-	raw, err := json.Marshal(moveNotNeighbourSector)
+	raw, err = json.Marshal(moveNotNeighbourSector)
 	raw = append(raw, '\n')
 	if err != nil {
 		return fmt.Errorf("failed to marshal payload")
