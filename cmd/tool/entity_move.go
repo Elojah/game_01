@@ -69,6 +69,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "failed to set entity", http.StatusInternalServerError)
 			return
 		}
+		logger.Info().Str("entity", e.ID.String()).Msg("tool move success")
 	}
 
 	w.WriteHeader(http.StatusOK)

@@ -30,7 +30,7 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 				Targets: []gulid.ID{ent.ID},
 				Position: geometry.Position{
 					SectorID: gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ"),
-					Coord:    geometry.Vec3{X: 34, Y: 34, Z: 33},
+					Coord:    geometry.Vec3{X: 34, Y: 1024 - 34, Z: 1024 - 33},
 				},
 			},
 		},
