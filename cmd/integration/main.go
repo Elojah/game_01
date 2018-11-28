@@ -6,6 +6,23 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+
+	gulid "github.com/elojah/game_01/pkg/ulid"
+)
+
+var (
+	me = connectInfo{
+		Username: "ITEST_me_username",
+		Password: "ITEST_me_password",
+		PCName:   "ITEST_me_pcname",
+		PCType:   gulid.MustParse("01CE3J5M6QMP5A4C0GTTYFYANP"),
+	}
+	opponent0 = connectInfo{
+		Username: "ITEST_o0_username",
+		Password: "ITEST_o0_password",
+		PCName:   "ITEST_o0_pcname",
+		PCType:   gulid.MustParse("01CE3J5M6QMP5A4C0GTTYFYANP"),
+	}
 )
 
 func main() {
@@ -61,7 +78,15 @@ func main() {
 	}
 	log.Info().Msg("static ok")
 
-	tok, ent, err := expectConnect(la)
+	/*
+		#Create and use entity
+		- Create account
+		- Create new pj
+		- Connect to PJ
+		- Check client feedback
+	*/
+
+	tok, ent, err := expectConnect(la, me)
 	if err != nil {
 		log.Error().Err(err).Msg("connect")
 		return
@@ -78,10 +103,11 @@ func main() {
 	time.Sleep(1 * time.Millisecond)
 
 	/*
-		#Test plan
+		#Test entity move
 		- FAIL Move same sector too far
 		- SUCCESS Move same sector
 		- FAIL Move not neighbour sector
+		- SUCCESS Move with tool (no check)
 		- FAIL Move neighbour sector too far
 		- SUCCESS Move neighbour sector
 	*/
@@ -122,12 +148,24 @@ func main() {
 	}
 	log.Info().Msg("move neighbour sector ok")
 
+	/*
+		#Test cast mechanism
+		- Create an opponent
+	*/
+
+	toko0, ento0, err := expectConnect(la, opponent0)
+	if err != nil {
+		log.Error().Err(err).Msg("connect")
+		return
+	}
+	log.Info().Msg("connect ok")
+	_, _ = toko0, ento0
+
 	_ = entClient
 	// if err := expectDisconnect(la, tok); err != nil {
 	// 	log.Error().Err(err).Msg("disconnect")
 	// 	return
 	// }
 	// log.Info().Msg("disconnect ok")
-
 	log.Info().Msg("integration ok")
 }

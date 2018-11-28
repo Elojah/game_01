@@ -14,14 +14,12 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-var (
-	testAccount = map[string]string{
-		"username": "integration_test_username",
-		"password": "integration_test_password",
-	}
-	testPCName = "testint"
-	testPCType = ulid.MustParse("01CE3J5M6QMP5A4C0GTTYFYANP")
-)
+type connectInfo struct {
+	Username string
+	Password string
+	PCName   string
+	PCType   ulid.ID
+}
 
 type accountLog struct {
 	common
@@ -223,8 +221,11 @@ type signoutAccount struct {
 	Token    ulid.ID
 }
 
-func expectSubscribe(a *LogAnalyzer) error {
-	raw, err := json.Marshal(testAccount)
+func expectSubscribe(a *LogAnalyzer, info connectInfo) error {
+	raw, err := json.Marshal(map[string]string{
+		"username": info.Username,
+		"password": info.Password,
+	})
 	if err != nil {
 		return err
 	}
@@ -245,6 +246,13 @@ func expectSubscribe(a *LogAnalyzer) error {
 		Route:  "/subscribe",
 	}
 	return a.Expect(func(s string) (bool, error) {
+		var com common
+		if err := json.Unmarshal([]byte(s), &com); err != nil {
+			return false, err
+		}
+		if com.Exe != "./bin/game_auth" {
+			return false, nil
+		}
 		var actual accountLog
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
@@ -256,9 +264,12 @@ func expectSubscribe(a *LogAnalyzer) error {
 	})
 }
 
-func expectSignin(a *LogAnalyzer) (account.Token, error) {
+func expectSignin(a *LogAnalyzer, info connectInfo) (account.Token, error) {
 	var tok account.Token
-	raw, err := json.Marshal(testAccount)
+	raw, err := json.Marshal(map[string]string{
+		"username": info.Username,
+		"password": info.Password,
+	})
 	if err != nil {
 		return tok, err
 	}
@@ -294,11 +305,11 @@ func expectSignin(a *LogAnalyzer) (account.Token, error) {
 	})
 }
 
-func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
+func expectCreatePC(a *LogAnalyzer, tok account.Token, info connectInfo) error {
 	cpc := createPC{
 		Token: tok.ID,
-		Name:  testPCName,
-		Type:  testPCType,
+		Name:  info.PCName,
+		Type:  info.PCType,
 	}
 	raw, err := json.Marshal(cpc)
 	if err != nil {
@@ -319,10 +330,17 @@ func expectCreatePC(a *LogAnalyzer, tok account.Token) error {
 		},
 		Method:   "POST",
 		Route:    "/pc/create",
-		Template: testPCType.String(),
+		Template: info.PCType.String(),
 		Token:    tok.ID.String(),
 	}
 	return a.Expect(func(s string) (bool, error) {
+		var com common
+		if err := json.Unmarshal([]byte(s), &com); err != nil {
+			return false, err
+		}
+		if com.Exe != "./bin/game_auth" {
+			return false, nil
+		}
 		var actual createPCLog
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
@@ -459,10 +477,10 @@ func expectConnectPC(a *LogAnalyzer, tok account.Token, pc entity.PC) (entity.E,
 	})
 }
 
-func expectSignout(a *LogAnalyzer, tok account.Token) error {
+func expectSignout(a *LogAnalyzer, tok account.Token, info connectInfo) error {
 	sa := signoutAccount{
 		Token:    tok.ID,
-		Username: testAccount["username"],
+		Username: info.Username,
 	}
 	raw, err := json.Marshal(sa)
 	if err != nil {
@@ -485,6 +503,13 @@ func expectSignout(a *LogAnalyzer, tok account.Token) error {
 		Route:  "/signout",
 	}
 	return a.Expect(func(s string) (bool, error) {
+		var com common
+		if err := json.Unmarshal([]byte(s), &com); err != nil {
+			return false, err
+		}
+		if com.Exe != "./bin/game_auth" {
+			return false, nil
+		}
 		var actual tokenLog
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
@@ -496,8 +521,11 @@ func expectSignout(a *LogAnalyzer, tok account.Token) error {
 	})
 }
 
-func expectUnsubscribe(a *LogAnalyzer) error {
-	raw, err := json.Marshal(testAccount)
+func expectUnsubscribe(a *LogAnalyzer, info connectInfo) error {
+	raw, err := json.Marshal(map[string]string{
+		"username": info.Username,
+		"password": info.Password,
+	})
 	if err != nil {
 		return err
 	}
@@ -518,6 +546,13 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 		Route:  "/unsubscribe",
 	}
 	return a.Expect(func(s string) (bool, error) {
+		var com common
+		if err := json.Unmarshal([]byte(s), &com); err != nil {
+			return false, err
+		}
+		if com.Exe != "./bin/game_auth" {
+			return false, nil
+		}
 		var actual accountLog
 		if err := json.Unmarshal([]byte(s), &actual); err != nil {
 			return false, err
@@ -529,17 +564,18 @@ func expectUnsubscribe(a *LogAnalyzer) error {
 	})
 }
 
-func expectConnect(a *LogAnalyzer) (account.Token, entity.E, error) {
+func expectConnect(a *LogAnalyzer, info connectInfo) (account.Token, entity.E, error) {
 	// ignore certificate validity
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
-	if err := expectSubscribe(a); err != nil {
+
+	if err := expectSubscribe(a, info); err != nil {
 		return account.Token{}, entity.E{}, err
 	}
-	tok, err := expectSignin(a)
+	tok, err := expectSignin(a, info)
 	if err != nil {
 		return account.Token{}, entity.E{}, err
 	}
-	if err := expectCreatePC(a, tok); err != nil {
+	if err := expectCreatePC(a, tok, info); err != nil {
 		return account.Token{}, entity.E{}, err
 	}
 	pc, err := expectListPC(a, tok)
@@ -553,13 +589,13 @@ func expectConnect(a *LogAnalyzer) (account.Token, entity.E, error) {
 	return tok, e, nil
 }
 
-func expectDisconnect(a *LogAnalyzer, tok account.Token) error {
+func expectDisconnect(a *LogAnalyzer, tok account.Token, info connectInfo) error {
 	// ignore certificate validity
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
-	if err := expectSignout(a, tok); err != nil {
+	if err := expectSignout(a, tok, info); err != nil {
 		return err
 	}
-	if err := expectUnsubscribe(a); err != nil {
+	if err := expectUnsubscribe(a, info); err != nil {
 		return err
 	}
 	return nil
