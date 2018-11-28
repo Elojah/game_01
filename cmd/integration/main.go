@@ -104,6 +104,12 @@ func main() {
 	}
 	log.Info().Msg("move not neighbour sector ok")
 
+	if entClient, err = expectToolEntityMove(la, entClient); err != nil {
+		log.Error().Err(err).Msg("move entity with tool")
+		return
+	}
+	log.Info().Msg("move entity with tool ok")
+
 	if err := expectMoveNeighbourTooFar(la, laClient, tok, entClient); err != nil {
 		log.Error().Err(err).Msg("move neighbour sector too far")
 		return

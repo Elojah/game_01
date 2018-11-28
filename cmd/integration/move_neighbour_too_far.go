@@ -1,12 +1,9 @@
 package main
 
 import (
-	"bytes"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/http"
 	"time"
 
 	"github.com/oklog/ulid"
@@ -21,27 +18,6 @@ import (
 func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E) error {
 
 	// #FAIL Move neighbour sector too far
-
-	// #Force move via tool entity at current sector frontier.
-	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
-
-	raw, err := json.Marshal(event.MoveSource{
-		Targets: []gulid.ID{ent.ID},
-		Position: geometry.Position{
-			Coord:    geometry.Vec3{X: 1024, Y: 1024, Z: 1024},
-			SectorID: gulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
-		},
-	})
-	if err != nil {
-		return err
-	}
-	resp, err := http.Post("https://localhost:8081/entity/move", "application/json", bytes.NewReader(raw))
-	if err != nil {
-		return err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("invalid status code %d", resp.StatusCode)
-	}
 
 	// #Move via api
 	now := ulid.Now()
@@ -59,7 +35,7 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 			},
 		},
 	}
-	raw, err = json.Marshal(moveNotNeighbourSector)
+	raw, err := json.Marshal(moveNotNeighbourSector)
 	raw = append(raw, '\n')
 	if err != nil {
 		return fmt.Errorf("failed to marshal payload")
@@ -219,8 +195,6 @@ func expectMoveNeighbourTooFar(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 			}
 			return nAPI == 0 && nCore == 0, nil
 		case "./bin/game_sync":
-			// ignore
-		case "./bin/game_tool":
 			// ignore
 		default:
 			return false, fmt.Errorf("unexpected exe %s", c.Exe)

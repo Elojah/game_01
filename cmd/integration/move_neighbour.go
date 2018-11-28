@@ -19,7 +19,7 @@ func expectMoveNeighbourSector(a *LogAnalyzer, ac *LogAnalyzer, tok account.Toke
 	// #SUCCESS Move neighbour sector
 	newCoord := geometry.Vec3{
 		X: 33,
-		Y: 34,
+		Y: 33,
 		Z: 33,
 	}
 	newSectorID := gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ")

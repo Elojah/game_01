@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"time"
 
 	"github.com/elojah/game_01/pkg/event"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -34,13 +34,13 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ts := uint64(time.Now().Unix())
+	ts := gulid.NewID().Time()
 	for _, target := range move.Targets {
 
 		// #Get current entity state.
-		e, err := h.EntityStore.GetEntity(target, ts+10)
+		e, err := h.EntityStore.GetEntity(target, ts)
 		if err != nil {
-			logger.Error().Err(errors.Wrapf(err, "get entity %s", target.String())).Msg("failed to get entity")
+			logger.Error().Err(errors.Wrapf(err, "get entity %s at ts %d", target.String(), ts)).Msg("failed to get entity")
 			http.Error(w, "failed to retrieve entity", http.StatusInternalServerError)
 			return
 		}
