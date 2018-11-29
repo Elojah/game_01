@@ -155,12 +155,17 @@ func main() {
 
 	toko0, ento0, err := expectConnect(la, opponent0)
 	if err != nil {
-		log.Error().Err(err).Msg("connect")
+		log.Error().Err(err).Msg("connect o0")
 		return
 	}
-	log.Info().Msg("connect ok")
-	_, _ = toko0, ento0
+	log.Info().Msg("connect o0 ok")
+	if ento0, err = expectToolo0Move(la, ento0); err != nil {
+		log.Error().Err(err).Msg("move o0 with tool")
+		return
+	}
+	log.Info().Msg("move o0 with tool ok")
 
+	_, _ = toko0, ento0
 	_ = entClient
 	// if err := expectDisconnect(la, tok); err != nil {
 	// 	log.Error().Err(err).Msg("disconnect")
