@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -14,6 +16,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	cast := e.Action.GetValue().(*event.Cast)
 	ts := e.ID.Time()
 
+	fmt.Println(0)
 	// #Check permission token/source.
 	permission, err := a.GetPermission(e.Token.String(), cast.Source.String())
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
@@ -24,6 +27,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
+	fmt.Println(1)
 	ab, err := a.AbilityStore.GetAbility(cast.Source, cast.AbilityID)
 	if err == gerrors.ErrNotFound {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", cast.AbilityID.String(), cast.Source.String())
@@ -33,6 +37,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Check MP consumption
+	fmt.Println(2)
 	source, err := a.EntityStore.GetEntity(cast.Source, ts)
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s at max ts %d", cast.Source.String(), ts)
@@ -54,6 +59,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// Check targets validity (number and position number).
+	fmt.Println(3)
 	for cid, component := range ab.Components {
 		targets, ok := cast.Targets[cid]
 		if !ok {
@@ -68,12 +74,14 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state with decreased MP and casting up.
+	fmt.Println(4)
 	source.CastAbility(ab, ts)
 	if err := a.EntityStore.SetEntity(source, ts); err != nil {
 		return errors.Wrapf(err, "set entity %s", source.ID.String())
 	}
 
 	// #Publish casted event to event set.
+	fmt.Println(5)
 	if err := a.EventQStore.PublishEvent(event.E{
 		ID: ulid.NewTimeID(ts + ab.CastTime),
 		Action: event.Action{

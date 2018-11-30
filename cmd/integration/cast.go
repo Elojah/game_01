@@ -108,7 +108,7 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 	}
 
 	nAPI := 3
-	nCore := 8
+	nCore := 4
 	if err := a.Expect(func(s string) (bool, error) {
 		var c common
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
@@ -140,43 +140,17 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		case "./bin/game_core":
 			nCore--
 			switch nCore {
-			case 7:
-				var erActual eventReceivedLog
-				if err := json.Unmarshal([]byte(s), &erActual); err != nil {
-					return nAPI == 0 && nCore == 0, err
-				}
-				return nAPI == 0 && nCore == 0, expectedERLog.Equal(erActual)
-			case 6:
-				var feActual fetchEventLog
-				if err := json.Unmarshal([]byte(s), &feActual); err != nil {
-					return nAPI == 0 && nCore == 0, err
-				}
-				return nAPI == 0 && nCore == 0, expectedFELog.Equal(feActual)
-			case 5:
-				var apyActual applyLog
-				if err := json.Unmarshal([]byte(s), &apyActual); err != nil {
-					return nAPI == 0 && nCore == 0, err
-				}
-				return nAPI == 0 && nCore == 0, expectedAPYLog.Equal(apyActual)
-			case 4:
-				var apdActual appliedLog
-				if err := json.Unmarshal([]byte(s), &apdActual); err != nil {
-					return nAPI == 0 && nCore == 0, err
-				}
-				return nAPI == 0 && nCore == 0, expectedAPDLog.Equal(apdActual)
 			case 3:
 				var erActual eventReceivedLog
 				if err := json.Unmarshal([]byte(s), &erActual); err != nil {
 					return nAPI == 0 && nCore == 0, err
 				}
-				expectedFELog.Event = gulid.MustParse(erActual.Event)
 				return nAPI == 0 && nCore == 0, expectedERLog.Equal(erActual)
 			case 2:
 				var feActual fetchEventLog
 				if err := json.Unmarshal([]byte(s), &feActual); err != nil {
 					return nAPI == 0 && nCore == 0, err
 				}
-				// Add one to fetch event because cast apply at ts+1
 				return nAPI == 0 && nCore == 0, expectedFELog.Equal(feActual)
 			case 1:
 				var apyActual applyLog
@@ -186,7 +160,6 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 				return nAPI == 0 && nCore == 0, expectedAPYLog.Equal(apyActual)
 			case 0:
 				var apdActual appliedLog
-				expectedAPDLog.Type = "cast_target"
 				if err := json.Unmarshal([]byte(s), &apdActual); err != nil {
 					return nAPI == 0 && nCore == 0, err
 				}

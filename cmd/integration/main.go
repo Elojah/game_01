@@ -163,12 +163,13 @@ func main() {
 		return
 	}
 	log.Info().Msg("move o0 with tool ok")
-	if ento0, err = expectCast(la, laClient, toko0, entClient, ento0); err != nil {
+	if entClient, err = expectCast(la, laClient, toko0, entClient, ento0); err != nil {
 		log.Error().Err(err).Msg("cast on o0")
 		return
 	}
 	log.Info().Msg("cast on o0 ok")
 
+	_ = entClient
 	// if err := expectDisconnect(la, tok); err != nil {
 	// 	log.Error().Err(err).Msg("disconnect")
 	// 	return
