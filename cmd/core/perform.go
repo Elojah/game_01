@@ -182,10 +182,10 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	var result *multierror.Error
 	for _, effect := range component.Effects {
 		veffect := effect.GetValue()
-		switch veffect.(type) {
+		switch v := veffect.(type) {
 		case ability.Damage:
 			fb.Effects = append(fb.Effects, ability.EffectFeedback{
-				DamageFeedback: target.Damage(perform.Source, veffect.(ability.Damage)),
+				DamageFeedback: target.Damage(perform.Source, v),
 			})
 		case ability.Heal:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
