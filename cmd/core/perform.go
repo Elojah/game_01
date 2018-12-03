@@ -1,10 +1,9 @@
 package main
 
 import (
-	"sync"
-
 	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/elojah/game_01/pkg/ability"
 	gerrors "github.com/elojah/game_01/pkg/errors"
@@ -48,13 +47,8 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	}
 
 	// #For all ability components.
-	var result *multierror.Error
-	errC := make(chan error, 0)
-	go func() {
-		for err := range errC {
-			result = multierror.Append(result, err)
-		}
-	}()
+	var g errgroup.Group
+	var i uint64
 	for cid := range ab.Components {
 
 		// #Retrieve targets for this component.
@@ -68,12 +62,11 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 			return gerrors.ErrNotImplementedYet
 		}
 
-		var wg sync.WaitGroup
-		wg.Add(len(target.Entities))
 		for _, id := range target.Entities {
-			go func(id ulid.ID) {
-				if err := a.EventQStore.PublishEvent(event.E{
-					ID: ulid.NewTimeID(ts),
+			id := id
+			g.Go(func() error {
+				e := event.E{
+					ID: ulid.NewTimeID(ts + i),
 					Action: event.Action{
 						PerformTarget: &event.PerformTarget{
 							AbilityID:   ab.ID,
@@ -81,15 +74,19 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 							Source:      source,
 						},
 					},
-				}, id); err != nil {
-					errC <- err
 				}
-			}(id)
+				if err := a.EventQStore.PublishEvent(e, id); err != nil {
+					return errors.Wrapf(err, "publish perform target event %s to target %s", e.ID.String(), target.String())
+				}
+				return nil
+			})
 		}
-		wg.Wait()
-		close(errC)
+		if err := g.Wait(); err != nil {
+			return err
+		}
+		i++
 	}
-	return result.ErrorOrNil()
+	return nil
 }
 
 func (a *app) PerformTarget(id ulid.ID, e event.E) error {
