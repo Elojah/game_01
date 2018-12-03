@@ -1,15 +1,14 @@
 package main
 
 import (
-	"sync"
+	"github.com/pkg/errors"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/elojah/game_01/pkg/account"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/ulid"
-	multierror "github.com/hashicorp/go-multierror"
-	"github.com/pkg/errors"
 )
 
 func (a *app) MoveSource(id ulid.ID, e event.E) error {
@@ -29,36 +28,21 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 	// #TODO Check if source is not stun or forbidden to move other entities
 
 	// #For all targets.
-	var result *multierror.Error
-	errC := make(chan error, 0)
-	var wgResult sync.WaitGroup
-	wgResult.Add(1)
-	go func() {
-		for err := range errC {
-			result = multierror.Append(result, err)
-		}
-		wgResult.Done()
-	}()
-	var wg sync.WaitGroup
-	wg.Add(len(move.Targets))
+	var g errgroup.Group
 	for _, target := range move.Targets {
-		go func(target ulid.ID) {
-
+		target := target
+		g.Go(func() error {
 			// #Check permission source/target.
 			permission, err := a.GetPermission(id.String(), target.String())
 			if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-				errC <- errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", id.String(), target.String())
-				wg.Done()
-				return
+				return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", id.String(), target.String())
 			}
 			if err != nil {
-				errC <- errors.Wrapf(err, "get permission token %s for %s", id.String(), target.String())
-				wg.Done()
-				return
+				return errors.Wrapf(err, "get permission token %s for %s", id.String(), target.String())
 			}
 
 			// #Publish move event to target.
-			if err := a.EventQStore.PublishEvent(event.E{
+			e := event.E{
 				ID: ulid.NewTimeID(ts + 1),
 				Action: event.Action{
 					MoveTarget: &event.MoveTarget{
@@ -66,17 +50,15 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 						Position: move.Position,
 					},
 				},
-			}, target); err != nil {
-				errC <- err
 			}
-			wg.Done()
-		}(target)
+			if err := a.EventQStore.PublishEvent(e, target); err != nil {
+				return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
+			}
+			return nil
+		})
 	}
-	wg.Wait()
-	close(errC)
-	wgResult.Wait()
 
-	return result.ErrorOrNil()
+	return g.Wait()
 }
 
 func (a *app) MoveTarget(id ulid.ID, e event.E) error {
