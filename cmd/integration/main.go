@@ -7,6 +7,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/ability"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -163,6 +164,29 @@ func main() {
 		return
 	}
 	log.Info().Msg("move o0 with tool ok")
+	if err := expectToolSetAbility(la, ability.A{
+		ID:                gulid.NewID(),
+		Type:              gulid.MustParse("01CP2Z4SDEWZK8YF29E07GPDVC"),
+		Animation:         gulid.MustParse("00000000000000000000000000"),
+		Name:              "int_test_ability",
+		MPConsumption:     5,
+		PostMPConsumption: 0,
+		CD:                2000,
+		LastUsed:          0,
+		CastTime:          1000,
+		Components:        map[string]ability.Component{
+			// Effects              []*Effect                             `protobuf:"bytes,2,rep,name=Effects,json=effects" json:"Effects,omitempty"`
+			// NTargets             uint64                                `protobuf:"varint,3,opt,name=NTargets,json=nTargets,proto3" json:"NTargets,omitempty"`
+			// Range                float64                               `protobuf:"fixed64,4,opt,name=Range,json=range,proto3" json:"Range,omitempty"`
+			// NPositions           uint64                                `protobuf:"varint,5,opt,name=NPositions,json=nPositions,proto3" json:"NPositions,omitempty"`
+			// PositionRange        uint64                                `protobuf:"varint,6,opt,name=PositionRange,json=positionRange,proto3" json:"PositionRange,omitempty"`
+			// Shape                github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,7,opt,name=Shape,json=shape,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Shape"`
+		},
+	}, ent); err != nil {
+		log.Error().Err(err).Msg("set ability with tool")
+		return
+	}
+	log.Info().Msg("set ability with tool ok")
 	if entClient, err = expectCast(la, laClient, tok, entClient, ento0); err != nil {
 		log.Error().Err(err).Msg("cast on o0")
 		return

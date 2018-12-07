@@ -18,6 +18,30 @@ type abilityWithEntity struct {
 	EntityID gulid.ID `json:"entity_id"`
 }
 
+type toolAbilitySuccessLog struct {
+	common
+	Route   string
+	Entity  string
+	Ability string
+	Time    int64
+}
+
+func (expected toolAbilitySuccessLog) Equal(actual toolAbilitySuccessLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if _, err := gulid.Parse(actual.Entity); err != nil {
+		return fmt.Errorf("invalid entity %s", actual.Entity)
+	}
+	if _, err := gulid.Parse(actual.Ability); err != nil {
+		return fmt.Errorf("invalid entity %s", actual.Entity)
+	}
+	if actual.Route != expected.Route {
+		return fmt.Errorf("invalid route %s", actual.Route)
+	}
+	return nil
+}
+
 func expectToolSetAbility(a *LogAnalyzer, ab ability.A, ent entity.E) error {
 
 	// #Force move via tool entity at current sector frontier.
@@ -40,11 +64,11 @@ func expectToolSetAbility(a *LogAnalyzer, ab ability.A, ent entity.E) error {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}
 
-	expectedTmscLog := toolMoveSuccessLog{
+	expectedTascLog := toolAbilitySuccessLog{
 		common: common{
 			Level:   "info",
 			Exe:     "./bin/game_tool",
-			Message: "tool move success",
+			Message: "tool ability success",
 		},
 		Route: "/ability",
 	}
@@ -56,11 +80,11 @@ func expectToolSetAbility(a *LogAnalyzer, ab ability.A, ent entity.E) error {
 		switch c.Exe {
 		case "./bin/game_tool":
 			// ignore
-			var tmscActual toolMoveSuccessLog
-			if err := json.Unmarshal([]byte(s), &tmscActual); err != nil {
+			var tascActual toolAbilitySuccessLog
+			if err := json.Unmarshal([]byte(s), &tascActual); err != nil {
 				return true, err
 			}
-			return true, expectedTmscLog.Equal(tmscActual)
+			return true, expectedTascLog.Equal(tascActual)
 		case "./bin/game_sync":
 			// ignore
 		default:

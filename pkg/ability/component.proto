@@ -51,7 +51,7 @@ message Effect {
 }
 
 message Component {
-	repeated Effect Effects       = 2;
+	repeated Effect Effects       = 2 [(gogoproto.nullable) = false];
 	uint64 NTargets               = 3;
 	double Range                  = 4;
 	uint64 NPositions             = 5;
