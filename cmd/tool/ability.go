@@ -48,6 +48,7 @@ func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 			logger.Error().Err(err).Str("ability", a.A.ID.String()).Msg("failed to set ability")
 			return
 		}
+		logger.Info().Str("ability", a.A.ID.String()).Str("entity", a.EntityID.String()).Msg("tool ability success")
 	}
 	w.WriteHeader(http.StatusOK)
 }
