@@ -16,7 +16,7 @@ import (
 	"github.com/oklog/ulid"
 )
 
-func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E, o entity.E) (entity.E, error) {
+func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, abilityID gulid.ID, ent entity.E, o entity.E) (entity.E, error) {
 
 	// #SUCCESS Cast same sector
 	newCoord := geometry.Vec3{
@@ -32,7 +32,7 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 		Query: event.Query{
 			Cast: &event.Cast{
 				Source:    ent.ID,
-				AbilityID: gulid.MustParse("01CP2Z4SDEWZK8YF29E07GPDVC"),
+				AbilityID: abilityID,
 				Targets: map[string]ability.Targets{
 					"01CPFBN87EESQ4QA8N820RV924": ability.Targets{
 						Entities: []gulid.ID{o.ID},

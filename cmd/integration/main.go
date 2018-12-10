@@ -164,7 +164,7 @@ func main() {
 		return
 	}
 	log.Info().Msg("move o0 with tool ok")
-	if err := expectToolSetAbility(la, ability.A{
+	ab := ability.A{
 		ID:                gulid.NewID(),
 		Type:              gulid.MustParse("01CP2Z4SDEWZK8YF29E07GPDVC"),
 		Animation:         gulid.MustParse("00000000000000000000000000"),
@@ -189,12 +189,13 @@ func main() {
 				NPositions: 0,
 			},
 		},
-	}, ent); err != nil {
+	}
+	if err := expectToolSetAbility(la, ab, ent); err != nil {
 		log.Error().Err(err).Msg("set ability with tool")
 		return
 	}
 	log.Info().Msg("set ability with tool ok")
-	if entClient, err = expectCast(la, laClient, tok, entClient, ento0); err != nil {
+	if entClient, err = expectCast(la, laClient, tok, ab.ID, entClient, ento0); err != nil {
 		log.Error().Err(err).Msg("cast on o0")
 		return
 	}
