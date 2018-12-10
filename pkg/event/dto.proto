@@ -22,6 +22,8 @@ message Cast {
 	map<string, ability.Targets> Targets = 3 [(gogoproto.nullable)   = false];
 }
 
+// TODO Add loot and consume here
+
 message Query {
 	option (gogoproto.onlyone)           = true;
 	Move Move                            = 1;
