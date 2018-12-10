@@ -4,26 +4,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math"
 	"time"
 
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/geometry"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 	"github.com/oklog/ulid"
 )
 
-func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, abilityID gulid.ID, ent entity.E, o entity.E) (entity.E, error) {
+func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ab ability.A, ent entity.E, o entity.E) (entity.E, error) {
 
 	// #SUCCESS Cast same sector
-	newCoord := geometry.Vec3{
-		X: math.Min(ent.Position.Coord.X+33, 1024),
-		Y: math.Min(ent.Position.Coord.Y+33, 1024),
-		Z: math.Min(ent.Position.Coord.Z+33, 1024),
-	}
 
 	now := ulid.Now()
 	cast := event.DTO{
@@ -32,7 +25,7 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, abilityID gu
 		Query: event.Query{
 			Cast: &event.Cast{
 				Source:    ent.ID,
-				AbilityID: abilityID,
+				AbilityID: ab.ID,
 				Targets: map[string]ability.Targets{
 					"01CYBX32YGJ4A4T4SAMMQKQS1H": ability.Targets{
 						Entities: []gulid.ID{o.ID},
@@ -199,7 +192,9 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, abilityID gu
 		}
 		if actual.ID.Compare(ent.ID) == 0 &&
 			actual.Position.SectorID.Compare(ent.Position.SectorID) == 0 &&
-			actual.Position.Coord == newCoord {
+			actual.Position.Coord == ent.Position.Coord &&
+			actual.MP == ent.MP-ab.MPConsumption &&
+			actual.Cast.AbilityID.Compare(ab.ID) == 0 {
 			return true, nil
 		}
 		return false, nil
