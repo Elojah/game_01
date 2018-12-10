@@ -49,7 +49,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Check CD validity. if LastUsed + CD < now.
-	if ab.LastUsed+ab.CD < ts {
+	if ts-ab.CD < ab.LastUsed {
 		return errors.Wrapf(gerrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
 	}
 

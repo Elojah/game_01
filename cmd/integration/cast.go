@@ -34,7 +34,7 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, abilityID gu
 				Source:    ent.ID,
 				AbilityID: abilityID,
 				Targets: map[string]ability.Targets{
-					"01CPFBN87EESQ4QA8N820RV924": ability.Targets{
+					"01CYBX32YGJ4A4T4SAMMQKQS1H": ability.Targets{
 						Entities: []gulid.ID{o.ID},
 					},
 				},
