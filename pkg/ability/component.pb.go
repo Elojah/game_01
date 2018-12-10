@@ -62,20 +62,18 @@ var Element_value = map[string]int32{
 }
 
 func (Element) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_component_1ac7d579c587087f, []int{0}
+	return fileDescriptor_component_c29118fddc4e2a80, []int{0}
 }
 
 type Heal struct {
-	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,json=amount,proto3" json:"Amount,omitempty"`
-	Element              Element  `protobuf:"varint,2,opt,name=Element,json=element,proto3,enum=ability.Element" json:"Element,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Amount  uint64  `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Element Element `protobuf:"varint,2,opt,name=Element,proto3,enum=ability.Element" json:"Element,omitempty"`
 }
 
 func (m *Heal) Reset()      { *m = Heal{} }
 func (*Heal) ProtoMessage() {}
 func (*Heal) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1ac7d579c587087f, []int{0}
+	return fileDescriptor_component_c29118fddc4e2a80, []int{0}
 }
 func (m *Heal) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -119,16 +117,14 @@ func (m *Heal) GetElement() Element {
 }
 
 type Damage struct {
-	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,json=amount,proto3" json:"Amount,omitempty"`
-	Element              Element  `protobuf:"varint,2,opt,name=Element,json=element,proto3,enum=ability.Element" json:"Element,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Amount  uint64  `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Element Element `protobuf:"varint,2,opt,name=Element,proto3,enum=ability.Element" json:"Element,omitempty"`
 }
 
 func (m *Damage) Reset()      { *m = Damage{} }
 func (*Damage) ProtoMessage() {}
 func (*Damage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1ac7d579c587087f, []int{1}
+	return fileDescriptor_component_c29118fddc4e2a80, []int{1}
 }
 func (m *Damage) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -172,18 +168,16 @@ func (m *Damage) GetElement() Element {
 }
 
 type HealOverTime struct {
-	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,json=amount,proto3" json:"Amount,omitempty"`
-	Element              Element  `protobuf:"varint,2,opt,name=Element,json=element,proto3,enum=ability.Element" json:"Element,omitempty"`
-	Frequency            uint64   `protobuf:"varint,3,opt,name=Frequency,json=frequency,proto3" json:"Frequency,omitempty"`
-	Duration             uint64   `protobuf:"varint,4,opt,name=Duration,json=duration,proto3" json:"Duration,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Amount    uint64  `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Element   Element `protobuf:"varint,2,opt,name=Element,proto3,enum=ability.Element" json:"Element,omitempty"`
+	Frequency uint64  `protobuf:"varint,3,opt,name=Frequency,proto3" json:"Frequency,omitempty"`
+	Duration  uint64  `protobuf:"varint,4,opt,name=Duration,proto3" json:"Duration,omitempty"`
 }
 
 func (m *HealOverTime) Reset()      { *m = HealOverTime{} }
 func (*HealOverTime) ProtoMessage() {}
 func (*HealOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1ac7d579c587087f, []int{2}
+	return fileDescriptor_component_c29118fddc4e2a80, []int{2}
 }
 func (m *HealOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -241,18 +235,16 @@ func (m *HealOverTime) GetDuration() uint64 {
 }
 
 type DamageOverTime struct {
-	Amount               uint64   `protobuf:"varint,1,opt,name=Amount,json=amount,proto3" json:"Amount,omitempty"`
-	Element              Element  `protobuf:"varint,2,opt,name=Element,json=element,proto3,enum=ability.Element" json:"Element,omitempty"`
-	Frequency            uint64   `protobuf:"varint,3,opt,name=Frequency,json=frequency,proto3" json:"Frequency,omitempty"`
-	Duration             uint64   `protobuf:"varint,4,opt,name=Duration,json=duration,proto3" json:"Duration,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
+	Amount    uint64  `protobuf:"varint,1,opt,name=Amount,proto3" json:"Amount,omitempty"`
+	Element   Element `protobuf:"varint,2,opt,name=Element,proto3,enum=ability.Element" json:"Element,omitempty"`
+	Frequency uint64  `protobuf:"varint,3,opt,name=Frequency,proto3" json:"Frequency,omitempty"`
+	Duration  uint64  `protobuf:"varint,4,opt,name=Duration,proto3" json:"Duration,omitempty"`
 }
 
 func (m *DamageOverTime) Reset()      { *m = DamageOverTime{} }
 func (*DamageOverTime) ProtoMessage() {}
 func (*DamageOverTime) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1ac7d579c587087f, []int{3}
+	return fileDescriptor_component_c29118fddc4e2a80, []int{3}
 }
 func (m *DamageOverTime) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -310,18 +302,16 @@ func (m *DamageOverTime) GetDuration() uint64 {
 }
 
 type Effect struct {
-	Heal                 *Heal           `protobuf:"bytes,1,opt,name=Heal,json=heal" json:"Heal,omitempty"`
-	Damage               *Damage         `protobuf:"bytes,2,opt,name=Damage,json=damage" json:"Damage,omitempty"`
-	HealOverTime         *HealOverTime   `protobuf:"bytes,3,opt,name=HealOverTime,json=healOverTime" json:"HealOverTime,omitempty"`
-	DamageOverTime       *DamageOverTime `protobuf:"bytes,4,opt,name=DamageOverTime,json=damageOverTime" json:"DamageOverTime,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}        `json:"-"`
-	XXX_sizecache        int32           `json:"-"`
+	Heal           *Heal           `protobuf:"bytes,1,opt,name=Heal" json:"Heal,omitempty"`
+	Damage         *Damage         `protobuf:"bytes,2,opt,name=Damage" json:"Damage,omitempty"`
+	HealOverTime   *HealOverTime   `protobuf:"bytes,3,opt,name=HealOverTime" json:"HealOverTime,omitempty"`
+	DamageOverTime *DamageOverTime `protobuf:"bytes,4,opt,name=DamageOverTime" json:"DamageOverTime,omitempty"`
 }
 
 func (m *Effect) Reset()      { *m = Effect{} }
 func (*Effect) ProtoMessage() {}
 func (*Effect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1ac7d579c587087f, []int{4}
+	return fileDescriptor_component_c29118fddc4e2a80, []int{4}
 }
 func (m *Effect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -379,20 +369,18 @@ func (m *Effect) GetDamageOverTime() *DamageOverTime {
 }
 
 type Component struct {
-	Effects              []*Effect                             `protobuf:"bytes,2,rep,name=Effects,json=effects" json:"Effects,omitempty"`
-	NTargets             uint64                                `protobuf:"varint,3,opt,name=NTargets,json=nTargets,proto3" json:"NTargets,omitempty"`
-	Range                float64                               `protobuf:"fixed64,4,opt,name=Range,json=range,proto3" json:"Range,omitempty"`
-	NPositions           uint64                                `protobuf:"varint,5,opt,name=NPositions,json=nPositions,proto3" json:"NPositions,omitempty"`
-	PositionRange        uint64                                `protobuf:"varint,6,opt,name=PositionRange,json=positionRange,proto3" json:"PositionRange,omitempty"`
-	Shape                github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,7,opt,name=Shape,json=shape,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Shape"`
-	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
-	XXX_sizecache        int32                                 `json:"-"`
+	Effects       []Effect                              `protobuf:"bytes,1,rep,name=Effects" json:"Effects"`
+	NTargets      uint64                                `protobuf:"varint,2,opt,name=NTargets,proto3" json:"NTargets,omitempty"`
+	Range         float64                               `protobuf:"fixed64,3,opt,name=Range,proto3" json:"Range,omitempty"`
+	NPositions    uint64                                `protobuf:"varint,4,opt,name=NPositions,proto3" json:"NPositions,omitempty"`
+	PositionRange uint64                                `protobuf:"varint,5,opt,name=PositionRange,proto3" json:"PositionRange,omitempty"`
+	Shape         github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,6,opt,name=Shape,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Shape"`
 }
 
 func (m *Component) Reset()      { *m = Component{} }
 func (*Component) ProtoMessage() {}
 func (*Component) Descriptor() ([]byte, []int) {
-	return fileDescriptor_component_1ac7d579c587087f, []int{5}
+	return fileDescriptor_component_c29118fddc4e2a80, []int{5}
 }
 func (m *Component) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -421,7 +409,7 @@ func (m *Component) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Component proto.InternalMessageInfo
 
-func (m *Component) GetEffects() []*Effect {
+func (m *Component) GetEffects() []Effect {
 	if m != nil {
 		return m.Effects
 	}
@@ -648,7 +636,7 @@ func (this *Component) Equal(that interface{}) bool {
 		return false
 	}
 	for i := range this.Effects {
-		if !this.Effects[i].Equal(that1.Effects[i]) {
+		if !this.Effects[i].Equal(&that1.Effects[i]) {
 			return false
 		}
 	}
@@ -745,7 +733,11 @@ func (this *Component) GoString() string {
 	s := make([]string, 0, 10)
 	s = append(s, "&ability.Component{")
 	if this.Effects != nil {
-		s = append(s, "Effects: "+fmt.Sprintf("%#v", this.Effects)+",\n")
+		vs := make([]*Effect, len(this.Effects))
+		for i := range vs {
+			vs[i] = &this.Effects[i]
+		}
+		s = append(s, "Effects: "+fmt.Sprintf("%#v", vs)+",\n")
 	}
 	s = append(s, "NTargets: "+fmt.Sprintf("%#v", this.NTargets)+",\n")
 	s = append(s, "Range: "+fmt.Sprintf("%#v", this.Range)+",\n")
@@ -970,7 +962,7 @@ func (m *Component) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	if len(m.Effects) > 0 {
 		for _, msg := range m.Effects {
-			dAtA[i] = 0x12
+			dAtA[i] = 0xa
 			i++
 			i = encodeVarintComponent(dAtA, i, uint64(msg.Size()))
 			n, err := msg.MarshalTo(dAtA[i:])
@@ -981,27 +973,27 @@ func (m *Component) MarshalTo(dAtA []byte) (int, error) {
 		}
 	}
 	if m.NTargets != 0 {
-		dAtA[i] = 0x18
+		dAtA[i] = 0x10
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.NTargets))
 	}
 	if m.Range != 0 {
-		dAtA[i] = 0x21
+		dAtA[i] = 0x19
 		i++
 		encoding_binary.LittleEndian.PutUint64(dAtA[i:], uint64(math.Float64bits(float64(m.Range))))
 		i += 8
 	}
 	if m.NPositions != 0 {
-		dAtA[i] = 0x28
+		dAtA[i] = 0x20
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.NPositions))
 	}
 	if m.PositionRange != 0 {
-		dAtA[i] = 0x30
+		dAtA[i] = 0x28
 		i++
 		i = encodeVarintComponent(dAtA, i, uint64(m.PositionRange))
 	}
-	dAtA[i] = 0x3a
+	dAtA[i] = 0x32
 	i++
 	i = encodeVarintComponent(dAtA, i, uint64(m.Shape.Size()))
 	n5, err := m.Shape.MarshalTo(dAtA[i:])
@@ -1081,9 +1073,10 @@ func NewPopulatedComponent(r randyComponent, easy bool) *Component {
 	this := &Component{}
 	if r.Intn(10) != 0 {
 		v1 := r.Intn(5)
-		this.Effects = make([]*Effect, v1)
+		this.Effects = make([]Effect, v1)
 		for i := 0; i < v1; i++ {
-			this.Effects[i] = NewPopulatedEffect(r, easy)
+			v2 := NewPopulatedEffect(r, easy)
+			this.Effects[i] = *v2
 		}
 	}
 	this.NTargets = uint64(uint64(r.Uint32()))
@@ -1093,8 +1086,8 @@ func NewPopulatedComponent(r randyComponent, easy bool) *Component {
 	}
 	this.NPositions = uint64(uint64(r.Uint32()))
 	this.PositionRange = uint64(uint64(r.Uint32()))
-	v2 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Shape = *v2
+	v3 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.Shape = *v3
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -1119,9 +1112,9 @@ func randUTF8RuneComponent(r randyComponent) rune {
 	return rune(ru + 61)
 }
 func randStringComponent(r randyComponent) string {
-	v3 := r.Intn(100)
-	tmps := make([]rune, v3)
-	for i := 0; i < v3; i++ {
+	v4 := r.Intn(100)
+	tmps := make([]rune, v4)
+	for i := 0; i < v4; i++ {
 		tmps[i] = randUTF8RuneComponent(r)
 	}
 	return string(tmps)
@@ -1143,11 +1136,11 @@ func randFieldComponent(dAtA []byte, r randyComponent, fieldNumber int, wire int
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateComponent(dAtA, uint64(key))
-		v4 := r.Int63()
+		v5 := r.Int63()
 		if r.Intn(2) == 0 {
-			v4 *= -1
+			v5 *= -1
 		}
-		dAtA = encodeVarintPopulateComponent(dAtA, uint64(v4))
+		dAtA = encodeVarintPopulateComponent(dAtA, uint64(v5))
 	case 1:
 		dAtA = encodeVarintPopulateComponent(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -1173,6 +1166,9 @@ func encodeVarintPopulateComponent(dAtA []byte, v uint64) []byte {
 	return dAtA
 }
 func (m *Heal) Size() (n int) {
+	if m == nil {
+		return 0
+	}
 	var l int
 	_ = l
 	if m.Amount != 0 {
@@ -1185,6 +1181,9 @@ func (m *Heal) Size() (n int) {
 }
 
 func (m *Damage) Size() (n int) {
+	if m == nil {
+		return 0
+	}
 	var l int
 	_ = l
 	if m.Amount != 0 {
@@ -1197,6 +1196,9 @@ func (m *Damage) Size() (n int) {
 }
 
 func (m *HealOverTime) Size() (n int) {
+	if m == nil {
+		return 0
+	}
 	var l int
 	_ = l
 	if m.Amount != 0 {
@@ -1215,6 +1217,9 @@ func (m *HealOverTime) Size() (n int) {
 }
 
 func (m *DamageOverTime) Size() (n int) {
+	if m == nil {
+		return 0
+	}
 	var l int
 	_ = l
 	if m.Amount != 0 {
@@ -1233,6 +1238,9 @@ func (m *DamageOverTime) Size() (n int) {
 }
 
 func (m *Effect) Size() (n int) {
+	if m == nil {
+		return 0
+	}
 	var l int
 	_ = l
 	if m.Heal != nil {
@@ -1255,6 +1263,9 @@ func (m *Effect) Size() (n int) {
 }
 
 func (m *Component) Size() (n int) {
+	if m == nil {
+		return 0
+	}
 	var l int
 	_ = l
 	if len(m.Effects) > 0 {
@@ -1359,7 +1370,7 @@ func (this *Component) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&Component{`,
-		`Effects:` + strings.Replace(fmt.Sprintf("%v", this.Effects), "Effect", "Effect", 1) + `,`,
+		`Effects:` + strings.Replace(strings.Replace(fmt.Sprintf("%v", this.Effects), "Effect", "Effect", 1), `&`, ``, 1) + `,`,
 		`NTargets:` + fmt.Sprintf("%v", this.NTargets) + `,`,
 		`Range:` + fmt.Sprintf("%v", this.Range) + `,`,
 		`NPositions:` + fmt.Sprintf("%v", this.NPositions) + `,`,
@@ -2047,7 +2058,7 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 			return fmt.Errorf("proto: Component: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
-		case 2:
+		case 1:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Effects", wireType)
 			}
@@ -2073,12 +2084,12 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Effects = append(m.Effects, &Effect{})
+			m.Effects = append(m.Effects, Effect{})
 			if err := m.Effects[len(m.Effects)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		case 3:
+		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NTargets", wireType)
 			}
@@ -2097,7 +2108,7 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
+		case 3:
 			if wireType != 1 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Range", wireType)
 			}
@@ -2108,7 +2119,7 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 			v = uint64(encoding_binary.LittleEndian.Uint64(dAtA[iNdEx:]))
 			iNdEx += 8
 			m.Range = float64(math.Float64frombits(v))
-		case 5:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field NPositions", wireType)
 			}
@@ -2127,7 +2138,7 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PositionRange", wireType)
 			}
@@ -2146,7 +2157,7 @@ func (m *Component) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 6:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Shape", wireType)
 			}
@@ -2302,44 +2313,43 @@ var (
 	ErrIntOverflowComponent   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("component.proto", fileDescriptor_component_1ac7d579c587087f) }
+func init() { proto.RegisterFile("component.proto", fileDescriptor_component_c29118fddc4e2a80) }
 
-var fileDescriptor_component_1ac7d579c587087f = []byte{
-	// 572 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x54, 0x3d, 0x6f, 0x13, 0x41,
-	0x10, 0xbd, 0xb5, 0xef, 0xc3, 0x5e, 0x7f, 0xe4, 0xb4, 0xe2, 0xe3, 0x14, 0xa1, 0xb5, 0xb1, 0x40,
-	0x98, 0x48, 0xb1, 0xc1, 0x34, 0x40, 0x83, 0x92, 0xd8, 0x11, 0xa0, 0x28, 0xc0, 0x11, 0x89, 0x12,
-	0xad, 0xed, 0xf5, 0xdd, 0x11, 0xdf, 0x9d, 0x59, 0xef, 0x21, 0xa5, 0xe3, 0x07, 0x20, 0xc4, 0x4f,
-	0xa0, 0xe4, 0x27, 0x50, 0x52, 0xba, 0x4c, 0x85, 0x10, 0x45, 0x84, 0x8f, 0x86, 0x32, 0x12, 0x0d,
-	0x25, 0xda, 0x5d, 0xdb, 0xb2, 0x53, 0xa7, 0x48, 0x37, 0xef, 0xcd, 0xce, 0xcc, 0xdb, 0x37, 0x7b,
-	0x07, 0xd7, 0x7a, 0x71, 0x38, 0x8a, 0x23, 0x1a, 0xf1, 0xc6, 0x88, 0xc5, 0x3c, 0x46, 0x16, 0xe9,
-	0x06, 0xc3, 0x80, 0x1f, 0xad, 0x6f, 0x7a, 0x01, 0xf7, 0x93, 0x6e, 0xa3, 0x17, 0x87, 0x4d, 0x2f,
-	0xf6, 0xe2, 0xa6, 0xcc, 0x77, 0x93, 0x81, 0x44, 0x12, 0xc8, 0x48, 0xd5, 0xd5, 0x9e, 0x42, 0xfd,
-	0x31, 0x25, 0x43, 0x74, 0x05, 0x9a, 0x5b, 0x61, 0x9c, 0x44, 0xdc, 0x01, 0x55, 0x50, 0xd7, 0x5d,
-	0x93, 0x48, 0x84, 0x36, 0xa0, 0xd5, 0x19, 0xd2, 0x90, 0x46, 0xdc, 0xc9, 0x54, 0x41, 0xbd, 0xdc,
-	0xb2, 0x1b, 0xb3, 0x49, 0x8d, 0x19, 0xef, 0x5a, 0x54, 0x05, 0xb5, 0x3d, 0x68, 0xb6, 0x49, 0x48,
-	0x3c, 0x7a, 0x2e, 0xdd, 0x3e, 0x00, 0x58, 0x14, 0xd2, 0x9e, 0xbd, 0xa3, 0xec, 0x20, 0x08, 0xcf,
-	0xa5, 0x29, 0xba, 0x06, 0xf3, 0xbb, 0x8c, 0xbe, 0x4d, 0x68, 0xd4, 0x3b, 0x72, 0xb2, 0xb2, 0x4d,
-	0x7e, 0x30, 0x27, 0xd0, 0x3a, 0xcc, 0xb5, 0x13, 0x46, 0x78, 0x10, 0x47, 0x8e, 0x2e, 0x93, 0xb9,
-	0xfe, 0x0c, 0xd7, 0x3e, 0x02, 0x58, 0x56, 0xb7, 0xbb, 0x20, 0x82, 0xbe, 0x03, 0x68, 0x76, 0x06,
-	0x03, 0xda, 0xe3, 0xe8, 0xba, 0x5a, 0xa2, 0x94, 0x51, 0x68, 0x95, 0x16, 0xd3, 0x04, 0xe9, 0xea,
-	0xbe, 0xd8, 0xef, 0xad, 0xf9, 0x6e, 0xa4, 0xa4, 0x42, 0x6b, 0x6d, 0x71, 0x48, 0xd1, 0xae, 0xd9,
-	0x57, 0xab, 0x7b, 0xb0, 0xea, 0xba, 0xd4, 0x54, 0x68, 0x5d, 0x5e, 0xe9, 0x39, 0x4f, 0xba, 0x45,
-	0x7f, 0x79, 0x41, 0x8f, 0xce, 0x3a, 0x24, 0x35, 0x17, 0x5a, 0x57, 0xcf, 0xcc, 0x5a, 0x94, 0x97,
-	0xfb, 0x2b, 0xf8, 0xa1, 0x3e, 0xf9, 0x5c, 0x01, 0xb5, 0xbf, 0x00, 0xe6, 0x77, 0xe6, 0xcf, 0x1b,
-	0xdd, 0x86, 0x96, 0xba, 0xe5, 0xd8, 0xc9, 0x54, 0xb3, 0x2b, 0xca, 0x15, 0xef, 0x5a, 0x54, 0xe5,
-	0x85, 0x5b, 0xfb, 0x07, 0x84, 0x79, 0x94, 0x8f, 0x67, 0x56, 0xe6, 0xa2, 0x19, 0x46, 0x97, 0xa0,
-	0xe1, 0x92, 0xc8, 0x53, 0x92, 0x80, 0x6b, 0x30, 0x01, 0x10, 0x86, 0x70, 0xff, 0x79, 0x3c, 0x0e,
-	0x84, 0xa1, 0x63, 0xc7, 0x90, 0x35, 0x30, 0x5a, 0x30, 0xe8, 0x06, 0x2c, 0xcd, 0x81, 0xaa, 0x36,
-	0xe5, 0x91, 0xd2, 0x68, 0x99, 0x44, 0x3b, 0xd0, 0x78, 0xe9, 0x93, 0x11, 0x75, 0xac, 0x2a, 0xa8,
-	0x17, 0xb7, 0x37, 0x27, 0x27, 0x15, 0xed, 0xe7, 0x49, 0xe5, 0xe6, 0xd2, 0x97, 0x48, 0x87, 0xf1,
-	0x1b, 0xe2, 0x37, 0x3d, 0x12, 0xd2, 0xd7, 0x77, 0xee, 0x36, 0x47, 0x87, 0x5e, 0x33, 0x19, 0x06,
-	0xfd, 0xc6, 0x93, 0xb6, 0x6b, 0x8c, 0x45, 0xed, 0xc6, 0x8b, 0xc5, 0xa3, 0x41, 0x39, 0xa8, 0xef,
-	0x06, 0x8c, 0xda, 0x1a, 0xca, 0x43, 0xe3, 0x15, 0xe1, 0x94, 0xd9, 0x00, 0x59, 0x30, 0xbb, 0x15,
-	0x30, 0x3b, 0x23, 0xb8, 0x0e, 0x61, 0xdc, 0xb7, 0xb3, 0x22, 0xdc, 0x0b, 0x3c, 0x9f, 0xdb, 0xba,
-	0xa8, 0x69, 0x13, 0x76, 0x68, 0x1b, 0x22, 0x12, 0x66, 0xda, 0xe6, 0xf6, 0xfd, 0xe3, 0x29, 0xd6,
-	0x7e, 0x4c, 0xb1, 0x76, 0x3a, 0xc5, 0xe0, 0xdf, 0x14, 0x83, 0xf7, 0x29, 0x06, 0x5f, 0x52, 0x0c,
-	0xbe, 0xa6, 0x18, 0x7c, 0x4b, 0x31, 0x98, 0xa4, 0x18, 0x1c, 0xa7, 0x18, 0xfc, 0x4a, 0x31, 0xf8,
-	0x93, 0x62, 0xed, 0x34, 0xc5, 0xe0, 0xd3, 0x6f, 0xac, 0x75, 0x4d, 0xf9, 0x73, 0xb8, 0xf7, 0x3f,
-	0x00, 0x00, 0xff, 0xff, 0x14, 0x4c, 0x04, 0x7a, 0x67, 0x04, 0x00, 0x00,
+var fileDescriptor_component_c29118fddc4e2a80 = []byte{
+	// 559 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x54, 0x3d, 0x6f, 0xd3, 0x40,
+	0x18, 0xf6, 0xdb, 0x38, 0x4e, 0x7b, 0xe9, 0x87, 0x75, 0xe2, 0xc3, 0xaa, 0xd0, 0x25, 0x44, 0x20,
+	0xa2, 0x4a, 0x8d, 0x21, 0x4c, 0xb0, 0x40, 0xd3, 0xa4, 0x02, 0x54, 0x15, 0x30, 0x95, 0x18, 0xd1,
+	0x25, 0x5c, 0x1c, 0xd3, 0xd8, 0x17, 0x9c, 0x33, 0x52, 0x37, 0x7e, 0x00, 0x42, 0xfc, 0x04, 0x46,
+	0x7e, 0x02, 0x23, 0x63, 0xc6, 0x4c, 0xa8, 0x62, 0xa8, 0x88, 0xb3, 0x30, 0x76, 0x84, 0x0d, 0xf9,
+	0x2e, 0x36, 0x4d, 0xe6, 0x0e, 0x6c, 0xf7, 0x3c, 0xf7, 0x7e, 0x3c, 0xef, 0xf3, 0x9e, 0x8d, 0x36,
+	0x3a, 0xdc, 0x1f, 0xf0, 0x80, 0x05, 0xa2, 0x36, 0x08, 0xb9, 0xe0, 0xb8, 0x40, 0xdb, 0x5e, 0xdf,
+	0x13, 0xc7, 0x9b, 0xdb, 0xae, 0x27, 0x7a, 0x51, 0xbb, 0xd6, 0xe1, 0xbe, 0xed, 0x72, 0x97, 0xdb,
+	0xf2, 0xbe, 0x1d, 0x75, 0x25, 0x92, 0x40, 0x9e, 0x54, 0x5e, 0xe5, 0x09, 0xd2, 0x1f, 0x31, 0xda,
+	0xc7, 0x57, 0x90, 0xb1, 0xe3, 0xf3, 0x28, 0x10, 0x16, 0x94, 0xa1, 0xaa, 0x3b, 0x33, 0x84, 0xb7,
+	0x50, 0xa1, 0xd5, 0x67, 0x3e, 0x0b, 0x84, 0xb5, 0x54, 0x86, 0xea, 0x7a, 0xdd, 0xac, 0xcd, 0x3a,
+	0xd5, 0x66, 0xbc, 0x93, 0x06, 0x54, 0xf6, 0x91, 0xd1, 0xa4, 0x3e, 0x75, 0xd9, 0x85, 0x54, 0xfb,
+	0x00, 0x68, 0x35, 0x91, 0xf6, 0xf4, 0x1d, 0x0b, 0x0f, 0x3d, 0xff, 0x42, 0x8a, 0xe2, 0x6b, 0x68,
+	0x65, 0x2f, 0x64, 0x6f, 0x23, 0x16, 0x74, 0x8e, 0xad, 0x9c, 0x2c, 0xf3, 0x8f, 0xc0, 0x9b, 0x68,
+	0xb9, 0x19, 0x85, 0x54, 0x78, 0x3c, 0xb0, 0x74, 0x79, 0x99, 0xe1, 0xca, 0x47, 0x40, 0xeb, 0x6a,
+	0xba, 0xff, 0x44, 0xd0, 0x77, 0x40, 0x46, 0xab, 0xdb, 0x65, 0x1d, 0x81, 0xaf, 0xab, 0x25, 0x4a,
+	0x19, 0xc5, 0xfa, 0x5a, 0xd6, 0x2d, 0x21, 0x1d, 0xb5, 0xdf, 0x5b, 0xe9, 0x6e, 0xa4, 0xa4, 0x62,
+	0x7d, 0x23, 0x0b, 0x52, 0xb4, 0x93, 0xae, 0xee, 0xde, 0xbc, 0xeb, 0x52, 0x53, 0xb1, 0x7e, 0x79,
+	0xae, 0x66, 0x7a, 0xe9, 0xcc, 0x2f, 0xe8, 0xc1, 0xa2, 0x43, 0x52, 0x73, 0xb1, 0x7e, 0x75, 0xa1,
+	0x57, 0x96, 0xbe, 0x10, 0x7e, 0x5f, 0x1f, 0x7d, 0x2e, 0x41, 0xe5, 0x0f, 0xa0, 0x95, 0xdd, 0xf4,
+	0x79, 0x63, 0x1b, 0x15, 0xd4, 0x94, 0x43, 0x0b, 0xca, 0xb9, 0x39, 0xe5, 0x8a, 0x6f, 0xe8, 0xa3,
+	0xd3, 0x92, 0xe6, 0xa4, 0x51, 0x89, 0x67, 0x07, 0x87, 0x34, 0x74, 0x99, 0x18, 0xca, 0x59, 0x75,
+	0x27, 0xc3, 0xf8, 0x12, 0xca, 0x3b, 0x34, 0x70, 0xd5, 0x54, 0xe0, 0x28, 0x80, 0x09, 0x42, 0x07,
+	0xcf, 0xf8, 0xd0, 0x4b, 0x6c, 0x1d, 0xce, 0x7c, 0x3e, 0xc7, 0xe0, 0x1b, 0x68, 0x2d, 0x05, 0x2a,
+	0x3b, 0x2f, 0x43, 0xe6, 0x49, 0xbc, 0x8b, 0xf2, 0x2f, 0x7a, 0x74, 0xc0, 0x2c, 0xa3, 0x0c, 0xd5,
+	0xd5, 0xc6, 0x76, 0xa2, 0xea, 0xc7, 0x69, 0xe9, 0xe6, 0xb9, 0xef, 0x91, 0xf5, 0xf9, 0x1b, 0xda,
+	0xb3, 0x5d, 0xea, 0xb3, 0x57, 0xb7, 0xef, 0xd8, 0x83, 0x23, 0xd7, 0x8e, 0xfa, 0xde, 0xeb, 0xda,
+	0xe3, 0xa6, 0xa3, 0x72, 0xb7, 0x9e, 0x67, 0x4f, 0x07, 0x2f, 0x23, 0x7d, 0xcf, 0x0b, 0x99, 0xa9,
+	0xe1, 0x15, 0x94, 0x7f, 0x49, 0x05, 0x0b, 0x4d, 0xc0, 0x05, 0x94, 0xdb, 0xf1, 0x42, 0x73, 0x29,
+	0xe1, 0x5a, 0x34, 0x14, 0x3d, 0x33, 0x97, 0x1c, 0xf7, 0x3d, 0xb7, 0x27, 0x4c, 0x3d, 0xc9, 0x69,
+	0xd2, 0xf0, 0xc8, 0xcc, 0x27, 0xa7, 0xc4, 0x52, 0xd3, 0x68, 0x3c, 0x1c, 0x4f, 0x88, 0x76, 0x32,
+	0x21, 0xda, 0xd9, 0x84, 0xc0, 0xef, 0x09, 0x81, 0xf7, 0x31, 0x81, 0x2f, 0x31, 0x81, 0xaf, 0x31,
+	0x81, 0x6f, 0x31, 0x81, 0x51, 0x4c, 0x60, 0x1c, 0x13, 0xf8, 0x19, 0x13, 0xf8, 0x15, 0x13, 0xed,
+	0x2c, 0x26, 0xf0, 0x69, 0x4a, 0xb4, 0xf1, 0x94, 0x68, 0x27, 0x53, 0xa2, 0xb5, 0x0d, 0xf9, 0xab,
+	0xb8, 0xfb, 0x37, 0x00, 0x00, 0xff, 0xff, 0x29, 0xa3, 0x4f, 0x01, 0x75, 0x04, 0x00, 0x00,
 }

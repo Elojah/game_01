@@ -39,6 +39,15 @@ func expectToolo0Move(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 
 	ent.Position = pos
 
+	expectedTtsLog := toolTargetsLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_tool",
+			Message: "found",
+		},
+		Targets: 1,
+		Route:   "/entity/move",
+	}
 	expectedTmscLog := toolMoveSuccessLog{
 		common: common{
 			Level:   "info",
@@ -47,6 +56,7 @@ func expectToolo0Move(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 		},
 		Route: "/entity/move",
 	}
+	n := 2
 	if err := a.Expect(func(s string) (bool, error) {
 		var c common
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
@@ -54,12 +64,21 @@ func expectToolo0Move(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 		}
 		switch c.Exe {
 		case "./bin/game_tool":
-			// ignore
-			var tmscActual toolMoveSuccessLog
-			if err := json.Unmarshal([]byte(s), &tmscActual); err != nil {
-				return true, err
+			n--
+			switch n {
+			case 1:
+				var ttsActual toolTargetsLog
+				if err := json.Unmarshal([]byte(s), &ttsActual); err != nil {
+					return true, err
+				}
+				return false, expectedTtsLog.Equal(ttsActual)
+			case 0:
+				var tmscActual toolMoveSuccessLog
+				if err := json.Unmarshal([]byte(s), &tmscActual); err != nil {
+					return true, err
+				}
+				return true, expectedTmscLog.Equal(tmscActual)
 			}
-			return true, expectedTmscLog.Equal(tmscActual)
 		case "./bin/game_sync":
 			// ignore
 		default:

@@ -168,6 +168,8 @@ func expectCast(a *LogAnalyzer, ac *LogAnalyzer, tok account.Token, ent entity.E
 			return nAPI == 0 && nCore == 0, nil
 		case "./bin/game_sync":
 			// ignore
+		case "./bin/game_tool":
+			// ignore
 		default:
 			return false, fmt.Errorf("unexpected exe %s", c.Exe)
 		}

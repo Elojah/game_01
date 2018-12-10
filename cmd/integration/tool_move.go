@@ -13,6 +13,26 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
+type toolTargetsLog struct {
+	common
+	Route   string
+	Targets int
+	Time    int64
+}
+
+func (expected toolTargetsLog) Equal(actual toolTargetsLog) error {
+	if actual.common != expected.common {
+		return fmt.Errorf("unexpected log %s", fmt.Sprint(actual.common))
+	}
+	if actual.Targets != expected.Targets {
+		return fmt.Errorf("invalid targets %d", actual.Targets)
+	}
+	if actual.Route != expected.Route {
+		return fmt.Errorf("invalid route %s", actual.Route)
+	}
+	return nil
+}
+
 type toolMoveSuccessLog struct {
 	common
 	Route  string
@@ -59,6 +79,15 @@ func expectToolEntityMove(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 
 	ent.Position = pos
 
+	expectedTtsLog := toolTargetsLog{
+		common: common{
+			Level:   "info",
+			Exe:     "./bin/game_tool",
+			Message: "found",
+		},
+		Targets: 1,
+		Route:   "/entity/move",
+	}
 	expectedTmscLog := toolMoveSuccessLog{
 		common: common{
 			Level:   "info",
@@ -67,6 +96,7 @@ func expectToolEntityMove(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 		},
 		Route: "/entity/move",
 	}
+	n := 2
 	if err := a.Expect(func(s string) (bool, error) {
 		var c common
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
@@ -74,12 +104,21 @@ func expectToolEntityMove(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 		}
 		switch c.Exe {
 		case "./bin/game_tool":
-			// ignore
-			var tmscActual toolMoveSuccessLog
-			if err := json.Unmarshal([]byte(s), &tmscActual); err != nil {
-				return true, err
+			n--
+			switch n {
+			case 1:
+				var ttsActual toolTargetsLog
+				if err := json.Unmarshal([]byte(s), &ttsActual); err != nil {
+					return true, err
+				}
+				return false, expectedTtsLog.Equal(ttsActual)
+			case 0:
+				var tmscActual toolMoveSuccessLog
+				if err := json.Unmarshal([]byte(s), &tmscActual); err != nil {
+					return true, err
+				}
+				return true, expectedTmscLog.Equal(tmscActual)
 			}
-			return true, expectedTmscLog.Equal(tmscActual)
 		case "./bin/game_sync":
 			// ignore
 		default:

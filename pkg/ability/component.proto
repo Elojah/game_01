@@ -51,10 +51,10 @@ message Effect {
 }
 
 message Component {
-	repeated Effect Effects       = 2 [(gogoproto.nullable) = false];
-	uint64 NTargets               = 3;
-	double Range                  = 4;
-	uint64 NPositions             = 5;
-	uint64 PositionRange          = 6;
-	bytes Shape                   = 7 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	repeated Effect Effects       = 1 [(gogoproto.nullable) = false];
+	uint64 NTargets               = 2;
+	double Range                  = 3;
+	uint64 NPositions             = 4;
+	uint64 PositionRange          = 5;
+	bytes Shape                   = 6 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

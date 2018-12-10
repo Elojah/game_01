@@ -174,13 +174,20 @@ func main() {
 		CD:                2000,
 		LastUsed:          0,
 		CastTime:          1000,
-		Components:        map[string]ability.Component{
-			// Effects              []*Effect                             `protobuf:"bytes,2,rep,name=Effects,json=effects" json:"Effects,omitempty"`
-			// NTargets             uint64                                `protobuf:"varint,3,opt,name=NTargets,json=nTargets,proto3" json:"NTargets,omitempty"`
-			// Range                float64                               `protobuf:"fixed64,4,opt,name=Range,json=range,proto3" json:"Range,omitempty"`
-			// NPositions           uint64                                `protobuf:"varint,5,opt,name=NPositions,json=nPositions,proto3" json:"NPositions,omitempty"`
-			// PositionRange        uint64                                `protobuf:"varint,6,opt,name=PositionRange,json=positionRange,proto3" json:"PositionRange,omitempty"`
-			// Shape                github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,7,opt,name=Shape,json=shape,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Shape"`
+		Components: map[string]ability.Component{
+			"01CYBX32YGJ4A4T4SAMMQKQS1H": ability.Component{
+				Effects: []ability.Effect{
+					ability.Effect{
+						Damage: &ability.Damage{
+							Element: ability.Time,
+							Amount:  8,
+						},
+					},
+				},
+				NTargets:   1,
+				Range:      50,
+				NPositions: 0,
+			},
 		},
 	}, ent); err != nil {
 		log.Error().Err(err).Msg("set ability with tool")

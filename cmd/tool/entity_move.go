@@ -33,6 +33,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
+	logger.Info().Int("targets", len(move.Targets)).Msg("found")
 
 	ts := gulid.NewID().Time()
 	for _, target := range move.Targets {
