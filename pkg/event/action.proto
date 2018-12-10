@@ -42,6 +42,26 @@ message PerformTarget {
 	entity.E Source                      = 3 [(gogoproto.nullable)   = false];
 }
 
+message LootSource {
+	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Item                           = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message LootTarget {
+	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	entity.E Source                      = 2 [(gogoproto.nullable)   = false];
+}
+
+message ConsumeSource {
+	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Item                           = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message ConsumeTarget {
+	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	entity.E Source                      = 2 [(gogoproto.nullable)   = false];
+}
+
 message Action {
 	option (gogoproto.onlyone)           = true;
 	MoveSource MoveSource                = 1;
@@ -50,4 +70,8 @@ message Action {
 	PerformSource PerformSource          = 4;
 	PerformTarget PerformTarget          = 5;
 	FeedbackTarget FeedbackTarget        = 6;
+	LootSource LootSource                = 7;
+	LootTarget LootTarget                = 8;
+	ConsumeSource COnsumeSource          = 9;
+	ConsumeTarget COnsumeTarget          = 10;
 }
