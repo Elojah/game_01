@@ -101,6 +101,7 @@ proto:
 	$Q cd pkg/account  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. account.proto
 	$Q cd pkg/account  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. token.proto
 	$Q cd pkg/geometry && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. position.proto
+	$Q cd pkg/item     && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. item.proto
 	$Q cd pkg/entity   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entity.proto
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. action.proto
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. dto.proto

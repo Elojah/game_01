@@ -11,7 +11,9 @@ import "github.com/elojah/game_01/pkg/geometry/position.proto";
 
 message I {
 	bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Look                   = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Type                   = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	string Name                  = 3;
-	geometry.Position Position   = 4 [(gogoproto.nullable)   = false];
+	bytes Owner                  = 4 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	geometry.Position Position   = 5 [(gogoproto.nullable)   = true];
+	bytes Skill                  = 6 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
 }
