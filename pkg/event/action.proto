@@ -72,6 +72,6 @@ message Action {
 	FeedbackTarget FeedbackTarget        = 6;
 	LootSource LootSource                = 7;
 	LootTarget LootTarget                = 8;
-	ConsumeSource COnsumeSource          = 9;
-	ConsumeTarget COnsumeTarget          = 10;
+	ConsumeSource ConsumeSource          = 9;
+	ConsumeTarget ConsumeTarget          = 10;
 }
