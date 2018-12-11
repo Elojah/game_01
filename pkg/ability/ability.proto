@@ -12,13 +12,15 @@ import "component.proto";
 message A {
 	bytes ID                           = 1 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes Type                         = 2 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Animation                    = 3 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	string Name                        = 4;
+	string Name                        = 3;
 
-	uint64 MPConsumption               = 5;
-	uint64 PostMPConsumption           = 6;
-	uint64 CD                          = 7;
-	uint64 LastUsed                    = 8;
-	uint64 CastTime                    = 9;
-	map<string, Component> Components  = 10 [(gogoproto.nullable)   = false];
+	bytes Icon                         = 4 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Animation                    = 5 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	uint64 MPConsumption               = 6;
+	uint64 PostMPConsumption           = 7;
+	uint64 CD                          = 8;
+	uint64 LastUsed                    = 9;
+	uint64 CastTime                    = 10;
+	map<string, Component> Components  = 11 [(gogoproto.nullable)   = false];
 }

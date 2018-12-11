@@ -38,7 +38,7 @@ type Move struct {
 func (m *Move) Reset()      { *m = Move{} }
 func (*Move) ProtoMessage() {}
 func (*Move) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dto_b7f2e52b8df08f3d, []int{0}
+	return fileDescriptor_dto_b2621c185219df87, []int{0}
 }
 func (m *Move) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -83,7 +83,7 @@ type Cast struct {
 func (m *Cast) Reset()      { *m = Cast{} }
 func (*Cast) ProtoMessage() {}
 func (*Cast) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dto_b7f2e52b8df08f3d, []int{1}
+	return fileDescriptor_dto_b2621c185219df87, []int{1}
 }
 func (m *Cast) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -119,15 +119,91 @@ func (m *Cast) GetTargets() map[string]ability.Targets {
 	return nil
 }
 
+type Loot struct {
+	Source github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=Source,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Source"`
+	ItemID github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ItemID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemID"`
+}
+
+func (m *Loot) Reset()      { *m = Loot{} }
+func (*Loot) ProtoMessage() {}
+func (*Loot) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dto_b2621c185219df87, []int{2}
+}
+func (m *Loot) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Loot) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Loot.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (dst *Loot) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Loot.Merge(dst, src)
+}
+func (m *Loot) XXX_Size() int {
+	return m.Size()
+}
+func (m *Loot) XXX_DiscardUnknown() {
+	xxx_messageInfo_Loot.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Loot proto.InternalMessageInfo
+
+type Consume struct {
+	Source github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=Source,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Source"`
+	ItemID github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ItemID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemID"`
+}
+
+func (m *Consume) Reset()      { *m = Consume{} }
+func (*Consume) ProtoMessage() {}
+func (*Consume) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dto_b2621c185219df87, []int{3}
+}
+func (m *Consume) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Consume) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Consume.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (dst *Consume) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Consume.Merge(dst, src)
+}
+func (m *Consume) XXX_Size() int {
+	return m.Size()
+}
+func (m *Consume) XXX_DiscardUnknown() {
+	xxx_messageInfo_Consume.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Consume proto.InternalMessageInfo
+
 type Query struct {
-	Move *Move `protobuf:"bytes,1,opt,name=Move" json:"Move,omitempty"`
-	Cast *Cast `protobuf:"bytes,2,opt,name=Cast" json:"Cast,omitempty"`
+	Move    *Move    `protobuf:"bytes,1,opt,name=Move" json:"Move,omitempty"`
+	Cast    *Cast    `protobuf:"bytes,2,opt,name=Cast" json:"Cast,omitempty"`
+	Loot    *Loot    `protobuf:"bytes,3,opt,name=Loot" json:"Loot,omitempty"`
+	Consume *Consume `protobuf:"bytes,4,opt,name=Consume" json:"Consume,omitempty"`
 }
 
 func (m *Query) Reset()      { *m = Query{} }
 func (*Query) ProtoMessage() {}
 func (*Query) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dto_b7f2e52b8df08f3d, []int{2}
+	return fileDescriptor_dto_b2621c185219df87, []int{4}
 }
 func (m *Query) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -170,6 +246,20 @@ func (m *Query) GetCast() *Cast {
 	return nil
 }
 
+func (m *Query) GetLoot() *Loot {
+	if m != nil {
+		return m.Loot
+	}
+	return nil
+}
+
+func (m *Query) GetConsume() *Consume {
+	if m != nil {
+		return m.Consume
+	}
+	return nil
+}
+
 type DTO struct {
 	ID    github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
 	Token github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=Token,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"Token"`
@@ -179,7 +269,7 @@ type DTO struct {
 func (m *DTO) Reset()      { *m = DTO{} }
 func (*DTO) ProtoMessage() {}
 func (*DTO) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dto_b7f2e52b8df08f3d, []int{3}
+	return fileDescriptor_dto_b2621c185219df87, []int{5}
 }
 func (m *DTO) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -219,6 +309,8 @@ func init() {
 	proto.RegisterType((*Move)(nil), "event.Move")
 	proto.RegisterType((*Cast)(nil), "event.Cast")
 	proto.RegisterMapType((map[string]ability.Targets)(nil), "event.Cast.TargetsEntry")
+	proto.RegisterType((*Loot)(nil), "event.Loot")
+	proto.RegisterType((*Consume)(nil), "event.Consume")
 	proto.RegisterType((*Query)(nil), "event.Query")
 	proto.RegisterType((*DTO)(nil), "event.DTO")
 }
@@ -294,6 +386,60 @@ func (this *Cast) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *Loot) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Loot)
+	if !ok {
+		that2, ok := that.(Loot)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Source.Equal(that1.Source) {
+		return false
+	}
+	if !this.ItemID.Equal(that1.ItemID) {
+		return false
+	}
+	return true
+}
+func (this *Consume) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Consume)
+	if !ok {
+		that2, ok := that.(Consume)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Source.Equal(that1.Source) {
+		return false
+	}
+	if !this.ItemID.Equal(that1.ItemID) {
+		return false
+	}
+	return true
+}
 func (this *Query) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -317,6 +463,12 @@ func (this *Query) Equal(that interface{}) bool {
 		return false
 	}
 	if !this.Cast.Equal(that1.Cast) {
+		return false
+	}
+	if !this.Loot.Equal(that1.Loot) {
+		return false
+	}
+	if !this.Consume.Equal(that1.Consume) {
 		return false
 	}
 	return true
@@ -387,17 +539,45 @@ func (this *Cast) GoString() string {
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
-func (this *Query) GoString() string {
+func (this *Loot) GoString() string {
 	if this == nil {
 		return "nil"
 	}
 	s := make([]string, 0, 6)
+	s = append(s, "&event.Loot{")
+	s = append(s, "Source: "+fmt.Sprintf("%#v", this.Source)+",\n")
+	s = append(s, "ItemID: "+fmt.Sprintf("%#v", this.ItemID)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Consume) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&event.Consume{")
+	s = append(s, "Source: "+fmt.Sprintf("%#v", this.Source)+",\n")
+	s = append(s, "ItemID: "+fmt.Sprintf("%#v", this.ItemID)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *Query) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 8)
 	s = append(s, "&event.Query{")
 	if this.Move != nil {
 		s = append(s, "Move: "+fmt.Sprintf("%#v", this.Move)+",\n")
 	}
 	if this.Cast != nil {
 		s = append(s, "Cast: "+fmt.Sprintf("%#v", this.Cast)+",\n")
+	}
+	if this.Loot != nil {
+		s = append(s, "Loot: "+fmt.Sprintf("%#v", this.Loot)+",\n")
+	}
+	if this.Consume != nil {
+		s = append(s, "Consume: "+fmt.Sprintf("%#v", this.Consume)+",\n")
 	}
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -528,6 +708,74 @@ func (m *Cast) MarshalTo(dAtA []byte) (int, error) {
 	return i, nil
 }
 
+func (m *Loot) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Loot) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	dAtA[i] = 0xa
+	i++
+	i = encodeVarintDto(dAtA, i, uint64(m.Source.Size()))
+	n6, err := m.Source.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n6
+	dAtA[i] = 0x12
+	i++
+	i = encodeVarintDto(dAtA, i, uint64(m.ItemID.Size()))
+	n7, err := m.ItemID.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n7
+	return i, nil
+}
+
+func (m *Consume) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Consume) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	dAtA[i] = 0xa
+	i++
+	i = encodeVarintDto(dAtA, i, uint64(m.Source.Size()))
+	n8, err := m.Source.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n8
+	dAtA[i] = 0x12
+	i++
+	i = encodeVarintDto(dAtA, i, uint64(m.ItemID.Size()))
+	n9, err := m.ItemID.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n9
+	return i, nil
+}
+
 func (m *Query) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -547,21 +795,41 @@ func (m *Query) MarshalTo(dAtA []byte) (int, error) {
 		dAtA[i] = 0xa
 		i++
 		i = encodeVarintDto(dAtA, i, uint64(m.Move.Size()))
-		n6, err := m.Move.MarshalTo(dAtA[i:])
+		n10, err := m.Move.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n6
+		i += n10
 	}
 	if m.Cast != nil {
 		dAtA[i] = 0x12
 		i++
 		i = encodeVarintDto(dAtA, i, uint64(m.Cast.Size()))
-		n7, err := m.Cast.MarshalTo(dAtA[i:])
+		n11, err := m.Cast.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
-		i += n7
+		i += n11
+	}
+	if m.Loot != nil {
+		dAtA[i] = 0x1a
+		i++
+		i = encodeVarintDto(dAtA, i, uint64(m.Loot.Size()))
+		n12, err := m.Loot.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n12
+	}
+	if m.Consume != nil {
+		dAtA[i] = 0x22
+		i++
+		i = encodeVarintDto(dAtA, i, uint64(m.Consume.Size()))
+		n13, err := m.Consume.MarshalTo(dAtA[i:])
+		if err != nil {
+			return 0, err
+		}
+		i += n13
 	}
 	return i, nil
 }
@@ -584,27 +852,27 @@ func (m *DTO) MarshalTo(dAtA []byte) (int, error) {
 	dAtA[i] = 0xa
 	i++
 	i = encodeVarintDto(dAtA, i, uint64(m.ID.Size()))
-	n8, err := m.ID.MarshalTo(dAtA[i:])
+	n14, err := m.ID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n8
+	i += n14
 	dAtA[i] = 0x12
 	i++
 	i = encodeVarintDto(dAtA, i, uint64(m.Token.Size()))
-	n9, err := m.Token.MarshalTo(dAtA[i:])
+	n15, err := m.Token.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n9
+	i += n15
 	dAtA[i] = 0x1a
 	i++
 	i = encodeVarintDto(dAtA, i, uint64(m.Query.Size()))
-	n10, err := m.Query.MarshalTo(dAtA[i:])
+	n16, err := m.Query.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n10
+	i += n16
 	return i, nil
 }
 
@@ -652,26 +920,52 @@ func NewPopulatedCast(r randyDto, easy bool) *Cast {
 	return this
 }
 
+func NewPopulatedLoot(r randyDto, easy bool) *Loot {
+	this := &Loot{}
+	v8 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.Source = *v8
+	v9 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.ItemID = *v9
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedConsume(r randyDto, easy bool) *Consume {
+	this := &Consume{}
+	v10 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.Source = *v10
+	v11 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.ItemID = *v11
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
 func NewPopulatedQuery(r randyDto, easy bool) *Query {
 	this := &Query{}
-	fieldNum := r.Intn(2)
+	fieldNum := r.Intn(4)
 	switch fieldNum {
 	case 0:
 		this.Move = NewPopulatedMove(r, easy)
 	case 1:
 		this.Cast = NewPopulatedCast(r, easy)
+	case 2:
+		this.Loot = NewPopulatedLoot(r, easy)
+	case 3:
+		this.Consume = NewPopulatedConsume(r, easy)
 	}
 	return this
 }
 
 func NewPopulatedDTO(r randyDto, easy bool) *DTO {
 	this := &DTO{}
-	v8 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v8
-	v9 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.Token = *v9
-	v10 := NewPopulatedQuery(r, easy)
-	this.Query = *v10
+	v12 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v12
+	v13 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.Token = *v13
+	v14 := NewPopulatedQuery(r, easy)
+	this.Query = *v14
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -696,9 +990,9 @@ func randUTF8RuneDto(r randyDto) rune {
 	return rune(ru + 61)
 }
 func randStringDto(r randyDto) string {
-	v11 := r.Intn(100)
-	tmps := make([]rune, v11)
-	for i := 0; i < v11; i++ {
+	v15 := r.Intn(100)
+	tmps := make([]rune, v15)
+	for i := 0; i < v15; i++ {
 		tmps[i] = randUTF8RuneDto(r)
 	}
 	return string(tmps)
@@ -720,11 +1014,11 @@ func randFieldDto(dAtA []byte, r randyDto, fieldNumber int, wire int) []byte {
 	switch wire {
 	case 0:
 		dAtA = encodeVarintPopulateDto(dAtA, uint64(key))
-		v12 := r.Int63()
+		v16 := r.Int63()
 		if r.Intn(2) == 0 {
-			v12 *= -1
+			v16 *= -1
 		}
-		dAtA = encodeVarintPopulateDto(dAtA, uint64(v12))
+		dAtA = encodeVarintPopulateDto(dAtA, uint64(v16))
 	case 1:
 		dAtA = encodeVarintPopulateDto(dAtA, uint64(key))
 		dAtA = append(dAtA, byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)), byte(r.Intn(256)))
@@ -790,6 +1084,32 @@ func (m *Cast) Size() (n int) {
 	return n
 }
 
+func (m *Loot) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Source.Size()
+	n += 1 + l + sovDto(uint64(l))
+	l = m.ItemID.Size()
+	n += 1 + l + sovDto(uint64(l))
+	return n
+}
+
+func (m *Consume) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = m.Source.Size()
+	n += 1 + l + sovDto(uint64(l))
+	l = m.ItemID.Size()
+	n += 1 + l + sovDto(uint64(l))
+	return n
+}
+
 func (m *Query) Size() (n int) {
 	if m == nil {
 		return 0
@@ -802,6 +1122,14 @@ func (m *Query) Size() (n int) {
 	}
 	if m.Cast != nil {
 		l = m.Cast.Size()
+		n += 1 + l + sovDto(uint64(l))
+	}
+	if m.Loot != nil {
+		l = m.Loot.Size()
+		n += 1 + l + sovDto(uint64(l))
+	}
+	if m.Consume != nil {
+		l = m.Consume.Size()
 		n += 1 + l + sovDto(uint64(l))
 	}
 	return n
@@ -869,6 +1197,28 @@ func (this *Cast) String() string {
 	}, "")
 	return s
 }
+func (this *Loot) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Loot{`,
+		`Source:` + fmt.Sprintf("%v", this.Source) + `,`,
+		`ItemID:` + fmt.Sprintf("%v", this.ItemID) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *Consume) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&Consume{`,
+		`Source:` + fmt.Sprintf("%v", this.Source) + `,`,
+		`ItemID:` + fmt.Sprintf("%v", this.ItemID) + `,`,
+		`}`,
+	}, "")
+	return s
+}
 func (this *Query) String() string {
 	if this == nil {
 		return "nil"
@@ -876,6 +1226,8 @@ func (this *Query) String() string {
 	s := strings.Join([]string{`&Query{`,
 		`Move:` + strings.Replace(fmt.Sprintf("%v", this.Move), "Move", "Move", 1) + `,`,
 		`Cast:` + strings.Replace(fmt.Sprintf("%v", this.Cast), "Cast", "Cast", 1) + `,`,
+		`Loot:` + strings.Replace(fmt.Sprintf("%v", this.Loot), "Loot", "Loot", 1) + `,`,
+		`Consume:` + strings.Replace(fmt.Sprintf("%v", this.Consume), "Consume", "Consume", 1) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -907,6 +1259,12 @@ func (this *Query) GetValue() interface{} {
 	if this.Cast != nil {
 		return this.Cast
 	}
+	if this.Loot != nil {
+		return this.Loot
+	}
+	if this.Consume != nil {
+		return this.Consume
+	}
 	return nil
 }
 
@@ -916,6 +1274,10 @@ func (this *Query) SetValue(value interface{}) bool {
 		this.Move = vt
 	case *Cast:
 		this.Cast = vt
+	case *Loot:
+		this.Loot = vt
+	case *Consume:
+		this.Consume = vt
 	default:
 		return false
 	}
@@ -1296,6 +1658,226 @@ func (m *Cast) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *Loot) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDto
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Loot: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Loot: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDto
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthDto
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ItemID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDto
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthDto
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.ItemID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDto(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDto
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Consume) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowDto
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Consume: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Consume: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDto
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthDto
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ItemID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDto
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthDto
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.ItemID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipDto(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthDto
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *Query) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -1388,6 +1970,72 @@ func (m *Query) Unmarshal(dAtA []byte) error {
 				m.Cast = &Cast{}
 			}
 			if err := m.Cast.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Loot", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDto
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDto
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Loot == nil {
+				m.Loot = &Loot{}
+			}
+			if err := m.Loot.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Consume", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowDto
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthDto
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Consume == nil {
+				m.Consume = &Consume{}
+			}
+			if err := m.Consume.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -1657,39 +2305,43 @@ var (
 	ErrIntOverflowDto   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("dto.proto", fileDescriptor_dto_b7f2e52b8df08f3d) }
+func init() { proto.RegisterFile("dto.proto", fileDescriptor_dto_b2621c185219df87) }
 
-var fileDescriptor_dto_b7f2e52b8df08f3d = []byte{
-	// 487 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0x3f, 0x6f, 0xd3, 0x40,
-	0x1c, 0xf5, 0xcf, 0x4e, 0x0a, 0x39, 0x67, 0xa8, 0x6e, 0x8a, 0x32, 0x9c, 0xa3, 0x48, 0xa0, 0x2c,
-	0x3d, 0x43, 0x0a, 0x52, 0x55, 0x09, 0x09, 0x52, 0x57, 0x28, 0x02, 0x54, 0x30, 0xd9, 0x91, 0xd3,
-	0x1e, 0xae, 0xc9, 0x9f, 0x8b, 0x9c, 0x73, 0x24, 0x6f, 0x7c, 0x04, 0x3e, 0x02, 0x62, 0x62, 0x67,
-	0x61, 0x64, 0xcc, 0xc0, 0x90, 0xb1, 0x62, 0xa8, 0xc8, 0x65, 0x61, 0xec, 0xc8, 0x88, 0x72, 0x77,
-	0xa6, 0x99, 0x2a, 0x11, 0xb1, 0xdd, 0xdd, 0xfb, 0xbd, 0xe7, 0xf7, 0xde, 0x9d, 0x51, 0xe5, 0x4c,
-	0x70, 0x3a, 0x49, 0xb9, 0xe0, 0xb8, 0xcc, 0x66, 0x6c, 0x2c, 0xea, 0x7b, 0x71, 0x22, 0xce, 0xb3,
-	0x3e, 0x3d, 0xe5, 0x23, 0x3f, 0xe6, 0x31, 0xf7, 0x15, 0xda, 0xcf, 0xde, 0xaa, 0x9d, 0xda, 0xa8,
-	0x95, 0x66, 0xd5, 0x1f, 0x6e, 0x8c, 0xb3, 0x21, 0x7f, 0x17, 0x9d, 0xfb, 0x71, 0x34, 0x62, 0x6f,
-	0xee, 0xdd, 0xf7, 0x27, 0x83, 0xd8, 0x8f, 0x19, 0x1f, 0x31, 0x91, 0xe6, 0xfe, 0x84, 0x4f, 0x13,
-	0x91, 0xf0, 0xb1, 0xa1, 0xed, 0xdf, 0x4c, 0x8b, 0xfa, 0xc9, 0x30, 0x11, 0xb9, 0x2f, 0xa2, 0x34,
-	0x66, 0x62, 0xaa, 0x49, 0xcd, 0xef, 0x80, 0x4a, 0x2f, 0xf8, 0x8c, 0xe1, 0x63, 0xb4, 0xf3, 0x9a,
-	0x67, 0xe9, 0x29, 0xab, 0x41, 0x03, 0x5a, 0xd5, 0xce, 0xde, 0xfc, 0xd2, 0xb3, 0x7e, 0x5c, 0x7a,
-	0x77, 0x6e, 0x56, 0xcd, 0x86, 0xc9, 0x19, 0xed, 0x06, 0xa1, 0x21, 0xe3, 0xa7, 0xe8, 0x56, 0x4f,
-	0x7f, 0xa0, 0x66, 0x37, 0x9c, 0x7f, 0xd7, 0x29, 0xd8, 0xf8, 0x01, 0xba, 0xfd, 0xd2, 0xe4, 0xab,
-	0x39, 0x0d, 0x68, 0xb9, 0x6d, 0x4c, 0x8b, 0xe4, 0xb4, 0x40, 0x3a, 0xa5, 0xb5, 0x7a, 0xf8, 0x77,
-	0xb2, 0xf9, 0xc9, 0x46, 0xa5, 0xa3, 0x68, 0x2a, 0xfe, 0x57, 0x9c, 0x67, 0xa8, 0xf2, 0x44, 0xf7,
-	0xd6, 0x0d, 0x6a, 0xf6, 0x36, 0x4a, 0xd7, 0x7c, 0x7c, 0x70, 0xdd, 0x8d, 0xd3, 0x70, 0x5a, 0x6e,
-	0xbb, 0x46, 0xd5, 0xfb, 0xa0, 0x6b, 0xc7, 0xd4, 0x40, 0xc7, 0x63, 0x91, 0xe6, 0x26, 0x57, 0x31,
-	0x5e, 0x7f, 0x8e, 0xaa, 0x9b, 0x30, 0xde, 0x45, 0xce, 0x80, 0xe5, 0x2a, 0x5a, 0x25, 0x5c, 0x2f,
-	0xf1, 0x5d, 0x54, 0x9e, 0x45, 0xc3, 0x8c, 0x29, 0x93, 0x6e, 0x7b, 0x97, 0x9a, 0xeb, 0x2e, 0x64,
-	0x43, 0x0d, 0x1f, 0xda, 0x07, 0xd0, 0x3c, 0x41, 0xe5, 0x57, 0x19, 0x4b, 0x73, 0xec, 0xe9, 0xbb,
-	0x57, 0x3a, 0x6e, 0xdb, 0x35, 0x6e, 0xd6, 0x47, 0xa1, 0x7e, 0x14, 0x9e, 0x6e, 0xd3, 0x88, 0xba,
-	0x1b, 0x76, 0x43, 0x05, 0x1c, 0x96, 0xe6, 0x1f, 0x3d, 0x68, 0x7e, 0x01, 0xe4, 0x04, 0xbd, 0x13,
-	0xfc, 0x08, 0xd9, 0xdd, 0x60, 0xbb, 0xc2, 0xed, 0x6e, 0x80, 0x8f, 0x50, 0xb9, 0xc7, 0x07, 0x6c,
-	0xbc, 0x5d, 0xd1, 0x9a, 0x8b, 0x5b, 0x26, 0x9c, 0x79, 0x34, 0x55, 0xe3, 0x59, 0x9d, 0x99, 0x5a,
-	0xf5, 0x40, 0xe7, 0xf1, 0x62, 0x49, 0xac, 0x8b, 0x25, 0xb1, 0xae, 0x96, 0x04, 0x7e, 0x2f, 0x09,
-	0xbc, 0x97, 0x04, 0x3e, 0x4b, 0x02, 0x5f, 0x25, 0x81, 0x6f, 0x92, 0xc0, 0x5c, 0x12, 0x58, 0x48,
-	0x02, 0x3f, 0x25, 0x81, 0x5f, 0x92, 0x58, 0x57, 0x92, 0xc0, 0x87, 0x15, 0xb1, 0x16, 0x2b, 0x62,
-	0x5d, 0xac, 0x88, 0xd5, 0xdf, 0x51, 0xff, 0xd0, 0xfe, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xd5,
-	0xb9, 0xc3, 0x79, 0xf2, 0x03, 0x00, 0x00,
+var fileDescriptor_dto_b2621c185219df87 = []byte{
+	// 550 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x54, 0xbf, 0x6f, 0xd3, 0x40,
+	0x14, 0xf6, 0xb3, 0x9d, 0x96, 0x9c, 0x23, 0x54, 0xdd, 0x64, 0x65, 0x38, 0x47, 0x91, 0x40, 0x59,
+	0x6a, 0x43, 0x0a, 0x52, 0x55, 0x09, 0x09, 0xf2, 0x43, 0x28, 0xa2, 0x08, 0x30, 0xd9, 0x91, 0xd3,
+	0x1e, 0xae, 0xc9, 0x8f, 0x8b, 0x9c, 0x73, 0xa4, 0x6c, 0xfc, 0x09, 0x0c, 0x48, 0x48, 0x4c, 0x88,
+	0x89, 0x9d, 0x85, 0x91, 0x31, 0x03, 0x43, 0xc6, 0x8a, 0xa1, 0x22, 0xce, 0xc2, 0xd8, 0x91, 0x11,
+	0xf9, 0xee, 0xdc, 0x66, 0xaa, 0x44, 0xd4, 0x81, 0xed, 0xee, 0xbd, 0xf7, 0x7d, 0x7e, 0xdf, 0xf7,
+	0xde, 0x19, 0x15, 0x8f, 0x39, 0x73, 0xc7, 0x31, 0xe3, 0x0c, 0x17, 0xe8, 0x94, 0x8e, 0x78, 0x79,
+	0x37, 0x8c, 0xf8, 0x49, 0xd2, 0x73, 0x8f, 0xd8, 0xd0, 0x0b, 0x59, 0xc8, 0x3c, 0x91, 0xed, 0x25,
+	0xaf, 0xc5, 0x4d, 0x5c, 0xc4, 0x49, 0xa2, 0xca, 0xf7, 0xd7, 0xca, 0xe9, 0x80, 0xbd, 0x09, 0x4e,
+	0xbc, 0x30, 0x18, 0xd2, 0x57, 0x77, 0xee, 0x7a, 0xe3, 0x7e, 0xe8, 0x85, 0x94, 0x0d, 0x29, 0x8f,
+	0x67, 0xde, 0x98, 0x4d, 0x22, 0x1e, 0xb1, 0x91, 0x82, 0xed, 0x5d, 0x0d, 0x0b, 0x7a, 0xd1, 0x20,
+	0xe2, 0x33, 0x8f, 0x07, 0x71, 0x48, 0xf9, 0x44, 0x82, 0xaa, 0x3f, 0x00, 0x99, 0x4f, 0xd9, 0x94,
+	0xe2, 0x36, 0xda, 0x7a, 0xc9, 0x92, 0xf8, 0x88, 0xda, 0x50, 0x81, 0x5a, 0xa9, 0xb1, 0x3b, 0x3f,
+	0x73, 0xb4, 0x9f, 0x67, 0xce, 0xad, 0xab, 0x59, 0x93, 0x41, 0x74, 0xec, 0x76, 0x5a, 0xbe, 0x02,
+	0xe3, 0xc7, 0x68, 0xbb, 0x2b, 0x3f, 0x60, 0xeb, 0x15, 0xe3, 0xdf, 0x79, 0x72, 0x34, 0xbe, 0x87,
+	0x6e, 0x3c, 0x57, 0xfa, 0x6c, 0xa3, 0x02, 0x35, 0xab, 0x8e, 0xdd, 0x5c, 0xb9, 0x9b, 0x67, 0x1a,
+	0x66, 0xc6, 0xee, 0x5f, 0x54, 0x56, 0x3f, 0xeb, 0xc8, 0x6c, 0x06, 0x13, 0x7e, 0x5d, 0x72, 0x9e,
+	0xa0, 0xe2, 0x23, 0xe9, 0x5b, 0xa7, 0x65, 0xeb, 0x9b, 0x30, 0x5d, 0xe2, 0xf1, 0xfe, 0xa5, 0x37,
+	0x46, 0xc5, 0xa8, 0x59, 0x75, 0xdb, 0x15, 0xfb, 0xe1, 0x66, 0x1d, 0xbb, 0x2a, 0xd5, 0x1e, 0xf1,
+	0x78, 0xa6, 0x74, 0xe5, 0xe5, 0xe5, 0x43, 0x54, 0x5a, 0x4f, 0xe3, 0x1d, 0x64, 0xf4, 0xe9, 0x4c,
+	0x48, 0x2b, 0xfa, 0xd9, 0x11, 0xdf, 0x46, 0x85, 0x69, 0x30, 0x48, 0xa8, 0x68, 0xd2, 0xaa, 0xef,
+	0xb8, 0x6a, 0xdc, 0x39, 0xad, 0x2f, 0xd3, 0x07, 0xfa, 0x3e, 0x54, 0xdf, 0x03, 0x32, 0x0f, 0x19,
+	0xbb, 0x36, 0x93, 0xda, 0x68, 0xab, 0xc3, 0xe9, 0x70, 0x53, 0x87, 0x14, 0xb8, 0xfa, 0x01, 0xd0,
+	0x76, 0x93, 0x8d, 0x26, 0xc9, 0x90, 0xfe, 0x67, 0x9d, 0x7d, 0x04, 0x54, 0x78, 0x91, 0xd0, 0x78,
+	0x86, 0x1d, 0xf9, 0x5a, 0x44, 0x57, 0x56, 0xdd, 0x52, 0xf3, 0xcb, 0x42, 0xbe, 0x7c, 0x46, 0x8e,
+	0xdc, 0x3f, 0x35, 0x06, 0x6b, 0x6d, 0xc0, 0xbe, 0x5c, 0x4c, 0x47, 0x7a, 0xaf, 0x76, 0x3a, 0x2f,
+	0xc8, 0x42, 0xbe, 0x1c, 0x4a, 0xed, 0xc2, 0x05, 0xdb, 0x14, 0x35, 0x37, 0x73, 0x12, 0x19, 0xf5,
+	0xf3, 0xf4, 0x81, 0x39, 0xff, 0xe4, 0x40, 0xf5, 0x2b, 0x20, 0xa3, 0xd5, 0x7d, 0x86, 0x1f, 0x20,
+	0xbd, 0xd3, 0xda, 0xcc, 0x2e, 0xbd, 0xd3, 0xc2, 0x4d, 0x54, 0xe8, 0xb2, 0x3e, 0x1d, 0x6d, 0xe6,
+	0x94, 0xc4, 0xe2, 0x9a, 0xf2, 0x49, 0xa9, 0x2b, 0xa9, 0xce, 0x45, 0x4c, 0xed, 0xb4, 0x2c, 0x68,
+	0x3c, 0x5c, 0x2c, 0x89, 0x76, 0xba, 0x24, 0xda, 0xf9, 0x92, 0xc0, 0x9f, 0x25, 0x81, 0xb7, 0x29,
+	0x81, 0x2f, 0x29, 0x81, 0x6f, 0x29, 0x81, 0xef, 0x29, 0x81, 0x79, 0x4a, 0x60, 0x91, 0x12, 0xf8,
+	0x95, 0x12, 0xf8, 0x9d, 0x12, 0xed, 0x3c, 0x25, 0xf0, 0x6e, 0x45, 0xb4, 0xc5, 0x8a, 0x68, 0xa7,
+	0x2b, 0xa2, 0xf5, 0xb6, 0xc4, 0x0f, 0x6c, 0xef, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x65, 0xcc,
+	0x5a, 0x58, 0x6f, 0x05, 0x00, 0x00,
 }

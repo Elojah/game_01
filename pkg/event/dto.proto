@@ -22,12 +22,22 @@ message Cast {
 	map<string, ability.Targets> Targets = 3 [(gogoproto.nullable)   = false];
 }
 
-// TODO Add loot and consume here
+message Loot {
+	bytes Source                         = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message Consume {
+	bytes Source                         = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
 
 message Query {
 	option (gogoproto.onlyone)           = true;
 	Move Move                            = 1;
 	Cast Cast                            = 2;
+	Loot Loot                            = 3;
+	Consume Consume                      = 4;
 }
 
 message DTO {

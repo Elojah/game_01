@@ -9,11 +9,30 @@ option (gogoproto.populate_all) = true;
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_01/pkg/geometry/position.proto";
 
+// Orb represents a skill learner object. Consumer learns skill at item consumption.
+message Orb {
+	bytes Skill                  = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
+}
+
+// Component represents a common object used for craft only.
+message Component {
+	bytes Type                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
+}
+
+message Type {
+	option (gogoproto.onlyone)   = true;
+	Orb Orb                      = 1;
+	Component Component          = 2;
+}
+
 message I {
 	bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Type                   = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	string Name                  = 3;
-	bytes Owner                  = 4 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	geometry.Position Position   = 5 [(gogoproto.nullable)   = true];
-	bytes Skill                  = 6 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
+	string Name                  = 2;
+
+	bytes Icon                   = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Mesh                   = 4 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	Type Type                    = 5 [(gogoproto.nullable)   = false];
+	bytes Owner                  = 6 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
+	geometry.Position Position   = 7 [(gogoproto.nullable)   = true];
 }
