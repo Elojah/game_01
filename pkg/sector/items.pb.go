@@ -26,22 +26,22 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion2 // please upgrade the proto package
 
-type Entities struct {
+type Items struct {
 	SectorID github_com_elojah_game_01_pkg_ulid.ID   `protobuf:"bytes,1,opt,name=SectorID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"SectorID"`
 	ItemIDs  []github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,rep,name=ItemIDs,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemIDs"`
 }
 
-func (m *Entities) Reset()      { *m = Entities{} }
-func (*Entities) ProtoMessage() {}
-func (*Entities) Descriptor() ([]byte, []int) {
-	return fileDescriptor_items_88e34a09c8e9ece9, []int{0}
+func (m *Items) Reset()      { *m = Items{} }
+func (*Items) ProtoMessage() {}
+func (*Items) Descriptor() ([]byte, []int) {
+	return fileDescriptor_items_ae69c5adc6372288, []int{0}
 }
-func (m *Entities) XXX_Unmarshal(b []byte) error {
+func (m *Items) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Entities) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *Items) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Entities.Marshal(b, m, deterministic)
+		return xxx_messageInfo_Items.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalTo(b)
@@ -51,29 +51,29 @@ func (m *Entities) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (dst *Entities) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Entities.Merge(dst, src)
+func (dst *Items) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Items.Merge(dst, src)
 }
-func (m *Entities) XXX_Size() int {
+func (m *Items) XXX_Size() int {
 	return m.Size()
 }
-func (m *Entities) XXX_DiscardUnknown() {
-	xxx_messageInfo_Entities.DiscardUnknown(m)
+func (m *Items) XXX_DiscardUnknown() {
+	xxx_messageInfo_Items.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Entities proto.InternalMessageInfo
+var xxx_messageInfo_Items proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*Entities)(nil), "sector.Entities")
+	proto.RegisterType((*Items)(nil), "sector.Items")
 }
-func (this *Entities) Equal(that interface{}) bool {
+func (this *Items) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*Entities)
+	that1, ok := that.(*Items)
 	if !ok {
-		that2, ok := that.(Entities)
+		that2, ok := that.(Items)
 		if ok {
 			that1 = &that2
 		} else {
@@ -98,12 +98,12 @@ func (this *Entities) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *Entities) GoString() string {
+func (this *Items) GoString() string {
 	if this == nil {
 		return "nil"
 	}
 	s := make([]string, 0, 6)
-	s = append(s, "&sector.Entities{")
+	s = append(s, "&sector.Items{")
 	s = append(s, "SectorID: "+fmt.Sprintf("%#v", this.SectorID)+",\n")
 	s = append(s, "ItemIDs: "+fmt.Sprintf("%#v", this.ItemIDs)+",\n")
 	s = append(s, "}")
@@ -117,7 +117,7 @@ func valueToGoStringItems(v interface{}, typ string) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("func(v %v) *%v { return &v } ( %#v )", typ, typ, pv)
 }
-func (m *Entities) Marshal() (dAtA []byte, err error) {
+func (m *Items) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalTo(dAtA)
@@ -127,7 +127,7 @@ func (m *Entities) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Entities) MarshalTo(dAtA []byte) (int, error) {
+func (m *Items) MarshalTo(dAtA []byte) (int, error) {
 	var i int
 	_ = i
 	var l int
@@ -164,8 +164,8 @@ func encodeVarintItems(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return offset + 1
 }
-func NewPopulatedEntities(r randyItems, easy bool) *Entities {
-	this := &Entities{}
+func NewPopulatedItems(r randyItems, easy bool) *Items {
+	this := &Items{}
 	v1 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.SectorID = *v1
 	v2 := r.Intn(10)
@@ -251,7 +251,7 @@ func encodeVarintPopulateItems(dAtA []byte, v uint64) []byte {
 	dAtA = append(dAtA, uint8(v))
 	return dAtA
 }
-func (m *Entities) Size() (n int) {
+func (m *Items) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -281,11 +281,11 @@ func sovItems(x uint64) (n int) {
 func sozItems(x uint64) (n int) {
 	return sovItems(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (this *Entities) String() string {
+func (this *Items) String() string {
 	if this == nil {
 		return "nil"
 	}
-	s := strings.Join([]string{`&Entities{`,
+	s := strings.Join([]string{`&Items{`,
 		`SectorID:` + fmt.Sprintf("%v", this.SectorID) + `,`,
 		`ItemIDs:` + fmt.Sprintf("%v", this.ItemIDs) + `,`,
 		`}`,
@@ -300,7 +300,7 @@ func valueToStringItems(v interface{}) string {
 	pv := reflect.Indirect(rv).Interface()
 	return fmt.Sprintf("*%v", pv)
 }
-func (m *Entities) Unmarshal(dAtA []byte) error {
+func (m *Items) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -323,10 +323,10 @@ func (m *Entities) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Entities: wiretype end group for non-group")
+			return fmt.Errorf("proto: Items: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Entities: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: Items: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -517,23 +517,23 @@ var (
 	ErrIntOverflowItems   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("items.proto", fileDescriptor_items_88e34a09c8e9ece9) }
+func init() { proto.RegisterFile("items.proto", fileDescriptor_items_ae69c5adc6372288) }
 
-var fileDescriptor_items_88e34a09c8e9ece9 = []byte{
-	// 240 bytes of a gzipped FileDescriptorProto
+var fileDescriptor_items_ae69c5adc6372288 = []byte{
+	// 233 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0xce, 0x2c, 0x49, 0xcd,
 	0x2d, 0xd6, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2b, 0x4e, 0x4d, 0x2e, 0xc9, 0x2f, 0x92,
 	0xd2, 0x4d, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b, 0xce, 0xcf, 0xd5, 0x4f, 0xcf, 0x4f, 0xcf,
-	0xd7, 0x07, 0x4b, 0x27, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0xd1, 0xa6, 0x34, 0x8f,
-	0x91, 0x8b, 0xc3, 0x35, 0xaf, 0x24, 0xb3, 0x24, 0x33, 0xb5, 0x58, 0xc8, 0x93, 0x8b, 0x23, 0x18,
-	0x6c, 0x8a, 0xa7, 0x8b, 0x04, 0xa3, 0x02, 0xa3, 0x06, 0x8f, 0x93, 0xee, 0x89, 0x7b, 0xf2, 0x0c,
-	0xb7, 0xee, 0xc9, 0xab, 0x22, 0x99, 0x9a, 0x9a, 0x93, 0x9f, 0x95, 0x98, 0xa1, 0x9f, 0x9e, 0x98,
-	0x9b, 0x1a, 0x6f, 0x60, 0xa8, 0x5f, 0x90, 0x9d, 0xae, 0x5f, 0x9a, 0x93, 0x99, 0xa2, 0xe7, 0xe9,
-	0x12, 0x04, 0xd7, 0x2e, 0xe4, 0xce, 0xc5, 0xee, 0x59, 0x92, 0x9a, 0xeb, 0xe9, 0x52, 0x2c, 0xc1,
-	0xa4, 0xc0, 0x4c, 0xba, 0x49, 0x30, 0xdd, 0x4e, 0x0e, 0x17, 0x1e, 0xca, 0x31, 0xdc, 0x78, 0x28,
-	0xc7, 0xf0, 0xe1, 0xa1, 0x1c, 0xe3, 0x8f, 0x87, 0x72, 0x8c, 0x0d, 0x8f, 0xe4, 0x18, 0x57, 0x3c,
-	0x92, 0x63, 0xdc, 0xf1, 0x48, 0x8e, 0xf1, 0xc0, 0x23, 0x39, 0xc6, 0x13, 0x8f, 0xe4, 0x18, 0x2f,
-	0x3c, 0x92, 0x63, 0x7c, 0xf0, 0x48, 0x8e, 0xf1, 0xc5, 0x23, 0x39, 0x86, 0x0f, 0x8f, 0xe4, 0x18,
-	0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x24, 0x36, 0xb0,
-	0x4f, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff, 0xb4, 0x65, 0x65, 0xe5, 0x2f, 0x01, 0x00, 0x00,
+	0xd7, 0x07, 0x4b, 0x27, 0x95, 0xa6, 0x81, 0x79, 0x60, 0x0e, 0x98, 0x05, 0xd1, 0xa6, 0x34, 0x9b,
+	0x91, 0x8b, 0xd5, 0x13, 0x64, 0x8c, 0x90, 0x27, 0x17, 0x47, 0x30, 0xd8, 0x08, 0x4f, 0x17, 0x09,
+	0x46, 0x05, 0x46, 0x0d, 0x1e, 0x27, 0xdd, 0x13, 0xf7, 0xe4, 0x19, 0x6e, 0xdd, 0x93, 0x57, 0x45,
+	0x32, 0x32, 0x35, 0x27, 0x3f, 0x2b, 0x31, 0x43, 0x3f, 0x3d, 0x31, 0x37, 0x35, 0xde, 0xc0, 0x50,
+	0xbf, 0x20, 0x3b, 0x5d, 0xbf, 0x34, 0x27, 0x33, 0x45, 0xcf, 0xd3, 0x25, 0x08, 0xae, 0x5d, 0xc8,
+	0x9d, 0x8b, 0x1d, 0x64, 0xa6, 0xa7, 0x4b, 0xb1, 0x04, 0x93, 0x02, 0x33, 0xe9, 0x26, 0xc1, 0x74,
+	0x3b, 0x39, 0x5c, 0x78, 0x28, 0xc7, 0x70, 0xe3, 0xa1, 0x1c, 0xc3, 0x87, 0x87, 0x72, 0x8c, 0x3f,
+	0x1e, 0xca, 0x31, 0x36, 0x3c, 0x92, 0x63, 0x5c, 0xf1, 0x48, 0x8e, 0x71, 0xc7, 0x23, 0x39, 0xc6,
+	0x03, 0x8f, 0xe4, 0x18, 0x4f, 0x3c, 0x92, 0x63, 0xbc, 0xf0, 0x48, 0x8e, 0xf1, 0xc1, 0x23, 0x39,
+	0xc6, 0x17, 0x8f, 0xe4, 0x18, 0x3e, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc2, 0x63,
+	0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0x92, 0xd8, 0xc0, 0xde, 0x34, 0x06, 0x04, 0x00, 0x00, 0xff,
+	0xff, 0x17, 0x55, 0x72, 0x1c, 0x2c, 0x01, 0x00, 0x00,
 }
