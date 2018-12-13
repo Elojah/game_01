@@ -40,12 +40,14 @@ type app struct {
 
 	limit         int
 	moveTolerance float64
+	lootRadius    float64
 }
 
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
 	a.moveTolerance = c.MoveTolerance
+	a.lootRadius = c.LootRadius
 	go a.Run()
 	return nil
 }
