@@ -2,7 +2,14 @@ PACKAGE   = game
 DATE     ?= $(shell date +%FT%T%z)
 VERSION  ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tags --always))
 
-GO        = /snap/go/current/bin/go
+ifneq ($(wildcard /snap/go/current/bin/go),)
+	GO = /snap/go/current/bin/go
+else ifneq ($(shell type -p go1.11),)
+	GO = go1.11
+else
+	GO = go
+endif
+
 GODOC     = godoc
 GOFMT     = gofmt
 GOLINT    = gometalinter
