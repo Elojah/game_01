@@ -111,6 +111,7 @@ proto:
 	$Q cd pkg/infra    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sequencer.proto
 	$Q cd pkg/infra    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. recurrer.proto
 	$Q cd pkg/sector   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entities.proto
+	$Q cd pkg/sector   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. items.proto
 	$Q cd pkg/sector   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sector.proto
 
 # Vendor

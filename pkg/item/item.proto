@@ -33,6 +33,5 @@ message I {
 	bytes Mesh                   = 4 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 
 	Type Type                    = 5 [(gogoproto.nullable)   = false];
-	bytes Owner                  = 6 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
-	geometry.Position Position   = 7 [(gogoproto.nullable)   = true];
+	geometry.Position Position   = 6 [(gogoproto.nullable)   = true];
 }
