@@ -174,6 +174,18 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 	case *event.FeedbackTarget:
 		logger.Error().Msg("not implemented")
 		return
+	case *event.LootSource:
+		logger.Error().Msg("not implemented")
+		return
+	case *event.LootTarget:
+		logger.Error().Msg("not implemented")
+		return
+	case *event.ConsumeSource:
+		logger.Error().Msg("not implemented")
+		return
+	case *event.ConsumeTarget:
+		logger.Error().Msg("not implemented")
+		return
 	default:
 		logger.Error().Msg("unrecognized action")
 		return
