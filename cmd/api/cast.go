@@ -30,11 +30,10 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 
-	go func() {
-		if err := h.PublishEvent(e, cast.Source); err != nil {
-			logger.Error().Err(err).Msg("event rejected")
-		}
-		logger.Info().Str("source", cast.Source.String()).Msg("send event")
-	}()
+	if err := h.PublishEvent(e, cast.Source); err != nil {
+		logger.Error().Err(err).Msg("event rejected")
+	}
+	logger.Info().Str("source", cast.Source.String()).Msg("send event")
+
 	return nil
 }
