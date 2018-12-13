@@ -28,7 +28,7 @@ message CastSource {
 
 message FeedbackTarget {
 	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Source                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	entity.E Source                      = 2 [(gogoproto.nullable)   = false];
 }
 
 message PerformSource {

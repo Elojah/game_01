@@ -1,7 +1,6 @@
 package main
 
 import (
-	multierror "github.com/hashicorp/go-multierror"
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 
@@ -176,23 +175,8 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Apply all ability components.
-	var result *multierror.Error
-	for _, effect := range component.Effects {
-		veffect := effect.GetValue()
-		switch v := veffect.(type) {
-		case ability.Damage:
-			fb.Effects = append(fb.Effects, ability.EffectFeedback{
-				DamageFeedback: target.Damage(perform.Source, v),
-			})
-		case ability.Heal:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
-		case ability.HealOverTime:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
-		case ability.DamageOverTime:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
-		default:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet)
-		}
+	if fb.Effects, err = target.ApplyEffects(&perform.Source, component.Effects); err != nil {
+		return errors.Wrapf(err, "failed to apply effects to target %s", target.ID.String())
 	}
 
 	// #Set entity new state.
@@ -211,7 +195,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		Action: event.Action{
 			FeedbackTarget: &event.FeedbackTarget{
 				ID:     fb.ID,
-				Source: target.ID,
+				Source: target,
 			},
 		},
 	}, perform.Source.ID)

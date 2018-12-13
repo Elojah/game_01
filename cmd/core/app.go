@@ -172,7 +172,10 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 			return
 		}
 	case *event.FeedbackTarget:
-		logger.Error().Msg("not implemented")
+		if err := a.FeedbackTarget(id, e); err != nil {
+			logger.Error().Err(err).Msg("feedback target rejected")
+			return
+		}
 		return
 	case *event.LootSource:
 		logger.Error().Msg("not implemented")
