@@ -97,6 +97,18 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 				logger.Error().Err(err).Str("event", "cast").Msg("failed to send event")
 			}
 		}()
+	case *event.Loot:
+		go func() {
+			if err := h.loot(ctx, msg); err != nil {
+				logger.Error().Err(err).Str("event", "loot").Msg("failed to send event")
+			}
+		}()
+	case *event.Consume:
+		go func() {
+			if err := h.consume(ctx, msg); err != nil {
+				logger.Error().Err(err).Str("event", "consume").Msg("failed to send event")
+			}
+		}()
 	default:
 		logger.Error().Msg("unrecognized action")
 	}

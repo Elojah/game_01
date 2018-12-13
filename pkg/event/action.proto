@@ -44,7 +44,7 @@ message PerformTarget {
 
 message LootSource {
 	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Item                           = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message LootTarget {
@@ -54,7 +54,7 @@ message LootTarget {
 
 message ConsumeSource {
 	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Item                           = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message ConsumeTarget {
