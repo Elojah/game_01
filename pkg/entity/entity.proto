@@ -10,19 +10,24 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 import "github.com/elojah/game_01/pkg/geometry/position.proto";
 
 message Cast {
-	bytes AbilityID              = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	uint64 TS                    = 2;
+	bytes AbilityID            = 1 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	uint64 TS                  = 2;
 }
 
 message E {
-	bytes ID                     = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes Type                   = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	string Name                  = 3;
-	bool Dead                    = 4;
-	uint64 HP                    = 5;
-	uint64 MaxHP                 = 6;
-	uint64 MP                    = 7;
-	uint64 MaxMP                 = 8;
-	geometry.Position Position   = 9 [(gogoproto.nullable)   = false];
-	Cast Cast                    = 10 [(gogoproto.nullable)  = true];
+	bytes ID                   = 1 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes Type                 = 2 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	string Name                = 3;
+
+	bool Dead                  = 4;
+	uint64 HP                  = 5;
+	uint64 MaxHP               = 6;
+	uint64 MP                  = 7;
+	uint64 MaxMP               = 8;
+
+	geometry.Vec3 Direction    = 9 [(gogoproto.nullable)    = false];
+	geometry.Position Position = 10 [(gogoproto.nullable)   = false];
+	Cast Cast                  = 11 [(gogoproto.nullable)   = true];
+
+	bytes InventoryID          = 12 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

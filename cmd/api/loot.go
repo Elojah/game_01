@@ -22,8 +22,9 @@ func (h *handler) loot(ctx context.Context, msg event.DTO) error {
 		Token: msg.Token,
 		Action: event.Action{
 			LootSource: &event.LootSource{
-				ID:     loot.Source,
-				ItemID: loot.ItemID,
+				ID:       loot.Source,
+				ItemID:   loot.ItemID,
+				TargetID: loot.TargetID,
 			},
 		},
 	}

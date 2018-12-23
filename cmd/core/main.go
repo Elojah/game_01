@@ -15,6 +15,7 @@ import (
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
+	sectorsvc "github.com/elojah/game_01/pkg/sector/svc"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -70,6 +71,10 @@ func run(prog string, filename string) {
 
 		EntitiesStore: sectorStore,
 		SectorStore:   sectorStore,
+		SectorService: sectorsvc.Service{
+			SectorEntitiesStore: sectorStore,
+			SectorStore:         sectorStore,
+		},
 	}
 	al := a.NewLauncher(Namespaces{
 		App: "app",

@@ -31,7 +31,8 @@ type app struct {
 	EventStore  event.Store
 
 	sector.EntitiesStore
-	SectorStore sector.Store
+	SectorStore   sector.Store
+	SectorService sector.Service
 
 	id ulid.ID
 
@@ -46,8 +47,8 @@ type app struct {
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
-	a.moveTolerance = c.MoveTolerance
 	a.lootRadius = c.LootRadius
+	a.SectorService.Up(c.MoveTolerance)
 	go a.Run()
 	return nil
 }

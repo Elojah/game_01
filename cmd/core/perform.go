@@ -176,7 +176,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Apply all ability components.
 	if fb.Effects, err = target.ApplyEffects(&perform.Source, component.Effects); err != nil {
-		return errors.Wrapf(err, "failed to apply effects to target %s", target.ID.String())
+		return errors.Wrapf(err, "apply effects to target %s", target.ID.String())
 	}
 
 	// #Set entity new state.

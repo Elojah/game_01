@@ -18,6 +18,17 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get entity %s", id.String())
 	}
 
+	// #Retrieve target entity
+	target, err := a.EntityStore.GetEntity(loot.TargetID, ts)
+	if err != nil {
+		return errors.Wrapf(err, "get entity %s", loot.TargetID.String())
+	}
+
+	targetInventory, err := a.GetInventory(target.InventoryID)
+	if err != nil {
+		return errors.Wrapf("retrieve inventory %s from target %s", target.InventoryID.String(), target.ID.String())
+	}
+
 	_, _ = loot, source
 	return nil
 }
