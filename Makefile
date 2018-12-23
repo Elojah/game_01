@@ -4,7 +4,7 @@ VERSION  ?= $(shell echo $(shell cat $(PWD)/.version)-$(shell git describe --tag
 
 ifneq ($(wildcard /snap/go/current/bin/go),)
 	GO = /snap/go/current/bin/go
-else ifneq ($(shell type -p go1.11),)
+else ifneq ($(shell which go1.11),)
 	GO = go1.11
 else
 	GO = go
@@ -30,6 +30,10 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 .PHONY: all
 
 all: client auth api core sync revoker tool
+
+# Help
+go-version:
+	$Q echo $(GO)
 
 # Executables
 client:
