@@ -59,9 +59,10 @@ func run(prog string, filename string) {
 
 		TokenStore: accountStore,
 
-		EntityStore:         entityLRUStore,
-		EntityTemplateStore: entityStore,
-		PermissionStore:     entityStore,
+		EntityStore:           entityLRUStore,
+		EntityTemplateStore:   entityStore,
+		EntityPermissionStore: entityStore,
+		EntityInventoryStore:  entityStore,
 
 		QSequencerStore: infraStore,
 		CoreStore:       infraStore,
@@ -71,7 +72,7 @@ func run(prog string, filename string) {
 
 		EntitiesStore: sectorStore,
 		SectorStore:   sectorStore,
-		SectorService: sectorsvc.Service{
+		SectorService: &sectorsvc.Service{
 			SectorEntitiesStore: sectorStore,
 			SectorStore:         sectorStore,
 		},

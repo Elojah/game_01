@@ -15,7 +15,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Check permission token/source.
-	permission, err := a.GetPermission(e.Token.String(), id.String())
+	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), id.String())
 	}

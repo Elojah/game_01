@@ -7,7 +7,6 @@ option (gogoproto.benchgen_all) = true;
 option (gogoproto.populate_all) = true;
 
 import "github.com/gogo/protobuf/gogoproto/gogo.proto";
-import "github.com/elojah/game_01/pkg/geometry/position.proto";
 
 // Orb represents a skill learner object. Consumer learns skill at item consumption.
 message Orb {

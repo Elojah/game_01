@@ -16,7 +16,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Check permission token/source.
-	permission, err := a.GetPermission(e.Token.String(), id.String())
+	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
 	if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", e.Token.String(), id.String())
 	}
@@ -32,7 +32,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 		target := target
 		g.Go(func() error {
 			// #Check permission source/target.
-			permission, err := a.GetPermission(id.String(), target.String())
+			permission, err := a.EntityPermissionStore.GetPermission(id.String(), target.String())
 			if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
 				return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", id.String(), target.String())
 			}
@@ -71,9 +71,9 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
 	}
 
-	if target, err = a.SectorService.Move(target, move); err != nil {
+	if target, err = a.SectorService.Move(target, move.Position); err != nil {
 		return errors.Wrapf(err, "move target %s", id.String())
 	}
 
-	return errors.Wrapf(s.EntityStore.SetEntity(target, ts), "set entity %s for ts %d", target.ID.String(), ts)
+	return errors.Wrapf(a.EntityStore.SetEntity(target, ts), "set entity %s for ts %d", target.ID.String(), ts)
 }

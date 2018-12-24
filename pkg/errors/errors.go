@@ -37,4 +37,6 @@ var (
 	ErrTooManyTargets = errors.New("too many targets")
 	// ErrOutOfRange is raised when a component ability is performed out of range on a target.
 	ErrOutOfRange = errors.New("out of range")
+	// ErrMissingItem is raised when a loot action is performed on an non present item in target inventory.
+	ErrMissingItem = errors.New("item missing")
 )

@@ -20,9 +20,10 @@ type app struct {
 
 	account.TokenStore
 
-	EntityTemplateStore entity.TemplateStore
-	EntityStore         entity.Store
-	entity.PermissionStore
+	EntityTemplateStore   entity.TemplateStore
+	EntityStore           entity.Store
+	EntityPermissionStore entity.PermissionStore
+	EntityInventoryStore  entity.InventoryStore
 
 	infra.QSequencerStore
 	infra.CoreStore
@@ -48,7 +49,9 @@ func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
 	a.lootRadius = c.LootRadius
-	a.SectorService.Up(c.MoveTolerance)
+	if err := a.SectorService.Up(c.MoveTolerance); err != nil {
+		return err
+	}
 	go a.Run()
 	return nil
 }
