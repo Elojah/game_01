@@ -35,7 +35,7 @@ var (
 	ErrMissingTarget = errors.New("target missing")
 	// ErrTooManyTargets is raised when a ability is casted/performed with too many targets for a component.
 	ErrTooManyTargets = errors.New("too many targets")
-	// ErrOutOfRange is raised when a component ability is performed out of range on a target.
+	// ErrOutOfRange is raised when a component ability is performed out of range on a target or when an item is looted in a further position.
 	ErrOutOfRange = errors.New("out of range")
 	// ErrMissingItem is raised when a loot action is performed on an non present item in target inventory.
 	ErrMissingItem = errors.New("item missing")

@@ -26,4 +26,5 @@ type Store interface {
 type Service interface {
 	Up(float64) error
 	Move(entity.E, geometry.Position) (entity.E, error)
+	Segment(geometry.Position, geometry.Position) (float64, error)
 }

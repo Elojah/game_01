@@ -120,3 +120,33 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 	// #Return new target state.
 	return target, nil
 }
+
+// Segment returns the segment distance between two positions, even if different sectors.
+// WORKS FOR NEIGHBOUR SEGMENTS ONLY
+func (s *Service) Segment(lhs geometry.Position, rhs geometry.Position) (float64, error) {
+
+	// #If both positions have same sector, return plain segment
+	if lhs.SectorID.Compare(rhs.SectorID) == 0 {
+		return geometry.Segment(lhs.Coord, rhs.Coord), nil
+	}
+
+	// #Retrieve current sector
+	sec, err := s.SectorStore.GetSector(lhs.SectorID)
+	if err != nil {
+		return 0, errors.Wrapf(err, "get sector %s", lhs.SectorID.String())
+	}
+
+	// #Check if new sector is a neighbour.
+	neigh, ok := sec.Neighbours[rhs.SectorID.String()]
+	if !ok {
+		return 0, errors.Wrapf(
+			gerrors.ErrInvalidAction,
+			"invalid next neighbour sector %s with previous %s",
+			rhs.SectorID.String(),
+			lhs.SectorID.String(),
+		)
+	}
+
+	// #Check if target has moved at a tolerable distance in different sectors.
+	return geometry.Segment(lhs.Coord, rhs.Coord.MoveReference(neigh)), nil
+}
