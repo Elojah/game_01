@@ -22,8 +22,8 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 		Token: msg.Token,
 		Action: event.Action{
 			MoveSource: &event.MoveSource{
-				Targets:  move.Targets,
-				Position: move.Position,
+				TargetIDs: move.Targets,
+				Position:  move.Position,
 			},
 		},
 	}

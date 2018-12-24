@@ -23,8 +23,8 @@ func expectToolo0Move(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 		SectorID: gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ"),
 	}
 	raw, err := json.Marshal(event.MoveSource{
-		Targets:  []gulid.ID{ent.ID},
-		Position: pos,
+		TargetIDs: []gulid.ID{ent.ID},
+		Position:  pos,
 	})
 	if err != nil {
 		return ent, err

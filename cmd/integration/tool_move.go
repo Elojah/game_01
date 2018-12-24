@@ -63,8 +63,8 @@ func expectToolEntityMove(a *LogAnalyzer, ent entity.E) (entity.E, error) {
 		SectorID: gulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A"),
 	}
 	raw, err := json.Marshal(event.MoveSource{
-		Targets:  []gulid.ID{ent.ID},
-		Position: pos,
+		TargetIDs: []gulid.ID{ent.ID},
+		Position:  pos,
 	})
 	if err != nil {
 		return ent, err

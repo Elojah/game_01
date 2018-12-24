@@ -33,15 +33,15 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	logger.Info().Int("targets", len(move.Targets)).Msg("found")
+	logger.Info().Int("targets", len(move.TargetIDs)).Msg("found")
 
 	ts := gulid.NewID().Time()
-	for _, target := range move.Targets {
+	for _, targetID := range move.TargetIDs {
 
 		// #Get current entity state.
-		e, err := h.EntityStore.GetEntity(target, ts)
+		e, err := h.EntityStore.GetEntity(targetID, ts)
 		if err != nil {
-			logger.Error().Err(errors.Wrapf(err, "get entity %s at ts %d", target.String(), ts)).Msg("failed to get entity")
+			logger.Error().Err(errors.Wrapf(err, "get entity %s at ts %d", targetID.String(), ts)).Msg("failed to get entity")
 			http.Error(w, "failed to retrieve entity", http.StatusInternalServerError)
 			return
 		}
@@ -49,13 +49,13 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 		if e.Position.SectorID.Compare(move.Position.SectorID) != 0 {
 
 			// #Add entity to new sector and remove from previous if necessary.
-			if err := h.AddEntityToSector(target, move.Position.SectorID); err != nil {
-				logger.Error().Err(errors.Wrapf(err, "add entity %s to sector %s", target.String(), move.Position.SectorID.String())).Msg("failed to add entity to sector")
+			if err := h.AddEntityToSector(targetID, move.Position.SectorID); err != nil {
+				logger.Error().Err(errors.Wrapf(err, "add entity %s to sector %s", targetID.String(), move.Position.SectorID.String())).Msg("failed to add entity to sector")
 				http.Error(w, "failed to add entity to new sector", http.StatusInternalServerError)
 				return
 			}
-			if err := h.RemoveEntityFromSector(target, e.Position.SectorID); err != nil {
-				logger.Error().Err(errors.Wrapf(err, "remove entity %s from sector %s", target.String(), e.Position.SectorID.String())).Msg("failed to remove entity from sector")
+			if err := h.RemoveEntityFromSector(targetID, e.Position.SectorID); err != nil {
+				logger.Error().Err(errors.Wrapf(err, "remove entity %s from sector %s", targetID.String(), e.Position.SectorID.String())).Msg("failed to remove entity from sector")
 				http.Error(w, "failed to remove entity from previous sector", http.StatusInternalServerError)
 				return
 			}
@@ -66,7 +66,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 
 		// #Write new target state.
 		if err := h.EntityStore.SetEntity(e, ts); err != nil {
-			logger.Error().Err(errors.Wrapf(err, "set entity %s for ts %d", target.String(), ts))
+			logger.Error().Err(errors.Wrapf(err, "set entity %s for ts %d", targetID.String(), ts))
 			http.Error(w, "failed to set entity", http.StatusInternalServerError)
 			return
 		}

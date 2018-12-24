@@ -46,5 +46,26 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(gerrors.ErrMissingItem, "retrieve item %s from inventory %s", loot.ItemID.String(), target.ID.String())
 	}
 
-	return gerrors.ErrNotImplementedYet
+	// #Remove item from inventory
+	if n == 1 {
+		delete(targetInventory.Items, loot.ItemID.String())
+	} else {
+		targetInventory.Items[loot.ItemID.String()]--
+	}
+
+	// #Publish loot event to target.
+	e = event.E{
+		ID: ulid.NewTimeID(ts + 1),
+		Action: event.Action{
+			LootTarget: &event.LootTarget{
+				SourceID: id,
+				ItemID:   loot.ItemID,
+			},
+		},
+	}
+	if err := a.EventQStore.PublishEvent(e, target.ID); err != nil {
+		return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
+	}
+
+	return nil
 }

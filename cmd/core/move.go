@@ -28,7 +28,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	// #For all targets.
 	var g errgroup.Group
-	for _, target := range move.Targets {
+	for _, target := range move.TargetIDs {
 		target := target
 		g.Go(func() error {
 			// #Check permission source/target.
@@ -45,7 +45,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 				ID: ulid.NewTimeID(ts + 1),
 				Action: event.Action{
 					MoveTarget: &event.MoveTarget{
-						Source:   id,
+						SourceID: id,
 						Position: move.Position,
 					},
 				},

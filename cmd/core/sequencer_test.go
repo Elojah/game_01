@@ -39,19 +39,19 @@ func TestSequencer(t *testing.T) {
 		event.E{
 			ID: gulid.NewTimeID(now + 1),
 			Action: event.Action{
-				MoveTarget: &event.MoveTarget{Source: gulid.NewID()},
+				MoveTarget: &event.MoveTarget{SourceID: gulid.NewID()},
 			},
 		},
 		event.E{
 			ID: gulid.NewTimeID(now + 2),
 			Action: event.Action{
-				MoveTarget: &event.MoveTarget{Source: gulid.NewID()},
+				MoveTarget: &event.MoveTarget{SourceID: gulid.NewID()},
 			},
 		},
 		event.E{
 			ID: gulid.NewTimeID(now + 3),
 			Action: event.Action{
-				MoveTarget: &event.MoveTarget{Source: gulid.NewID()},
+				MoveTarget: &event.MoveTarget{SourceID: gulid.NewID()},
 			},
 		},
 	}

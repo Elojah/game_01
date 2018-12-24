@@ -12,12 +12,12 @@ import "github.com/elojah/game_01/pkg/ability/targets.proto";
 import "github.com/elojah/game_01/pkg/entity/entity.proto";
 
 message MoveSource {
-	repeated bytes Targets               = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	repeated bytes TargetIDs             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	geometry.Position Position           = 2 [(gogoproto.nullable)   = false];
 }
 
 message MoveTarget {
-	bytes Source                         = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes SourceID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	geometry.Position Position           = 2 [(gogoproto.nullable)   = false];
 }
 
@@ -43,25 +43,21 @@ message PerformTarget {
 }
 
 message LootSource {
-	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes TargetID                       = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes ItemID                         = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-}
-
-message LootTarget {
-	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	entity.E Source                      = 2 [(gogoproto.nullable)   = false];
-	bytes ItemID                         = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-}
-
-message ConsumeSource {
-	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes TargetID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
+message LootTarget {
+	bytes SourceID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message ConsumeSource {
+	bytes ItemID                         = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
 message ConsumeTarget {
-	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	entity.E Source                      = 2 [(gogoproto.nullable)   = false];
+	entity.E Source                      = 1 [(gogoproto.nullable)   = false];
 }
 
 message Action {
