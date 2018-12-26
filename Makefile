@@ -118,6 +118,7 @@ proto:
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. action.proto
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. dto.proto
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. event.proto
+	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. trigger.proto
 	$Q cd pkg/infra    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ack.proto
 	$Q cd pkg/infra    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. q_action.proto
 	$Q cd pkg/infra    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sequencer.proto
