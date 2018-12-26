@@ -34,6 +34,34 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 		return gerrors.ErrOutOfRange
 	}
 
+	// #Publish loot event to target.
+	e = event.E{
+		ID: ulid.NewTimeID(ts + 1),
+		Action: event.Action{
+			LootTarget: &event.LootTarget{
+				SourceID: id,
+				ItemID:   loot.ItemID,
+			},
+		},
+	}
+	if err := a.EventQStore.PublishEvent(e, target.ID); err != nil {
+		return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
+	}
+
+	return nil
+}
+
+func (a *app) LootTarget(id ulid.ID, e event.E) error {
+
+	loot := e.Action.GetValue().(*event.LootTarget)
+	ts := e.ID.Time()
+
+	// #Retrieve entity
+	target, err := a.EntityStore.GetEntity(id, ts)
+	if err != nil {
+		return errors.Wrapf(err, "get entity %s", id.String())
+	}
+
 	// #Retrieve target inventory
 	targetInventory, err := a.EntityInventoryStore.GetInventory(target.InventoryID)
 	if err != nil {

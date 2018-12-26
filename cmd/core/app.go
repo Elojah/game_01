@@ -148,7 +148,7 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Str("sequencer", id.String()).
 		Str("event", e.ID.String()).
 		Uint64("ts", id.Time()).
-		Str("type", e.Action.Type()).
+		Str("type", e.Action.String()).
 		Logger()
 
 	switch e.Action.GetValue().(type) {
