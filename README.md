@@ -1,19 +1,13 @@
 # GAME_01
 
-WORK IN PROGRESS
+**WORK IN PROGRESS**
 
 [![CircleCI](https://circleci.com/gh/Elojah/game_01/tree/master.svg?style=svg)](https://circleci.com/gh/Elojah/game_01/tree/master)
 
 > GAME_01 is a multi services scalable MMORPG server
 
-GAME_01 is an UDP client/server with its own ACK protocol. Client writes user action and send them to API while receiving world data from sync. Core establish world rules and events order.
-```
-client <-> api -> core -> redis-lru
-redis-lru -> sync -> client
-```
-Authentication and char creation/connect is handled by auth and associate a session token at each signin.
-Revoker regularly revokes unused tokens.
-GAME_01 also comes with a Tool API to create world data like entities/abilities/sectors.
+GAME_01 is a set of services and tools to build a MMORPG server the easiest way possible
+*UE4 integration in progress*
 
 ## Installation
 
@@ -28,7 +22,7 @@ go get -u github.com/elojah/game_01
 ```sh
 # Start services
 docker-compose -d
-make dep
+make vendor
 make sync && bin/game_sync configs/config_sync.json
 make core && bin/game_core configs/config_core.json
 make api && bin/game_api configs/config_api.json
@@ -82,6 +76,14 @@ _For more examples and usage, please refer to the [Wiki][wiki]._
 
 See [trello](https://trello.com/b/GX9gz3Js/game01) for more informations.
 
+## How it works
+```
+client <-> api -> core -> redis-lru
+redis-lru -> sync -> client
+```
+Authentication and char creation/connect is handled by auth and associate a session token at each signin.
+Revoker regularly revokes unused tokens.
+GAME_01 also comes with a Tool API to create world data like entities/abilities/sectors.
 
 ## Code architecture
 ```
