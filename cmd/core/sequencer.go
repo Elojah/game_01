@@ -16,8 +16,9 @@ type tick chan ulid.ID
 type Sequencer struct {
 	id ulid.ID
 
-	EventStore  event.Store
-	EntityStore entity.Store
+	EventStore          event.Store
+	EntityStore         entity.Store
+	EventTriggerService event.TriggerService
 
 	logger zerolog.Logger
 
@@ -125,8 +126,8 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}
-	if err := s.EventStore.SetEvent(e, s.id); err != nil {
-		s.logger.Error().Err(err).Msg("error creating event")
+	if err := s.TriggerService.Set(e); err != nil {
+		s.logger.Error().Err(err).Msg("error setting event")
 		return
 	}
 	s.logger.Info().Str("event", e.ID.String()).Msg("event received")

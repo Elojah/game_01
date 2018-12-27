@@ -13,6 +13,7 @@ import (
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	eventsvc "github.com/elojah/game_01/pkg/event/svc"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	sectorsvc "github.com/elojah/game_01/pkg/sector/svc"
@@ -69,6 +70,10 @@ func run(prog string, filename string) {
 
 		EventQStore: eventStore,
 		EventStore:  eventStore,
+		EventTriggerService: &eventsvc.TriggerService{
+			TriggerStore: eventStore,
+			Store:        eventStore,
+		},
 
 		EntitiesStore: sectorStore,
 		SectorStore:   sectorStore,

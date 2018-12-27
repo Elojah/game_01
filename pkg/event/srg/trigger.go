@@ -1,6 +1,8 @@
 package srg
 
 import (
+	"strings"
+
 	"github.com/go-redis/redis"
 
 	gerrors "github.com/elojah/game_01/pkg/errors"
@@ -21,7 +23,7 @@ func (s *Store) SetTrigger(t event.Trigger) error {
 	).Err()
 }
 
-// GetTrigger list triggers in redis set key from min (included).
+// GetTrigger redis implementation.
 func (s *Store) GetTrigger(source gulid.ID, e gulid.ID) (gulid.ID, error) {
 	val, err := s.Get(triggerKey + source.String() + ":" + e.String()).Result()
 	if err != nil {
@@ -34,17 +36,29 @@ func (s *Store) GetTrigger(source gulid.ID, e gulid.ID) (gulid.ID, error) {
 	return gulid.MustParse(val), nil
 }
 
-// ListTrigger list triggers in redis set key from min (included).
+// ListTrigger redis implementation.
 func (s *Store) ListTrigger(source gulid.ID) ([]event.Trigger, error) {
 	vals, err := s.Keys(triggerKey + source.String() + ":*").Result()
 	if err != nil {
 		return nil, err
 	}
 	// TODO retrieve entities too
-	triggers := make([]gulid.ID, len(vals))
+	triggers := make([]event.Trigger, len(vals))
 	for i, val := range vals {
-		triggers[i] = gulid.MustParse(val)
+		etarget, err := s.Get(val).Result()
+		if err != nil {
+			return nil, err
+		}
+		triggers[i] = event.Trigger{
+			EntityID:      gulid.MustParse(strings.Split(val, ":")[2]),
+			EventSourceID: source,
+			EventTargetID: gulid.MustParse(etarget),
+		}
 	}
-	return nil, gerrors.ErrNotImplementedYet
-	// return triggers, nil
+	return triggers, nil
+}
+
+// DelTrigger redis implementation.
+func (s *Store) DelTrigger(source gulid.ID, e gulid.ID) error {
+	return s.Del(triggerKey + source.String() + ":" + e.String()).Err()
 }

@@ -15,4 +15,5 @@ type QStore interface {
 type Store interface {
 	SetEvent(E, ulid.ID) error
 	ListEvent(ulid.ID, ulid.ID) ([]E, error)
+	DelEvent(ulid.ID, ulid.ID) error
 }

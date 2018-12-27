@@ -7,6 +7,7 @@ import (
 
 var _ event.Store = (*Store)(nil)
 var _ event.QStore = (*Store)(nil)
+var _ event.TriggerStore = (*Store)(nil)
 
 // Store implements token and entity.
 type Store struct {

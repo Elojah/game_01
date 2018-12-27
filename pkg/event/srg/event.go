@@ -48,3 +48,11 @@ func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
 	}
 	return events, nil
 }
+
+// DelEvent implemented with redis.
+func (s *Store) DelEvent(eventID ulid.ID, id ulid.ID) error {
+	return s.ZRem(
+		eventKey+id.String(),
+		eventID.String(),
+	).Err()
+}

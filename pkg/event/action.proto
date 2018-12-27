@@ -11,6 +11,10 @@ import "github.com/elojah/game_01/pkg/geometry/position.proto";
 import "github.com/elojah/game_01/pkg/ability/targets.proto";
 import "github.com/elojah/game_01/pkg/entity/entity.proto";
 
+message Cancel {
+	bytes EventID                        = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
 message MoveSource {
 	repeated bytes TargetIDs             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	geometry.Position Position           = 2 [(gogoproto.nullable)   = false];
@@ -62,14 +66,15 @@ message ConsumeTarget {
 
 message Action {
 	option (gogoproto.onlyone)           = true;
-	MoveSource MoveSource                = 1;
-	MoveTarget MoveTarget                = 2;
-	CastSource CastSource                = 3;
-	PerformSource PerformSource          = 4;
-	PerformTarget PerformTarget          = 5;
-	FeedbackTarget FeedbackTarget        = 6;
-	LootSource LootSource                = 7;
-	LootTarget LootTarget                = 8;
-	ConsumeSource ConsumeSource          = 9;
-	ConsumeTarget ConsumeTarget          = 10;
+	Cancel Cancel                        = 1;
+	MoveSource MoveSource                = 2;
+	MoveTarget MoveTarget                = 3;
+	CastSource CastSource                = 4;
+	PerformSource PerformSource          = 5;
+	PerformTarget PerformTarget          = 6;
+	FeedbackTarget FeedbackTarget        = 7;
+	LootSource LootSource                = 8;
+	LootTarget LootTarget                = 9;
+	ConsumeSource ConsumeSource          = 10;
+	ConsumeTarget ConsumeTarget          = 11;
 }

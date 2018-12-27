@@ -28,8 +28,9 @@ type app struct {
 	infra.QSequencerStore
 	infra.CoreStore
 
-	EventQStore event.QStore
-	EventStore  event.Store
+	EventQStore         event.QStore
+	EventStore          event.Store
+	EventTriggerService event.TriggerService
 
 	sector.EntitiesStore
 	SectorStore   sector.Store
@@ -105,6 +106,7 @@ func (a *app) Sequencer(msg *infra.Message) {
 	case infra.Open:
 		a.seqs[sequencer.ID] = NewSequencer(sequencer.ID, a.limit, a.Apply)
 		a.seqs[sequencer.ID].EventStore = a.EventStore
+		a.seqs[sequencer.ID].EventTriggerService = a.EventTriggerService
 		a.seqs[sequencer.ID].EntityStore = a.EntityStore
 		a.seqs[sequencer.ID].Run()
 
