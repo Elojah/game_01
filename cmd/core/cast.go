@@ -74,7 +74,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Publish casted event to event set.
-	if err := a.EventQStore.PublishEvent(event.E{
+	e = event.E{
 		ID: ulid.NewTimeID(ts + ab.CastTime),
 		Action: event.Action{
 			PerformSource: &event.PerformSource{
@@ -82,7 +82,9 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				Targets:   cs.Targets,
 			},
 		},
-	}, id); err != nil {
+		Trigger: e.ID,
+	}
+	if err := a.EventQStore.PublishEvent(e, id); err != nil {
 		return errors.Wrapf(err, "set casted event %s", e.ID.String())
 	}
 

@@ -63,3 +63,9 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 
 	return nil
 }
+
+// Cancel cancels an event sending a cancel action to all events triggered by e.
+// Works recursively
+func (s *TriggerService) Cancel(e event.E) error {
+	return gerrors.ErrNotImplementedYet
+}

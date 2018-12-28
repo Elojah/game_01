@@ -52,9 +52,10 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 				ItemID:   loot.ItemID,
 			},
 		},
+		Trigger: e.ID,
 	}
 	if err := a.EventQStore.PublishEvent(e, target.ID); err != nil {
-		return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
+		return errors.Wrapf(err, "publish move target event %s to target %s", e.ID.String(), target.String())
 	}
 
 	return nil
