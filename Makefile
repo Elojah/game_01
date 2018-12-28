@@ -133,6 +133,12 @@ vendor:
 	$(info $(M) running go mod vendor…) @
 	$Q $(GO) mod vendor
 
+# Tidy
+.PHONY: tidy
+tidy:
+	$(info $(M) running go mod tidy…) @
+	$Q $(GO) mod tidy
+
 # Check
 .PHONY: check
 check: lint test

@@ -126,7 +126,7 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		s.logger.Error().Err(err).Msg("error unmarshaling event")
 		return
 	}
-	if err := s.TriggerService.Set(e); err != nil {
+	if err := s.EventTriggerService.Set(e, s.id); err != nil {
 		s.logger.Error().Err(err).Msg("error setting event")
 		return
 	}

@@ -13,6 +13,8 @@ type Store struct {
 	SetEventCount  int32
 	ListEventFunc  func(ulid.ID, ulid.ID) ([]event.E, error)
 	ListEventCount int32
+	DelEventFunc   func(ulid.ID, ulid.ID) error
+	DelEventCount  int32
 }
 
 // SetEvent mocks event.Store.
@@ -31,6 +33,15 @@ func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
 		return nil, nil
 	}
 	return s.ListEventFunc(id, min)
+}
+
+// DelEvent mocks event.Store.
+func (s *Store) DelEvent(id ulid.ID, eID ulid.ID) error {
+	atomic.AddInt32(&s.DelEventCount, 1)
+	if s.DelEventFunc == nil {
+		return nil
+	}
+	return s.DelEventFunc(id, eID)
 }
 
 // NewStore returns a event service mock ready for usage.
