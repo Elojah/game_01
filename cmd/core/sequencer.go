@@ -5,6 +5,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/entity"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -127,7 +128,11 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		return
 	}
 	if err := s.EventTriggerService.Set(e, s.id); err != nil {
-		s.logger.Error().Err(err).Msg("error setting event")
+		if err == gerrors.ErrIneffectiveCancel {
+			s.logger.Info().Err(err).Msg("event not processed")
+		} else {
+			s.logger.Error().Err(err).Msg("error setting event")
+		}
 		return
 	}
 	s.logger.Info().Str("event", e.ID.String()).Msg("event received")

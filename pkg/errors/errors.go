@@ -41,4 +41,6 @@ var (
 	ErrMissingItem = errors.New("item missing")
 	// ErrFullInventory is raised when a loot action is performed and the source inventory is full.
 	ErrFullInventory = errors.New("inventory full")
+	// ErrIneffectiveCancel is raised when a cancel event is applied but no event was found to cancel.
+	ErrIneffectiveCancel = errors.New("ineffective cancel")
 )

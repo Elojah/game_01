@@ -39,10 +39,14 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 		if err := s.TriggerStore.DelTrigger(e.Trigger, entityID); err != nil {
 			return errors.Wrapf(err, "delete trigger %s", e.Trigger.String())
 		}
+		// If event is a cancellation, don't set event or trigger
+		if e.Action.Cancel != nil {
+			return nil
+		}
 	}
-	// If event is a cancellation, don't set event or trigger
+	// If event is a cancellation, don't set event or trigger but returns a no calculate error
 	if e.Action.Cancel != nil {
-		return nil
+		return gerrors.ErrIneffectiveCancel
 	}
 
 	// Set event and trigger
