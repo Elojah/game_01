@@ -90,6 +90,11 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 		targetInventory.Items[loot.ItemID.String()]--
 	}
 
+	// Set new inventory
+	if err := a.EntityInventoryStore.SetInventory(targetInventory); err != nil {
+		return errors.Wrapf(err, "set inventory %s from target %s", targetInventory.ID.String(), target.ID.String())
+	}
+
 	// #Publish loot event to target.
 	e = event.E{
 		ID: ulid.NewTimeID(ts + 1),
@@ -130,6 +135,11 @@ func (a *app) LootFeedback(id ulid.ID, e event.E) error {
 		sourceInventory.Items[loot.ItemID.String()] = 1
 	} else {
 		sourceInventory.Items[loot.ItemID.String()]++
+	}
+
+	// Set new inventory
+	if err := a.EntityInventoryStore.SetInventory(sourceInventory); err != nil {
+		return errors.Wrapf(err, "set inventory %s from source %s", sourceInventory.ID.String(), source.ID.String())
 	}
 
 	return nil
