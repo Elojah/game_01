@@ -25,6 +25,15 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get entity %s", loot.TargetID.String())
 	}
 
+	// #Retrieve source inventory
+	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
+	if err != nil {
+		return errors.Wrapf(err, "retrieve inventory %s from source %s", source.InventoryID.String(), target.ID.String())
+	}
+	if len(sourceInventory.Items) > int(sourceInventory.Size_-1) {
+		return gerrors.ErrFullInventory
+	}
+
 	// #Check distance between source and target
 	dist, err := a.SectorService.Segment(source.Position, target.Position)
 	if err != nil {
@@ -85,7 +94,7 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 	e = event.E{
 		ID: ulid.NewTimeID(ts + 1),
 		Action: event.Action{
-			LootTarget: &event.LootTarget{
+			LootFeedback: &event.LootFeedback{
 				SourceID: id,
 				ItemID:   loot.ItemID,
 			},
@@ -93,6 +102,34 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 	}
 	if err := a.EventQStore.PublishEvent(e, target.ID); err != nil {
 		return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
+	}
+
+	return nil
+}
+
+func (a *app) LootFeedback(id ulid.ID, e event.E) error {
+
+	loot := e.Action.GetValue().(*event.LootTarget)
+	ts := e.ID.Time()
+
+	// #Retrieve entity
+	source, err := a.EntityStore.GetEntity(id, ts)
+	if err != nil {
+		return errors.Wrapf(err, "get entity %s", id.String())
+	}
+
+	// #Retrieve source inventory
+	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
+	if err != nil {
+		return errors.Wrapf(err, "retrieve inventory %s from source %s", source.InventoryID.String(), source.ID.String())
+	}
+
+	// #Check item exists in inventory
+	_, ok := sourceInventory.Items[loot.ItemID.String()]
+	if !ok {
+		sourceInventory.Items[loot.ItemID.String()] = 1
+	} else {
+		sourceInventory.Items[loot.ItemID.String()]++
 	}
 
 	return nil

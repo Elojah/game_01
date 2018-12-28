@@ -39,4 +39,6 @@ var (
 	ErrOutOfRange = errors.New("out of range")
 	// ErrMissingItem is raised when a loot action is performed on an non present item in target inventory.
 	ErrMissingItem = errors.New("item missing")
+	// ErrFullInventory is raised when a loot action is performed and the source inventory is full.
+	ErrFullInventory = errors.New("inventory full")
 )

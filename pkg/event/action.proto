@@ -56,6 +56,11 @@ message LootTarget {
 	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
+message LootFeedback {
+	bytes SourceID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
 message ConsumeSource {
 	bytes ItemID                         = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
@@ -75,6 +80,7 @@ message Action {
 	FeedbackTarget FeedbackTarget        = 7;
 	LootSource LootSource                = 8;
 	LootTarget LootTarget                = 9;
-	ConsumeSource ConsumeSource          = 10;
-	ConsumeTarget ConsumeTarget          = 11;
+	LootFeedback LootFeedback            = 10;
+	ConsumeSource ConsumeSource          = 11;
+	ConsumeTarget ConsumeTarget          = 12;
 }

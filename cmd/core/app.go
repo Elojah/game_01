@@ -186,10 +186,22 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		}
 		return
 	case *event.LootSource:
-		logger.Error().Msg("not implemented")
+		if err := a.LootSource(id, e); err != nil {
+			logger.Error().Err(err).Msg("loot source rejected")
+			return
+		}
 		return
 	case *event.LootTarget:
-		logger.Error().Msg("not implemented")
+		if err := a.LootTarget(id, e); err != nil {
+			logger.Error().Err(err).Msg("loot target rejected")
+			return
+		}
+		return
+	case *event.LootFeedback:
+		if err := a.LootFeedback(id, e); err != nil {
+			logger.Error().Err(err).Msg("loot feedback rejected")
+			return
+		}
 		return
 	case *event.ConsumeSource:
 		logger.Error().Msg("not implemented")
