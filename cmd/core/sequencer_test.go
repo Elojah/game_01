@@ -61,6 +61,7 @@ func TestSequencer(t *testing.T) {
 		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
+		eventTriggerService := eventmocks.NewTriggerService()
 		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch eventStore.ListEventCount {
@@ -79,6 +80,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.EventStore = eventStore
+		seq.EventTriggerService = eventTriggerService
 		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
@@ -96,6 +98,7 @@ func TestSequencer(t *testing.T) {
 		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
+		eventTriggerService := eventmocks.NewTriggerService()
 		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
@@ -115,6 +118,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.EventStore = eventStore
+		seq.EventTriggerService = eventTriggerService
 		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()
@@ -140,6 +144,7 @@ func TestSequencer(t *testing.T) {
 		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
+		eventTriggerService := eventmocks.NewTriggerService()
 		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
@@ -167,6 +172,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.EventStore = eventStore
+		seq.EventTriggerService = eventTriggerService
 		seq.EntityStore = entityStore
 		seq.logger = zerolog.New(os.Stderr).With().Timestamp().Logger()
 		seq.logger = zerolog.Nop()
@@ -193,6 +199,7 @@ func TestSequencer(t *testing.T) {
 		seqID := gulid.NewID()
 		entityStore := entitymocks.NewStore()
 		eventStore := eventmocks.NewStore()
+		eventTriggerService := eventmocks.NewTriggerService()
 		eventStore.ListEventFunc = func(key gulid.ID, min gulid.ID) ([]event.E, error) {
 			assert.Equal(t, seqID.String(), key.String())
 			switch min.String() {
@@ -223,6 +230,7 @@ func TestSequencer(t *testing.T) {
 			},
 		)
 		seq.EventStore = eventStore
+		seq.EventTriggerService = eventTriggerService
 		seq.EntityStore = entityStore
 		seq.logger = zerolog.Nop()
 		seq.Run()

@@ -42,7 +42,6 @@ func (s *Store) ListTrigger(source gulid.ID) ([]event.Trigger, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO retrieve entities too
 	triggers := make([]event.Trigger, len(vals))
 	for i, val := range vals {
 		etarget, err := s.Get(val).Result()
