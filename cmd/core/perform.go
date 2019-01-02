@@ -13,7 +13,7 @@ import (
 
 func (a *app) PerformSource(id ulid.ID, e event.E) error {
 
-	perform := e.Action.GetValue().(*event.PerformSource)
+	ps := e.Action.PerformSource
 	ts := e.ID.Time()
 
 	// #Retrieve entity
@@ -23,17 +23,17 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(source.ID, perform.AbilityID)
+	ab, err := a.AbilityStore.GetAbility(source.ID, ps.AbilityID)
 	if err == gerrors.ErrNotFound {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", perform.AbilityID.String(), id.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", ps.AbilityID.String(), id.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", perform.AbilityID.String(), id.String())
+		return errors.Wrapf(err, "get ability %s for %s", ps.AbilityID.String(), id.String())
 	}
 
 	// #Check cast was not interrupted.
 	if source.Cast == nil ||
-		source.Cast.AbilityID != perform.AbilityID ||
+		source.Cast.AbilityID != ps.AbilityID ||
 		source.Cast.TS+ab.CastTime != ts {
 		// normal behavior, don't return errors
 		return nil
@@ -51,7 +51,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	for cid := range ab.Components {
 
 		// #Retrieve targets for this component.
-		target, ok := perform.Targets[cid]
+		target, ok := ps.Targets[cid]
 		if !ok {
 			return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
 		}
@@ -73,6 +73,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 							Source:      source,
 						},
 					},
+					Trigger: e.ID,
 				}
 				if err := a.EventQStore.PublishEvent(e, id); err != nil {
 					return errors.Wrapf(err, "publish perform target event %s to target %s", e.ID.String(), target.String())
@@ -90,7 +91,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 
 func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
-	perform := e.Action.GetValue().(*event.PerformTarget)
+	pt := e.Action.PerformTarget
 	ts := e.ID.Time()
 
 	// #Retrieve previous target state.
@@ -100,38 +101,38 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(perform.Source.ID, perform.AbilityID)
+	ab, err := a.AbilityStore.GetAbility(pt.Source.ID, pt.AbilityID)
 	if err == gerrors.ErrNotFound {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", perform.AbilityID.String(), perform.Source.ID.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", pt.AbilityID.String(), pt.Source.ID.String())
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", perform.AbilityID.String(), perform.Source.ID.String())
+		return errors.Wrapf(err, "get ability %s for %s", pt.AbilityID.String(), pt.Source.ID.String())
 	}
 
 	// #Initialize feedback.
 	fb := ability.Feedback{
 		ID:          ulid.NewID(),
 		AbilityID:   ab.ID,
-		ComponentID: perform.ComponentID,
+		ComponentID: pt.ComponentID,
 	}
 
 	// #Check component validity.
-	cid := perform.ComponentID.String()
+	cid := pt.ComponentID.String()
 	component, ok := ab.Components[cid]
 	if !ok {
 		return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
 	}
 
 	// #Check range validity.
-	if perform.Source.Position.SectorID.Compare(target.Position.SectorID) == 0 {
-		if geometry.Segment(perform.Source.Position.Coord, target.Position.Coord) > component.Range {
+	if pt.Source.Position.SectorID.Compare(target.Position.SectorID) == 0 {
+		if geometry.Segment(pt.Source.Position.Coord, target.Position.Coord) > component.Range {
 			return errors.Wrapf(
 				gerrors.ErrOutOfRange,
 				"source %s (%f , %f , %f) out of range %f for target %s (%f , %f , %f)",
-				perform.Source.ID.String(),
-				perform.Source.Position.Coord.X,
-				perform.Source.Position.Coord.Y,
-				perform.Source.Position.Coord.Z,
+				pt.Source.ID.String(),
+				pt.Source.Position.Coord.X,
+				pt.Source.Position.Coord.Y,
+				pt.Source.Position.Coord.Z,
 				component.Range,
 				target.ID.String(),
 				target.Position.Coord.X,
@@ -140,30 +141,30 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 			)
 		}
 	} else {
-		sec, err := a.SectorStore.GetSector(perform.Source.Position.SectorID)
+		sec, err := a.SectorStore.GetSector(pt.Source.Position.SectorID)
 		if err != nil {
-			return errors.Wrapf(err, "get sector %s", perform.Source.Position.SectorID)
+			return errors.Wrapf(err, "get sector %s", pt.Source.Position.SectorID)
 		}
 		neigh, ok := sec.Neighbours[target.Position.SectorID.String()]
 		if !ok {
 			return errors.Wrapf(
 				gerrors.ErrOutOfRange,
 				"source %s in sector %s not neighbour to target %s in sector %s",
-				perform.Source.ID.String(),
-				perform.Source.Position.SectorID.String(),
+				pt.Source.ID.String(),
+				pt.Source.Position.SectorID.String(),
 				target.ID.String(),
 				target.Position.SectorID.String(),
 			)
 		}
-		if geometry.Segment(perform.Source.Position.Coord, target.Position.Coord.MoveReference(neigh)) > component.Range {
+		if geometry.Segment(pt.Source.Position.Coord, target.Position.Coord.MoveReference(neigh)) > component.Range {
 			return errors.Wrapf(
 				gerrors.ErrOutOfRange,
 				"source %s sector %s (%f , %f , %f) out of range %f for target %s sector %s (%f , %f , %f)",
-				perform.Source.ID.String(),
-				perform.Source.Position.SectorID.String(),
-				perform.Source.Position.Coord.X,
-				perform.Source.Position.Coord.Y,
-				perform.Source.Position.Coord.Z,
+				pt.Source.ID.String(),
+				pt.Source.Position.SectorID.String(),
+				pt.Source.Position.Coord.X,
+				pt.Source.Position.Coord.Y,
+				pt.Source.Position.Coord.Z,
 				component.Range,
 				target.ID.String(),
 				target.Position.SectorID.String(),
@@ -175,13 +176,13 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	}
 
 	// #Apply all ability components.
-	if fb.Effects, err = target.ApplyEffects(&perform.Source, component.Effects); err != nil {
+	if fb.Effects, err = target.ApplyEffects(&pt.Source, component.Effects); err != nil {
 		return errors.Wrapf(err, "apply effects to target %s", target.ID.String())
 	}
 
 	// #Set entity new state.
 	if err := a.EntityStore.SetEntity(target, ts); err != nil {
-		return errors.Wrapf(err, "set entity %s", perform.Source.ID.String())
+		return errors.Wrapf(err, "set entity %s", pt.Source.ID.String())
 	}
 
 	// #Set feedback.
@@ -198,5 +199,5 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 				Source: target,
 			},
 		},
-	}, perform.Source.ID)
+	}, pt.Source.ID)
 }

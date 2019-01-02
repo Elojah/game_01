@@ -43,4 +43,6 @@ var (
 	ErrFullInventory = errors.New("inventory full")
 	// ErrIneffectiveCancel is raised when a cancel event is applied but no event was found to cancel.
 	ErrIneffectiveCancel = errors.New("ineffective cancel")
+	// ErrNotCancellable is raised when a cancel event is applied but the event is a non cancellable.
+	ErrNotCancellable = errors.New("event can't be cancel")
 )

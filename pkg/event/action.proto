@@ -12,7 +12,6 @@ import "github.com/elojah/game_01/pkg/ability/targets.proto";
 import "github.com/elojah/game_01/pkg/entity/entity.proto";
 
 message Cancel {
-	bytes EventID                        = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message MoveSource {

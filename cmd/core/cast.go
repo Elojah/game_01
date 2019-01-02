@@ -11,7 +11,7 @@ import (
 
 func (a *app) CastSource(id ulid.ID, e event.E) error {
 
-	cs := e.Action.GetValue().(*event.CastSource)
+	cs := e.Action.CastSource
 	ts := e.ID.Time()
 
 	// #Check permission token/source.

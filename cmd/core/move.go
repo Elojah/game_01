@@ -12,7 +12,7 @@ import (
 
 func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
-	move := e.Action.GetValue().(*event.MoveSource)
+	ms := e.Action.MoveSource
 	ts := e.ID.Time()
 
 	// #Check permission token/source.
@@ -28,7 +28,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	// #For all targets.
 	var g errgroup.Group
-	for _, target := range move.TargetIDs {
+	for _, target := range ms.TargetIDs {
 		target := target
 		g.Go(func() error {
 			// #Check permission source/target.
@@ -46,12 +46,12 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 				Action: event.Action{
 					MoveTarget: &event.MoveTarget{
 						SourceID: id,
-						Position: move.Position,
+						Position: ms.Position,
 					},
 				},
 			}
 			if err := a.EventQStore.PublishEvent(e, target); err != nil {
-				return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
+				return errors.Wrapf(err, "publish move target event %s to target %s", e.ID.String(), target.String())
 			}
 			return nil
 		})
@@ -62,7 +62,7 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 
-	move := e.Action.GetValue().(*event.MoveTarget)
+	mt := e.Action.MoveTarget
 	ts := e.ID.Time()
 
 	// #Retrieve previous state target.
@@ -71,7 +71,7 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
 	}
 
-	if target, err = a.SectorService.Move(target, move.Position); err != nil {
+	if target, err = a.SectorService.Move(target, mt.Position); err != nil {
 		return errors.Wrapf(err, "move target %s", id.String())
 	}
 
