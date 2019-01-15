@@ -46,7 +46,6 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	}
 
 	// #For all ability components.
-	var g errgroup.Group
 	var i uint64
 	for cid := range ab.Components {
 
@@ -57,24 +56,26 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 		}
 
 		// #Send event to all targets
+		e := event.E{
+			ID: ulid.NewTimeID(ts + i),
+			Action: event.Action{
+				PerformTarget: &event.PerformTarget{
+					AbilityID:   ab.ID,
+					ComponentID: ulid.MustParse(cid),
+					Source:      source,
+				},
+			},
+			Trigger: e.ID,
+		}
+
 		if len(target.Positions) != 0 {
 			return gerrors.ErrNotImplementedYet
 		}
 
+		var g errgroup.Group
 		for _, id := range target.Entities {
 			id := id
 			g.Go(func() error {
-				e := event.E{
-					ID: ulid.NewTimeID(ts + i),
-					Action: event.Action{
-						PerformTarget: &event.PerformTarget{
-							AbilityID:   ab.ID,
-							ComponentID: ulid.MustParse(cid),
-							Source:      source,
-						},
-					},
-					Trigger: e.ID,
-				}
 				if err := a.EventQStore.PublishEvent(e, id); err != nil {
 					return errors.Wrapf(err, "publish perform target event %s to target %s", e.ID.String(), target.String())
 				}

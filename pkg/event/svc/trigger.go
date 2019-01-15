@@ -4,7 +4,6 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/elojah/game_01/pkg/account"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	gulid "github.com/elojah/game_01/pkg/ulid"
@@ -42,9 +41,13 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 		if err := s.TriggerStore.DelTrigger(e.Trigger, entityID); err != nil {
 			return errors.Wrapf(err, "delete trigger %s", e.Trigger.String())
 		}
-		// If event is a cancellation, don't set event or trigger
+		// Cancel event
+		if err := s.Cancel(e); err != nil {
+			return errors.Wrapf(err, "cancel event %s", e.ID.String())
+		}
+		// If event is a cancellation, don't set event or trigger and stop here
 		if e.Action.Cancel != nil {
-			return s.Cancel(e)
+			return nil
 		}
 	}
 	// If event is a cancellation, don't set event or trigger but returns a no calculate error
@@ -113,38 +116,37 @@ func (s *TriggerService) CancelCastSource(e event.E) error {
 }
 
 // CancelPerformSource cancels a PerformSource event.
-// Cancels perform target is cast source was cancelled.
+// Cancels perform target if cast source was cancelled.
 func (s *TriggerService) CancelPerformSource(e event.E) error {
 	ps := e.Action.PerformSource
+	// #Publish move event to target.
+	e = event.E{
+		ID: gulid.NewTimeID(e.ID.Time()),
+		Action: event.Action{
+			Cancel: &event.Cancel{},
+		},
+		Trigger: e.ID,
+	}
+
 	var g errgroup.Group
 	for _, targets := range ps.Targets {
-		targets := targets
-		g.Go(func() error {
-			// #Check permission source/target.
-			permission, err := a.EntityPermissionStore.GetPermission(id.String(), target.String())
-			if err == gerrors.ErrNotFound || (err != nil && account.ACL(permission.Value) != account.Owner) {
-				return errors.Wrapf(gerrors.ErrInsufficientACLs, "get permission token %s for %s", id.String(), target.String())
-			}
-			if err != nil {
-				return errors.Wrapf(err, "get permission token %s for %s", id.String(), target.String())
-			}
-
-			// #Publish move event to target.
-			e := event.E{
-				ID: ulid.NewTimeID(ts + 1),
-				Action: event.Action{
-					MoveTarget: &event.MoveTarget{
-						SourceID: id,
-						Position: move.Position,
-					},
-				},
-			}
-			if err := a.EventQStore.PublishEvent(e, target); err != nil {
-				return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
-			}
-			return nil
-		})
+		if len(targets.Positions) != 0 {
+			return gerrors.ErrNotImplementedYet
+		}
+		for _, target := range targets.Entities {
+			target := target
+			g.Go(func() error {
+				if err := s.QStore.PublishEvent(e, target); err != nil {
+					return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
+				}
+				return nil
+			})
+		}
+		if err := g.Wait(); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // CancelPerformTarget cancels a PerformTarget event.
