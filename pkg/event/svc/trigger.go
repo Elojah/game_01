@@ -102,11 +102,30 @@ func (s *TriggerService) Cancel(e event.E) error {
 
 // CancelMoveSource cancels a MoveSource event.
 func (s *TriggerService) CancelMoveSource(e event.E) error {
-	return gerrors.ErrNotCancellable
+	ms := e.Action.MoveSource
+	e = event.E{
+		ID: gulid.NewTimeID(e.ID.Time()),
+		Action: event.Action{
+			Cancel: &event.Cancel{},
+		},
+		Trigger: e.ID,
+	}
+
+	// #Publish move event to targets.
+	var g errgroup.Group
+	for _, targetID := range ms.TargetIDs {
+		targetID := targetID
+		g.Go(func() error {
+			return errors.Wrapf(s.QStore.PublishEvent(e, targetID), "publish cancel move target event %s to target %s", e.String(), targetID.String())
+		})
+	}
+	return g.Wait()
 }
 
 // CancelMoveTarget cancels a MoveTarget event.
 func (s *TriggerService) CancelMoveTarget(e event.E) error {
+	// WARNING Actually it is not a leaf but the tree would resend to all sector entities
+	// Or we may should save entities who interacted with this specific spot, think about it
 	return nil
 }
 
@@ -136,10 +155,7 @@ func (s *TriggerService) CancelPerformSource(e event.E) error {
 		for _, target := range targets.Entities {
 			target := target
 			g.Go(func() error {
-				if err := s.QStore.PublishEvent(e, target); err != nil {
-					return errors.Wrapf(err, "publish move target event %s to target %s", e.String(), target.String())
-				}
-				return nil
+				return errors.Wrapf(s.QStore.PublishEvent(e, target), "publish cancel move target event %s to target %s", e.String(), target.String())
 			})
 		}
 		if err := g.Wait(); err != nil {
