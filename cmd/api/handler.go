@@ -78,7 +78,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	now := ulid.Now()
 	ts := msg.ID.Time()
 	if ts > now || now-ts > h.tolerance {
-		err := gerrors.ErrInvalidTS
+		err := gerrors.ErrInvalidTS{MsgID: msg.ID.String(), TS: ts, Now: now}
 		logger.Error().Err(err).Str("status", "timeout").Uint64("ts", ts).Uint64("now", now).Msg("packet rejected")
 		return err
 	}

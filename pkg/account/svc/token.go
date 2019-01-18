@@ -35,10 +35,10 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 		return account.Token{}, errors.Wrapf(err, "get account with username %s", payload.Username)
 	}
 	if a.Password != payload.Password {
-		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials, "compare passwords")
+		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials{Username: payload.Username}, "compare passwords")
 	}
 	if !a.Token.IsZero() {
-		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin, "check existing account token")
+		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{a.ID.String()}, "check existing account token")
 	}
 
 	// #Identify origin IP
@@ -77,7 +77,7 @@ func (s TokenService) Access(id gulid.ID, addr string) (account.Token, error) {
 	expected, _, ee := net.SplitHostPort(t.IP)
 	actual, _, ea := net.SplitHostPort(addr)
 	if expected != actual || ee != nil || ea != nil {
-		return account.Token{}, errors.Wrapf(gerrors.ErrWrongIP, "different ips %s != %s", expected, actual)
+		return account.Token{}, gerrors.ErrWrongIP{TokenID: id.String(), Expected: expected, Actual: actual}
 	}
 	return t, nil
 }

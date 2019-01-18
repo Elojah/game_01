@@ -104,6 +104,7 @@ func (a *app) Sequencer(msg *infra.Message) {
 	logger = logger.With().Str("sequencer", sequencer.ID.String()).Logger()
 
 	switch sequencer.Action {
+
 	case infra.Open:
 		a.seqs[sequencer.ID] = NewSequencer(sequencer.ID, a.limit, a.Apply)
 		a.seqs[sequencer.ID].EventStore = a.EventStore
@@ -118,8 +119,8 @@ func (a *app) Sequencer(msg *infra.Message) {
 				seq.Handler(msg)
 			}
 		}(a.seqs[sequencer.ID], a.subs[sequencer.ID])
-
 		logger.Info().Msg("sequencer up")
+
 	case infra.Close:
 		seq, ok := a.seqs[sequencer.ID]
 		if !ok {
