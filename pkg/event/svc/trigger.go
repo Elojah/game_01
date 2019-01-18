@@ -111,7 +111,6 @@ func (s *TriggerService) CancelMoveSource(e event.E) error {
 		Trigger: e.ID,
 	}
 
-	// #Publish move event to targets.
 	var g errgroup.Group
 	for _, targetID := range ms.TargetIDs {
 		targetID := targetID
@@ -139,7 +138,6 @@ func (s *TriggerService) CancelCastSource(e event.E) error {
 // Cancels perform target if cast source was cancelled.
 func (s *TriggerService) CancelPerformSource(e event.E) error {
 	ps := e.Action.PerformSource
-	// #Publish move event to target.
 	e = event.E{
 		ID: gulid.NewTimeID(e.ID.Time()),
 		Action: event.Action{
@@ -170,7 +168,6 @@ func (s *TriggerService) CancelPerformSource(e event.E) error {
 func (s *TriggerService) CancelPerformTarget(e event.E) error {
 
 	pt := e.Action.PerformTarget
-	// #Publish move event to source.
 	e = event.E{
 		ID: gulid.NewTimeID(e.ID.Time()),
 		Action: event.Action{
@@ -188,13 +185,37 @@ func (s *TriggerService) CancelFeedbackTarget(e event.E) error {
 }
 
 // CancelLootSource cancels a LootSource event.
-func (s *TriggerService) CancelLootSource(e event.E) error { return gerrors.ErrNotImplementedYet }
+func (s *TriggerService) CancelLootSource(e event.E) error {
+	ls := e.Action.LootSource
+	e = event.E{
+		ID: gulid.NewTimeID(e.ID.Time()),
+		Action: event.Action{
+			Cancel: &event.Cancel{},
+		},
+		Trigger: e.ID,
+	}
+	return errors.Wrapf(s.QStore.PublishEvent(e, ls.TargetID), "publish cancel loot source event %s to target %s", e.String(), ls.TargetID.String())
+}
 
 // CancelLootTarget cancels a LootTarget event.
-func (s *TriggerService) CancelLootTarget(e event.E) error { return gerrors.ErrNotImplementedYet }
+func (s *TriggerService) CancelLootTarget(e event.E) error {
+	lt := e.Action.LootTarget
+	// #Publish move event to source.
+	e = event.E{
+		ID: gulid.NewTimeID(e.ID.Time()),
+		Action: event.Action{
+			Cancel: &event.Cancel{},
+		},
+		Trigger: e.ID,
+	}
+	return errors.Wrapf(s.QStore.PublishEvent(e, lt.SourceID), "publish cancel loot target event %s to source %s", e.String(), lt.SourceID.String())
+}
 
 // CancelLootFeedback cancels a LootFeedback event.
-func (s *TriggerService) CancelLootFeedback(e event.E) error { return gerrors.ErrNotImplementedYet }
+func (s *TriggerService) CancelLootFeedback(e event.E) error {
+	// Leaf
+	return nil
+}
 
 // CancelConsumeSource cancels a ConsumeSource event.
 func (s *TriggerService) CancelConsumeSource(e event.E) error { return gerrors.ErrNotImplementedYet }
