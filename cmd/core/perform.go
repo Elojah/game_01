@@ -200,5 +200,6 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 				Source: target,
 			},
 		},
+		Trigger: e.ID,
 	}, pt.Source.ID)
 }

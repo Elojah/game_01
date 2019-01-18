@@ -131,7 +131,8 @@ func (s *TriggerService) CancelMoveTarget(e event.E) error {
 
 // CancelCastSource cancels a CastSource event.
 func (s *TriggerService) CancelCastSource(e event.E) error {
-	return gerrors.ErrNotCancellable
+	// Cancel CastSource automatically propagates on itself
+	return nil
 }
 
 // CancelPerformSource cancels a PerformSource event.
@@ -166,10 +167,25 @@ func (s *TriggerService) CancelPerformSource(e event.E) error {
 }
 
 // CancelPerformTarget cancels a PerformTarget event.
-func (s *TriggerService) CancelPerformTarget(e event.E) error { return gerrors.ErrNotImplementedYet }
+func (s *TriggerService) CancelPerformTarget(e event.E) error {
+
+	pt := e.Action.PerformTarget
+	// #Publish move event to source.
+	e = event.E{
+		ID: gulid.NewTimeID(e.ID.Time()),
+		Action: event.Action{
+			Cancel: &event.Cancel{},
+		},
+		Trigger: e.ID,
+	}
+	return errors.Wrapf(s.QStore.PublishEvent(e, pt.Source.ID), "publish cancel perform target event %s to source %s", e.String(), pt.Source.ID.String())
+}
 
 // CancelFeedbackTarget cancels a FeedbackTarget event.
-func (s *TriggerService) CancelFeedbackTarget(e event.E) error { return gerrors.ErrNotImplementedYet }
+func (s *TriggerService) CancelFeedbackTarget(e event.E) error {
+	// Leaf
+	return nil
+}
 
 // CancelLootSource cancels a LootSource event.
 func (s *TriggerService) CancelLootSource(e event.E) error { return gerrors.ErrNotImplementedYet }
