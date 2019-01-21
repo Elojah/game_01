@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -128,7 +129,7 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		return
 	}
 	if err := s.EventTriggerService.Set(e, s.id); err != nil {
-		if err == gerrors.ErrIneffectiveCancel {
+		if errors.Cause(err).(type) == gerrors.ErrIneffectiveCancel {
 			s.logger.Info().Err(err).Msg("event not processed")
 		} else {
 			s.logger.Error().Err(err).Msg("error setting event")

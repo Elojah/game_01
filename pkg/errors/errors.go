@@ -9,10 +9,12 @@ import (
 // #Dev errors
 
 // ErrNotImplementedYet is raised when a resource is not implemented yet.
-type ErrNotImplementedYet struct{}
+type ErrNotImplementedYet struct {
+	Version string
+}
 
-func (ErrNotImplementedYet) Error() string {
-	return "not implemented yet"
+func (err ErrNotImplementedYet) Error() string {
+	return fmt.Sprintf("not implemented in version %s", err.Version)
 }
 
 // #Token/login errors
@@ -99,54 +101,66 @@ func (err ErrNotFound) Error() string {
 }
 
 // ErrMissingTarget is raised when a ability is performed with a missing component targets.
-type ErrMissingTarget struct{}
+type ErrMissingTarget struct {
+	AbilityID   string
+	ComponentID string
+}
 
-func (ErrMissingTarget) Error() string {
-	return "target missing"
+func (err ErrMissingTarget) Error() string {
+	return fmt.Sprintf("missing target for ability %s component %s", err.AbilityID, err.ComponentID)
 }
 
 // ErrTooManyTargets is raised when a ability is casted/performed with too many targets for a component.
-type ErrTooManyTargets struct{}
+type ErrTooManyTargets struct {
+	NTargets    int
+	Max         int
+	AbilityID   string
+	ComponentID string
+}
 
-func (ErrTooManyTargets) Error() string {
-	return "too many targets"
+func (err ErrTooManyTargets) Error() string {
+	return fmt.Sprintf("too many targets %d for ability %s component %s", err.NTargets, err.AbilityID, err.ComponentID)
 }
 
 // ErrOutOfRange is raised when a component ability is performed out of range on a target or when an item is looted in a further position.
-type ErrOutOfRange struct{}
+type ErrOutOfRange struct {
+	Dist  int
+	Range int
+}
 
-func (ErrOutOfRange) Error() string {
-	return "out of range"
+func (err ErrOutOfRange) Error() string {
+	return fmt.Sprintf("out of range %d for %d", err.Dist, err.Range)
 }
 
 // ErrMissingItem is raised when a loot action is performed on an non present item in target inventory.
-type ErrMissingItem struct{}
+type ErrMissingItem struct {
+	ItemID      string
+	InventoryID string
+}
 
-func (ErrMissingItem) Error() string {
-	return "item missing"
+func (err ErrMissingItem) Error() string {
+	return fmt.Sprintf("item %s missing in inventory %s", err.ItemID, err.InventoryID)
 }
 
 // ErrFullInventory is raised when a loot action is performed and the source inventory is full.
-type ErrFullInventory struct{}
+type ErrFullInventory struct {
+	InventoryID string
+}
 
-func (ErrFullInventory) Error() string {
-	return "inventory full"
+func (err ErrFullInventory) Error() string {
+	return fmt.Sprintf("inventory %s full", err.InventoryID)
 }
 
 // ErrIneffectiveCancel is raised when a cancel event is applied but no event was found to cancel.
-type ErrIneffectiveCancel struct{}
-
-func (ErrIneffectiveCancel) Error() string {
-	return "ineffective cancel"
+type ErrIneffectiveCancel struct {
+	TriggerID string
 }
 
-// ErrNotCancellable is raised when a cancel event is applied but the event is a non cancellable.
-type ErrNotCancellable struct{}
-
-func (ErrNotCancellable) Error() string {
-	return "event can't be cancel"
+func (err ErrIneffectiveCancel) Error() string {
+	return fmt.Sprintf("ineffective cancel trigger %s", err.TriggerID)
 }
 
+// IsGameLogicError returns if error type is a game logic error and needs a cancel propagation.
 func IsGameLogicError(err error) bool {
 	switch err := perrors.Cause(err).(type) {
 	case ErrNotImplementedYet:
@@ -164,6 +178,8 @@ func IsGameLogicError(err error) bool {
 	case ErrMissingItem:
 	case ErrFullInventory:
 	case ErrIneffectiveCancel:
-	case ErrNotCancellable:
+		_ = err
 	}
+
+	return false
 }

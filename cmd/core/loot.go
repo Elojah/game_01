@@ -28,10 +28,12 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 	// #Retrieve source inventory
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {
-		return errors.Wrapf(err, "retrieve inventory %s from source %s", source.InventoryID.String(), target.ID.String())
+		return errors.Wrapf(err, "retrieve inventory %s from source %s", source.InventoryID.String(), source.InventoryID.String())
 	}
 	if len(sourceInventory.Items) > int(sourceInventory.Size_-1) {
-		return gerrors.ErrFullInventory
+		return errors.Wrapf(gerrors.ErrFullInventory{
+			InventoryID: source.InventoryID,
+		}, "check inventory %s from source %s", source.InventoryID.String(), source.InventoryID.String())
 	}
 
 	// #Check distance between source and target
@@ -40,7 +42,10 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "calculate segment between entity %s and target %s", source.ID.String(), target.ID.String())
 	}
 	if dist > a.lootRadius {
-		return gerrors.ErrOutOfRange
+		return errors.Wrapf(gerrors.ErrOutOfRange{
+			Dist:  dist,
+			Range: a.lootRadius,
+		}, "loot source %s event %s", id.String(), e.ID.String())
 	}
 
 	// #Publish loot event to target.
@@ -81,7 +86,11 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 	// #Check item exists in inventory
 	n, ok := targetInventory.Items[lt.ItemID.String()]
 	if !ok || n < 1 {
-		return errors.Wrapf(gerrors.ErrMissingItem, "retrieve item %s from inventory %s", lt.ItemID.String(), target.ID.String())
+		return errors.Wrapf(
+			gerrors.ErrMissingItem{
+				ItemID:      lt.ItemID.String(),
+				InventoryID: target.ID.String(),
+			}, "retrieve item %s from inventory %s", lt.ItemID.String(), target.ID.String())
 	}
 
 	// #Remove item from inventory

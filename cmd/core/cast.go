@@ -65,13 +65,26 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	for cid, component := range ab.Components {
 		targets, ok := cs.Targets[cid]
 		if !ok {
-			return errors.Wrapf(gerrors.ErrMissingTarget, "ability %s component %s", ab.ID.String(), cid)
+			return errors.Wrapf(gerrors.ErrMissingTarget{
+				AbilityID:   ab.ID.String(),
+				ComponentID: cid.String(),
+			}, "ability %s component %s", ab.ID.String(), cid)
 		}
 		if uint64(len(targets.Entities)) > component.NTargets {
-			return errors.Wrapf(gerrors.ErrTooManyTargets, "%d entities for %d max for ability %s component %s", len(targets.Entities), component.NTargets, ab.ID.String(), cid)
+			return errors.Wrapf(gerrors.ErrTooManyTargets{
+				NTargets:    len(targets.Entities),
+				Max:         component.NTargets,
+				AbilityID:   ab.ID.String(),
+				ComponentID: cid,
+			}, "%d entities for %d max for ability %s component %s", len(targets.Entities), component.NTargets, ab.ID.String(), cid)
 		}
 		if uint64(len(targets.Positions)) > component.NPositions {
-			return errors.Wrapf(gerrors.ErrTooManyTargets, "")
+			return errors.Wrapf(gerrors.ErrTooManyTargets{
+				NTargets:    len(targets.Entities),
+				Max:         component.NTargets,
+				AbilityID:   ab.ID.String(),
+				ComponentID: cid,
+			}, "%d positions for %d max for ability %s component %s", len(targets.Positions), component.NPositions, ab.ID.String(), cid)
 		}
 	}
 

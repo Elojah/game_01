@@ -56,7 +56,10 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 		// #Retrieve targets for this component.
 		target, ok := ps.Targets[cid]
 		if !ok {
-			return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
+			return errors.Wrapf(gerrors.ErrMissingTarget{
+				AbilityID:   ab.ID.String(),
+				ComponentID: cid.String(),
+			}, "ability %s component %s ", ab.ID.String(), cid)
 		}
 
 		// #Send event to all targets
@@ -73,7 +76,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 		}
 
 		if len(target.Positions) != 0 {
-			return gerrors.ErrNotImplementedYet
+			return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 		}
 
 		var g errgroup.Group
@@ -129,14 +132,21 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	cid := pt.ComponentID.String()
 	component, ok := ab.Components[cid]
 	if !ok {
-		return errors.Wrapf(gerrors.ErrMissingTarget, "component %s for ability %s", cid, ab.ID.String())
+		return errors.Wrapf(gerrors.ErrMissingTarget{
+			AbilityID:   ab.ID.String(),
+			ComponentID: cid.String(),
+		}, "ability %s component %s", ab.ID.String(), cid)
 	}
 
 	// #Check range validity.
 	if pt.Source.Position.SectorID.Compare(target.Position.SectorID) == 0 {
-		if geometry.Segment(pt.Source.Position.Coord, target.Position.Coord) > component.Range {
+		dist := geometry.Segment(pt.Source.Position.Coord, target.Position.Coord)
+		if dist > component.Range {
 			return errors.Wrapf(
-				gerrors.ErrOutOfRange,
+				gerrors.ErrOutOfRange{
+					Dist:  dist,
+					Range: component.Range,
+				},
 				"source %s (%f , %f , %f) out of range %f for target %s (%f , %f , %f)",
 				pt.Source.ID.String(),
 				pt.Source.Position.Coord.X,
@@ -149,6 +159,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 				target.Position.Coord.Z,
 			)
 		}
+
 	} else {
 		sec, err := a.SectorStore.GetSector(pt.Source.Position.SectorID)
 		if err != nil {
@@ -157,7 +168,10 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		neigh, ok := sec.Neighbours[target.Position.SectorID.String()]
 		if !ok {
 			return errors.Wrapf(
-				gerrors.ErrOutOfRange,
+				gerrors.ErrOutOfRange{
+					Dist:  -1,
+					Range: component.Range,
+				},
 				"source %s in sector %s not neighbour to target %s in sector %s",
 				pt.Source.ID.String(),
 				pt.Source.Position.SectorID.String(),
@@ -165,9 +179,14 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 				target.Position.SectorID.String(),
 			)
 		}
-		if geometry.Segment(pt.Source.Position.Coord, target.Position.Coord.MoveReference(neigh)) > component.Range {
+
+		dist := geometry.Segment(pt.Source.Position.Coord, target.Position.Coord.MoveReference(neigh))
+		if dist > component.Range {
 			return errors.Wrapf(
-				gerrors.ErrOutOfRange,
+				gerrors.ErrOutOfRange{
+					Dist:  dist,
+					Range: component.Range,
+				},
 				"source %s sector %s (%f , %f , %f) out of range %f for target %s sector %s (%f , %f , %f)",
 				pt.Source.ID.String(),
 				pt.Source.Position.SectorID.String(),

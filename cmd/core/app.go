@@ -206,10 +206,10 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		}
 		return
 	case *event.ConsumeSource:
-		logger.Error().Err(gerrors.ErrNotImplementedYet).Msg("consume source")
+		logger.Error().Err(gerrors.ErrNotImplementedYet{Version: "0.2.0"}).Msg("consume source")
 		return
 	case *event.ConsumeTarget:
-		logger.Error().Err(gerrors.ErrNotImplementedYet).Msg("consume target")
+		logger.Error().Err(gerrors.ErrNotImplementedYet{Version: "0.2.0"}).Msg("consume target")
 		return
 	default:
 		logger.Error().Msg("unrecognized action")

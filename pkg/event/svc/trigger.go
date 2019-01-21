@@ -52,7 +52,9 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	}
 	// If event is a cancellation, don't set event or trigger but returns a no calculate error
 	if e.Action.Cancel != nil {
-		return gerrors.ErrIneffectiveCancel
+		return errors.Wrapf(gerrors.ErrIneffectiveCancel{
+			TriggerID: e.Trigger,
+		}, "cancel action entity %s", entityID.String())
 	}
 
 	// Set event and trigger
@@ -97,7 +99,7 @@ func (s *TriggerService) Cancel(e event.E) error {
 	case *event.ConsumeTarget:
 		return s.CancelConsumeTarget(e)
 	}
-	return gerrors.ErrNotImplementedYet
+	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }
 
 // CancelMoveSource cancels a MoveSource event.
@@ -149,7 +151,7 @@ func (s *TriggerService) CancelPerformSource(e event.E) error {
 	var g errgroup.Group
 	for _, targets := range ps.Targets {
 		if len(targets.Positions) != 0 {
-			return gerrors.ErrNotImplementedYet
+			return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 		}
 		for _, target := range targets.Entities {
 			target := target
@@ -218,7 +220,11 @@ func (s *TriggerService) CancelLootFeedback(e event.E) error {
 }
 
 // CancelConsumeSource cancels a ConsumeSource event.
-func (s *TriggerService) CancelConsumeSource(e event.E) error { return gerrors.ErrNotImplementedYet }
+func (s *TriggerService) CancelConsumeSource(e event.E) error {
+	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
+}
 
 // CancelConsumeTarget cancels a ConsumeTarget event.
-func (s *TriggerService) CancelConsumeTarget(e event.E) error { return gerrors.ErrNotImplementedYet }
+func (s *TriggerService) CancelConsumeTarget(e event.E) error {
+	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
+}
