@@ -22,7 +22,7 @@ func (s *Store) GetToken(id ulid.ID) (account.Token, error) {
 		if err != redis.Nil {
 			return account.Token{}, err
 		}
-		return account.Token{}, errors.ErrNotFound
+		return account.Token{}, errors.ErrNotFound{Store: tokenKey, Index: id.String()}
 	}
 
 	var t account.Token

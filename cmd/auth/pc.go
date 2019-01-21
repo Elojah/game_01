@@ -97,7 +97,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if left <= 0 {
-		err := gerrors.ErrInvalidAction
+		err := gerrors.ErrInvalidAction{Action: "create_pc"}
 		logger.Error().Err(err).Msg("no more pc left")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

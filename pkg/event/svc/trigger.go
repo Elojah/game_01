@@ -19,7 +19,7 @@ type TriggerService struct {
 // Set event if necessary considering trigger update or removal.
 func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	var t gulid.ID
-	err := gerrors.ErrNotFound
+	err := gerrors.ErrNotFound{}
 
 	// This trick is to avoid huge if clauses. By default err is ErrNotFound to jump to final set
 	if !e.Trigger.IsZero() {
@@ -27,7 +27,7 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	}
 
 	// err checking of above statement
-	if err != nil && err != gerrors.ErrNotFound {
+	if err != nil && errors.Cause(err).(type) != gerrors.ErrNotFound {
 		return errors.Wrapf(err, "get trigger %s from event %s", e.Trigger.String(), e.ID.String())
 	}
 	// No errors when retrieving trigger means a event has already been triggered by it

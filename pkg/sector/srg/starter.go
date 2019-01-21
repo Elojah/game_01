@@ -19,7 +19,7 @@ func (s *Store) GetRandomStarter() (sector.Starter, error) {
 		if err != redis.Nil {
 			return sector.Starter{}, err
 		}
-		return sector.Starter{}, errors.ErrNotFound
+		return sector.Starter{}, errors.ErrNotFound{Store: starterKey, Index: "random"}
 	}
 
 	return sector.Starter{SectorID: ulid.MustParse(val)}, nil

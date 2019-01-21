@@ -21,8 +21,8 @@ func (a *app) FeedbackTarget(id ulid.ID, e event.E) error {
 
 	// #Retrieve feedback.
 	fb, err := a.FeedbackStore.GetFeedback(ft.ID)
-	if err == gerrors.ErrNotFound {
-		return errors.Wrapf(gerrors.ErrNotFound, "get feedback %s set by %s", ft.ID.String(), ft.Source.ID.String())
+	if errors.Cause(err).(type) == gerrors.ErrNotFound {
+		return errors.Wrapf(err, "get feedback %s set by %s", ft.ID.String(), ft.Source.ID.String())
 	}
 
 	// #Apply all ability components.

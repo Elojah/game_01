@@ -19,7 +19,7 @@ func (s *Store) GetItem(id ulid.ID) (item.I, error) {
 		if err != redis.Nil {
 			return item.I{}, err
 		}
-		return item.I{}, errors.ErrNotFound
+		return item.I{}, errors.ErrNotFound{Store: itemKey, Index: id.String()}
 	}
 
 	var it item.I

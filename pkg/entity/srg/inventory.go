@@ -19,7 +19,7 @@ func (s *Store) GetInventory(id ulid.ID) (entity.Inventory, error) {
 		if err != redis.Nil {
 			return entity.Inventory{}, err
 		}
-		return entity.Inventory{}, errors.ErrNotFound
+		return entity.Inventory{}, errors.ErrNotFound{Store: inventoryKey, Index: id.String()}
 	}
 
 	var inv entity.Inventory

@@ -19,7 +19,7 @@ func (s *Store) GetFeedback(id ulid.ID) (ability.Feedback, error) {
 		if err != redis.Nil {
 			return ability.Feedback{}, err
 		}
-		return ability.Feedback{}, errors.ErrNotFound
+		return ability.Feedback{}, errors.ErrNotFound{Store: feedbackKey, Index: id.String()}
 	}
 
 	var fb ability.Feedback

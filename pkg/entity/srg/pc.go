@@ -43,7 +43,7 @@ func (s *Store) GetPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
 		if err != redis.Nil {
 			return entity.PC{}, err
 		}
-		return entity.PC{}, errors.ErrNotFound
+		return entity.PC{}, errors.ErrNotFound{Store: pcKey, Index: accountID.String() + ":" + id.String()}
 	}
 
 	var e entity.E
@@ -79,7 +79,7 @@ func (s *Store) GetPCLeft(accountID ulid.ID) (entity.PCLeft, error) {
 		if err != redis.Nil {
 			return entity.PCLeft(0), err
 		}
-		return entity.PCLeft(0), errors.ErrNotFound
+		return entity.PCLeft(0), errors.ErrNotFound{Store: pcLeftKey, Index: accountID.String()}
 	}
 
 	pcLeft, err := strconv.Atoi(val)

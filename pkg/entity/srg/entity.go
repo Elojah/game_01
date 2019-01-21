@@ -43,7 +43,7 @@ func (s *Store) GetEntity(id ulid.ID, max uint64) (entity.E, error) {
 		return entity.E{}, err
 	}
 	if len(vals) == 0 {
-		return entity.E{}, errors.ErrNotFound
+		return entity.E{}, errors.ErrNotFound{Store: entityKey, Index: id.String()}
 	}
 	var e entity.E
 	if err := e.Unmarshal([]byte(vals[0])); err != nil {

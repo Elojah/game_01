@@ -24,7 +24,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(source.ID, ps.AbilityID)
-	if err == gerrors.ErrNotFound {
+	if errors.Cause(err).(type) == gerrors.ErrNotFound {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  -1,
 			Source: source.ID.String(),
@@ -107,7 +107,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(pt.Source.ID, pt.AbilityID)
-	if err == gerrors.ErrNotFound {
+	if errors.Cause(err).(type) == gerrors.ErrNotFound {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  -1,
 			Source: pt.Source.ID.String(),

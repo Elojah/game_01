@@ -19,7 +19,7 @@ func (s *Store) GetSequencer(id ulid.ID) (infra.Sequencer, error) {
 		if err != redis.Nil {
 			return infra.Sequencer{}, err
 		}
-		return infra.Sequencer{}, errors.ErrNotFound
+		return infra.Sequencer{}, errors.ErrNotFound{Store: sequencerKey, Index: id.String()}
 	}
 
 	var sequencer infra.Sequencer

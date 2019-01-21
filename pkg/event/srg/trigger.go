@@ -30,7 +30,7 @@ func (s *Store) GetTrigger(source gulid.ID, e gulid.ID) (gulid.ID, error) {
 		if err != redis.Nil {
 			return gulid.ID{}, err
 		}
-		return gulid.ID{}, gerrors.ErrNotFound
+		return gulid.ID{}, gerrors.ErrNotFound{Store: triggerKey, Index: source.String() + ":" + e.String()}
 	}
 
 	return gulid.MustParse(val), nil

@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -41,14 +42,14 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 
 	// #Check username is unique
 	_, err := h.AccountStore.GetAccount(a.Username)
-	if err != nil && err != errors.ErrNotFound {
-		logger.Error().Err(err).Msg("failed to get account")
-		http.Error(w, "failed to check account unicity", http.StatusInternalServerError)
-		return
-	}
-	if err != errors.ErrNotFound {
+	if errors.Cause(err).(type) == gerrors.ErrNotFound {
 		logger.Error().Err(err).Msg("account username found")
 		http.Error(w, "username already exists", http.StatusUnauthorized)
+		return
+	}
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to get account")
+		http.Error(w, "failed to check account unicity", http.StatusInternalServerError)
 		return
 	}
 
@@ -111,7 +112,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	// #Search account in redis
 	a, err := h.AccountStore.GetAccount(ac.Username)
 	if err != nil {
-		if err != errors.ErrNotFound {
+		if errors.Cause(err).(type) != gerrors.ErrNotFound {
 			logger.Error().Err(err).Msg("failed to get account")
 			http.Error(w, "failed to retrieve account", http.StatusInternalServerError)
 			return

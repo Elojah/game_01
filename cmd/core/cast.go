@@ -16,7 +16,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
-	if err == gerrors.ErrNotFound || (err == nil && account.ACL(permission.Value) != account.Owner) {
+	if errors.Cause(err).(type) == gerrors.ErrNotFound || (err == nil && account.ACL(permission.Value) != account.Owner) {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  permission.Value,
 			Source: e.Token.String(),
@@ -29,7 +29,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(id, cs.AbilityID)
-	if err == gerrors.ErrNotFound {
+	if errors.Cause(err).(type) == gerrors.ErrNotFound {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  -1,
 			Source: id.String(),
@@ -47,7 +47,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 	if source.MP < ab.MPConsumption {
 		return errors.Wrapf(
-			gerrors.ErrInvalidAction,
+			gerrors.ErrInvalidAction{Action: "cast_source"},
 			"entity %s with MP %d for ability %s with MP: %d",
 			id.String(),
 			source.MP,
@@ -58,7 +58,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Check CD validity. if LastUsed + CD < now.
 	if ts-ab.CD < ab.LastUsed {
-		return errors.Wrapf(gerrors.ErrInvalidAction, "cd down for skill %s ", ab.ID.String())
+		return errors.Wrapf(gerrors.ErrInvalidAction{Action: "cast_source"}, "cd down for skill %s ", ab.ID.String())
 	}
 
 	// Check targets validity (number and position number).

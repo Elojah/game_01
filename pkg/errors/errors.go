@@ -80,17 +80,22 @@ func (err ErrInvalidEntityType) Error() string {
 // #Common api/core errors
 
 // ErrInvalidAction is raised when an action is not possible following game rules.
-type ErrInvalidAction struct{}
+type ErrInvalidAction struct {
+	Action string
+}
 
-func (ErrInvalidAction) Error() string {
-	return "action is not possible"
+func (err ErrInvalidAction) Error() string {
+	return fmt.Sprintf("action %s is not possible", err.Action)
 }
 
 // ErrNotFound is raised when a mandatory resource is not found in storage.
-type ErrNotFound struct{}
+type ErrNotFound struct {
+	Store string
+	Index string
+}
 
-func (ErrNotFound) Error() string {
-	return "no results found"
+func (err ErrNotFound) Error() string {
+	return fmt.Sprintf("no results found in store %s for index %s", err.Store, err.Index)
 }
 
 // ErrMissingTarget is raised when a ability is performed with a missing component targets.

@@ -18,7 +18,7 @@ func (s *Store) GetAccount(username string) (account.A, error) {
 		if err != redis.Nil {
 			return account.A{}, err
 		}
-		return account.A{}, errors.ErrNotFound
+		return account.A{}, errors.ErrNotFound{Store: accountKey, Index: username}
 	}
 
 	var a account.A

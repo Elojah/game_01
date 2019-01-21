@@ -19,7 +19,7 @@ func (s *Store) GetRecurrer(tokenID ulid.ID) (infra.Recurrer, error) {
 		if err != redis.Nil {
 			return infra.Recurrer{}, err
 		}
-		return infra.Recurrer{}, errors.ErrNotFound
+		return infra.Recurrer{}, errors.ErrNotFound{Store: recurrerKey, Index: tokenID.String()}
 	}
 
 	var recurrer infra.Recurrer

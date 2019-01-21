@@ -19,7 +19,7 @@ func (s *Store) GetTemplate(id ulid.ID) (entity.Template, error) {
 		if err != redis.Nil {
 			return entity.Template{}, err
 		}
-		return entity.Template{}, errors.ErrNotFound
+		return entity.Template{}, errors.ErrNotFound{Store: templateKey, Index: id.String()}
 	}
 
 	var e entity.E

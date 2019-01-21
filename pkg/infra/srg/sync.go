@@ -19,7 +19,7 @@ func (s *Store) GetRandomSync() (infra.Sync, error) {
 		if err != redis.Nil {
 			return infra.Sync{}, err
 		}
-		return infra.Sync{}, errors.ErrNotFound
+		return infra.Sync{}, errors.ErrNotFound{Store: syncKey, Index: "random"}
 	}
 
 	return infra.Sync{ID: ulid.MustParse(val)}, nil

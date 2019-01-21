@@ -21,7 +21,7 @@ func (s *Store) GetPermission(source string, target string) (entity.Permission, 
 		if err != redis.Nil {
 			return entity.Permission{}, err
 		}
-		return entity.Permission{}, errors.ErrNotFound
+		return entity.Permission{}, errors.ErrNotFound{Store: permissionKey, Index: source + ":" + target}
 	}
 
 	permission := entity.Permission{

@@ -19,7 +19,7 @@ func (s *Store) ListAbility(entityID ulid.ID) ([]ability.A, error) {
 		if err != redis.Nil {
 			return nil, err
 		}
-		return nil, errors.ErrNotFound
+		return nil, errors.ErrNotFound{Store: aKey, Index: entityID.String()}
 	}
 
 	as := make([]ability.A, len(keys))
@@ -43,7 +43,7 @@ func (s *Store) GetAbility(entityID ulid.ID, id ulid.ID) (ability.A, error) {
 		if err != redis.Nil {
 			return ability.A{}, err
 		}
-		return ability.A{}, errors.ErrNotFound
+		return ability.A{}, errors.ErrNotFound{Store: aKey, Index: entityID.String() + ":" + id.String()}
 	}
 
 	var a ability.A

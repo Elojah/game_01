@@ -110,7 +110,7 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	e, err := s.Entity.GetEntity(te, ulid.Now())
 	if err != nil {
 		// Token is valid but not connected to any entity.
-		if err == gerrors.ErrNotFound {
+		if errors.Cause(err).(type) == gerrors.ErrNotFound {
 			return result.ErrorOrNil()
 		}
 		return errors.Wrapf(err, "get entity %s", te.String())

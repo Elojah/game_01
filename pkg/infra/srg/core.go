@@ -19,7 +19,7 @@ func (s *Store) GetRandomCore() (infra.Core, error) {
 		if err != redis.Nil {
 			return infra.Core{}, err
 		}
-		return infra.Core{}, errors.ErrNotFound
+		return infra.Core{}, errors.ErrNotFound{Store: coreKey, Index: "random"}
 	}
 
 	return infra.Core{ID: ulid.MustParse(val)}, nil
