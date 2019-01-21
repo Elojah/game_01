@@ -2,9 +2,10 @@ package srg
 
 import (
 	"github.com/go-redis/redis"
+	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -17,28 +18,32 @@ func (s *Store) GetInventory(id ulid.ID) (entity.Inventory, error) {
 	val, err := s.Get(inventoryKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return entity.Inventory{}, err
+			return entity.Inventory{}, errors.Wrapf(err, "get inventory %s", id.String())
 		}
-		return entity.Inventory{}, errors.ErrNotFound{Store: inventoryKey, Index: id.String()}
+		return entity.Inventory{}, errors.Wrapf(
+			gerrors.ErrNotFound{Store: inventoryKey, Index: id.String()},
+			"get inventory %s",
+			id.String(),
+		)
 	}
 
 	var inv entity.Inventory
 	if err := inv.Unmarshal([]byte(val)); err != nil {
-		return entity.Inventory{}, err
+		return entity.Inventory{}, errors.Wrapf(err, "get inventory %s", id.String())
 	}
 	return inv, nil
 }
 
 // SetInventory implemented with redis.
-func (s *Store) SetInventory(inventory entity.Inventory) error {
-	raw, err := inventory.Marshal()
+func (s *Store) SetInventory(inv entity.Inventory) error {
+	raw, err := inv.Marshal()
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "set inventory %s", inv.ID.String())
 	}
-	return s.Set(inventoryKey+inventory.ID.String(), raw, 0).Err()
+	return errors.Wrapf(s.Set(inventoryKey+inv.ID.String(), raw, 0).Err(), "set inventory %s", inv.ID.String())
 }
 
 // DelInventory implemented with redis.
 func (s *Store) DelInventory(id ulid.ID) error {
-	return s.Del(inventoryKey + id.String()).Err()
+	return errors.Wrapf(s.Del(inventoryKey+id.String()).Err(), "del inventory %s", id.String())
 }

@@ -4,9 +4,10 @@ import (
 	"strconv"
 
 	"github.com/go-redis/redis"
+	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -18,15 +19,15 @@ const (
 func (s *Store) SetEntity(e entity.E, ts uint64) error {
 	raw, err := e.Marshal()
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "set entity %s at %d", e.ID.String(), ts)
 	}
-	return s.ZAddNX(
+	return errors.Wrapf(s.ZAddNX(
 		entityKey+e.ID.String(),
 		redis.Z{
 			Score:  float64(ts),
 			Member: raw,
 		},
-	).Err()
+	).Err(), "set entity %s at %d", e.ID.String(), ts)
 }
 
 // GetEntity retrieves entity in Redis using ZRevRangeByScore.
@@ -40,28 +41,33 @@ func (s *Store) GetEntity(id ulid.ID, max uint64) (entity.E, error) {
 		},
 	).Result()
 	if err != nil {
-		return entity.E{}, err
+		return entity.E{}, errors.Wrapf(err, "get entity %s at %d", id.String(), max)
 	}
 	if len(vals) == 0 {
-		return entity.E{}, errors.ErrNotFound{Store: entityKey, Index: id.String()}
+		return entity.E{}, errors.Wrapf(
+			gerrors.ErrNotFound{Store: entityKey, Index: id.String()},
+			"get entity %s at %d",
+			id.String(),
+			max,
+		)
 	}
 	var e entity.E
 	if err := e.Unmarshal([]byte(vals[0])); err != nil {
-		return entity.E{}, err
+		return entity.E{}, errors.Wrapf(err, "get entity %s at %d", id.String(), max)
 	}
 	return e, nil
 }
 
 // DelEntity deletes all entity states in redis.
 func (s *Store) DelEntity(id ulid.ID) error {
-	return s.Del(entityKey + id.String()).Err()
+	return errors.Wrapf(s.Del(entityKey+id.String()).Err(), "del entity %s", id.String())
 }
 
 // DelEntityByTS deletes entity states in redis from minTS to +inf.
 func (s *Store) DelEntityByTS(id ulid.ID, min uint64) error {
-	return s.ZRemRangeByScore(
+	return errors.Wrapf(s.ZRemRangeByScore(
 		entityKey+id.String(),
 		strconv.FormatUint(min, 10),
 		"+inf",
-	).Err()
+	).Err(), "del entity %s with min TS %d", id.String(), min)
 }
