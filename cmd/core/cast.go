@@ -16,7 +16,15 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
-	if errors.Cause(err).(type) == gerrors.ErrNotFound || (err == nil && account.ACL(permission.Value) != account.Owner) {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
+		return errors.Wrapf(gerrors.ErrInsufficientACLs{
+			Value:  permission.Value,
+			Source: e.Token.String(),
+			Target: id.String(),
+		}, "get permission token %s for %s", e.Token.String(), id.String())
+	}
+	if err == nil && account.ACL(permission.Value) != account.Owner {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  permission.Value,
 			Source: e.Token.String(),
@@ -29,7 +37,8 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(id, cs.AbilityID)
-	if errors.Cause(err).(type) == gerrors.ErrNotFound {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  -1,
 			Source: id.String(),
@@ -67,7 +76,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		if !ok {
 			return errors.Wrapf(gerrors.ErrMissingTarget{
 				AbilityID:   ab.ID.String(),
-				ComponentID: cid.String(),
+				ComponentID: cid,
 			}, "ability %s component %s", ab.ID.String(), cid)
 		}
 		if uint64(len(targets.Entities)) > component.NTargets {

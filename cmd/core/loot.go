@@ -32,7 +32,7 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 	}
 	if len(sourceInventory.Items) > int(sourceInventory.Size_-1) {
 		return errors.Wrapf(gerrors.ErrFullInventory{
-			InventoryID: source.InventoryID,
+			InventoryID: source.InventoryID.String(),
 		}, "check inventory %s from source %s", source.InventoryID.String(), source.InventoryID.String())
 	}
 

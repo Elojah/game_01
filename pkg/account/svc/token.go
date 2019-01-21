@@ -38,7 +38,7 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials{Username: payload.Username}, "compare passwords")
 	}
 	if !a.Token.IsZero() {
-		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{a.ID.String()}, "check existing account token")
+		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: a.ID.String()}, "check existing account token")
 	}
 
 	// #Identify origin IP

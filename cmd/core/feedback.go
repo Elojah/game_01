@@ -21,7 +21,8 @@ func (a *app) FeedbackTarget(id ulid.ID, e event.E) error {
 
 	// #Retrieve feedback.
 	fb, err := a.FeedbackStore.GetFeedback(ft.ID)
-	if errors.Cause(err).(type) == gerrors.ErrNotFound {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
 		return errors.Wrapf(err, "get feedback %s set by %s", ft.ID.String(), ft.Source.ID.String())
 	}
 

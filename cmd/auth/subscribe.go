@@ -42,7 +42,8 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 
 	// #Check username is unique
 	_, err := h.AccountStore.GetAccount(a.Username)
-	if errors.Cause(err).(type) == gerrors.ErrNotFound {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
 		logger.Error().Err(err).Msg("account username found")
 		http.Error(w, "username already exists", http.StatusUnauthorized)
 		return
@@ -112,7 +113,8 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	// #Search account in redis
 	a, err := h.AccountStore.GetAccount(ac.Username)
 	if err != nil {
-		if errors.Cause(err).(type) != gerrors.ErrNotFound {
+		switch errors.Cause(err).(type) {
+		case gerrors.ErrNotFound:
 			logger.Error().Err(err).Msg("failed to get account")
 			http.Error(w, "failed to retrieve account", http.StatusInternalServerError)
 			return

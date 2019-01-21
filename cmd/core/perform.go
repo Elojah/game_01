@@ -24,7 +24,8 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(source.ID, ps.AbilityID)
-	if errors.Cause(err).(type) == gerrors.ErrNotFound {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  -1,
 			Source: source.ID.String(),
@@ -58,7 +59,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 		if !ok {
 			return errors.Wrapf(gerrors.ErrMissingTarget{
 				AbilityID:   ab.ID.String(),
-				ComponentID: cid.String(),
+				ComponentID: cid,
 			}, "ability %s component %s ", ab.ID.String(), cid)
 		}
 
@@ -110,7 +111,8 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(pt.Source.ID, pt.AbilityID)
-	if errors.Cause(err).(type) == gerrors.ErrNotFound {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  -1,
 			Source: pt.Source.ID.String(),
@@ -134,7 +136,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	if !ok {
 		return errors.Wrapf(gerrors.ErrMissingTarget{
 			AbilityID:   ab.ID.String(),
-			ComponentID: cid.String(),
+			ComponentID: cid,
 		}, "ability %s component %s", ab.ID.String(), cid)
 	}
 

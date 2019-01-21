@@ -113,7 +113,7 @@ func (err ErrMissingTarget) Error() string {
 // ErrTooManyTargets is raised when a ability is casted/performed with too many targets for a component.
 type ErrTooManyTargets struct {
 	NTargets    int
-	Max         int
+	Max         uint64
 	AbilityID   string
 	ComponentID string
 }
@@ -124,12 +124,12 @@ func (err ErrTooManyTargets) Error() string {
 
 // ErrOutOfRange is raised when a component ability is performed out of range on a target or when an item is looted in a further position.
 type ErrOutOfRange struct {
-	Dist  int
-	Range int
+	Dist  float64
+	Range float64
 }
 
 func (err ErrOutOfRange) Error() string {
-	return fmt.Sprintf("out of range %d for %d", err.Dist, err.Range)
+	return fmt.Sprintf("out of range %f for %f", err.Dist, err.Range)
 }
 
 // ErrMissingItem is raised when a loot action is performed on an non present item in target inventory.

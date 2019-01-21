@@ -17,8 +17,15 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 
 	// #Check permission token/source.
 	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
-	if errors.Cause(err).(type) == gerrors.ErrNotFound ||
-		(err == nil && account.ACL(permission.Value) != account.Owner) {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
+		return errors.Wrapf(gerrors.ErrInsufficientACLs{
+			Value:  permission.Value,
+			Source: e.Token.String(),
+			Target: id.String(),
+		}, "get permission token %s for %s", e.Token.String(), id.String())
+	}
+	if err == nil && account.ACL(permission.Value) != account.Owner {
 		return errors.Wrapf(gerrors.ErrInsufficientACLs{
 			Value:  permission.Value,
 			Source: e.Token.String(),
@@ -38,8 +45,15 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 		g.Go(func() error {
 			// #Check permission source/target.
 			permission, err := a.EntityPermissionStore.GetPermission(id.String(), target.String())
-			if errors.Cause(err).(type) == gerrors.ErrNotFound ||
-				(err == nil && account.ACL(permission.Value) != account.Owner) {
+			switch errors.Cause(err).(type) {
+			case gerrors.ErrNotFound:
+				return errors.Wrapf(gerrors.ErrInsufficientACLs{
+					Value:  permission.Value,
+					Source: id.String(),
+					Target: target.String(),
+				}, "get permission token %s for %s", id.String(), target.String())
+			}
+			if err == nil && account.ACL(permission.Value) != account.Owner {
 				return errors.Wrapf(gerrors.ErrInsufficientACLs{
 					Value:  permission.Value,
 					Source: id.String(),

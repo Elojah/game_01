@@ -88,7 +88,8 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	// #Retrieve account by username.
 	a, err := h.AccountStore.GetAccount(ac.Username)
 	if err != nil {
-		if errors.Cause(err).(type) == gerrors.ErrNotFound {
+		switch errors.Cause(err).(type) {
+		case gerrors.ErrNotFound:
 			logger.Error().Err(err).Msg("invalid username")
 			http.Error(w, "invalid username", http.StatusBadRequest)
 			return

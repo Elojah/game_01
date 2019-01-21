@@ -129,9 +129,10 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		return
 	}
 	if err := s.EventTriggerService.Set(e, s.id); err != nil {
-		if errors.Cause(err).(type) == gerrors.ErrIneffectiveCancel {
+		switch errors.Cause(err).(type) {
+		case gerrors.ErrNotFound:
 			s.logger.Info().Err(err).Msg("event not processed")
-		} else {
+		default:
 			s.logger.Error().Err(err).Msg("error setting event")
 		}
 		return
