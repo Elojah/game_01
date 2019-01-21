@@ -19,7 +19,7 @@ func (s *Store) GetSector(id ulid.ID) (sector.S, error) {
 		if err != redis.Nil {
 			return sector.S{}, err
 		}
-		return sector.S{}, errors.ErrNotFound{Store: sectorKy, Index: id.String()}
+		return sector.S{}, errors.ErrNotFound{Store: sectorKey, Index: id.String()}
 	}
 
 	var sec sector.S
