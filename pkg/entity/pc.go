@@ -26,7 +26,7 @@ type PC = E
 // Check checks if pc fields are valid.
 func (pc PC) Check() error {
 	if _, ok := pcNames[pc.Name]; !ok {
-		return errors.ErrInvalidEntityType
+		return errors.ErrInvalidEntityType{EntityType: pc.Name}
 	}
 	return nil
 }

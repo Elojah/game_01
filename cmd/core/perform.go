@@ -25,7 +25,11 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(source.ID, ps.AbilityID)
 	if err == gerrors.ErrNotFound {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", ps.AbilityID.String(), id.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs{
+			Value:  -1,
+			Source: source.ID.String(),
+			Target: ps.AbilityID.String(),
+		}, "get ability %s for %s", ps.AbilityID.String(), id.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get ability %s for %s", ps.AbilityID.String(), id.String())
@@ -104,7 +108,11 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(pt.Source.ID, pt.AbilityID)
 	if err == gerrors.ErrNotFound {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs, "get ability %s for %s", pt.AbilityID.String(), pt.Source.ID.String())
+		return errors.Wrapf(gerrors.ErrInsufficientACLs{
+			Value:  -1,
+			Source: pt.Source.ID.String(),
+			Target: pt.AbilityID.String(),
+		}, "get ability %s for %s", pt.AbilityID.String(), pt.Source.ID.String())
 	}
 	if err != nil {
 		return errors.Wrapf(err, "get ability %s for %s", pt.AbilityID.String(), pt.Source.ID.String())

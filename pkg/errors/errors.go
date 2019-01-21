@@ -49,10 +49,14 @@ func (err ErrWrongCredentials) Error() string {
 }
 
 // ErrInsufficientACLs is raised when a user apply an action without valid rights.
-type ErrInsufficientACLs struct{}
+type ErrInsufficientACLs struct {
+	Value  int
+	Source string
+	Target string
+}
 
-func (ErrInsufficientACLs) Error() string {
-	return "insufficient rights"
+func (err ErrInsufficientACLs) Error() string {
+	return fmt.Sprintf("insufficient rights %d for source %s on target %s", err.Value, err.Source, err.Target)
 }
 
 // ErrMultipleLogin is raised zhen an account is already logged.
@@ -65,10 +69,12 @@ func (err ErrMultipleLogin) Error() string {
 }
 
 // ErrInvalidEntityType is raised when an entity doesn't respect the correct type.
-type ErrInvalidEntityType struct{}
+type ErrInvalidEntityType struct {
+	EntityType string
+}
 
-func (ErrInvalidEntityType) Error() string {
-	return "invalid entity type"
+func (err ErrInvalidEntityType) Error() string {
+	return fmt.Sprintf("invalid entity type %s", err.EntityType)
 }
 
 // #Common api/core errors
