@@ -3,6 +3,7 @@ package srg
 import (
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -13,9 +14,14 @@ const (
 func (s *Store) PublishSequencer(seq infra.Sequencer, id ulid.ID) error {
 	raw, err := seq.Marshal()
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "publish sequencer %s on pool %s", seq.ID.String(), id.String())
 	}
-	return s.Publish(qsequencerKey+id.String(), raw).Err()
+	return errors.Wrapf(
+		s.Publish(qsequencerKey+id.String(), raw).Err(),
+		"publish sequencer %s on pool %s",
+		seq.ID.String(),
+		id.String(),
+	)
 }
 
 // SubscribeSequencer implementation with redis pubsub.
