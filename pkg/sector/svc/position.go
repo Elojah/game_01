@@ -37,36 +37,39 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 
 		// #Check if target has moved in correct boundaries in same sector.
 		if sec.Out(target.Position.Coord) {
-			return target, errors.Wrapf(
-				gerrors.ErrInvalidAction{Action: "move"},
-				"check in sector %s (%f , %f , %f) from (%f , %f , %f) to (%f , %f , %f) for entity %s",
-				sec.ID.String(),
-				sec.Dim.X,
-				sec.Dim.Y,
-				sec.Dim.Z,
-				target.Position.Coord.X,
-				target.Position.Coord.Y,
-				target.Position.Coord.Z,
-				newPosition.Coord.X,
-				newPosition.Coord.Y,
-				newPosition.Coord.Z,
-				target.ID.String(),
+			return target, errors.Wrap(
+				errors.Wrap(
+					gerrors.ErrInvalidMove{
+						TargetID:       target.ID.String(),
+						SectorID:       sec.ID.String(),
+						SectorDim:      sec.Dim,
+						TargetPosition: target.Position.Coord,
+						NewSectorID:    sec.ID.String(),
+						NewSectorDim:   sec.Dim,
+						NewPosition:    newPosition.Coord,
+					},
+					"check boundaries",
+				),
+				"move",
 			)
 		}
 
 		// #Check if target has moved at a tolerable distance in same sector.
 		if geometry.Segment(target.Position.Coord, newPosition.Coord) > s.Tolerance {
-			return target, errors.Wrapf(
-				gerrors.ErrInvalidAction{Action: "move"},
-				"check newPosition tolerance %f from (%f , %f , %f) to (%f , %f , %f) for entity %s",
-				s.Tolerance,
-				target.Position.Coord.X,
-				target.Position.Coord.Y,
-				target.Position.Coord.Z,
-				newPosition.Coord.X,
-				newPosition.Coord.Y,
-				newPosition.Coord.Z,
-				target.ID.String(),
+			return target, errors.Wrap(
+				errors.Wrap(
+					gerrors.ErrInvalidMove{
+						TargetID:       target.ID.String(),
+						SectorID:       sec.ID.String(),
+						SectorDim:      sec.Dim,
+						TargetPosition: target.Position.Coord,
+						NewSectorID:    sec.ID.String(),
+						NewSectorDim:   sec.Dim,
+						NewPosition:    newPosition.Coord,
+					},
+					"check tolerance",
+				),
+				"move",
 			)
 		}
 
@@ -79,29 +82,63 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 		// #Check if new sector is a neighbour.
 		neigh, ok := sec.Neighbours[newPosition.SectorID.String()]
 		if !ok {
-			return target, errors.Wrapf(
-				gerrors.ErrInvalidAction{Action: "move"},
-				"invalid next neighbour sector %s with previous %s",
-				newPosition.SectorID.String(),
-				target.Position.SectorID.String(),
+			return target, errors.Wrap(
+				errors.Wrap(
+					gerrors.ErrInvalidMove{
+						TargetID:       target.ID.String(),
+						SectorID:       sec.ID.String(),
+						SectorDim:      sec.Dim,
+						TargetPosition: target.Position.Coord,
+						NewSectorID:    newPosition.SectorID.String(),
+						NewPosition:    newPosition.Coord,
+					},
+					"check neighbour",
+				),
+				"move",
+			)
+		}
+
+		// #Retrieve neighbour sector (for boundaries checking)
+		neighSec, err := s.SectorStore.GetSector(newPosition.SectorID)
+		if err != nil {
+			return target, errors.Wrap(err, "move")
+		}
+
+		// #Check if target has moved in correct boundaries in neighbour sector.
+		if neighSec.Out(newPosition.Coord) {
+			return target, errors.Wrap(
+				errors.Wrap(
+					gerrors.ErrInvalidMove{
+						TargetID:       target.ID.String(),
+						SectorID:       sec.ID.String(),
+						SectorDim:      sec.Dim,
+						TargetPosition: target.Position.Coord,
+						NewSectorID:    neighSec.ID.String(),
+						NewSectorDim:   neighSec.Dim,
+						NewPosition:    newPosition.Coord,
+					},
+					"check boundaries",
+				),
+				"move",
 			)
 		}
 
 		// #Check if target has moved at a tolerable distance in different sectors.
 		if geometry.Segment(target.Position.Coord, newPosition.Coord.MoveReference(neigh)) > s.Tolerance {
-			return target, errors.Wrapf(
-				gerrors.ErrInvalidAction{Action: "move"},
-				"check newPosition tolerance %f from %s (%f , %f , %f) to %s (%f , %f , %f) for entity %s",
-				s.Tolerance,
-				target.Position.SectorID.String(),
-				target.Position.Coord.X,
-				target.Position.Coord.Y,
-				target.Position.Coord.Z,
-				newPosition.SectorID.String(),
-				newPosition.Coord.X,
-				newPosition.Coord.Y,
-				newPosition.Coord.Z,
-				target.ID.String(),
+			return target, errors.Wrap(
+				errors.Wrap(
+					gerrors.ErrInvalidMove{
+						TargetID:       target.ID.String(),
+						SectorID:       sec.ID.String(),
+						SectorDim:      sec.Dim,
+						TargetPosition: target.Position.Coord,
+						NewSectorID:    neighSec.ID.String(),
+						NewSectorDim:   neighSec.Dim,
+						NewPosition:    newPosition.Coord,
+					},
+					"check tolerance",
+				),
+				"move",
 			)
 		}
 

@@ -25,27 +25,27 @@ func (s Service) Disconnect(id gulid.ID, t account.Token) error {
 
 	e, err := s.Entity.GetEntity(id, ulid.Now())
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s", id.String())
+		return errors.Wrap(err, "disconnect entity")
 	}
 
 	// #Close entity sequencer
 	if err := s.SequencerService.Remove(id); err != nil {
-		return errors.Wrapf(err, "delete sequencer %s", id.String())
+		return errors.Wrap(err, "disconnect entity")
 	}
 
 	// #Delete token permission on entity
 	if err := s.EntityPermission.DelPermission(t.ID.String(), id.String()); err != nil {
-		return errors.Wrapf(err, "delete permission %s %s", t.ID.String(), id.String())
+		return errors.Wrap(err, "disconnect entity")
 	}
 
 	// #Delete pc entity position
 	if err := s.SectorEntities.RemoveEntityFromSector(id, e.Position.SectorID); err != nil {
-		return errors.Wrapf(err, "remove entity %s from sector %s", id.String(), e.Position.SectorID.String())
+		return errors.Wrap(err, "disconnect entity")
 	}
 
 	// #Delete pc entity
 	if err := s.Entity.DelEntity(id); err != nil {
-		return errors.Wrapf(err, "delete entity %s", id.String())
+		return errors.Wrap(err, "disconnect entity")
 	}
 
 	return nil

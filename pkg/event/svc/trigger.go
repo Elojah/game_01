@@ -31,7 +31,7 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 		switch errors.Cause(err).(type) {
 		case gerrors.ErrNotFound:
 		default:
-			return errors.Wrapf(err, "get trigger %s from event %s", e.Trigger.String(), e.ID.String())
+			return errors.Wrapf(err, "set event with trigger")
 		}
 	}
 	// No errors when retrieving trigger means a event has already been triggered by it
@@ -39,15 +39,15 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	if err == nil {
 		// Delete previous event.
 		if err := s.Store.DelEvent(t, entityID); err != nil {
-			return errors.Wrapf(err, "delete previous event %s", e.ID.String())
+			return errors.Wrapf(err, "set event with trigger")
 		}
 		// Delete trigger
 		if err := s.TriggerStore.DelTrigger(e.Trigger, entityID); err != nil {
-			return errors.Wrapf(err, "delete trigger %s", e.Trigger.String())
+			return errors.Wrapf(err, "set event with trigger")
 		}
 		// Cancel event
 		if err := s.Cancel(e); err != nil {
-			return errors.Wrapf(err, "cancel event %s", e.ID.String())
+			return errors.Wrapf(err, "set event with trigger")
 		}
 		// If event is a cancellation, don't set event or trigger and stop here
 		if e.Action.Cancel != nil {
@@ -58,19 +58,19 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	if e.Action.Cancel != nil {
 		return errors.Wrapf(gerrors.ErrIneffectiveCancel{
 			TriggerID: e.Trigger.String(),
-		}, "cancel action entity %s", entityID.String())
+		}, "set event with trigger")
 	}
 
 	// Set event and trigger
 	if err := s.Store.SetEvent(e, entityID); err != nil {
-		return errors.Wrapf(err, "create event %s", e.ID.String())
+		return errors.Wrapf(err, "set event with trigger")
 	}
 	if err := s.TriggerStore.SetTrigger(event.Trigger{
 		EntityID:      entityID,
 		EventSourceID: e.Trigger,
 		EventTargetID: e.ID,
 	}); err != nil {
-		return errors.Wrapf(err, "create trigger %s", e.ID.String())
+		return errors.Wrapf(err, "set event with trigger")
 	}
 
 	return nil
@@ -121,7 +121,7 @@ func (s *TriggerService) CancelMoveSource(e event.E) error {
 	for _, targetID := range ms.TargetIDs {
 		targetID := targetID
 		g.Go(func() error {
-			return errors.Wrapf(s.QStore.PublishEvent(e, targetID), "publish cancel move target event %s to target %s", e.String(), targetID.String())
+			return errors.Wrapf(s.QStore.PublishEvent(e, targetID), "cancel move source")
 		})
 	}
 	return g.Wait()
@@ -160,7 +160,7 @@ func (s *TriggerService) CancelPerformSource(e event.E) error {
 		for _, target := range targets.Entities {
 			target := target
 			g.Go(func() error {
-				return errors.Wrapf(s.QStore.PublishEvent(e, target), "publish cancel move target event %s to target %s", e.String(), target.String())
+				return errors.Wrapf(s.QStore.PublishEvent(e, target), "cancel move target")
 			})
 		}
 		if err := g.Wait(); err != nil {
@@ -181,7 +181,7 @@ func (s *TriggerService) CancelPerformTarget(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(s.QStore.PublishEvent(e, pt.Source.ID), "publish cancel perform target event %s to source %s", e.String(), pt.Source.ID.String())
+	return errors.Wrapf(s.QStore.PublishEvent(e, pt.Source.ID), "cancel perform target")
 }
 
 // CancelFeedbackTarget cancels a FeedbackTarget event.
@@ -200,7 +200,7 @@ func (s *TriggerService) CancelLootSource(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(s.QStore.PublishEvent(e, ls.TargetID), "publish cancel loot source event %s to target %s", e.String(), ls.TargetID.String())
+	return errors.Wrapf(s.QStore.PublishEvent(e, ls.TargetID), "cancel loot source")
 }
 
 // CancelLootTarget cancels a LootTarget event.
@@ -214,7 +214,7 @@ func (s *TriggerService) CancelLootTarget(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(s.QStore.PublishEvent(e, lt.SourceID), "publish cancel loot target event %s to source %s", e.String(), lt.SourceID.String())
+	return errors.Wrapf(s.QStore.PublishEvent(e, lt.SourceID), "cancel loot target")
 }
 
 // CancelLootFeedback cancels a LootFeedback event.

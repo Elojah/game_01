@@ -20,7 +20,7 @@ func (s RecurrerService) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer,
 	// #Open recurrer on a random sync
 	sy, err := s.InfraSync.GetRandomSync()
 	if err != nil {
-		return infra.Recurrer{}, errors.Wrap(err, "get random sync")
+		return infra.Recurrer{}, errors.Wrap(err, "new recurrer")
 	}
 	r := infra.Recurrer{
 		EntityID: entityID,
@@ -29,12 +29,12 @@ func (s RecurrerService) New(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer,
 		Pool:     sy.ID,
 	}
 	if err := s.InfraQRecurrer.PublishRecurrer(r, sy.ID); err != nil {
-		return infra.Recurrer{}, errors.Wrapf(err, "open recurrer %s on pool %s", entityID.String(), sy.ID.String())
+		return infra.Recurrer{}, errors.Wrap(err, "new recurrer")
 	}
 
 	// #Set recurrer with saved sync id
 	if err := s.InfraRecurrer.SetRecurrer(r); err != nil {
-		return infra.Recurrer{}, errors.Wrapf(err, "set recurrer %s", r.EntityID.String())
+		return infra.Recurrer{}, errors.Wrap(err, "new recurrer")
 	}
 	return r, nil
 }
@@ -45,16 +45,16 @@ func (s RecurrerService) Remove(id ulid.ID) error {
 	// #Retrieve and close recurrer
 	r, err := s.InfraRecurrer.GetRecurrer(id)
 	if err != nil {
-		return errors.Wrapf(err, "get recurrer %s", id.String())
+		return errors.Wrap(err, "remove recurrer")
 	}
 	r.Action = infra.Close
 	if err := s.InfraQRecurrer.PublishRecurrer(r, r.Pool); err != nil {
-		return errors.Wrapf(err, "close recurrer %s on pool %s", r.EntityID.String(), r.Pool.String())
+		return errors.Wrap(err, "remove recurrer")
 	}
 
 	// #Delete recurrer
 	if err := s.InfraRecurrer.DelRecurrer(r.TokenID); err != nil {
-		return errors.Wrapf(err, "delete recurrer for token %s", r.TokenID.String())
+		return errors.Wrap(err, "remove recurrer")
 	}
 	return nil
 }

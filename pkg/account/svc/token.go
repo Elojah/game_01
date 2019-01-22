@@ -32,19 +32,19 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 	// #Search account in redis
 	a, err := s.Account.GetAccount(payload.Username)
 	if err != nil {
-		return account.Token{}, errors.Wrapf(err, "get account with username %s", payload.Username)
+		return account.Token{}, errors.Wrap(err, "new token")
 	}
 	if a.Password != payload.Password {
-		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials{Username: payload.Username}, "compare passwords")
+		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials{Username: payload.Username}, "new token")
 	}
 	if !a.Token.IsZero() {
-		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: a.ID.String()}, "check existing account token")
+		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: a.ID.String()}, "new token")
 	}
 
 	// #Identify origin IP
 	ip, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
-		return account.Token{}, errors.Wrapf(err, "resolve address %s", addr)
+		return account.Token{}, errors.Wrap(errors.Wrapf(err, "resolve address %s", addr), "new token")
 	}
 
 	// #Set a new token
@@ -54,11 +54,11 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 		IP:      ip.String(),
 	}
 	if err := s.AccountToken.SetToken(t); err != nil {
-		return account.Token{}, errors.Wrapf(err, "set token %s", t.ID.String())
+		return account.Token{}, errors.Wrap(err, "new token")
 	}
 	a.Token = t.ID
 	if err := s.Account.SetAccount(a); err != nil {
-		return account.Token{}, errors.Wrapf(err, "set account %s with token %s", a.ID.String(), t.ID.String())
+		return account.Token{}, errors.Wrap(err, "new token")
 	}
 
 	return t, nil
@@ -70,14 +70,17 @@ func (s TokenService) Access(id gulid.ID, addr string) (account.Token, error) {
 	// #Search message UUID in storage.
 	t, err := s.AccountToken.GetToken(id)
 	if err != nil {
-		return account.Token{}, errors.Wrapf(err, "get token %s", id.String())
+		return account.Token{}, errors.Wrap(err, "access token")
 	}
 
 	// #Match message UUID with source IP.
 	expected, _, ee := net.SplitHostPort(t.IP)
 	actual, _, ea := net.SplitHostPort(addr)
 	if expected != actual || ee != nil || ea != nil {
-		return account.Token{}, gerrors.ErrWrongIP{TokenID: id.String(), Expected: expected, Actual: actual}
+		return account.Token{}, errors.Wrap(
+			gerrors.ErrWrongIP{TokenID: id.String(), Expected: expected, Actual: actual},
+			"access token",
+		)
 	}
 	return t, nil
 }
@@ -91,19 +94,19 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	// #Retrieve token
 	t, err := s.AccountToken.GetToken(id)
 	if err != nil {
-		return errors.Wrapf(err, "get token %s", id.String())
+		return errors.Wrap(err, "disconnect token")
 	}
 
 	// #Close token recurrer
 	if err := s.InfraRecurrerService.Remove(id); err != nil {
-		result = multierror.Append(result, errors.Wrapf(err, "remove recurrer %s", id.String()))
+		result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 	}
 
 	// #Reset token entity.
 	te := t.Entity
 	t.Entity = gulid.Zero()
 	if err := s.AccountToken.SetToken(t); err != nil {
-		result = multierror.Append(result, errors.Wrapf(err, "set token %s", id.String()))
+		result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 	}
 
 	// #Retrieve entity
@@ -114,25 +117,25 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 		case gerrors.ErrNotFound:
 			return result.ErrorOrNil()
 		}
-		return errors.Wrapf(err, "get entity %s", te.String())
+		return errors.Wrap(err, "disconnect token")
 	}
 
 	// #Save last entity state into PC
 	pc := entity.PC(e)
 	pc.ID = t.PC
 	if err := s.EntityPC.SetPC(pc, t.Account); err != nil {
-		return errors.Wrapf(err, "set pc %s with entity %s", pc.ID.String(), e.ID.String())
+		return errors.Wrap(err, "disconnect token")
 	}
 
 	// # Disconnect all entitis associated with token.
 	ps, err := s.EntityPermission.ListPermission(t.ID.String())
 	if err != nil {
-		return errors.Wrapf(err, "list permissions for token %s", t.ID.String())
+		return errors.Wrap(err, "disconnect token")
 	}
 	for _, p := range ps {
 		targetID := gulid.MustParse(p.Target)
 		if err := s.EntityService.Disconnect(targetID, t); err != nil {
-			result = multierror.Append(result, errors.Wrapf(err, "disconnect entity %s from token %s", targetID.String(), t.ID.String()))
+			result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 		}
 	}
 

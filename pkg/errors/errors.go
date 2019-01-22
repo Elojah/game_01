@@ -3,6 +3,7 @@ package errors
 import (
 	"fmt"
 
+	"github.com/elojah/game_01/pkg/geometry"
 	perrors "github.com/pkg/errors"
 )
 
@@ -80,6 +81,40 @@ func (err ErrInvalidEntityType) Error() string {
 }
 
 // #Common api/core errors
+
+// ErrInvalidMove is raised when an invalid move event is processed.
+type ErrInvalidMove struct {
+	TargetID string
+
+	SectorID       string
+	SectorDim      geometry.Vec3
+	TargetPosition geometry.Vec3
+
+	NewSectorID  string
+	NewSectorDim geometry.Vec3
+	NewPosition  geometry.Vec3
+}
+
+func (err ErrInvalidMove) Error() string {
+	return fmt.Sprintf(
+		"invalid move from sector %s (%f, %f, %f) to sector %s (%f, %f, %f) for entity %s from (%f, %f, %f) to (%f, %f, %f)",
+		err.SectorID,
+		err.SectorDim.X,
+		err.SectorDim.Y,
+		err.SectorDim.Z,
+		err.NewSectorID,
+		err.NewSectorDim.X,
+		err.NewSectorDim.Y,
+		err.NewSectorDim.Z,
+		err.TargetID,
+		err.TargetPosition.X,
+		err.TargetPosition.Y,
+		err.TargetPosition.Z,
+		err.NewPosition.X,
+		err.NewPosition.Y,
+		err.NewPosition.Z,
+	)
+}
 
 // ErrInvalidAction is raised when an action is not possible following game rules.
 type ErrInvalidAction struct {

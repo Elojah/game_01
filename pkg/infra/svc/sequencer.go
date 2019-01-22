@@ -20,16 +20,16 @@ func (s *SequencerService) New(id ulid.ID) (infra.Sequencer, error) {
 	// #Open sequencer on a random core
 	c, err := s.InfraCore.GetRandomCore()
 	if err != nil {
-		return infra.Sequencer{}, errors.Wrap(err, "get random core")
+		return infra.Sequencer{}, errors.Wrap(err, "new sequencer")
 	}
 	seq := infra.Sequencer{ID: id, Action: infra.Open, Pool: c.ID}
 	if err := s.InfraQSequencer.PublishSequencer(seq, c.ID); err != nil {
-		return infra.Sequencer{}, errors.Wrapf(err, "open sequencer %s on core %s", seq.ID.String(), c.ID.String())
+		return infra.Sequencer{}, errors.Wrap(err, "new sequencer")
 	}
 
 	// #Set sequencer with saved core id
 	if err := s.InfraSequencer.SetSequencer(seq); err != nil {
-		return infra.Sequencer{}, errors.Wrapf(err, "set sequencer %s", seq.ID)
+		return infra.Sequencer{}, errors.Wrap(err, "new sequencer")
 	}
 	return seq, nil
 }
@@ -40,16 +40,16 @@ func (s *SequencerService) Remove(id ulid.ID) error {
 	// #Retrieve and close sequencer
 	seq, err := s.InfraSequencer.GetSequencer(id)
 	if err != nil {
-		return errors.Wrapf(err, "get sequencer %s", id.String())
+		return errors.Wrapf(err, "remove sequencer")
 	}
 	seq.Action = infra.Close
 	if err := s.InfraQSequencer.PublishSequencer(seq, seq.Pool); err != nil {
-		return errors.Wrapf(err, "close sequencer %s on pool %s", seq.ID.String(), seq.Pool.String())
+		return errors.Wrapf(err, "remove sequencer")
 	}
 
 	// #Delete sequencer
 	if err := s.InfraSequencer.DelSequencer(seq.ID); err != nil {
-		return errors.Wrapf(err, "delete sequencer %s", seq.ID.String())
+		return errors.Wrapf(err, "remove sequencer")
 	}
 	return nil
 }
