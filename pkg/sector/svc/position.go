@@ -144,10 +144,10 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 
 		// #Add entity to new sector and remove from previous.
 		if err := s.SectorEntitiesStore.AddEntityToSector(target.ID, newPosition.SectorID); err != nil {
-			return target, errors.Wrapf(err, "add entity %s to sector %s", target.ID.String(), newPosition.SectorID.String())
+			return target, errors.Wrap(err, "move")
 		}
 		if err := s.SectorEntitiesStore.RemoveEntityFromSector(target.ID, target.Position.SectorID); err != nil {
-			return target, errors.Wrapf(err, "remove entity %s from sector %s", target.ID.String(), sec.ID.String())
+			return target, errors.Wrap(err, "move")
 		}
 
 		// #Move target
@@ -170,17 +170,18 @@ func (s *Service) Segment(lhs geometry.Position, rhs geometry.Position) (float64
 	// #Retrieve current sector
 	sec, err := s.SectorStore.GetSector(lhs.SectorID)
 	if err != nil {
-		return 0, errors.Wrapf(err, "get sector %s", lhs.SectorID.String())
+		return 0, errors.Wrap(err, "calculate segment")
 	}
 
 	// #Check if new sector is a neighbour.
 	neigh, ok := sec.Neighbours[rhs.SectorID.String()]
 	if !ok {
-		return 0, errors.Wrapf(
-			gerrors.ErrInvalidAction{Action: "move"},
-			"invalid next neighbour sector %s with previous %s",
-			rhs.SectorID.String(),
-			lhs.SectorID.String(),
+		return 0, errors.Wrap(
+			gerrors.ErrInvalidNeighbourSector{
+				SectorID:        lhs.SectorID.String(),
+				SectorNeighbour: rhs.SectorID.String(),
+			},
+			"calculate segment",
 		)
 	}
 

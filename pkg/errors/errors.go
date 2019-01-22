@@ -116,6 +116,16 @@ func (err ErrInvalidMove) Error() string {
 	)
 }
 
+// ErrInvalidNeighbourSector is raised when a sector is not an expected neighbour.
+type ErrInvalidNeighbourSector struct {
+	SectorID        string
+	SectorNeighbour string
+}
+
+func (err ErrInvalidNeighbourSector) Error() string {
+	return fmt.Sprintf("sector %s is not neighbour to %s", err.SectorNeighbour, err.SectorID)
+}
+
 // ErrInvalidAction is raised when an action is not possible following game rules.
 type ErrInvalidAction struct {
 	Action string
