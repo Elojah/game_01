@@ -2,8 +2,9 @@ package srg
 
 import (
 	"github.com/go-redis/redis"
+	"github.com/pkg/errors"
 
-	"github.com/elojah/game_01/pkg/errors"
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -17,9 +18,12 @@ func (s *Store) GetRandomStarter() (sector.Starter, error) {
 	val, err := s.SRandMember(starterKey).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return sector.Starter{}, err
+			return sector.Starter{}, errors.Wrap(err, "get random starter")
 		}
-		return sector.Starter{}, errors.ErrNotFound{Store: starterKey, Index: "random"}
+		return sector.Starter{}, errors.Wrap(
+			gerrors.ErrNotFound{Store: starterKey, Index: "random"},
+			"get random starter",
+		)
 	}
 
 	return sector.Starter{SectorID: ulid.MustParse(val)}, nil
@@ -27,16 +31,16 @@ func (s *Store) GetRandomStarter() (sector.Starter, error) {
 
 // SetStarter redis implementation.
 func (s *Store) SetStarter(starter sector.Starter) error {
-	return s.SAdd(
+	return errors.Wrapf(s.SAdd(
 		starterKey,
 		starter.SectorID.String(),
-	).Err()
+	).Err(), "set starter %s", starter.SectorID.String())
 }
 
 // DelStarter redis implementation.
 func (s *Store) DelStarter(id ulid.ID) error {
-	return s.SRem(
+	return errors.Wrapf(s.SRem(
 		starterKey,
 		id.String(),
-	).Err()
+	).Err(), "del starter %s", id.String())
 }

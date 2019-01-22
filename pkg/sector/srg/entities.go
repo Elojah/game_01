@@ -3,6 +3,7 @@ package srg
 import (
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -14,7 +15,7 @@ func (s *Store) GetEntities(sectorID ulid.ID) (sector.Entities, error) {
 	sectorEntities := sector.Entities{SectorID: sectorID}
 	vals, err := s.SMembers(sectorEntitiesKey + sectorID.String()).Result()
 	if err != nil {
-		return sector.Entities{}, err
+		return sector.Entities{}, errors.Wrapf(err, "get entities for sector %s", sectorID.String())
 	}
 	sectorEntities.EntityIDs = make([]ulid.ID, len(vals))
 	for i, val := range vals {
@@ -25,10 +26,20 @@ func (s *Store) GetEntities(sectorID ulid.ID) (sector.Entities, error) {
 
 // AddEntityToSector implemented with redis.
 func (s *Store) AddEntityToSector(entityID ulid.ID, sectorID ulid.ID) error {
-	return s.SAdd(sectorEntitiesKey+sectorID.String(), entityID.String()).Err()
+	return errors.Wrapf(
+		s.SAdd(sectorEntitiesKey+sectorID.String(), entityID.String()).Err(),
+		"add entity %s to sector %s",
+		entityID.String(),
+		sectorID.String(),
+	)
 }
 
 // RemoveEntityFromSector implemented with redis.
 func (s *Store) RemoveEntityFromSector(entityID ulid.ID, sectorID ulid.ID) error {
-	return s.SRem(sectorEntitiesKey+sectorID.String(), entityID.String()).Err()
+	return errors.Wrapf(
+		s.SRem(sectorEntitiesKey+sectorID.String(), entityID.String()).Err(),
+		"remove entity %s from sector %s",
+		entityID.String(),
+		sectorID.String(),
+	)
 }

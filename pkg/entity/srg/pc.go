@@ -63,11 +63,11 @@ func (s *Store) GetPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
 func (s *Store) SetPC(pc entity.PC, accountID ulid.ID) error {
 	raw, err := pc.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "set pc %s for account", pc.ID.String(), accountID.String())
+		return errors.Wrapf(err, "set pc %s for account %s", pc.ID.String(), accountID.String())
 	}
 	return errors.Wrapf(
 		s.Set(pcKey+accountID.String()+":"+pc.ID.String(), raw, 0).Err(),
-		"set pc %s for account",
+		"set pc %s for account %s",
 		pc.ID.String(),
 		accountID.String(),
 	)
