@@ -55,19 +55,28 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
 	}
 	if source.MP < ab.MPConsumption {
-		return errors.Wrapf(
-			gerrors.ErrInvalidAction{Action: "cast_source"},
-			"entity %s with MP %d for ability %s with MP: %d",
-			id.String(),
-			source.MP,
-			ab.ID.String(),
-			ab.MPConsumption,
+		return errors.Wrap(
+			gerrors.ErrMissingMP{
+				EntityID:      id.String(),
+				MPLeft:        source.MP,
+				AbilityID:     ab.ID.String(),
+				MPConsumption: ab.MPConsumption,
+			}, "cast source",
 		)
 	}
 
 	// #Check CD validity. if LastUsed + CD < now.
 	if ts-ab.CD < ab.LastUsed {
-		return errors.Wrapf(gerrors.ErrInvalidAction{Action: "cast_source"}, "cd down for skill %s ", ab.ID.String())
+		return errors.Wrap(
+			gerrors.ErrAbilityCDDown{
+				EntityID:  source.ID.String(),
+				AbilityID: ab.ID.String(),
+				TS:        ts,
+				LastUsed:  ab.LastUsed,
+				CD:        ab.CD,
+			},
+			"cast source",
+		)
 	}
 
 	// Check targets validity (number and position number).

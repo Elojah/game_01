@@ -126,13 +126,51 @@ func (err ErrInvalidNeighbourSector) Error() string {
 	return fmt.Sprintf("sector %s is not neighbour to %s", err.SectorNeighbour, err.SectorID)
 }
 
-// ErrInvalidAction is raised when an action is not possible following game rules.
-type ErrInvalidAction struct {
-	Action string
+// ErrFullPCCreated is raised when a pc is created but the account limit for pc is already reached.
+type ErrFullPCCreated struct {
+	AccountID string
 }
 
-func (err ErrInvalidAction) Error() string {
-	return fmt.Sprintf("action %s is not possible", err.Action)
+func (err ErrFullPCCreated) Error() string {
+	return fmt.Sprintf("account %s cannot create anymore pc", err.AccountID)
+}
+
+// ErrMissingMP is raised when an entity cast a skill with not enough mp to perform it.
+type ErrMissingMP struct {
+	EntityID      string
+	AbilityID     string
+	MPLeft        uint64
+	MPConsumption uint64
+}
+
+func (err ErrMissingMP) Error() string {
+	return fmt.Sprintf(
+		"entity %s (%d MP) cannot cast %s (%d MP)",
+		err.EntityID,
+		err.MPLeft,
+		err.AbilityID,
+		err.MPConsumption,
+	)
+}
+
+// ErrAbilityCDDown is raised when an ability is cast but previous CD is still up.
+type ErrAbilityCDDown struct {
+	EntityID  string
+	AbilityID string
+	TS        uint64
+	LastUsed  uint64
+	CD        uint64
+}
+
+func (err ErrAbilityCDDown) Error() string {
+	return fmt.Sprintf(
+		"entity %s cannot cast ability %s at %d last used %d + CD %d",
+		err.EntityID,
+		err.AbilityID,
+		err.TS,
+		err.LastUsed,
+		err.CD,
+	)
 }
 
 // ErrNotFound is raised when a mandatory resource is not found in storage.
@@ -215,7 +253,6 @@ func IsGameLogicError(err error) bool {
 	case ErrInsufficientACLs:
 	case ErrMultipleLogin:
 	case ErrInvalidEntityType:
-	case ErrInvalidAction:
 	case ErrNotFound:
 	case ErrMissingTarget:
 	case ErrTooManyTargets:
