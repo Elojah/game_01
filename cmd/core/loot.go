@@ -16,54 +16,58 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s", id.String())
+		return errors.Wrap(err, "retrieve entity")
 	}
 
 	// #Retrieve target entity
 	target, err := a.EntityStore.GetEntity(ls.TargetID, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s", ls.TargetID.String())
+		return errors.Wrap(err, "retrieve entity")
 	}
 
 	// #Retrieve source inventory
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {
-		return errors.Wrapf(err, "retrieve inventory %s from source %s", source.InventoryID.String(), source.InventoryID.String())
+		return errors.Wrap(err, "retrieve inventory")
 	}
 	if len(sourceInventory.Items) > int(sourceInventory.Size_-1) {
-		return errors.Wrapf(gerrors.ErrFullInventory{
-			InventoryID: source.InventoryID.String(),
-		}, "check inventory %s from source %s", source.InventoryID.String(), source.InventoryID.String())
+		return errors.Wrap(
+			gerrors.ErrFullInventory{
+				InventoryID: source.InventoryID.String(),
+			},
+			"check inventory",
+		)
 	}
 
 	// #Check distance between source and target
 	dist, err := a.SectorService.Segment(source.Position, target.Position)
 	if err != nil {
-		return errors.Wrapf(err, "calculate segment between entity %s and target %s", source.ID.String(), target.ID.String())
+		return errors.Wrap(err, "check loot validity")
 	}
 	if dist > a.lootRadius {
-		return errors.Wrapf(gerrors.ErrOutOfRange{
-			Dist:  dist,
-			Range: a.lootRadius,
-		}, "loot source %s event %s", id.String(), e.ID.String())
+		return errors.Wrap(
+			gerrors.ErrOutOfRange{
+				Dist:  dist,
+				Range: a.lootRadius,
+			},
+			"check loot validity",
+		)
 	}
 
 	// #Publish loot event to target.
-	e = event.E{
-		ID: ulid.NewTimeID(ts + 1),
-		Action: event.Action{
-			LootTarget: &event.LootTarget{
-				SourceID: id,
-				ItemID:   ls.ItemID,
+	return errors.Wrap(a.EventQStore.PublishEvent(
+		event.E{
+			ID: ulid.NewTimeID(ts + 1),
+			Action: event.Action{
+				LootTarget: &event.LootTarget{
+					SourceID: id,
+					ItemID:   ls.ItemID,
+				},
 			},
-		},
-		Trigger: e.ID,
-	}
-	if err := a.EventQStore.PublishEvent(e, target.ID); err != nil {
-		return errors.Wrapf(err, "publish move target event %s to target %s", e.ID.String(), target.String())
-	}
-
-	return nil
+			Trigger: e.ID,
+		}, target.ID),
+		"validate loot",
+	)
 }
 
 func (a *app) LootTarget(id ulid.ID, e event.E) error {
@@ -74,23 +78,25 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 	// #Retrieve entity
 	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s", id.String())
+		return errors.Wrap(err, "retrieve entity")
 	}
 
 	// #Retrieve target inventory
 	targetInventory, err := a.EntityInventoryStore.GetInventory(target.InventoryID)
 	if err != nil {
-		return errors.Wrapf(err, "retrieve inventory %s from target %s", target.InventoryID.String(), target.ID.String())
+		return errors.Wrap(err, "retrieve inventory")
 	}
 
 	// #Check item exists in inventory
 	n, ok := targetInventory.Items[lt.ItemID.String()]
 	if !ok || n < 1 {
-		return errors.Wrapf(
+		return errors.Wrap(
 			gerrors.ErrMissingItem{
 				ItemID:      lt.ItemID.String(),
 				InventoryID: target.ID.String(),
-			}, "retrieve item %s from inventory %s", lt.ItemID.String(), target.ID.String())
+			},
+			"check loot validity",
+		)
 	}
 
 	// #Remove item from inventory
@@ -102,24 +108,22 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 
 	// Set new inventory
 	if err := a.EntityInventoryStore.SetInventory(targetInventory); err != nil {
-		return errors.Wrapf(err, "set inventory %s from target %s", targetInventory.ID.String(), target.ID.String())
+		return errors.Wrap(err, "validate loot")
 	}
 
 	// #Publish loot event to target.
-	e = event.E{
-		ID: ulid.NewTimeID(ts + 1),
-		Action: event.Action{
-			LootFeedback: &event.LootFeedback{
-				SourceID: id,
-				ItemID:   lt.ItemID,
+	return errors.Wrap(a.EventQStore.PublishEvent(
+		event.E{
+			ID: ulid.NewTimeID(ts + 1),
+			Action: event.Action{
+				LootFeedback: &event.LootFeedback{
+					SourceID: id,
+					ItemID:   lt.ItemID,
+				},
 			},
-		},
-	}
-	if err := a.EventQStore.PublishEvent(e, target.ID); err != nil {
-		return errors.Wrapf(err, "publish move target event %s to target %s", e.ID.String(), target.String())
-	}
-
-	return nil
+		}, target.ID),
+		"validate loot",
+	)
 }
 
 func (a *app) LootFeedback(id ulid.ID, e event.E) error {
@@ -130,13 +134,13 @@ func (a *app) LootFeedback(id ulid.ID, e event.E) error {
 	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s", id.String())
+		return errors.Wrap(err, "retrieve entity")
 	}
 
 	// #Retrieve source inventory
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {
-		return errors.Wrapf(err, "retrieve inventory %s from source %s", source.InventoryID.String(), source.ID.String())
+		return errors.Wrap(err, "retrieve inventory")
 	}
 
 	// #Check item exists in inventory
@@ -148,9 +152,5 @@ func (a *app) LootFeedback(id ulid.ID, e event.E) error {
 	}
 
 	// Set new inventory
-	if err := a.EntityInventoryStore.SetInventory(sourceInventory); err != nil {
-		return errors.Wrapf(err, "set inventory %s from source %s", sourceInventory.ID.String(), source.ID.String())
-	}
-
-	return nil
+	return errors.Wrap(a.EntityInventoryStore.SetInventory(sourceInventory), "validate loot")
 }

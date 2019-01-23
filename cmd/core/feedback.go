@@ -16,21 +16,21 @@ func (a *app) FeedbackTarget(id ulid.ID, e event.E) error {
 	// #Retrieve previous target state.
 	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
+		return errors.Wrap(err, "retrieve entity")
 	}
 
 	// #Retrieve feedback.
 	fb, err := a.FeedbackStore.GetFeedback(ft.ID)
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
-		return errors.Wrapf(err, "get feedback %s set by %s", ft.ID.String(), ft.Source.ID.String())
+		return errors.Wrapf(err, "retrieve feedback")
 	}
 
 	// #Apply all ability components.
 	if err := target.ApplyEffectFeedbacks(&ft.Source, fb.Effects); err != nil {
-		return errors.Wrapf(err, "apply effects to target %s", target.ID.String())
+		return errors.Wrap(err, "apply feedback")
 	}
 
 	// #Set entity new state.
-	return errors.Wrapf(a.EntityStore.SetEntity(target, ts), "set entity %s", ft.Source.ID.String())
+	return errors.Wrap(a.EntityStore.SetEntity(target, ts), "validate feeback")
 }

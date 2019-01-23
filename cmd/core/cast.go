@@ -18,41 +18,43 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
-		return errors.Wrapf(gerrors.ErrInsufficientACLs{
-			Value:  permission.Value,
-			Source: e.Token.String(),
-			Target: id.String(),
-		}, "get permission token %s for %s", e.Token.String(), id.String())
+		return errors.Wrap(err, "check permission token")
 	}
 	if err == nil && account.ACL(permission.Value) != account.Owner {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs{
-			Value:  permission.Value,
-			Source: e.Token.String(),
-			Target: id.String(),
-		}, "get permission token %s for %s", e.Token.String(), id.String())
+		return errors.Wrap(
+			gerrors.ErrInsufficientACLs{
+				Value:  permission.Value,
+				Source: e.Token.String(),
+				Target: id.String(),
+			},
+			"check permission token",
+		)
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), id.String())
+		return errors.Wrap(err, "check permission token")
 	}
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(id, cs.AbilityID)
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
-		return errors.Wrapf(gerrors.ErrInsufficientACLs{
-			Value:  -1,
-			Source: id.String(),
-			Target: cs.AbilityID.String(),
-		}, "get ability %s for %s", cs.AbilityID.String(), id.String())
+		return errors.Wrap(
+			gerrors.ErrInsufficientACLs{
+				Value:  -1,
+				Source: id.String(),
+				Target: cs.AbilityID.String(),
+			},
+			"retrieve ability",
+		)
 	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", cs.AbilityID.String(), id.String())
+		return errors.Wrap(err, "retrieve ability")
 	}
 
 	// #Check MP consumption
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
+		return errors.Wrap(err, "retrieve entity")
 	}
 	if source.MP < ab.MPConsumption {
 		return errors.Wrap(
@@ -61,7 +63,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				MPLeft:        source.MP,
 				AbilityID:     ab.ID.String(),
 				MPConsumption: ab.MPConsumption,
-			}, "cast source",
+			}, "check ability validity",
 		)
 	}
 
@@ -75,7 +77,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				LastUsed:  ab.LastUsed,
 				CD:        ab.CD,
 			},
-			"cast source",
+			"check ability validity",
 		)
 	}
 
@@ -83,49 +85,47 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	for cid, component := range ab.Components {
 		targets, ok := cs.Targets[cid]
 		if !ok {
-			return errors.Wrapf(gerrors.ErrMissingTarget{
+			return errors.Wrap(gerrors.ErrMissingTarget{
 				AbilityID:   ab.ID.String(),
 				ComponentID: cid,
-			}, "ability %s component %s", ab.ID.String(), cid)
+			}, "check ability validity")
 		}
 		if uint64(len(targets.Entities)) > component.NTargets {
-			return errors.Wrapf(gerrors.ErrTooManyTargets{
+			return errors.Wrap(gerrors.ErrTooManyTargets{
 				NTargets:    len(targets.Entities),
 				Max:         component.NTargets,
 				AbilityID:   ab.ID.String(),
 				ComponentID: cid,
-			}, "%d entities for %d max for ability %s component %s", len(targets.Entities), component.NTargets, ab.ID.String(), cid)
+			}, "check ability validity")
 		}
 		if uint64(len(targets.Positions)) > component.NPositions {
-			return errors.Wrapf(gerrors.ErrTooManyTargets{
-				NTargets:    len(targets.Entities),
-				Max:         component.NTargets,
+			return errors.Wrap(gerrors.ErrTooManyTargets{
+				NTargets:    len(targets.Positions),
+				Max:         component.NPositions,
 				AbilityID:   ab.ID.String(),
 				ComponentID: cid,
-			}, "%d positions for %d max for ability %s component %s", len(targets.Positions), component.NPositions, ab.ID.String(), cid)
+			}, "check ability validity")
 		}
 	}
 
 	// #Set entity new state with decreased MP and casting up.
 	source.CastAbility(ab, ts)
 	if err := a.EntityStore.SetEntity(source, ts); err != nil {
-		return errors.Wrapf(err, "set entity %s", source.ID.String())
+		return errors.Wrap(err, "validate ability")
 	}
 
 	// #Publish casted event to event set.
-	e = event.E{
-		ID: ulid.NewTimeID(ts + ab.CastTime),
-		Action: event.Action{
-			PerformSource: &event.PerformSource{
-				AbilityID: cs.AbilityID,
-				Targets:   cs.Targets,
+	return errors.Wrap(a.EventQStore.PublishEvent(
+		event.E{
+			ID: ulid.NewTimeID(ts + ab.CastTime),
+			Action: event.Action{
+				PerformSource: &event.PerformSource{
+					AbilityID: cs.AbilityID,
+					Targets:   cs.Targets,
+				},
 			},
-		},
-		Trigger: e.ID,
-	}
-	if err := a.EventQStore.PublishEvent(e, id); err != nil {
-		return errors.Wrapf(err, "set casted event %s", e.ID.String())
-	}
-
-	return nil
+			Trigger: e.ID,
+		}, id),
+		"validate ability",
+	)
 }
