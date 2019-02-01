@@ -155,65 +155,40 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Str("type", e.Action.String()).
 		Logger()
 
+	var err error
 	switch e.Action.GetValue().(type) {
 	case *event.MoveSource:
-		if err := a.MoveSource(id, e); err != nil {
-			logger.Error().Err(err).Msg("move source rejected")
-			return
-		}
+		err = a.MoveSource(id, e)
 	case *event.MoveTarget:
-		if err := a.MoveTarget(id, e); err != nil {
-			logger.Error().Err(err).Msg("move target rejected")
-			return
-		}
+		err = a.MoveTarget(id, e)
 	case *event.CastSource:
-		if err := a.CastSource(id, e); err != nil {
-			logger.Error().Err(err).Msg("cast source rejected")
-			return
-		}
+		err = a.CastSource(id, e)
 	case *event.PerformSource:
-		if err := a.PerformSource(id, e); err != nil {
-			logger.Error().Err(err).Msg("perform source rejected")
-			return
-		}
+		err = a.PerformSource(id, e)
 	case *event.PerformTarget:
-		if err := a.PerformTarget(id, e); err != nil {
-			logger.Error().Err(err).Msg("perform target rejected")
-			return
-		}
+		err = a.PerformTarget(id, e)
 	case *event.FeedbackTarget:
-		if err := a.FeedbackTarget(id, e); err != nil {
-			logger.Error().Err(err).Msg("feedback target rejected")
-			return
-		}
-		return
+		err = a.FeedbackTarget(id, e)
 	case *event.LootSource:
-		if err := a.LootSource(id, e); err != nil {
-			logger.Error().Err(err).Msg("loot source rejected")
-			return
-		}
-		return
+		err = a.LootSource(id, e)
 	case *event.LootTarget:
-		if err := a.LootTarget(id, e); err != nil {
-			logger.Error().Err(err).Msg("loot target rejected")
-			return
-		}
-		return
+		err = a.LootTarget(id, e)
 	case *event.LootFeedback:
-		if err := a.LootFeedback(id, e); err != nil {
-			logger.Error().Err(err).Msg("loot feedback rejected")
-			return
-		}
-		return
+		err = a.LootFeedback(id, e)
 	case *event.ConsumeSource:
-		logger.Error().Err(gerrors.ErrNotImplementedYet{Version: "0.2.0"}).Msg("consume source")
-		return
+		err = gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 	case *event.ConsumeTarget:
-		logger.Error().Err(gerrors.ErrNotImplementedYet{Version: "0.2.0"}).Msg("consume target")
-		return
+		err = gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 	default:
 		logger.Error().Msg("unrecognized action")
-		return
+	}
+	if err != nil {
+		if gerrors.IsGameLogicError(err) {
+			if err := a.EventTriggerService.Cancel(e); err != nil {
+				logger.Error().Err(err).Msg("cancel event")
+			}
+		}
+		logger.Error().Err(err).Msg("apply event")
 	}
 	logger.Info().Msg("applied")
 }

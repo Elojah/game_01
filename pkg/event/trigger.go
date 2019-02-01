@@ -15,4 +15,5 @@ type TriggerStore interface {
 // TriggerService handles trigger event interactions.
 type TriggerService interface {
 	Set(E, gulid.ID) error
+	Cancel(E) error
 }

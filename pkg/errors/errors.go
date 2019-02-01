@@ -245,23 +245,29 @@ func (err ErrIneffectiveCancel) Error() string {
 
 // IsGameLogicError returns if error type is a game logic error and needs a cancel propagation.
 func IsGameLogicError(err error) bool {
-	switch err := perrors.Cause(err).(type) {
-	case ErrNotImplementedYet:
-	case ErrWrongIP:
+	switch perrors.Cause(err).(type) {
 	case ErrInvalidTS:
-	case ErrWrongCredentials:
+		return true
 	case ErrInsufficientACLs:
-	case ErrMultipleLogin:
+		return true
 	case ErrInvalidEntityType:
+		return true
+	case ErrInvalidMove:
+		return true
+	case ErrInvalidNeighbourSector:
+		return true
+	case ErrMissingMP:
+		return true
+	case ErrAbilityCDDown:
+		return true
 	case ErrNotFound:
-	case ErrMissingTarget:
-	case ErrTooManyTargets:
+		return true
 	case ErrOutOfRange:
+		return true
 	case ErrMissingItem:
+		return true
 	case ErrFullInventory:
-	case ErrIneffectiveCancel:
-		_ = err
+		return true
 	}
-
 	return false
 }
