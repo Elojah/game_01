@@ -7,6 +7,59 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
+// TriggerStore mocks an event trigger store.
+type TriggerStore struct {
+	SetTriggerFunc   func(t event.Trigger) error
+	SetTriggerCount  int32
+	GetTriggerFunc   func(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error)
+	GetTriggerCount  int32
+	ListTriggerFunc  func(triggerID gulid.ID) ([]event.Trigger, error)
+	ListTriggerCount int32
+	DelTriggerFunc   func(triggerID gulid.ID, entityID gulid.ID) error
+	DelTriggerCount  int32
+}
+
+// SetTrigger mocks SetTrigger method in event trigger store.
+func (s *TriggerStore) SetTrigger(t event.Trigger) error {
+	atomic.AddInt32(&s.SetTriggerCount, 1)
+	if s.SetTriggerFunc == nil {
+		return nil
+	}
+	return s.SetTriggerFunc(t)
+}
+
+// GetTrigger mocks GetTrigger method in event trigger store.
+func (s *TriggerStore) GetTrigger(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error) {
+	atomic.AddInt32(&s.GetTriggerCount, 1)
+	if s.GetTriggerFunc == nil {
+		return gulid.Zero(), nil
+	}
+	return s.GetTriggerFunc(triggerID, entityID)
+}
+
+// ListTrigger mocks ListTrigger method in event trigger store.
+func (s *TriggerStore) ListTrigger(triggerID gulid.ID) ([]event.Trigger, error) {
+	atomic.AddInt32(&s.ListTriggerCount, 1)
+	if s.ListTriggerFunc == nil {
+		return nil, nil
+	}
+	return s.ListTriggerFunc(triggerID)
+}
+
+// DelTrigger mocks DelTrigger method in event trigger store.
+func (s *TriggerStore) DelTrigger(triggerID gulid.ID, entityID gulid.ID) error {
+	atomic.AddInt32(&s.DelTriggerCount, 1)
+	if s.DelTriggerFunc == nil {
+		return nil
+	}
+	return s.DelTriggerFunc(triggerID, entityID)
+}
+
+// NewTriggerStore returns a TriggerStore mock.
+func NewTriggerStore() *TriggerStore {
+	return &TriggerStore{}
+}
+
 // TriggerService is mock for event.TriggerService.
 type TriggerService struct {
 	SetFunc     func(event.E, gulid.ID) error

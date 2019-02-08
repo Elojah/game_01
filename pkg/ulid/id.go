@@ -16,6 +16,16 @@ func NewID() ID {
 	return ID(ulid.MustNew(ulid.Timestamp(time.Now()), rand.Reader))
 }
 
+// NewIDs returns a new array of random IDs.
+func NewIDs(n int) []ID {
+	t := ulid.Timestamp(time.Now())
+	ids := make([]ID, n)
+	for i := range ids {
+		ids[i] = ID(ulid.MustNew(t, rand.Reader))
+	}
+	return ids
+}
+
 // NewTimeID returns a new random ID based on time t.
 func NewTimeID(t uint64) ID {
 	return ID(ulid.MustNew(t, rand.Reader))
