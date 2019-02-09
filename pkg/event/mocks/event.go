@@ -5,21 +5,23 @@ import (
 
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // Store mocks event.Store.
 type Store struct {
-	SetEventFunc   func(event.E, ulid.ID) error
+	SetEventFunc   func(event.E, gulid.ID) error
 	SetEventCount  int32
-	ListEventFunc  func(ulid.ID, ulid.ID) ([]event.E, error)
+	GetEventFunc   func(gulid.ID, gulid.ID) (event.E, error)
+	GetEventCount  int32
+	ListEventFunc  func(gulid.ID, gulid.ID) ([]event.E, error)
 	ListEventCount int32
-	DelEventFunc   func(ulid.ID, ulid.ID) error
+	DelEventFunc   func(gulid.ID, gulid.ID) error
 	DelEventCount  int32
 }
 
 // SetEvent mocks event.Store.
-func (s *Store) SetEvent(e event.E, id ulid.ID) error {
+func (s *Store) SetEvent(e event.E, id gulid.ID) error {
 	atomic.AddInt32(&s.SetEventCount, 1)
 	if s.SetEventFunc == nil {
 		return nil
@@ -27,8 +29,17 @@ func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 	return s.SetEventFunc(e, id)
 }
 
+// GetEvent mocks event.Store.
+func (s *Store) GetEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
+	atomic.AddInt32(&s.GetEventCount, 1)
+	if s.GetEventFunc == nil {
+		return event.E{}, nil
+	}
+	return s.GetEventFunc(entityID, id)
+}
+
 // ListEvent mocks event.Store.
-func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
+func (s *Store) ListEvent(id gulid.ID, min gulid.ID) ([]event.E, error) {
 	atomic.AddInt32(&s.ListEventCount, 1)
 	if s.ListEventFunc == nil {
 		return nil, nil
@@ -37,7 +48,7 @@ func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
 }
 
 // DelEvent mocks event.Store.
-func (s *Store) DelEvent(id ulid.ID, eID ulid.ID) error {
+func (s *Store) DelEvent(id gulid.ID, eID gulid.ID) error {
 	atomic.AddInt32(&s.DelEventCount, 1)
 	if s.DelEventFunc == nil {
 		return nil
@@ -52,14 +63,14 @@ func NewStore() *Store {
 
 // QStore mocks event qstore.
 type QStore struct {
-	PublishEventFunc    func(event.E, ulid.ID) error
+	PublishEventFunc    func(event.E, gulid.ID) error
 	PublishEventCount   int32
-	SubscribeEventFunc  func(ulid.ID) *infra.Subscription
+	SubscribeEventFunc  func(gulid.ID) *infra.Subscription
 	SubscribeEventCount int32
 }
 
 // PublishEvent mocks PublishEvent in event qstore.
-func (s *QStore) PublishEvent(e event.E, entityID ulid.ID) error {
+func (s *QStore) PublishEvent(e event.E, entityID gulid.ID) error {
 	atomic.AddInt32(&s.PublishEventCount, 1)
 	if s.PublishEventFunc == nil {
 		return nil
@@ -68,7 +79,7 @@ func (s *QStore) PublishEvent(e event.E, entityID ulid.ID) error {
 }
 
 // SubscribeEvent mocks SubscribeEvent in event qstore.
-func (s *QStore) SubscribeEvent(entityID ulid.ID) *infra.Subscription {
+func (s *QStore) SubscribeEvent(entityID gulid.ID) *infra.Subscription {
 	atomic.AddInt32(&s.SubscribeEventCount, 1)
 	if s.SubscribeEventFunc == nil {
 		return nil

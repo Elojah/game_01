@@ -6,8 +6,9 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -15,7 +16,7 @@ const (
 )
 
 // SetEvent implemented with redis.
-func (s *Store) SetEvent(e event.E, id ulid.ID) error {
+func (s *Store) SetEvent(e event.E, id gulid.ID) error {
 	raw, err := e.Marshal()
 	if err != nil {
 		return errors.Wrapf(err, "set event %s for entity %s", e.ID.String(), id.String())
@@ -29,8 +30,35 @@ func (s *Store) SetEvent(e event.E, id ulid.ID) error {
 	).Err(), "set event %s for entity %s", e.ID.String(), id.String())
 }
 
+// GetEvent implemented with redis.
+func (s *Store) GetEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
+	vals, err := s.ZRangeByScore(
+		eventKey+entityID.String(),
+		redis.ZRangeBy{
+			Min:   strconv.FormatUint(id.Time(), 10),
+			Max:   "+inf",
+			Count: 1,
+		},
+	).Result()
+	if err != nil {
+		return event.E{}, errors.Wrapf(err, "get event for entity %s at %d", entityID.String(), id.Time())
+	}
+	if len(vals) != 0 {
+		return event.E{}, errors.Wrapf(gerrors.ErrNotFound{
+			Store: eventKey,
+			Index: eventKey + entityID.String(),
+		}, "get event at %d", id.Time())
+	}
+
+	var e event.E
+	if err := e.Unmarshal([]byte(vals[0])); err != nil {
+		return event.E{}, errors.Wrapf(err, "get event for entity %s at %d", entityID.String(), id.Time())
+	}
+	return e, nil
+}
+
 // ListEvent list events in redis set key from min (included).
-func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
+func (s *Store) ListEvent(id gulid.ID, min gulid.ID) ([]event.E, error) {
 	vals, err := s.ZRangeByScore(
 		eventKey+id.String(),
 		redis.ZRangeBy{
@@ -51,7 +79,7 @@ func (s *Store) ListEvent(id ulid.ID, min ulid.ID) ([]event.E, error) {
 }
 
 // DelEvent implemented with redis.
-func (s *Store) DelEvent(eventID ulid.ID, id ulid.ID) error {
+func (s *Store) DelEvent(eventID gulid.ID, id gulid.ID) error {
 	return errors.Wrapf(s.ZRem(
 		eventKey+id.String(),
 		eventID.String(),

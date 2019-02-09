@@ -60,6 +60,70 @@ func TestTriggerService(t *testing.T) {
 
 		// Assert
 		assert.Equal(t, int32(1), store.SetEventCount)
+		assert.Equal(t, int32(0), store.GetEventCount)
+		assert.Equal(t, int32(0), store.ListEventCount)
+		assert.Equal(t, int32(0), store.DelEventCount)
+
+		assert.Equal(t, int32(1), triggerStore.SetTriggerCount)
+		assert.Equal(t, int32(1), triggerStore.GetTriggerCount)
+		assert.Equal(t, int32(0), triggerStore.ListTriggerCount)
+		assert.Equal(t, int32(0), triggerStore.DelTriggerCount)
+
+		assert.Equal(t, int32(0), qStore.PublishEventCount)
+		assert.Equal(t, int32(0), qStore.SubscribeEventCount)
+	})
+	t.Run("cancel event success", func(t *testing.T) {
+
+		// Data
+		e := event.E{
+			ID:    gulid.NewID(),
+			Token: gulid.NewID(),
+			Action: event.Action{
+				Cancel: &event.Cancel{},
+			},
+			Trigger: gulid.NewID(),
+		}
+		entityID := gulid.NewID()
+		eventID := gulid.NewID()
+
+		// Mocks
+		store := &eventmocks.Store{
+			GetEventFunc: func(prev gulid.ID, id gulid.ID) (event.E, error) {
+				assert.Equal(t, eventID.String(), prev.String())
+				assert.Equal(t, entityID.String(), id.String())
+				return nil
+			},
+			DelEventFunc: func(prev gulid.ID, id gulid.ID) error {
+				assert.Equal(t, entityID.String(), prev.String())
+				assert.Equal(t, entityID.String(), id.String())
+				return nil
+			},
+		}
+		triggerStore := &eventmocks.TriggerStore{
+			GetTriggerFunc: func(triggerID gulid.ID, id gulid.ID) (gulid.ID, error) {
+				assert.Equal(t, e.Trigger.String(), triggerID.String())
+				assert.Equal(t, entityID.String(), id.String())
+				return eventID, nil
+			},
+			DelTriggerFunc: func(triggerID gulid.ID, id gulid.ID) error {
+				assert.Equal(t, e.Trigger.String(), triggerID.String())
+				assert.Equal(t, entityID.String(), id.String())
+				return nil
+			},
+		}
+		qStore := &eventmocks.QStore{}
+
+		// Test
+		s := TriggerService{
+			TriggerStore: triggerStore,
+			Store:        store,
+			QStore:       qStore,
+		}
+		assert.NoError(t, s.Set(e, entityID))
+
+		// Assert
+		assert.Equal(t, int32(1), store.SetEventCount)
+		assert.Equal(t, int32(0), store.GetEventCount)
 		assert.Equal(t, int32(0), store.ListEventCount)
 		assert.Equal(t, int32(0), store.DelEventCount)
 

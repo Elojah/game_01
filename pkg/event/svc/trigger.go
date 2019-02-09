@@ -37,7 +37,11 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	// No errors when retrieving trigger means a event has already been triggered by it
 	// In this case we clean previous event and previous trigger
 	if err == nil {
-		// Delete previous event.
+		// Retrieve and delete previous event.
+		prev, err := s.Store.GetEvent(t, entityID)
+		if err != nil {
+			return errors.Wrapf(err, "get triggered event")
+		}
 		if err := s.Store.DelEvent(t, entityID); err != nil {
 			return errors.Wrapf(err, "set event with trigger")
 		}
@@ -45,8 +49,8 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 		if err := s.TriggerStore.DelTrigger(e.Trigger, entityID); err != nil {
 			return errors.Wrapf(err, "set event with trigger")
 		}
-		// Cancel event
-		if err := s.Cancel(e); err != nil {
+		// Cancel previous event
+		if err := s.Cancel(prev); err != nil {
 			return errors.Wrapf(err, "set event with trigger")
 		}
 		// If event is a cancellation, don't set event or trigger and stop here

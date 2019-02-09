@@ -14,6 +14,7 @@ type QStore interface {
 // Store wraps action interactions.
 type Store interface {
 	SetEvent(E, ulid.ID) error
+	GetEvent(ulid.ID, ulid.ID) (E, error)
 	ListEvent(ulid.ID, ulid.ID) ([]E, error)
 	DelEvent(ulid.ID, ulid.ID) error
 }
