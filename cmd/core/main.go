@@ -12,6 +12,7 @@ import (
 	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
 	eventsvc "github.com/elojah/game_01/pkg/event/svc"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
@@ -64,6 +65,9 @@ func run(prog string, filename string) {
 		EntityTemplateStore:   entityStore,
 		EntityPermissionStore: entityStore,
 		EntityInventoryStore:  entityStore,
+		EntityPermissionService: entitysvc.PermissionService{
+			EntityPermission: entityStore,
+		},
 
 		QSequencerStore: infraStore,
 		CoreStore:       infraStore,

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/pkg/errors"
 
-	"github.com/elojah/game_01/pkg/account"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -14,24 +13,9 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	cs := e.Action.CastSource
 	ts := e.ID.Time()
 
-	// #Check permission token/source.
-	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
-	switch errors.Cause(err).(type) {
-	case gerrors.ErrNotFound:
-		return errors.Wrap(err, "check permission token")
-	}
-	if err == nil && account.ACL(permission.Value) != account.Owner {
-		return errors.Wrap(
-			gerrors.ErrInsufficientACLs{
-				Value:  permission.Value,
-				Source: e.Token.String(),
-				Target: id.String(),
-			},
-			"check permission token",
-		)
-	}
-	if err != nil {
-		return errors.Wrap(err, "check permission token")
+	// #Check permission source/token
+	if err := a.EntityPermissionService.CheckSource(id, e.Token); err != nil {
+		return errors.Wrap(err, "cast source")
 	}
 
 	// #Retrieve ability.

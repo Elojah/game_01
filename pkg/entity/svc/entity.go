@@ -13,9 +13,9 @@ import (
 
 // Service represents entity usecases.
 type Service struct {
-	Entity           entity.Store
-	EntityPermission entity.PermissionStore
-	SectorEntities   sector.EntitiesStore
+	EntityStore           entity.Store
+	EntityPermissionStore entity.PermissionStore
+	SectorEntitiesStore   sector.EntitiesStore
 
 	SequencerService infra.SequencerService
 }
@@ -23,7 +23,7 @@ type Service struct {
 // Disconnect disconnects an entity.
 func (s Service) Disconnect(id gulid.ID, t account.Token) error {
 
-	e, err := s.Entity.GetEntity(id, ulid.Now())
+	e, err := s.EntityStore.GetEntity(id, ulid.Now())
 	if err != nil {
 		return errors.Wrap(err, "disconnect entity")
 	}
@@ -34,17 +34,17 @@ func (s Service) Disconnect(id gulid.ID, t account.Token) error {
 	}
 
 	// #Delete token permission on entity
-	if err := s.EntityPermission.DelPermission(t.ID.String(), id.String()); err != nil {
+	if err := s.EntityPermissionStore.DelPermission(t.ID.String(), id.String()); err != nil {
 		return errors.Wrap(err, "disconnect entity")
 	}
 
 	// #Delete pc entity position
-	if err := s.SectorEntities.RemoveEntityFromSector(id, e.Position.SectorID); err != nil {
+	if err := s.SectorEntitiesStore.RemoveEntityFromSector(id, e.Position.SectorID); err != nil {
 		return errors.Wrap(err, "disconnect entity")
 	}
 
 	// #Delete pc entity
-	if err := s.Entity.DelEntity(id); err != nil {
+	if err := s.EntityStore.DelEntity(id); err != nil {
 		return errors.Wrap(err, "disconnect entity")
 	}
 

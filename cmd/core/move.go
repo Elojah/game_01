@@ -15,25 +15,9 @@ func (a *app) MoveSource(id ulid.ID, e event.E) error {
 	ms := e.Action.MoveSource
 	ts := e.ID.Time()
 
-	// #Check permission token/source.
-	permission, err := a.EntityPermissionStore.GetPermission(e.Token.String(), id.String())
-	switch errors.Cause(err).(type) {
-	case gerrors.ErrNotFound:
-		return errors.Wrapf(gerrors.ErrInsufficientACLs{
-			Value:  permission.Value,
-			Source: e.Token.String(),
-			Target: id.String(),
-		}, "get permission token %s for %s", e.Token.String(), id.String())
-	}
-	if err == nil && account.ACL(permission.Value) != account.Owner {
-		return errors.Wrapf(gerrors.ErrInsufficientACLs{
-			Value:  permission.Value,
-			Source: e.Token.String(),
-			Target: id.String(),
-		}, "get permission token %s for %s", e.Token.String(), id.String())
-	}
-	if err != nil {
-		return errors.Wrapf(err, "get permission token %s for %s", e.Token.String(), id.String())
+	// #Check permission source/token
+	if err := a.EntityPermissionService.CheckSource(id, e.Token); err != nil {
+		return errors.Wrap(err, "move source")
 	}
 
 	// #TODO Check if source is not stun or forbidden to move other entities

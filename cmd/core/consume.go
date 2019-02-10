@@ -8,88 +8,61 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) LootSource(id ulid.ID, e event.E) error {
+func (a *app) ConsumeSource(id ulid.ID, e event.E) error {
 
-	ls := e.Action.LootSource
+	ls := e.Action.ConsumeSource
 	ts := e.ID.Time()
 
 	// #Check permission source/token
 	if err := a.EntityPermissionService.CheckSource(id, e.Token); err != nil {
-		return errors.Wrap(err, "loot source")
+		return errors.Wrap(err, "consume source")
 	}
 
 	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrap(err, "loot source")
-	}
-
-	// #Retrieve target entity
-	target, err := a.EntityStore.GetEntity(ls.TargetID, ts)
-	if err != nil {
-		return errors.Wrap(err, "loot source")
+		return errors.Wrap(err, "consume source")
 	}
 
 	// #Retrieve source inventory
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {
-		return errors.Wrap(err, "loot source")
-	}
-	if len(sourceInventory.Items) > int(sourceInventory.Size_-1) {
-		return errors.Wrap(
-			gerrors.ErrFullInventory{
-				InventoryID: source.InventoryID.String(),
-			},
-			"loot source",
-		)
+		return errors.Wrap(err, "consume source")
 	}
 
-	// #Check distance between source and target
-	dist, err := a.SectorService.Segment(source.Position, target.Position)
-	if err != nil {
-		return errors.Wrap(err, "loot source")
-	}
-	if dist > a.lootRadius {
-		return errors.Wrap(
-			gerrors.ErrOutOfRange{
-				Dist:  dist,
-				Range: a.lootRadius,
-			},
-			"loot source",
-		)
-	}
+	// TODO check object exists in inventory
 
 	// #Publish loot event to target.
 	return errors.Wrap(a.EventQStore.PublishEvent(
 		event.E{
 			ID: ulid.NewTimeID(ts + 1),
 			Action: event.Action{
-				LootTarget: &event.LootTarget{
+				ConsumeTarget: &event.ConsumeTarget{
 					SourceID: id,
 					ItemID:   ls.ItemID,
 				},
 			},
 			Trigger: e.ID,
-		}, target.ID),
-		"loot source",
+		}, targetID),
+		"consume source",
 	)
 }
 
-func (a *app) LootTarget(id ulid.ID, e event.E) error {
+func (a *app) ConsumeTarget(id ulid.ID, e event.E) error {
 
-	lt := e.Action.LootTarget
+	lt := e.Action.ConsumeTarget
 	ts := e.ID.Time()
 
 	// #Retrieve entity
 	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrap(err, "loot target")
+		return errors.Wrap(err, "retrieve entity")
 	}
 
 	// #Retrieve target inventory
 	targetInventory, err := a.EntityInventoryStore.GetInventory(target.InventoryID)
 	if err != nil {
-		return errors.Wrap(err, "loot target")
+		return errors.Wrap(err, "retrieve inventory")
 	}
 
 	// #Check item exists in inventory
@@ -100,7 +73,7 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 				ItemID:      lt.ItemID.String(),
 				InventoryID: target.ID.String(),
 			},
-			"loot target",
+			"check loot validity",
 		)
 	}
 
@@ -113,7 +86,7 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 
 	// Set new inventory
 	if err := a.EntityInventoryStore.SetInventory(targetInventory); err != nil {
-		return errors.Wrap(err, "loot target")
+		return errors.Wrap(err, "validate loot")
 	}
 
 	// #Publish loot event to target.
@@ -121,31 +94,31 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 		event.E{
 			ID: ulid.NewTimeID(ts + 1),
 			Action: event.Action{
-				LootFeedback: &event.LootFeedback{
+				ConsumeFeedback: &event.ConsumeFeedback{
 					SourceID: id,
 					ItemID:   lt.ItemID,
 				},
 			},
 		}, target.ID),
-		"loot target",
+		"validate loot",
 	)
 }
 
-func (a *app) LootFeedback(id ulid.ID, e event.E) error {
+func (a *app) ConsumeFeedback(id ulid.ID, e event.E) error {
 
-	lf := e.Action.LootFeedback
+	lf := e.Action.ConsumeFeedback
 	ts := e.ID.Time()
 
 	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrap(err, "loot feedback")
+		return errors.Wrap(err, "retrieve entity")
 	}
 
 	// #Retrieve source inventory
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {
-		return errors.Wrap(err, "loot feedback")
+		return errors.Wrap(err, "retrieve inventory")
 	}
 
 	// #Check item exists in inventory

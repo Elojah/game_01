@@ -6,20 +6,25 @@ import (
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	gerrors "github.com/elojah/game_01/pkg/errors"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/gulid"
 )
 
 // Store is an interface for E object.
 type Store interface {
 	SetEntity(E, uint64) error
-	GetEntity(ulid.ID, uint64) (E, error)
-	DelEntity(ulid.ID) error
-	DelEntityByTS(ulid.ID, uint64) error
+	GetEntity(gulid.ID, uint64) (E, error)
+	DelEntity(gulid.ID) error
+	DelEntityByTS(gulid.ID, uint64) error
 }
 
 // Service represents entity usecases.
 type Service interface {
-	Disconnect(id ulid.ID, tok account.Token) error
+	Disconnect(id gulid.ID, tok account.Token) error
+}
+
+// PermissionService wraps permission usecases for entities.
+type PermissionService interface {
+	CheckSource(id gulid.ID, tok gulid.ID) error
 }
 
 // CastAbility decreases MP (without check) and assign a new cast to entity.

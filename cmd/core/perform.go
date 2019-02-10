@@ -16,6 +16,10 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	ps := e.Action.PerformSource
 	ts := e.ID.Time()
 
+	if err := a.EntityPermissionService.CheckSource(id, e.Token); err != nil {
+		return errors.Wrap(err, "perform source")
+	}
+
 	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {

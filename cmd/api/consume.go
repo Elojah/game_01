@@ -22,7 +22,8 @@ func (h *handler) consume(ctx context.Context, msg event.DTO) error {
 		Token: msg.Token,
 		Action: event.Action{
 			ConsumeSource: &event.ConsumeSource{
-				ItemID: consume.ItemID,
+				TargetID: consume.TargetID,
+				ItemID:   consume.ItemID,
 			},
 		},
 	}

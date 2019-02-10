@@ -151,4 +151,5 @@ func TestTriggerService(t *testing.T) {
 		assert.Equal(t, int32(2), qStore.PublishEventCount)
 		assert.Equal(t, int32(0), qStore.SubscribeEventCount)
 	})
+
 }
