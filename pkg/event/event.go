@@ -2,19 +2,19 @@ package event
 
 import (
 	"github.com/elojah/game_01/pkg/infra"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // QStore must be implemented by a queue.
 type QStore interface {
-	PublishEvent(E, ulid.ID) error
-	SubscribeEvent(ulid.ID) *infra.Subscription
+	PublishEvent(E, gulid.ID) error
+	SubscribeEvent(gulid.ID) *infra.Subscription
 }
 
 // Store wraps action interactions.
 type Store interface {
-	SetEvent(E, ulid.ID) error
-	GetEvent(ulid.ID, ulid.ID) (E, error)
-	ListEvent(ulid.ID, ulid.ID) ([]E, error)
-	DelEvent(ulid.ID, ulid.ID) error
+	SetEvent(E, gulid.ID) error
+	GetEvent(gulid.ID, gulid.ID) (E, error)
+	ListEvent(gulid.ID, gulid.ID) ([]E, error)
+	DelEvent(gulid.ID, gulid.ID) error
 }

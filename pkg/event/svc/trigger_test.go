@@ -12,6 +12,7 @@ import (
 )
 
 func TestTriggerService(t *testing.T) {
+
 	t.Run("set event move source success", func(t *testing.T) {
 
 		// Data
@@ -72,6 +73,7 @@ func TestTriggerService(t *testing.T) {
 		assert.Equal(t, int32(0), qStore.PublishEventCount)
 		assert.Equal(t, int32(0), qStore.SubscribeEventCount)
 	})
+
 	t.Run("cancel event success", func(t *testing.T) {
 
 		// Data
@@ -83,18 +85,27 @@ func TestTriggerService(t *testing.T) {
 			},
 			Trigger: gulid.NewID(),
 		}
+		prevE := event.E{
+			ID:    gulid.NewID(),
+			Token: e.Token,
+			Action: event.Action{
+				MoveSource: &event.MoveSource{
+					TargetIDs: gulid.NewIDs(2),
+				},
+			},
+			Trigger: e.Trigger,
+		}
 		entityID := gulid.NewID()
-		eventID := gulid.NewID()
 
 		// Mocks
 		store := &eventmocks.Store{
-			GetEventFunc: func(prev gulid.ID, id gulid.ID) (event.E, error) {
-				assert.Equal(t, eventID.String(), prev.String())
+			GetEventFunc: func(prevID gulid.ID, id gulid.ID) (event.E, error) {
+				assert.Equal(t, prevE.ID.String(), prevID.String())
 				assert.Equal(t, entityID.String(), id.String())
-				return nil
+				return prevE, nil
 			},
-			DelEventFunc: func(prev gulid.ID, id gulid.ID) error {
-				assert.Equal(t, entityID.String(), prev.String())
+			DelEventFunc: func(prevID gulid.ID, id gulid.ID) error {
+				assert.Equal(t, prevE.ID.String(), prevID.String())
 				assert.Equal(t, entityID.String(), id.String())
 				return nil
 			},
@@ -103,7 +114,7 @@ func TestTriggerService(t *testing.T) {
 			GetTriggerFunc: func(triggerID gulid.ID, id gulid.ID) (gulid.ID, error) {
 				assert.Equal(t, e.Trigger.String(), triggerID.String())
 				assert.Equal(t, entityID.String(), id.String())
-				return eventID, nil
+				return prevE.ID, nil
 			},
 			DelTriggerFunc: func(triggerID gulid.ID, id gulid.ID) error {
 				assert.Equal(t, e.Trigger.String(), triggerID.String())
@@ -111,7 +122,12 @@ func TestTriggerService(t *testing.T) {
 				return nil
 			},
 		}
-		qStore := &eventmocks.QStore{}
+		qStore := &eventmocks.QStore{
+			PublishEventFunc: func(cancelE event.E, id gulid.ID) error {
+				assert.NotNil(t, e.Action.Cancel)
+				return nil
+			},
+		}
 
 		// Test
 		s := TriggerService{
@@ -122,17 +138,17 @@ func TestTriggerService(t *testing.T) {
 		assert.NoError(t, s.Set(e, entityID))
 
 		// Assert
-		assert.Equal(t, int32(1), store.SetEventCount)
-		assert.Equal(t, int32(0), store.GetEventCount)
+		assert.Equal(t, int32(0), store.SetEventCount)
+		assert.Equal(t, int32(1), store.GetEventCount)
 		assert.Equal(t, int32(0), store.ListEventCount)
-		assert.Equal(t, int32(0), store.DelEventCount)
+		assert.Equal(t, int32(1), store.DelEventCount)
 
-		assert.Equal(t, int32(1), triggerStore.SetTriggerCount)
+		assert.Equal(t, int32(0), triggerStore.SetTriggerCount)
 		assert.Equal(t, int32(1), triggerStore.GetTriggerCount)
 		assert.Equal(t, int32(0), triggerStore.ListTriggerCount)
-		assert.Equal(t, int32(0), triggerStore.DelTriggerCount)
+		assert.Equal(t, int32(1), triggerStore.DelTriggerCount)
 
-		assert.Equal(t, int32(0), qStore.PublishEventCount)
+		assert.Equal(t, int32(2), qStore.PublishEventCount)
 		assert.Equal(t, int32(0), qStore.SubscribeEventCount)
 	})
 }

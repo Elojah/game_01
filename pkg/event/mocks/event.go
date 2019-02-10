@@ -35,7 +35,7 @@ func (s *Store) GetEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
 	if s.GetEventFunc == nil {
 		return event.E{}, nil
 	}
-	return s.GetEventFunc(entityID, id)
+	return s.GetEventFunc(id, entityID)
 }
 
 // ListEvent mocks event.Store.
