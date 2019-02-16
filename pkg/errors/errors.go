@@ -225,6 +225,15 @@ func (err ErrMissingItem) Error() string {
 	return fmt.Sprintf("item %s missing in inventory %s", err.ItemID, err.InventoryID)
 }
 
+// ErrNotConsumableItem is raised when a consume action is performed on a not consumable item.
+type ErrNotConsumableItem struct {
+	ItemID string
+}
+
+func (err ErrNotConsumableItem) Error() string {
+	return fmt.Sprintf("item %s can't be consumed", err.ItemID)
+}
+
 // ErrFullInventory is raised when a loot action is performed and the source inventory is full.
 type ErrFullInventory struct {
 	InventoryID string
@@ -265,6 +274,8 @@ func IsGameLogicError(err error) bool {
 	case ErrOutOfRange:
 		return true
 	case ErrMissingItem:
+		return true
+	case ErrNotConsumableItem:
 		return true
 	case ErrFullInventory:
 		return true

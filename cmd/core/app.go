@@ -178,10 +178,6 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		err = a.LootFeedback(id, e)
 	case *event.ConsumeSource:
 		err = a.ConsumeSource(id, e)
-	case *event.ConsumeTarget:
-		err = gerrors.ErrNotImplementedYet{Version: "0.2.0"}
-	case *event.ConsumeFeedback:
-		err = gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 	default:
 		logger.Error().Msg("unrecognized action")
 	}
