@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	starterKey = "starter:"
+	starterKey = "sectorStarter:"
 )
 
 // GetRandomStarter redis implementation.

@@ -58,7 +58,7 @@ func (s *Store) GetAbility(entityID ulid.ID, id ulid.ID) (ability.A, error) {
 
 	var a ability.A
 	if err := a.Unmarshal([]byte(val)); err != nil {
-		return ability.A{}, errors.Wrapf(err, "get ability %s for entity %s", entityID.String(), id.String())
+		return ability.A{}, errors.Wrapf(err, "get ability %s for entity %s", id.String(), entityID.String())
 	}
 	return a, nil
 }
