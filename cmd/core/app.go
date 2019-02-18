@@ -10,6 +10,7 @@ import (
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/infra"
+	"github.com/elojah/game_01/pkg/item"
 	"github.com/elojah/game_01/pkg/sector"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -27,12 +28,14 @@ type app struct {
 	EntityInventoryStore    entity.InventoryStore
 	EntityPermissionService entity.PermissionService
 
-	infra.QSequencerStore
-	infra.CoreStore
-
 	EventQStore         event.QStore
 	EventStore          event.Store
 	EventTriggerService event.TriggerService
+
+	infra.QSequencerStore
+	infra.CoreStore
+
+	ItemStore item.Store
 
 	sector.EntitiesStore
 	SectorStore   sector.Store

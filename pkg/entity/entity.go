@@ -6,7 +6,7 @@ import (
 	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	gerrors "github.com/elojah/game_01/pkg/errors"
-	gulid "github.com/elojah/game_01/pkg/gulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // Store is an interface for E object.

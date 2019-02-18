@@ -16,11 +16,11 @@ import (
 
 // TokenService represents token usecases.
 type TokenService struct {
-	Account          account.Store
-	AccountToken     account.TokenStore
-	Entity           entity.Store
-	EntityPC         entity.PCStore
-	EntityPermission entity.PermissionStore
+	AccountStore          account.Store
+	AccountTokenStore     account.TokenStore
+	EntityStore           entity.Store
+	EntityPCStore         entity.PCStore
+	EntityPermissionStore entity.PermissionStore
 
 	EntityService        entity.Service
 	InfraRecurrerService infra.RecurrerService
@@ -30,7 +30,7 @@ type TokenService struct {
 func (s TokenService) New(payload account.A, addr string) (account.Token, error) {
 
 	// #Search account in redis
-	a, err := s.Account.GetAccount(payload.Username)
+	a, err := s.AccountStore.GetAccount(payload.Username)
 	if err != nil {
 		return account.Token{}, errors.Wrap(err, "new token")
 	}
@@ -53,11 +53,11 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 		Account: a.ID,
 		IP:      ip.String(),
 	}
-	if err := s.AccountToken.SetToken(t); err != nil {
+	if err := s.AccountTokenStore.SetToken(t); err != nil {
 		return account.Token{}, errors.Wrap(err, "new token")
 	}
 	a.Token = t.ID
-	if err := s.Account.SetAccount(a); err != nil {
+	if err := s.AccountStore.SetAccount(a); err != nil {
 		return account.Token{}, errors.Wrap(err, "new token")
 	}
 
@@ -68,7 +68,7 @@ func (s TokenService) New(payload account.A, addr string) (account.Token, error)
 func (s TokenService) Access(id gulid.ID, addr string) (account.Token, error) {
 
 	// #Search message UUID in storage.
-	t, err := s.AccountToken.GetToken(id)
+	t, err := s.AccountTokenStore.GetToken(id)
 	if err != nil {
 		return account.Token{}, errors.Wrap(err, "access token")
 	}
@@ -92,7 +92,7 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	var result *multierror.Error
 
 	// #Retrieve token
-	t, err := s.AccountToken.GetToken(id)
+	t, err := s.AccountTokenStore.GetToken(id)
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
@@ -105,12 +105,12 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	// #Reset token entity.
 	te := t.Entity
 	t.Entity = gulid.Zero()
-	if err := s.AccountToken.SetToken(t); err != nil {
+	if err := s.AccountTokenStore.SetToken(t); err != nil {
 		result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 	}
 
 	// #Retrieve entity
-	e, err := s.Entity.GetEntity(te, ulid.Now())
+	e, err := s.EntityStore.GetEntity(te, ulid.Now())
 	if err != nil {
 		// Token is valid but not connected to any entity.
 		switch errors.Cause(err).(type) {
@@ -123,12 +123,12 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	// #Save last entity state into PC
 	pc := entity.PC(e)
 	pc.ID = t.PC
-	if err := s.EntityPC.SetPC(pc, t.Account); err != nil {
+	if err := s.EntityPCStore.SetPC(pc, t.Account); err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
 
 	// # Disconnect all entitis associated with token.
-	ps, err := s.EntityPermission.ListPermission(t.ID.String())
+	ps, err := s.EntityPermissionStore.ListPermission(t.ID.String())
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}

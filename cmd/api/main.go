@@ -66,11 +66,11 @@ func run(prog string, filename string) {
 		C:      c,
 		QStore: eventStore,
 		TokenService: accountsvc.TokenService{
-			Account:          accountStore,
-			AccountToken:     accountStore,
-			Entity:           entityLRUStore,
-			EntityPC:         entityStore,
-			EntityPermission: entityStore,
+			AccountStore:          accountStore,
+			AccountTokenStore:     accountStore,
+			EntityStore:           entityLRUStore,
+			EntityPCStore:         entityStore,
+			EntityPermissionStore: entityStore,
 			InfraRecurrerService: infrasvc.RecurrerService{
 				InfraQRecurrer: infraStore,
 				InfraRecurrer:  infraStore,

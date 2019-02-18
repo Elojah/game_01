@@ -66,15 +66,15 @@ func run(prog string, filename string) {
 		StarterStore:    sectorStore,
 		SectorStore:     sectorStore,
 		TokenService: &accountsvc.TokenService{
-			Account:          accountStore,
-			AccountToken:     accountStore,
-			Entity:           entityLRUStore,
-			EntityPC:         entityStore,
-			EntityPermission: entityStore,
+			AccountStore:          accountStore,
+			AccountTokenStore:     accountStore,
+			EntityStore:           entityLRUStore,
+			EntityPCStore:         entityStore,
+			EntityPermissionStore: entityStore,
 			EntityService: &entitysvc.Service{
-				Entity:           entityLRUStore,
-				EntityPermission: entityStore,
-				SectorEntities:   sectorStore,
+				EntityStore:           entityLRUStore,
+				EntityPermissionStore: entityStore,
+				SectorEntitiesStore:   sectorStore,
 				SequencerService: &infrasvc.SequencerService{
 					InfraQSequencer: infraStore,
 					InfraSequencer:  infraStore,

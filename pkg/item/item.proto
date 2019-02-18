@@ -10,12 +10,12 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 // Orb represents a skill learner object. Consumer learns skill at item consumption.
 message Orb {
-	bytes Skill                  = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
+	bytes AbilityID              = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 // Component represents a common object used for craft only.
 message Component {
-	bytes Type                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = true];
+	bytes Type                   = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message Type {

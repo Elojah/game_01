@@ -16,6 +16,7 @@ import (
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
 	eventsvc "github.com/elojah/game_01/pkg/event/svc"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	itemsrg "github.com/elojah/game_01/pkg/item/srg"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	sectorsvc "github.com/elojah/game_01/pkg/sector/svc"
 	"github.com/elojah/redis"
@@ -51,6 +52,7 @@ func run(prog string, filename string) {
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
 	infraStore := infrasrg.NewStore(rd)
+	itemStore := itemsrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
 
 	// main app
@@ -66,7 +68,7 @@ func run(prog string, filename string) {
 		EntityPermissionStore: entityStore,
 		EntityInventoryStore:  entityStore,
 		EntityPermissionService: entitysvc.PermissionService{
-			EntityPermission: entityStore,
+			EntityPermissionStore: entityStore,
 		},
 
 		QSequencerStore: infraStore,
@@ -80,6 +82,7 @@ func run(prog string, filename string) {
 		},
 
 		EntitiesStore: sectorStore,
+		ItemStore:     itemStore,
 		SectorStore:   sectorStore,
 		SectorService: &sectorsvc.Service{
 			SectorEntitiesStore: sectorStore,
