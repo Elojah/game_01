@@ -30,6 +30,14 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 		return errors.Wrap(err, "loot source")
 	}
 
+	// #Check if target is lootable
+	if ok, err := a.ItemLootStore.GetLoot(target.ID); !ok || err != nil {
+		if err != nil {
+			return errors.Wrap(err, "loot source")
+		}
+		return errors.Wrap(gerrors.ErrNotLootableEntity{EntityID: target.ID.String()}, "loot source")
+	}
+
 	// #Retrieve source inventory
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {

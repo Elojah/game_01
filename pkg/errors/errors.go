@@ -234,6 +234,15 @@ func (err ErrNotConsumableItem) Error() string {
 	return fmt.Sprintf("item %s can't be consumed", err.ItemID)
 }
 
+// ErrNotLootableEntity is raised when a loot action is performed on a not lootable entity.
+type ErrNotLootableEntity struct {
+	EntityID string
+}
+
+func (err ErrNotLootableEntity) Error() string {
+	return fmt.Sprintf("entity %s can't be loot", err.EntityID)
+}
+
 // ErrFullInventory is raised when a loot action is performed and the source inventory is full.
 type ErrFullInventory struct {
 	InventoryID string
@@ -276,6 +285,8 @@ func IsGameLogicError(err error) bool {
 	case ErrMissingItem:
 		return true
 	case ErrNotConsumableItem:
+		return true
+	case ErrNotLootableEntity:
 		return true
 	case ErrFullInventory:
 		return true

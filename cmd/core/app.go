@@ -35,7 +35,8 @@ type app struct {
 	infra.QSequencerStore
 	infra.CoreStore
 
-	ItemStore item.Store
+	ItemStore     item.Store
+	ItemLootStore item.LootStore
 
 	sector.EntitiesStore
 	SectorStore   sector.Store

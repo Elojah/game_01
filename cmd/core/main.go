@@ -83,6 +83,7 @@ func run(prog string, filename string) {
 
 		EntitiesStore: sectorStore,
 		ItemStore:     itemStore,
+		ItemLootStore: itemStore,
 		SectorStore:   sectorStore,
 		SectorService: &sectorsvc.Service{
 			SectorEntitiesStore: sectorStore,
