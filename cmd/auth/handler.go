@@ -6,6 +6,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/ability"
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/event"
@@ -34,6 +35,7 @@ type handler struct {
 	account.TokenService
 	infra.SequencerService
 	infra.RecurrerService
+	AbilityService ability.Service
 
 	srv *http.Server
 }

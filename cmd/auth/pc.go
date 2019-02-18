@@ -132,15 +132,22 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 	pc.Name = setPC.Name
 
+	// #Set starter abilities to entity
+	if err := h.AbilityService.SetAbilities(ast); err != nil {
+		logger.Error().Err(err).Str("template", template.ID.String()).Msg("failed to set starter abilities")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// #Retrieve a random starter sector.
-	start, err := h.GetRandomStarter()
+	sst, err := h.GetRandomStarter()
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to pick random starter")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	logger = logger.With().Str("sector", start.SectorID.String()).Logger()
-	sec, err := h.SectorStore.GetSector(start.SectorID)
+	logger = logger.With().Str("sector", sst.SectorID.String()).Logger()
+	sec, err := h.SectorStore.GetSector(sst.SectorID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve starter sector")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

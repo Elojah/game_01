@@ -1,12 +1,17 @@
 package ability
 
 import (
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 // Store is the communication interface for abilities.
 type Store interface {
-	SetAbility(A, ulid.ID) error
-	GetAbility(ulid.ID, ulid.ID) (A, error)
-	ListAbility(entityID ulid.ID) ([]A, error)
+	SetAbility(A, gulid.ID) error
+	GetAbility(gulid.ID, gulid.ID) (A, error)
+	ListAbility(entityID gulid.ID) ([]A, error)
+}
+
+// Service wraps ability helpers.
+type Service interface {
+	SetAbilities(gulid.ID, gulid.ID) error
 }

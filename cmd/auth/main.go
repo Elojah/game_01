@@ -9,6 +9,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	abilitysvc "github.com/elojah/game_01/pkg/ability/svc"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
 	accountsvc "github.com/elojah/game_01/pkg/account/svc"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
@@ -45,6 +47,7 @@ func run(prog string, filename string) {
 
 	// Stores and applicatives
 	accountStore := accountsrg.NewStore(rd)
+	abilityStore := abilitysrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
 	eventStore := eventsrg.NewStore(rd)
@@ -86,6 +89,10 @@ func run(prog string, filename string) {
 				InfraRecurrer:  infraStore,
 				InfraSync:      infraStore,
 			},
+		},
+		AbilityService: &abilitysvc.Service{
+			AbilityStore:         abilityStore,
+			AbilityTemplateStore: abilityStore,
 		},
 		SequencerService: &infrasvc.SequencerService{
 			InfraQSequencer: infraStore,
