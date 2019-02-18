@@ -15,6 +15,7 @@ import (
 
 type handler struct {
 	AbilityStore         ability.Store
+	AbilityStarterStore  ability.StarterStore
 	AbilityTemplateStore ability.TemplateStore
 
 	AccountStore account.Store
@@ -35,19 +36,19 @@ type handler struct {
 func (h *handler) Dial(c Config) error {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/ability", h.ability)
 	mux.HandleFunc("/ability/template", h.abilityTemplate)
-	mux.HandleFunc("/entity/template", h.entityTemplate)
+	mux.HandleFunc("/ability/starter", h.abilityStarter)
 
+	mux.HandleFunc("/entity", h.entity)
+	mux.HandleFunc("/entity/template", h.entityTemplate)
+	mux.HandleFunc("/entity/move", h.entityMove)
+
+	mux.HandleFunc("/sector", h.sector)
 	mux.HandleFunc("/sector/entities", h.sectorEntities)
 	mux.HandleFunc("/sector/starter", h.sectorStarter)
 
-	mux.HandleFunc("/ability", h.ability)
-	mux.HandleFunc("/entity", h.entity)
-	mux.HandleFunc("/sector", h.sector)
-
 	mux.HandleFunc("/sequencer", h.sequencer)
-
-	mux.HandleFunc("/entity/move", h.entityMove)
 
 	h.srv = &http.Server{
 		Addr:    c.Address,
