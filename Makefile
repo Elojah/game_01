@@ -109,6 +109,7 @@ proto:
 	$Q cd pkg/ability  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. effect_feedback.proto
 	$Q cd pkg/ability  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. feedback.proto
 	$Q cd pkg/ability  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. targets.proto
+	$Q cd pkg/ability  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. starter.proto
 	$Q cd pkg/account  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. account.proto
 	$Q cd pkg/account  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. token.proto
 	$Q cd pkg/geometry && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. position.proto
