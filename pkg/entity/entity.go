@@ -22,11 +22,6 @@ type Service interface {
 	Disconnect(id gulid.ID, tok account.Token) error
 }
 
-// PermissionService wraps permission usecases for entities.
-type PermissionService interface {
-	CheckSource(id gulid.ID, tok gulid.ID) error
-}
-
 // CastAbility decreases MP (without check) and assign a new cast to entity.
 func (e *E) CastAbility(ab ability.A, ts uint64) {
 	e.MP -= ab.MPConsumption
