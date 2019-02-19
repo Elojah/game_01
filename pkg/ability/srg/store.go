@@ -8,6 +8,7 @@ import (
 var _ ability.Store = (*Store)(nil)
 var _ ability.FeedbackStore = (*Store)(nil)
 var _ ability.TemplateStore = (*Store)(nil)
+var _ ability.StarterStore = (*Store)(nil)
 
 // Store implements token and entity.
 type Store struct {

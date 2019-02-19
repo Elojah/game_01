@@ -82,7 +82,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("token", setPC.Token.String()).Logger()
 
 	// #Get and check token.
-	tok, err := h.TokenService.Access(setPC.Token, r.RemoteAddr)
+	tok, err := h.AccountTokenService.Access(setPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -90,7 +90,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Check user permission to create a new PC.
-	left, err := h.GetPCLeft(tok.Account)
+	left, err := h.EntityPCLeftStore.GetPCLeft(tok.Account)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -104,7 +104,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Decrease token permission to create a new PC by 1.
-	if err := h.SetPCLeft(left-1, tok.Account); err != nil {
+	if err := h.EntityPCLeftStore.SetPCLeft(left-1, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to decrease left pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -113,7 +113,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("template", setPC.Type.String()).Logger()
 
 	// #Retrieve entity template for new PC.
-	template, err := h.GetTemplate(setPC.Type)
+	template, err := h.EntityTemplateStore.GetTemplate(setPC.Type)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve template")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -140,7 +140,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve a random starter sector.
-	sst, err := h.GetRandomStarter()
+	sst, err := h.SectorStarterStore.GetRandomStarter()
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to pick random starter")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -159,7 +159,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		SectorID: sec.ID,
 		Coord:    geometry.Vec3{X: sec.Dim.X * rand.Float64(), Y: sec.Dim.Y * rand.Float64(), Z: sec.Dim.Z * rand.Float64()},
 	}
-	if err := h.SetPC(pc, tok.Account); err != nil {
+	if err := h.EntityPCStore.SetPC(pc, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -193,7 +193,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("token", listPC.Token.String()).Logger()
 
 	// #Get and check token.
-	tok, err := h.TokenService.Access(listPC.Token, r.RemoteAddr)
+	tok, err := h.AccountTokenService.Access(listPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -203,7 +203,7 @@ func (h *handler) listPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("account", tok.Account.String()).Logger()
 
 	// #Retrieve PCs by account.
-	pcs, err := h.ListPC(tok.Account)
+	pcs, err := h.EntityPCStore.ListPC(tok.Account)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve PCs")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -255,7 +255,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		Logger()
 
 	// #Get and check token.
-	tok, err := h.TokenService.Access(connectPC.Token, r.RemoteAddr)
+	tok, err := h.AccountTokenService.Access(connectPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -268,7 +268,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve PC for this account.
-	pc, err := h.GetPC(tok.Account, connectPC.Target)
+	pc, err := h.EntityPCStore.GetPC(tok.Account, connectPC.Target)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve PC")
 		http.Error(w, "failed to connect", http.StatusBadRequest)
@@ -287,14 +287,14 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 
 	logger = logger.With().Str("sector", pc.Position.SectorID.String()).Logger()
 	// #Add entity to PC sector.
-	if err := h.AddEntityToSector(e.ID, pc.Position.SectorID); err != nil {
+	if err := h.SectorEntitiesStore.AddEntityToSector(e.ID, pc.Position.SectorID); err != nil {
 		logger.Error().Err(err).Msg("failed to add entity to sector")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}
 
 	// #Add permission token/entity.
-	if err := h.SetPermission(entity.Permission{
+	if err := h.EntityPermissionStore.SetPermission(entity.Permission{
 		ID:     gulid.NewID(),
 		Source: tok.ID.String(),
 		Target: e.ID.String(),
@@ -305,7 +305,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Add permission entity/entity.
-	if err := h.SetPermission(entity.Permission{
+	if err := h.EntityPermissionStore.SetPermission(entity.Permission{
 		ID:     gulid.NewID(),
 		Source: e.ID.String(),
 		Target: e.ID.String(),
@@ -316,7 +316,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates a new sequencer for this entity.
-	sequencer, err := h.SequencerService.New(e.ID)
+	sequencer, err := h.InfraSequencerService.New(e.ID)
 	logger = logger.With().Str("sequencer", sequencer.ID.String()).Logger()
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create entity sequencer")
@@ -324,7 +324,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates a new recurrer for this token/entity.
-	recurrer, err := h.RecurrerService.New(e.ID, tok.ID)
+	recurrer, err := h.InfraRecurrerService.New(e.ID, tok.ID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create entity recurrer")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
@@ -335,7 +335,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	tok.SyncPool = recurrer.Pool
 	tok.PC = pc.ID
 	tok.Entity = e.ID
-	if err := h.SetToken(tok); err != nil {
+	if err := h.AccountTokenStore.SetToken(tok); err != nil {
 		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to update token pools")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
@@ -383,14 +383,14 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("token", disconnectPC.Token.String()).Logger()
 
 	// #Get and check token.
-	tok, err := h.TokenService.Access(disconnectPC.Token, r.RemoteAddr)
+	tok, err := h.AccountTokenService.Access(disconnectPC.Token, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	if err := h.TokenService.Disconnect(tok.ID); err != nil {
+	if err := h.AccountTokenService.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to disconnect")
 		http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 		return

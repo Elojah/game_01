@@ -62,7 +62,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Add Permission to create X new chars.
-	if err := h.SetPCLeft(entity.MaxPC, a.ID); err != nil {
+	if err := h.EntityPCLeftStore.SetPCLeft(entity.MaxPC, a.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to set character permission")
 		http.Error(w, "failed to set permissions", http.StatusInternalServerError)
 		return
@@ -133,18 +133,18 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	// #If account still connect, disconnect it.
 	if !a.Token.IsZero() {
 		logger = logger.With().Str("token", a.Token.String()).Logger()
-		if _, err := h.TokenService.Access(a.Token, r.RemoteAddr); err != nil {
+		if _, err := h.AccountTokenService.Access(a.Token, r.RemoteAddr); err != nil {
 			logger.Error().Err(err).Msg("failed to retrieve token")
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
 		}
-		if err := h.TokenService.Disconnect(a.Token); err != nil {
+		if err := h.AccountTokenService.Disconnect(a.Token); err != nil {
 			logger.Error().Err(err).Msg("failed to disconnect token")
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
 		}
 		// #Delete token
-		if err := h.DelToken(a.Token); err != nil {
+		if err := h.AccountTokenStore.DelToken(a.Token); err != nil {
 			logger.Error().Err(err).Msg("failed to delete token")
 			http.Error(w, "failed to delete token", http.StatusInternalServerError)
 			return
@@ -152,14 +152,14 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete all associated PCs.
-	pcs, err := h.ListPC(a.ID)
+	pcs, err := h.EntityPCStore.ListPC(a.ID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to list pcs")
 		http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 		return
 	}
 	for _, pc := range pcs {
-		if err := h.DelPC(a.ID, pc.ID); err != nil {
+		if err := h.EntityPCStore.DelPC(a.ID, pc.ID); err != nil {
 			logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to delete pc")
 			http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 			return
@@ -167,7 +167,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete PC left number.
-	if err := h.DelPCLeft(a.ID); err != nil {
+	if err := h.EntityPCLeftStore.DelPCLeft(a.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to delete pc left")
 		http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 		return

@@ -37,7 +37,7 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 	a := ac.Domain()
 
 	// #Create token from account
-	tok, err := h.TokenService.New(a, r.RemoteAddr)
+	tok, err := h.AccountTokenService.New(a, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token from account")
 		http.Error(w, "failed to signin", http.StatusInternalServerError)
@@ -115,7 +115,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Retrieve account token
-	tok, err := h.TokenService.Access(tokID, r.RemoteAddr)
+	tok, err := h.AccountTokenService.Access(tokID, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -123,14 +123,14 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Disconnect token
-	if err := h.TokenService.Disconnect(tok.ID); err != nil {
+	if err := h.AccountTokenService.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to disconnect token")
 		http.Error(w, "failed to disconnect token", http.StatusInternalServerError)
 		return
 	}
 
 	// #Delete token
-	if err := h.DelToken(tok.ID); err != nil {
+	if err := h.AccountTokenStore.DelToken(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to delete token")
 		http.Error(w, "failed to delete token", http.StatusInternalServerError)
 		return

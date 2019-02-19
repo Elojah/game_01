@@ -56,19 +56,24 @@ func run(prog string, filename string) {
 
 	// handler (https server)
 	h := &handler{
-		AccountStore:    accountStore,
-		TokenStore:      accountStore,
-		EntityStore:     entityLRUStore,
-		PCStore:         entityStore,
-		PCLeftStore:     entityStore,
-		PermissionStore: entityStore,
-		TemplateStore:   entityStore,
-		QStore:          eventStore,
-		SyncStore:       infraStore,
-		EntitiesStore:   sectorStore,
-		StarterStore:    sectorStore,
-		SectorStore:     sectorStore,
-		TokenService: &accountsvc.TokenService{
+		AccountStore:      accountStore,
+		AccountTokenStore: accountStore,
+
+		EntityStore:           entityLRUStore,
+		EntityPCStore:         entityStore,
+		EntityPCLeftStore:     entityStore,
+		EntityPermissionStore: entityStore,
+		EntityTemplateStore:   entityStore,
+
+		EventQStore: eventStore,
+
+		InfraSyncStore: infraStore,
+
+		SectorStore:         sectorStore,
+		SectorEntitiesStore: sectorStore,
+		SectorStarterStore:  sectorStore,
+
+		AccountTokenService: &accountsvc.TokenService{
 			AccountStore:          accountStore,
 			AccountTokenStore:     accountStore,
 			EntityStore:           entityLRUStore,
@@ -95,12 +100,12 @@ func run(prog string, filename string) {
 			AbilityStarterStore:  abilityStore,
 			AbilityTemplateStore: abilityStore,
 		},
-		SequencerService: &infrasvc.SequencerService{
+		InfraSequencerService: &infrasvc.SequencerService{
 			InfraQSequencer: infraStore,
 			InfraSequencer:  infraStore,
 			InfraCore:       infraStore,
 		},
-		RecurrerService: &infrasvc.RecurrerService{
+		InfraRecurrerService: &infrasvc.RecurrerService{
 			InfraQRecurrer: infraStore,
 			InfraRecurrer:  infraStore,
 			InfraSync:      infraStore,
