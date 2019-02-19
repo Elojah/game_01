@@ -133,8 +133,8 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	pc.Name = setPC.Name
 
 	// #Set starter abilities to entity
-	if err := h.AbilityService.SetAbilities(ast); err != nil {
-		logger.Error().Err(err).Str("template", template.ID.String()).Msg("failed to set starter abilities")
+	if err := h.AbilityService.SetStarterAbilities(pc.ID, pc.Type); err != nil {
+		logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to set starter abilities")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

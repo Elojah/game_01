@@ -92,6 +92,7 @@ func run(prog string, filename string) {
 		},
 		AbilityService: &abilitysvc.Service{
 			AbilityStore:         abilityStore,
+			AbilityStarterStore:  abilityStore,
 			AbilityTemplateStore: abilityStore,
 		},
 		SequencerService: &infrasvc.SequencerService{

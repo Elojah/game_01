@@ -13,5 +13,5 @@ type Store interface {
 
 // Service wraps ability helpers.
 type Service interface {
-	SetAbilities(gulid.ID, gulid.ID) error
+	SetStarterAbilities(gulid.ID, gulid.ID) error
 }
