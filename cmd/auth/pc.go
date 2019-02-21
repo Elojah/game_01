@@ -390,9 +390,17 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Disconnect token entities.
 	if err := h.AccountTokenService.Disconnect(tok.ID); err != nil {
 		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to disconnect")
 		http.Error(w, "failed to disconnect", http.StatusInternalServerError)
+		return
+	}
+
+	// #Close token recurrer.
+	if err := h.InfraRecurrerService.Remove(tok.ID); err != nil {
+		logger.Error().Err(err).Str("token", tok.ID.String()).Msg("failed to remove recurrer")
+		http.Error(w, "failed to remove recurrer", http.StatusInternalServerError)
 		return
 	}
 

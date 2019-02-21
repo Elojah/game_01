@@ -42,13 +42,14 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 
 	// #Check username is unique
 	_, err := h.AccountStore.GetAccount(a.Username)
-	switch errors.Cause(err).(type) {
-	case gerrors.ErrNotFound:
+	if err == nil {
 		logger.Error().Err(err).Msg("account username found")
 		http.Error(w, "username already exists", http.StatusUnauthorized)
 		return
 	}
-	if err != nil {
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
+	default:
 		logger.Error().Err(err).Msg("failed to get account")
 		http.Error(w, "failed to check account unicity", http.StatusInternalServerError)
 		return

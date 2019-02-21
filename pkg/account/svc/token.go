@@ -10,7 +10,6 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
-	"github.com/elojah/game_01/pkg/infra"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -22,8 +21,7 @@ type TokenService struct {
 	EntityPCStore         entity.PCStore
 	EntityPermissionStore entity.PermissionStore
 
-	EntityService        entity.Service
-	InfraRecurrerService infra.RecurrerService
+	EntityService entity.Service
 }
 
 // New creates a new token from account payload A. Returns an error if the account is invalid.
@@ -97,9 +95,9 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 		return errors.Wrap(err, "disconnect token")
 	}
 
-	// #Close token recurrer
-	if err := s.InfraRecurrerService.Remove(id); err != nil {
-		result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
+	// #Check if token is connected
+	if t.Entity.IsZero() {
+		return nil
 	}
 
 	// #Reset token entity.
@@ -127,7 +125,7 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 		return errors.Wrap(err, "disconnect token")
 	}
 
-	// # Disconnect all entitis associated with token.
+	// # Disconnect all entities associated with token.
 	ps, err := s.EntityPermissionStore.ListPermission(t.ID.String())
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")

@@ -98,15 +98,10 @@ func (a *LA) NewProcess(name string, args ...string) error {
 	return nil
 }
 
-// Consume consumes n last log lines or less if n is too high and print them.
+// Consume consumes n last log lines and print them.
 func (a *LA) Consume(n int) {
-	var i int
-	for s := range a.c {
-		if i >= n {
-			return
-		}
-		fmt.Print(s)
-		i++
+	for i := 0; i < n; i++ {
+		fmt.Print(<-a.c)
 	}
 }
 

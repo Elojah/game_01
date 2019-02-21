@@ -13,8 +13,6 @@ import (
 	accountsvc "github.com/elojah/game_01/pkg/account/svc"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
-	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
-	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
@@ -59,7 +57,6 @@ func run(prog string, filename string) {
 	accountStore := accountsrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
-	infraStore := infrasrg.NewStore(rd)
 
 	h := &handler{
 		M:      m,
@@ -71,11 +68,6 @@ func run(prog string, filename string) {
 			EntityStore:           entityLRUStore,
 			EntityPCStore:         entityStore,
 			EntityPermissionStore: entityStore,
-			InfraRecurrerService: infrasvc.RecurrerService{
-				InfraQRecurrer: infraStore,
-				InfraRecurrer:  infraStore,
-				InfraSync:      infraStore,
-			},
 		},
 	}
 

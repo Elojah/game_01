@@ -68,11 +68,6 @@ func run(prog string, filename string) {
 					InfraCore:       infraStore,
 				},
 			},
-			InfraRecurrerService: &infrasvc.RecurrerService{
-				InfraQRecurrer: infraStore,
-				InfraRecurrer:  infraStore,
-				InfraSync:      infraStore,
-			},
 		},
 	}
 	al := a.NewLauncher(Namespaces{

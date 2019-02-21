@@ -53,8 +53,6 @@ func main() {
 
 	authService := auth.NewService("https://localhost:8080")
 
-	la.Consume(7)
-
 	if err := Case0(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return

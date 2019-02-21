@@ -89,11 +89,6 @@ func run(prog string, filename string) {
 					InfraCore:       infraStore,
 				},
 			},
-			InfraRecurrerService: &infrasvc.RecurrerService{
-				InfraQRecurrer: infraStore,
-				InfraRecurrer:  infraStore,
-				InfraSync:      infraStore,
-			},
 		},
 		AbilityService: &abilitysvc.Service{
 			AbilityStore:         abilityStore,
