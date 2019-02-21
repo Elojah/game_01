@@ -4,3 +4,7 @@ package auth
 type Service struct {
 	url string
 }
+
+func NewService(url string) *Service {
+	return &Service{url: url}
+}

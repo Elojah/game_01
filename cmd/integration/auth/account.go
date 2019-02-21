@@ -12,8 +12,8 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// Create a new account through HTTPS.
-func (s *Service) Create(username string, password string) error {
+// Subscribe a new account through HTTPS.
+func (s *Service) Subscribe(username string, password string) error {
 	raw, err := json.Marshal(map[string]string{
 		"username": username,
 		"password": password,
