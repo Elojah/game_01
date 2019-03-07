@@ -26,8 +26,8 @@ type SetPC struct {
 // Check checks setpc validity.
 func (spc SetPC) Check() error {
 	l := len(spc.Name)
-	if l < 4 || l > 15 || strings.IndexFunc(spc.Name, func(r rune) bool {
-		return (r < 'A' || r > 'z') && (r < '0' || r > '9')
+	if l < 4 || l > 24 || strings.IndexFunc(spc.Name, func(r rune) bool {
+		return (r < 'A' || r > 'z') && (r < '0' || r > '9') && (r != '_')
 	}) != -1 {
 		return errors.New("invalid name")
 	}

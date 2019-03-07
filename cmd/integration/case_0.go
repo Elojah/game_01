@@ -10,7 +10,7 @@ const (
 	password0 = "test_NYYovlaKoFZUVR"
 )
 
-// Case0 subscribe a new account and unsubscribe it.
+// Case0 :
 // - Subscribe
 // - Unsubscribe
 func Case0(s *auth.Service) error {

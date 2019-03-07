@@ -38,6 +38,7 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 	for _, e := range entities {
 		if err := h.EntityStore.SetEntity(e, ulid.Now()); err != nil {
 			logger.Error().Err(err).Str("entity", e.ID.String()).Msg("failed to set entity")
+			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
 	}

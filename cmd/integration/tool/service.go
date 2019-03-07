@@ -1,11 +1,11 @@
-package auth
+package tool
 
-// Service wraps account helpers.
+// Service wraps tool helpers.
 type Service struct {
 	url string
 }
 
-// NewService returns a integration service for auth.
+// NewService returns a integration service for tool.
 func NewService(url string) *Service {
 	return &Service{url: url}
 }

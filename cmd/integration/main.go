@@ -4,9 +4,11 @@ import (
 	"crypto/tls"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/elojah/game_01/cmd/integration/auth"
 	"github.com/elojah/game_01/cmd/integration/log_analyzer"
+	"github.com/elojah/game_01/cmd/integration/tool"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 )
@@ -16,7 +18,7 @@ func main() {
 	zerolog.TimeFieldFormat = ""
 	log.Logger = log.With().Str("exe", os.Args[0]).Logger()
 
-	la := log_analyzer.NewLA()
+	la := loganalyzer.NewLA()
 
 	cmds := [][]string{
 		[]string{"sync", "./bin/game_sync", "./configs/config_sync.json"},
@@ -35,7 +37,7 @@ func main() {
 		}
 	}
 
-	laClient := log_analyzer.NewLA()
+	laClient := loganalyzer.NewLA()
 	defer laClient.Close()
 	if err := laClient.NewProcess(
 		"client",
@@ -46,19 +48,32 @@ func main() {
 		return
 	}
 
+	// wait for processes to listen
+	time.Sleep(500 * time.Millisecond)
+
 	// ignore certificate validity
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true} // nolint: gosec
 
 	log.Info().Msg("integration up")
 
-	authService := auth.NewService("https://localhost:8080")
+	toolService := tool.NewService("https://localhost:8081")
+	if err := Static(toolService); err != nil {
+		log.Error().Err(err).Msg("static failure")
+		return
+	}
 
+	authService := auth.NewService("https://localhost:8080")
 	if err := Case0(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
 	if err := Case1(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
+		return
+	}
+	if err := Case2(authService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		la.Consume(20)
 		return
 	}
 }

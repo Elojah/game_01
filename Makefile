@@ -148,16 +148,7 @@ check: lint test
 .PHONY: lint
 lint:
 	$(info $(M) running $(GOLINT)…) @
-	$Q GO_VENDOR=1 $(GOLINT)\
-					"--vendor" \
-					"--deadline=1m" \
-					"--disable=gotype" \
-					"--disable=vetshadow" \
-					"--disable=gocyclo" \
-					"--disable=goconst" \
-					"--fast" \
-					"--json" \
-					"./..."
+	$Q golangci-lint run
 
 # Test
 .PHONY: test

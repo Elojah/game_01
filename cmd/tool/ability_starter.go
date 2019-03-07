@@ -36,6 +36,7 @@ func (h *handler) postAbilityStarters(w http.ResponseWriter, r *http.Request) {
 	for _, st := range starters {
 		if err := h.AbilityStarterStore.SetStarter(st); err != nil {
 			logger.Error().Err(err).Str("ability_starter", st.EntityID.String()).Msg("failed to set ability_starter")
+			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
 	}

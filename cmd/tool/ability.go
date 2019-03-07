@@ -46,6 +46,7 @@ func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 	for _, a := range abilities {
 		if err := h.AbilityStore.SetAbility(a.A, a.EntityID); err != nil {
 			logger.Error().Err(err).Str("ability", a.A.ID.String()).Msg("failed to set ability")
+			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
 		logger.Info().Str("ability", a.A.ID.String()).Str("entity", a.EntityID.String()).Msg("tool ability success")

@@ -53,6 +53,7 @@ func run(prog string, filename string) {
 	h := &handler{
 		AbilityStore:         abilityStore,
 		AbilityTemplateStore: abilityStore,
+		AbilityStarterStore:  abilityStore,
 		AccountStore:         accountStore,
 		EntityStore:          entityLRUStore,
 		EntityTemplateStore:  entityStore,

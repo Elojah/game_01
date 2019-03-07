@@ -36,6 +36,7 @@ func (h *handler) postSectors(w http.ResponseWriter, r *http.Request) {
 	for _, s := range sectors {
 		if err := h.SectorStore.SetSector(s); err != nil {
 			logger.Error().Err(err).Str("sector", s.ID.String()).Msg("failed to set sector")
+			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
 	}

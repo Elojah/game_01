@@ -1,4 +1,4 @@
-package log_analyzer
+package loganalyzer
 
 import (
 	"bufio"

@@ -38,11 +38,13 @@ func (h *handler) postSequencer(w http.ResponseWriter, r *http.Request) {
 		case infra.Open:
 			if _, err := h.SequencerService.New(s.ID); err != nil {
 				logger.Error().Err(err).Str("sequencer", s.ID.String()).Msg("failed to set sequencer")
+				http.Error(w, "store failure", http.StatusInternalServerError)
 				return
 			}
 		case infra.Close:
 			if err := h.SequencerService.Remove(s.ID); err != nil {
 				logger.Error().Err(err).Str("sequencer", s.ID.String()).Msg("failed to set sequencer")
+				http.Error(w, "store failure", http.StatusInternalServerError)
 				return
 			}
 		}

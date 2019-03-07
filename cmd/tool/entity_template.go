@@ -36,6 +36,7 @@ func (h *handler) postEntityTemplates(w http.ResponseWriter, r *http.Request) {
 	for _, t := range templates {
 		if err := h.EntityTemplateStore.SetTemplate(t); err != nil {
 			logger.Error().Err(err).Str("entity_template", t.ID.String()).Msg("failed to set entity_template")
+			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
 	}

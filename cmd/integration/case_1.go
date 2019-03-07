@@ -10,7 +10,7 @@ const (
 	password1 = "test_NYYovlaKoFZUVR"
 )
 
-// Case1 subscribe a new account and unsubscribe it.
+// Case1 :
 // - Subscribe
 // - SignIn
 // - SignOut

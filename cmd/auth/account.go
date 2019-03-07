@@ -29,10 +29,10 @@ func (a Account) Check() error {
 	if lu < 4 || lu > 25 ||
 		lp < 7 || lp > 50 ||
 		strings.IndexFunc(a.Username, func(r rune) bool {
-			return (r < 'A' || r > 'z') && (r < '0' || r > '9')
+			return (r < 'A' || r > 'z') && (r < '0' || r > '9') && (r != '_')
 		}) != -1 ||
 		strings.IndexFunc(a.Password, func(r rune) bool {
-			return (r < 'A' || r > 'z') && (r < '0' || r > '9')
+			return (r < 'A' || r > 'z') && (r < '0' || r > '9') && (r != '_')
 		}) != -1 {
 		return errors.New("invalid account")
 	}
