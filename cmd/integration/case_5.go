@@ -1,10 +1,11 @@
 package main
 
 import (
+	"github.com/pkg/errors"
+
 	"github.com/elojah/game_01/cmd/integration/auth"
 	"github.com/elojah/game_01/cmd/integration/client"
 	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -44,7 +45,12 @@ func Case5(as *auth.Service, cs *client.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}
-	if err := cs.MoveSameSector(tok.ID, ent, geometry.Vec3{X: 52.0021, Y: 83.7427, Z: 57.2037}); err != nil {
+	newCoord, err := cs.MoveSameSector(tok.ID, ent, geometry.Vec3{X: 52.0021, Y: 83.7427, Z: 57.2037})
+	if err != nil {
+		return errors.Wrap(err, "case_5")
+	}
+	_, err = cs.GetState(ent.ID, geometry.Position{SectorID: ent.Position.SectorID, Coord: newCoord})
+	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}
 	if err := as.DisconnectPC(tok.ID); err != nil {

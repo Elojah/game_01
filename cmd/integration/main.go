@@ -85,7 +85,7 @@ func main() {
 		return
 	}
 
-	clientService := client.NewService(laClient.Processes["client"].In)
+	clientService := client.NewService(laClient)
 	if err := Case5(authService, clientService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return

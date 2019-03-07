@@ -105,18 +105,18 @@ func (a *LA) Consume(n int) {
 	}
 }
 
-func (a *LA) Retrieve(f func(string) (bool, error), max int) (string, error) {
+func (a *LA) Retrieve(f func(string) (bool, error), max int) error {
 	for i := 0; i < max; i++ {
 		s := <-a.c
 		ok, err := f(s)
 		if err != nil {
-			return s, err
+			return err
 		}
 		if ok {
-			return s, nil
+			return nil
 		}
 	}
-	return "", fmt.Errorf("corresponding log not found in %d logs", max)
+	return fmt.Errorf("corresponding log not found in %d logs", max)
 }
 
 // Expect sends log into f and return error if f fail. Returns nil when f returns ok.
