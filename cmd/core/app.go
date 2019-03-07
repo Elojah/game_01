@@ -47,9 +47,8 @@ type app struct {
 	subs map[ulid.ID]*infra.Subscription
 	seqs map[ulid.ID]*Sequencer
 
-	limit         int
-	moveTolerance float64
-	lootRadius    float64
+	limit      int
+	lootRadius float64
 }
 
 func (a *app) Dial(c Config) error {

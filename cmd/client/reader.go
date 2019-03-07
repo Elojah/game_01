@@ -38,7 +38,7 @@ func newReader(c *client.C, ack <-chan gulid.ID) *reader {
 		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 		event:   make(chan event.DTO),
-		events:  make(map[gulid.ID]event.DTO, 0),
+		events:  make(map[gulid.ID]event.DTO),
 		ack:     ack,
 	}
 }

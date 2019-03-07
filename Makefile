@@ -12,7 +12,7 @@ endif
 
 GODOC     = godoc
 GOFMT     = gofmt
-GOLINT    = gometalinter
+GOLINT    = golangci-lint
 
 API         = api
 CLIENT      = client
@@ -147,8 +147,8 @@ check: lint test
 # Lint
 .PHONY: lint
 lint:
-	$(info $(M) running $(GOLINT)…) @
-	$Q golangci-lint run
+	$(info $(M) running $(GOLINT)…)
+	$Q golangci-lint run --enable-all --skip-dirs cmd/integration.bak
 
 # Test
 .PHONY: test
