@@ -10,9 +10,14 @@ else
 	GO = go
 endif
 
-GODOC     = godoc
-GOFMT     = gofmt
-GOLINT    = golangci-lint
+ifneq ($(wildcard ./bin/golangci-lint),)
+	GOLINT = ./bin/golangci-lint
+else
+	GOLINT = golangci-lint
+endif
+
+GODOC       = godoc
+GOFMT       = gofmt
 
 API         = api
 CLIENT      = client
@@ -148,7 +153,7 @@ check: lint test
 .PHONY: lint
 lint:
 	$(info $(M) running $(GOLINT)…)
-	$Q golangci-lint run --skip-dirs cmd/integration.bak
+	$Q $(GOLINT) run --skip-dirs cmd/integration.bak
 
 # Test
 .PHONY: test
