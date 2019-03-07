@@ -9,8 +9,8 @@ const (
 	username2 = "test_bwzFEZBgxu"
 	password2 = "test_NYYovlaKoFZUVR"
 
-	pcName = "test_hBBJFsDkrDyUom"
-	pcType = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+	pcName2 = "test_hBBJFsDkrDyUom"
+	pcType2 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
 )
 
 // Case2 :
@@ -27,7 +27,7 @@ func Case2(s *auth.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_2")
 	}
-	if err := s.CreatePC(tok.ID, pcName, pcType); err != nil {
+	if err := s.CreatePC(tok.ID, pcName2, pcType2); err != nil {
 		return errors.Wrap(err, "case_2")
 	}
 	if err := s.SignOut(tok.ID, username2); err != nil {

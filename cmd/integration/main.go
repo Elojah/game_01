@@ -69,11 +69,20 @@ func main() {
 	}
 	if err := Case1(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
+		la.Consume(100)
 		return
 	}
 	if err := Case2(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
-		la.Consume(20)
+		return
+	}
+	if err := Case3(authService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		return
+	}
+	if err := Case4(authService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		la.Consume(100)
 		return
 	}
 }

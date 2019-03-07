@@ -129,6 +129,17 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Close token recurrer.
+	if err := h.InfraRecurrerService.Remove(tok.ID); err != nil {
+		switch errors.Cause(err).(type) {
+		case gerrors.ErrNotFound:
+		default:
+			logger.Error().Err(err).Msg("failed to remove recurrer")
+			http.Error(w, "failed to remove recurrer", http.StatusInternalServerError)
+			return
+		}
+	}
+
 	// #Delete token
 	if err := h.AccountTokenStore.DelToken(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to delete token")
