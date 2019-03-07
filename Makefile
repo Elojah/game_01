@@ -148,7 +148,7 @@ check: lint test
 .PHONY: lint
 lint:
 	$(info $(M) running $(GOLINT)…)
-	$Q golangci-lint run --enable-all --skip-dirs cmd/integration.bak
+	$Q golangci-lint run --skip-dirs cmd/integration.bak
 
 # Test
 .PHONY: test

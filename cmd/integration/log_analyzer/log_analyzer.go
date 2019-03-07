@@ -75,7 +75,7 @@ type LA struct {
 func NewLA() *LA {
 	return &LA{
 		c:         make(chan string, 1000),
-		Processes: make(map[string]*process, 0),
+		Processes: make(map[string]*process),
 	}
 }
 
