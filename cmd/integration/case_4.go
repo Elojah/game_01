@@ -21,6 +21,7 @@ const (
 // - ConnectPC
 // - SignOut
 // - Unsubscribe
+// Test a signout while being connected
 func Case4(s *auth.Service) error {
 	if err := s.Subscribe(username4, password4); err != nil {
 		return errors.Wrap(err, "case_4")

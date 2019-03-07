@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/elojah/game_01/cmd/integration/auth"
+	"github.com/elojah/game_01/cmd/integration/client"
 	"github.com/elojah/game_01/cmd/integration/log_analyzer"
 	"github.com/elojah/game_01/cmd/integration/tool"
 	"github.com/rs/zerolog"
@@ -69,7 +70,6 @@ func main() {
 	}
 	if err := Case1(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
-		la.Consume(100)
 		return
 	}
 	if err := Case2(authService); err != nil {
@@ -82,7 +82,12 @@ func main() {
 	}
 	if err := Case4(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
-		la.Consume(100)
+		return
+	}
+
+	clientService := client.NewService(laClient.Processes["client"].In)
+	if err := Case5(authService, clientService); err != nil {
+		log.Error().Err(err).Msg("case failure")
 		return
 	}
 }

@@ -1,11 +1,13 @@
 package client
 
+import "io"
+
 // Service wraps client helpers.
 type Service struct {
-	url string
+	in io.WriteCloser
 }
 
 // NewService returns a integration service for client.
-func NewService(url string) *Service {
-	return &Service{url: url}
+func NewService(in io.WriteCloser) *Service {
+	return &Service{in: in}
 }
