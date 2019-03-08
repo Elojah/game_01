@@ -27,16 +27,16 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 
-	var move event.MoveSource
+	var move event.Move
 	if err := decoder.Decode(&move); err != nil {
 		logger.Error().Err(err).Msg("invalid JSON")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	logger.Info().Int("targets", len(move.TargetIDs)).Msg("found")
+	logger.Info().Int("targets", len(move.Targets)).Msg("found")
 
 	ts := gulid.NewID().Time()
-	for _, targetID := range move.TargetIDs {
+	for _, targetID := range move.Targets {
 
 		// #Get current entity state.
 		e, err := h.EntityStore.GetEntity(targetID, ts)

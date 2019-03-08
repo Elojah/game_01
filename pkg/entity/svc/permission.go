@@ -14,8 +14,8 @@ type PermissionService struct {
 	EntityPermissionStore entity.PermissionStore
 }
 
-// CheckSource check if token has owner permission on source.
-func (s PermissionService) CheckSource(id gulid.ID, tok gulid.ID) error {
+// CheckPermission check if token has owner permission on source.
+func (s PermissionService) CheckPermission(tok gulid.ID, id gulid.ID) error {
 
 	// #Check permission token/source.
 	permission, err := s.EntityPermissionStore.GetPermission(tok.String(), id.String())

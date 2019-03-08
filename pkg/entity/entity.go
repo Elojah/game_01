@@ -4,7 +4,6 @@ import (
 	multierror "github.com/hashicorp/go-multierror"
 
 	"github.com/elojah/game_01/pkg/ability"
-	"github.com/elojah/game_01/pkg/account"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
@@ -19,7 +18,7 @@ type Store interface {
 
 // Service represents entity usecases.
 type Service interface {
-	Disconnect(id gulid.ID, tok account.Token) error
+	Disconnect(id gulid.ID) error
 }
 
 // CastAbility decreases MP (without check) and assign a new cast to entity.

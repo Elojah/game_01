@@ -24,9 +24,8 @@ func (s *Service) MoveSameSector(tokID gulid.ID, ent entity.E, vec geometry.Vec3
 		Z: math.Max(math.Min(ent.Position.Coord.Z+vec.Z, 1024), 0),
 	}
 
-	now := ulid.Now()
 	moveSameSector := event.DTO{
-		ID:    gulid.NewTimeID(now),
+		ID:    gulid.NewTimeID(ulid.Now()),
 		Token: tokID,
 		Query: event.Query{
 			Move: &event.Move{

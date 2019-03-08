@@ -1,7 +1,6 @@
 package svc
 
 import (
-	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/infra"
 	"github.com/elojah/game_01/pkg/sector"
@@ -21,7 +20,7 @@ type Service struct {
 }
 
 // Disconnect disconnects an entity.
-func (s Service) Disconnect(id gulid.ID, t account.Token) error {
+func (s Service) Disconnect(id gulid.ID) error {
 
 	e, err := s.EntityStore.GetEntity(id, ulid.Now())
 	if err != nil {
@@ -30,11 +29,6 @@ func (s Service) Disconnect(id gulid.ID, t account.Token) error {
 
 	// #Close entity sequencer
 	if err := s.SequencerService.Remove(id); err != nil {
-		return errors.Wrap(err, "disconnect entity")
-	}
-
-	// #Delete token permission on entity
-	if err := s.EntityPermissionStore.DelPermission(t.ID.String(), id.String()); err != nil {
 		return errors.Wrap(err, "disconnect entity")
 	}
 

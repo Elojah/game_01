@@ -132,7 +132,12 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	}
 	for _, p := range ps {
 		targetID := gulid.MustParse(p.Target)
-		if err := s.EntityService.Disconnect(targetID, t); err != nil {
+		if err := s.EntityService.Disconnect(targetID); err != nil {
+			result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
+			continue // don't remove permission in error case, it could lead to data loss
+		}
+		// #Delete token permission on entity
+		if err := s.EntityPermissionStore.DelPermission(p.Source, p.Target); err != nil {
 			result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 		}
 	}

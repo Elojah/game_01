@@ -128,11 +128,11 @@ func (a *app) Sequencer(msg *infra.Message) {
 	case infra.Close:
 		seq, ok := a.seqs[sequencer.ID]
 		if !ok {
-			logger.Error().Str("sequencer", sequencer.ID.String()).Msg("sequencer not found")
+			logger.Error().Msg("sequencer not found")
 			return
 		}
 		if err := seq.Close(); err != nil {
-			logger.Error().Err(err).Str("sequencer", sequencer.ID.String()).Msg("failed to close sequencer")
+			logger.Error().Err(err).Msg("failed to close sequencer")
 			return
 		}
 		sub, ok := a.subs[sequencer.ID]
@@ -156,13 +156,11 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Str("sequencer", id.String()).
 		Str("event", e.ID.String()).
 		Uint64("ts", id.Time()).
-		Str("type", e.Action.String()).
+		Str("action", e.Action.GoString()).
 		Logger()
 
 	var err error
 	switch e.Action.GetValue().(type) {
-	case *event.MoveSource:
-		err = a.MoveSource(id, e)
 	case *event.MoveTarget:
 		err = a.MoveTarget(id, e)
 	case *event.CastSource:

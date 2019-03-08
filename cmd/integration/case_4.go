@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/elojah/game_01/cmd/integration/auth"
 	"github.com/pkg/errors"
 )
@@ -40,6 +42,8 @@ func Case4(s *auth.Service) error {
 	if _, err := s.ConnectPC(tok.ID, pcs[0].ID); err != nil {
 		return errors.Wrap(err, "case_4")
 	}
+	// Wait for sequencer/subs to be ready
+	time.Sleep(50 * time.Millisecond)
 	if err := s.SignOut(tok.ID, username4); err != nil {
 		return errors.Wrap(err, "case_4")
 	}

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/cmd/integration/auth"
@@ -45,11 +47,20 @@ func Case5(as *auth.Service, cs *client.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}
-	newCoord, err := cs.MoveSameSector(tok.ID, ent, geometry.Vec3{X: 52.0021, Y: 83.7427, Z: 57.2037})
+	// Wait for sequencer/subs to be ready
+	time.Sleep(50 * time.Millisecond)
+	// Retrieve current entity state
+	ent, err = cs.GetState(ent.ID)
 	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}
-	_, err = cs.GetState(ent.ID, geometry.Position{SectorID: ent.Position.SectorID, Coord: newCoord})
+	// Move entity in 10/10/10 direction
+	newCoord, err := cs.MoveSameSector(tok.ID, ent, geometry.Vec3{X: 10, Y: 10, Z: 10})
+	if err != nil {
+		return errors.Wrap(err, "case_5")
+	}
+	// Check entity moved at correct position
+	_, err = cs.GetStateAtPosition(ent.ID, geometry.Position{SectorID: ent.Position.SectorID, Coord: newCoord})
 	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}

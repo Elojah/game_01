@@ -84,8 +84,6 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 // Works recursively
 func (s *TriggerService) Cancel(e event.E) error {
 	switch e.Action.GetValue().(type) {
-	case *event.MoveSource:
-		return s.CancelMoveSource(e)
 	case *event.MoveTarget:
 		return s.CancelMoveTarget(e)
 	case *event.CastSource:
@@ -110,31 +108,9 @@ func (s *TriggerService) Cancel(e event.E) error {
 	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }
 
-// CancelMoveSource cancels a MoveSource event.
-func (s *TriggerService) CancelMoveSource(e event.E) error {
-	ms := e.Action.MoveSource
-	e = event.E{
-		ID: gulid.NewTimeID(e.ID.Time()),
-		Action: event.Action{
-			Cancel: &event.Cancel{},
-		},
-		Trigger: e.ID,
-	}
-
-	var g errgroup.Group
-	for _, targetID := range ms.TargetIDs {
-		targetID := targetID
-		g.Go(func() error {
-			return errors.Wrapf(s.QStore.PublishEvent(e, targetID), "cancel move source")
-		})
-	}
-	return g.Wait()
-}
-
 // CancelMoveTarget cancels a MoveTarget event.
 func (s *TriggerService) CancelMoveTarget(e event.E) error {
-	// WARNING Actually it is not a leaf but the tree would resend to all sector entities
-	// Or we may should save entities who interacted with this specific spot, think about it
+	// Actually move interacts with all sector entities so cancel may trigger area abilities for example
 	return nil
 }
 

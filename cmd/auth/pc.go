@@ -10,6 +10,7 @@ import (
 	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/geometry"
@@ -298,6 +299,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		ID:     gulid.NewID(),
 		Source: tok.ID.String(),
 		Target: e.ID.String(),
+		Value:  int(account.Owner),
 	}); err != nil {
 		logger.Error().Err(err).Msg("failed to create permissions")
 		http.Error(w, "failed to create permissions", http.StatusInternalServerError)

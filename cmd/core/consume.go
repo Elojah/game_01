@@ -15,7 +15,7 @@ func (a *app) ConsumeSource(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Check permission source/token
-	if err := a.EntityPermissionService.CheckSource(id, e.Token); err != nil {
+	if err := a.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
 		return errors.Wrap(err, "consume source")
 	}
 

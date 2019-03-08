@@ -20,5 +20,5 @@ type PermissionStore interface {
 
 // PermissionService wraps permission usecases for entities.
 type PermissionService interface {
-	CheckSource(gulid.ID, gulid.ID) error
+	CheckPermission(gulid.ID, gulid.ID) error
 }
