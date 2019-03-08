@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/elojah/game_01/pkg/ability"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	eventmocks "github.com/elojah/game_01/pkg/event/mocks"
@@ -20,8 +21,12 @@ func TestTriggerService(t *testing.T) {
 			ID:    gulid.NewID(),
 			Token: gulid.NewID(),
 			Action: event.Action{
-				MoveSource: &event.MoveSource{
-					TargetIDs: gulid.NewIDs(3),
+				CastSource: &event.CastSource{
+					Targets: map[string]ability.Targets{
+						"test": ability.Targets{
+							Entities: gulid.NewIDs(3),
+						},
+					},
 				},
 			},
 			Trigger: gulid.NewID(),
@@ -89,8 +94,12 @@ func TestTriggerService(t *testing.T) {
 			ID:    gulid.NewID(),
 			Token: e.Token,
 			Action: event.Action{
-				MoveSource: &event.MoveSource{
-					TargetIDs: gulid.NewIDs(2),
+				CastSource: &event.CastSource{
+					Targets: map[string]ability.Targets{
+						"test": ability.Targets{
+							Entities: gulid.NewIDs(2),
+						},
+					},
 				},
 			},
 			Trigger: e.Trigger,

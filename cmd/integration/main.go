@@ -88,7 +88,6 @@ func main() {
 	clientService := client.NewService(laClient)
 	if err := Case5(authService, clientService); err != nil {
 		log.Error().Err(err).Msg("case failure")
-		la.Consume(100)
 		return
 	}
 }
