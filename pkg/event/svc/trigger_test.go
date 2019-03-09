@@ -14,14 +14,14 @@ import (
 
 func TestTriggerService(t *testing.T) {
 
-	t.Run("set event move source success", func(t *testing.T) {
+	t.Run("set event perform source success", func(t *testing.T) {
 
 		// Data
 		e := event.E{
 			ID:    gulid.NewID(),
 			Token: gulid.NewID(),
 			Action: event.Action{
-				CastSource: &event.CastSource{
+				PerformSource: &event.PerformSource{
 					Targets: map[string]ability.Targets{
 						"test": ability.Targets{
 							Entities: gulid.NewIDs(3),
@@ -94,7 +94,7 @@ func TestTriggerService(t *testing.T) {
 			ID:    gulid.NewID(),
 			Token: e.Token,
 			Action: event.Action{
-				CastSource: &event.CastSource{
+				PerformSource: &event.PerformSource{
 					Targets: map[string]ability.Targets{
 						"test": ability.Targets{
 							Entities: gulid.NewIDs(2),
