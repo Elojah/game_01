@@ -18,51 +18,61 @@ type TriggerService struct {
 
 // Set event if necessary considering trigger update or removal.
 func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
-	var prevID gulid.ID
-	err := (error)(gerrors.ErrNotFound{})
 
-	// This trick is to avoid huge if clauses. By default err is ErrNotFound to jump to final set
-	if !e.Trigger.IsZero() {
-		prevID, err = s.TriggerStore.GetTrigger(e.Trigger, entityID)
+	if e.Trigger.IsZero() {
+		// Set event
+		return errors.Wrapf(s.Store.SetEvent(e, entityID), "set event with trigger")
 	}
 
-	// err checking of above statement
+	prevID, err := s.TriggerStore.GetTrigger(e.Trigger, entityID)
 	if err != nil {
 		switch errors.Cause(err).(type) {
+		// Trigger doesn't exist yet so write event+trigger
 		case gerrors.ErrNotFound:
+			// Cancel events will just be ignored here because it can't cancel an event not triggered yet
+			// If event is a cancellation, don't set event or trigger but returns a no calculate error
+			if e.Action.Cancel != nil {
+				return errors.Wrapf(gerrors.ErrIneffectiveCancel{
+					TriggerID: e.Trigger.String(),
+				}, "set event with trigger")
+			}
+			if err := s.Store.SetEvent(e, entityID); err != nil {
+				return errors.Wrapf(err, "set event with trigger")
+			}
+			if err := s.TriggerStore.SetTrigger(event.Trigger{
+				EntityID:      entityID,
+				EventSourceID: e.Trigger,
+				EventTargetID: e.ID,
+			}); err != nil {
+				return errors.Wrapf(err, "set event with trigger")
+			}
 		default:
 			return errors.Wrapf(err, "set event with trigger")
 		}
 	}
+
 	// No errors when retrieving trigger means a event has already been triggered by it
 	// In this case we clean previous event and previous trigger
-	if err == nil {
-		// Retrieve and delete previous event.
-		prev, err := s.Store.GetEvent(prevID, entityID)
-		if err != nil {
-			return errors.Wrapf(err, "set event with trigger")
-		}
-		if err := s.Store.DelEvent(prevID, entityID); err != nil {
-			return errors.Wrapf(err, "set event with trigger")
-		}
-		// Delete trigger
-		if err := s.TriggerStore.DelTrigger(e.Trigger, entityID); err != nil {
-			return errors.Wrapf(err, "set event with trigger")
-		}
-		// Cancel previous event
-		if err := s.Cancel(prev); err != nil {
-			return errors.Wrapf(err, "set event with trigger")
-		}
-		// If event is a cancellation, don't set event or trigger and stop here
-		if e.Action.Cancel != nil {
-			return nil
-		}
+
+	// Retrieve and delete previous event.
+	prev, err := s.Store.GetEvent(prevID, entityID)
+	if err != nil {
+		return errors.Wrapf(err, "set event with trigger")
 	}
-	// If event is a cancellation, don't set event or trigger but returns a no calculate error
+	if err := s.Store.DelEvent(prevID, entityID); err != nil {
+		return errors.Wrapf(err, "set event with trigger")
+	}
+	// Delete trigger
+	if err := s.TriggerStore.DelTrigger(e.Trigger, entityID); err != nil {
+		return errors.Wrapf(err, "set event with trigger")
+	}
+	// Cancel previous event
+	if err := s.Cancel(prev); err != nil {
+		return errors.Wrapf(err, "set event with trigger")
+	}
+	// If event is a cancellation, don't set event or trigger and stop here
 	if e.Action.Cancel != nil {
-		return errors.Wrapf(gerrors.ErrIneffectiveCancel{
-			TriggerID: e.Trigger.String(),
-		}, "set event with trigger")
+		return nil
 	}
 
 	// Set event and trigger
