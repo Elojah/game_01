@@ -39,13 +39,11 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 			if err := s.Store.SetEvent(e, entityID); err != nil {
 				return errors.Wrapf(err, "set event with trigger")
 			}
-			if err := s.TriggerStore.SetTrigger(event.Trigger{
+			return errors.Wrapf(s.TriggerStore.SetTrigger(event.Trigger{
 				EntityID:      entityID,
 				EventSourceID: e.Trigger,
 				EventTargetID: e.ID,
-			}); err != nil {
-				return errors.Wrapf(err, "set event with trigger")
-			}
+			}), "set event with trigger")
 		default:
 			return errors.Wrapf(err, "set event with trigger")
 		}
