@@ -49,3 +49,29 @@ func (s *Service) MoveSameSector(tokID gulid.ID, ent entity.E, vec geometry.Vec3
 
 	return newCoord, nil
 }
+
+// Move move an entity at position pos. Don't check any distance limit reach.
+func (s *Service) Move(tokID gulid.ID, ent entity.E, pos geometry.Position) error {
+
+	moveNextSector := event.DTO{
+		ID:    gulid.NewTimeID(ulid.Now()),
+		Token: tokID,
+		Query: event.Query{
+			Move: &event.Move{
+				Targets:  []gulid.ID{ent.ID},
+				Position: pos,
+			},
+		},
+	}
+	raw, err := json.Marshal(moveNextSector)
+	raw = append(raw, '\n')
+	if err != nil {
+		return errors.Wrap(fmt.Errorf("failed to marshal payload"), "move same sector")
+	}
+
+	if _, err := io.WriteString(s.LA.Processes["client"].In, string(raw)); err != nil {
+		return errors.Wrap(err, "move same sector")
+	}
+
+	return nil
+}

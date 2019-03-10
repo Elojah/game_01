@@ -90,4 +90,8 @@ func main() {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
+	if err := Case6(authService, clientService, toolService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		return
+	}
 }
