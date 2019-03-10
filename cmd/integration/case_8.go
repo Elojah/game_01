@@ -17,11 +17,11 @@ import (
 
 const (
 	username8_0 = "test_hzOADnuxelP"
-	password8_0 = "test_FRKsnfbDFFd"
+	password8_0 = "test_FRKsnfbDFFd" // nolint: gosec
 	pcName8_0   = "test_uxbQmPNwdyXxJ"
 
 	username8_1 = "test_yNRkOPVlGbWod"
-	password8_1 = "test_hSNMmjIuDCpONZAx"
+	password8_1 = "test_hSNMmjIuDCpONZAx" // nolint: gosec
 	pcName8_1   = "test_qAp"
 
 	pcType8 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
@@ -58,18 +58,18 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err := as.Subscribe(username8_0, password8_0); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	tok_0, err := as.SignIn(username8_0, password8_0)
+	tok0, err := as.SignIn(username8_0, password8_0)
 	if err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	if err := as.CreatePC(tok_0.ID, pcName8_0, pcType8); err != nil {
+	if err := as.CreatePC(tok0.ID, pcName8_0, pcType8); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	pcs_0, err := as.ListPC(tok_0.ID)
-	if err != nil || len(pcs_0) != 1 {
+	pcs0, err := as.ListPC(tok0.ID)
+	if err != nil || len(pcs0) != 1 {
 		return errors.Wrap(err, "case_8")
 	}
-	ent_0, err := as.ConnectPC(tok_0.ID, pcs_0[0].ID)
+	ent0, err := as.ConnectPC(tok0.ID, pcs0[0].ID)
 	if err != nil {
 		return errors.Wrap(err, "case_8")
 	}
@@ -78,18 +78,18 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err := as.Subscribe(username8_1, password8_1); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	tok_1, err := as.SignIn(username8_1, password8_1)
+	tok1, err := as.SignIn(username8_1, password8_1)
 	if err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	if err := as.CreatePC(tok_1.ID, pcName8_1, pcType8); err != nil {
+	if err := as.CreatePC(tok1.ID, pcName8_1, pcType8); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	pcs_1, err := as.ListPC(tok_1.ID)
-	if err != nil || len(pcs_1) != 1 {
+	pcs1, err := as.ListPC(tok1.ID)
+	if err != nil || len(pcs1) != 1 {
 		return errors.Wrap(err, "case_8")
 	}
-	ent_1, err := as.ConnectPC(tok_1.ID, pcs_1[0].ID)
+	ent1, err := as.ConnectPC(tok1.ID, pcs1[0].ID)
 	if err != nil {
 		return errors.Wrap(err, "case_8")
 	}
@@ -98,38 +98,38 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	time.Sleep(80 * time.Millisecond)
 	// Retrieve current entity state
 
-	ent_0, err = cs.GetState(ent_0.ID, 50)
+	ent0, err = cs.GetState(ent0.ID, 50)
 	if err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	ent_1, err = cs.GetState(ent_1.ID, 50)
+	ent1, err = cs.GetState(ent1.ID, 50)
 	if err != nil {
 		return errors.Wrap(err, "case_8")
 	}
 
 	// Starter is unique: 01CF001HTBA3CDR1ERJ6RF183A (1024, 1024, 1024)
-	if err := ts.EntityMove(ent_0.ID, geometry.Position{
-		SectorID: ent_0.Position.SectorID,
+	if err := ts.EntityMove(ent0.ID, geometry.Position{
+		SectorID: ent0.Position.SectorID,
 		Coord:    geometry.Vec3{X: 1020, Y: 0, Z: 0},
 	}); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
 
-	// Move ent_1 close to caster
-	if err := ts.EntityMove(ent_1.ID, geometry.Position{
-		SectorID: ent_1.Position.SectorID,
+	// Move ent1 close to caster
+	if err := ts.EntityMove(ent1.ID, geometry.Position{
+		SectorID: ent1.Position.SectorID,
 		Coord:    geometry.Vec3{X: 10, Y: 10, Z: 0},
 	}); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
 
-	// Cast from ent_0 to ent_1 with starter skill
-	if err := cs.Cast(tok_0.ID, event.Cast{
-		Source:    ent_0.ID,
+	// Cast from ent0 to ent1 with starter skill
+	if err := cs.Cast(tok0.ID, event.Cast{
+		Source:    ent0.ID,
 		AbilityID: gulid.MustParse("01CP2Z4SDEWZK8YF29E08GPDVC"),
 		Targets: map[string]ability.Targets{
-			"01CPFBN88EESQ4QA8N820RV924": ability.Targets{
-				Entities: []gulid.ID{ent_1.ID},
+			"01CPFBN88EESQ4QA8N820RV924": {
+				Entities: []gulid.ID{ent1.ID},
 			},
 		},
 	}); err != nil {
@@ -139,29 +139,36 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	time.Sleep(1000 * time.Millisecond) // cast time last 1000 ms
 
 	// Check entity caster used mana
-	_, err = cs.GetStateAt(ent_0.ID, 500, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent0.ID, 500, func(actual entity.E) bool {
 		return actual.MP == 250-10
 	})
-	// Check entity target took damage
-	_, err = cs.GetStateAt(ent_1.ID, 50, func(actual entity.E) bool {
-		return actual.HP == 150-30
-	})
-
-	// #0
-	if err := as.DisconnectPC(tok_0.ID); err != nil {
+	if err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	if err := as.SignOut(tok_0.ID, username8_0); err != nil {
+
+	// Check entity target took damage
+	_, err = cs.GetStateAt(ent1.ID, 50, func(actual entity.E) bool {
+		return actual.HP == 150-30
+	})
+	if err != nil {
+		return errors.Wrap(err, "case_8")
+	}
+
+	// #0
+	if err := as.DisconnectPC(tok0.ID); err != nil {
+		return errors.Wrap(err, "case_8")
+	}
+	if err := as.SignOut(tok0.ID, username8_0); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
 	if err := as.Unsubscribe(username8_0, password8_0); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
 	// #1
-	if err := as.DisconnectPC(tok_1.ID); err != nil {
+	if err := as.DisconnectPC(tok1.ID); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
-	if err := as.SignOut(tok_1.ID, username8_1); err != nil {
+	if err := as.SignOut(tok1.ID, username8_1); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
 	if err := as.Unsubscribe(username8_1, password8_1); err != nil {

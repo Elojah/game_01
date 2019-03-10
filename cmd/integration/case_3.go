@@ -9,7 +9,7 @@ import (
 
 const (
 	username3 = "test_gzArksMUjske"
-	password3 = "test_apMwqzFnAPhg"
+	password3 = "test_apMwqzFnAPhg" // nolint: gosec
 
 	pcName3 = "test_emh"
 	pcType3 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist

@@ -10,10 +10,10 @@ import (
 // EntitiesStore mocks sector.EntitiesStore.
 type EntitiesStore struct {
 	GetEntitiesFunc             func(ulid.ID) (sector.Entities, error)
-	GetEntitiesCount            int32
 	AddEntityToSectorFunc       func(ulid.ID, ulid.ID) error
-	AddEntityToSectorCount      int32
 	RemoveEntityFromSectorFunc  func(ulid.ID, ulid.ID) error
+	GetEntitiesCount            int32
+	AddEntityToSectorCount      int32
 	RemoveEntityFromSectorCount int32
 }
 

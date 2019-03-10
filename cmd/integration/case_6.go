@@ -15,7 +15,7 @@ import (
 
 const (
 	username6 = "test_EOvnhzSznpRCenMi"
-	password6 = "test_sffBzXAZKFdxCw"
+	password6 = "test_sffBzXAZKFdxCw" // nolint: gosec
 
 	pcName6 = "test_MKvmGgqOIMupVmJJw"
 	pcType6 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
@@ -33,14 +33,14 @@ const (
 // - SignOut
 // - Unsubscribe
 func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
-	if err := as.Subscribe(username5, password5); err != nil {
+	if err := as.Subscribe(username6, password6); err != nil {
 		return errors.Wrap(err, "case_6")
 	}
-	tok, err := as.SignIn(username5, password5)
+	tok, err := as.SignIn(username6, password6)
 	if err != nil {
 		return errors.Wrap(err, "case_6")
 	}
-	if err := as.CreatePC(tok.ID, pcName5, pcType5); err != nil {
+	if err := as.CreatePC(tok.ID, pcName6, pcType6); err != nil {
 		return errors.Wrap(err, "case_6")
 	}
 	pcs, err := as.ListPC(tok.ID)
@@ -98,10 +98,10 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err := as.DisconnectPC(tok.ID); err != nil {
 		return errors.Wrap(err, "case_6")
 	}
-	if err := as.SignOut(tok.ID, username5); err != nil {
+	if err := as.SignOut(tok.ID, username6); err != nil {
 		return errors.Wrap(err, "case_6")
 	}
-	if err := as.Unsubscribe(username5, password5); err != nil {
+	if err := as.Unsubscribe(username6, password6); err != nil {
 		return errors.Wrap(err, "case_6")
 	}
 	return nil

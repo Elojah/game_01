@@ -10,8 +10,8 @@ import (
 // Store mocks sector.Store.
 type Store struct {
 	SetSectorFunc  func(sector.S) error
-	SetSectorCount int32
 	GetSectorFunc  func(ulid.ID) (sector.S, error)
+	SetSectorCount int32
 	GetSectorCount int32
 }
 

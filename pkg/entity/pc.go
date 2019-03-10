@@ -12,11 +12,11 @@ const (
 
 var (
 	pcNames = map[string]struct{}{
-		"trickster":  struct{}{},
-		"mesmerist":  struct{}{},
-		"inquisitor": struct{}{},
-		"totemist":   struct{}{},
-		"scavenger":  struct{}{},
+		"trickster":  {},
+		"mesmerist":  {},
+		"inquisitor": {},
+		"totemist":   {},
+		"scavenger":  {},
 	}
 )
 

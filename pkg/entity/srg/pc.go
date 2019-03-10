@@ -56,7 +56,7 @@ func (s *Store) GetPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
 	if err := e.Unmarshal([]byte(val)); err != nil {
 		return entity.PC{}, errors.Wrapf(err, "get pc %s for account %s", id.String(), accountID.String())
 	}
-	return entity.PC(e), nil
+	return e, nil
 }
 
 // SetPC implemented with redis.

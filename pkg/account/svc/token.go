@@ -119,7 +119,7 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	}
 
 	// #Save last entity state into PC
-	pc := entity.PC(e)
+	pc := e
 	pc.ID = t.PC
 	if err := s.EntityPCStore.SetPC(pc, t.Account); err != nil {
 		return errors.Wrap(err, "disconnect token")

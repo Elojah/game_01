@@ -23,32 +23,32 @@ func TestSequencer(t *testing.T) {
 	now := ulid.Now()
 	cid := gulid.NewID().String()
 	eset := []event.E{
-		event.E{
+		{
 			ID: gulid.NewTimeID(now),
 			Action: event.Action{
 				CastSource: &event.CastSource{
 					AbilityID: gulid.NewID(),
 					Targets: map[string]ability.Targets{
-						cid: ability.Targets{
+						cid: {
 							Entities: []gulid.ID{gulid.NewID(), gulid.NewID(), gulid.NewID()},
 						},
 					},
 				},
 			},
 		},
-		event.E{
+		{
 			ID: gulid.NewTimeID(now + 1),
 			Action: event.Action{
 				MoveTarget: &event.MoveTarget{},
 			},
 		},
-		event.E{
+		{
 			ID: gulid.NewTimeID(now + 2),
 			Action: event.Action{
 				MoveTarget: &event.MoveTarget{},
 			},
 		},
-		event.E{
+		{
 			ID: gulid.NewTimeID(now + 3),
 			Action: event.Action{
 				MoveTarget: &event.MoveTarget{},

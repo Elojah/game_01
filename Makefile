@@ -153,7 +153,7 @@ check: lint test
 .PHONY: lint
 lint:
 	$(info $(M) running $(GOLINT)…)
-	$Q $(GOLINT) run --skip-dirs cmd/integration.bak
+	$Q $(GOLINT) run
 
 # Test
 .PHONY: test

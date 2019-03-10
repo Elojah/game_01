@@ -26,5 +26,5 @@ func (s *Store) PublishRecurrer(r infra.Recurrer, id ulid.ID) error {
 
 // SubscribeRecurrer implementation with redis pubsub.
 func (s *Store) SubscribeRecurrer(id ulid.ID) *infra.Subscription {
-	return (*infra.Subscription)(s.Subscribe(qrecurrerKey + id.String()))
+	return s.Subscribe(qrecurrerKey + id.String())
 }

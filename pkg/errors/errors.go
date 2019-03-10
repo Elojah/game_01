@@ -205,7 +205,8 @@ func (err ErrTooManyTargets) Error() string {
 	return fmt.Sprintf("too many targets %d for ability %s component %s", err.NTargets, err.AbilityID, err.ComponentID)
 }
 
-// ErrOutOfRange is raised when a component ability is performed out of range on a target or when an item is looted in a further position.
+// ErrOutOfRange is raised when a component ability is performed out of range
+// on a target or when an item is looted in a further position.
 type ErrOutOfRange struct {
 	Dist  float64
 	Range float64

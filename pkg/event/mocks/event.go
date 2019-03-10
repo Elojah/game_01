@@ -11,12 +11,12 @@ import (
 // Store mocks event.Store.
 type Store struct {
 	SetEventFunc   func(event.E, gulid.ID) error
-	SetEventCount  int32
 	GetEventFunc   func(gulid.ID, gulid.ID) (event.E, error)
-	GetEventCount  int32
 	ListEventFunc  func(gulid.ID, gulid.ID) ([]event.E, error)
-	ListEventCount int32
 	DelEventFunc   func(gulid.ID, gulid.ID) error
+	SetEventCount  int32
+	GetEventCount  int32
+	ListEventCount int32
 	DelEventCount  int32
 }
 
@@ -64,8 +64,8 @@ func NewStore() *Store {
 // QStore mocks event qstore.
 type QStore struct {
 	PublishEventFunc    func(event.E, gulid.ID) error
-	PublishEventCount   int32
 	SubscribeEventFunc  func(gulid.ID) *infra.Subscription
+	PublishEventCount   int32
 	SubscribeEventCount int32
 }
 

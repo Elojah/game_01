@@ -26,5 +26,5 @@ func (s *Store) PublishSequencer(seq infra.Sequencer, id ulid.ID) error {
 
 // SubscribeSequencer implementation with redis pubsub.
 func (s *Store) SubscribeSequencer(id ulid.ID) *infra.Subscription {
-	return (*infra.Subscription)(s.Subscribe(qsequencerKey + id.String()))
+	return s.Subscribe(qsequencerKey + id.String())
 }

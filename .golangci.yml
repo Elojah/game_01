@@ -42,3 +42,16 @@ run:
   # directory holds the correct copies of dependencies and ignores
   # the dependency descriptions in go.mod.
   modules-download-mode: vendor
+linters:
+  enable:
+  enable-all: true
+  disable:
+    - megacheck # Panic in go1.11+
+    - unparam # Error return should be automatic, even in nil case
+    - gocritic # Raise switch type but there is no way to change it in if clause
+    - dupl # In a template world why not but in Go...
+    - interfacer # Want to impose standard interface instead of logic domain
+    - goconst # For "classic" strings like POST, prefer to keep them hardcode
+    - gochecknoglobals # May be ok to have const
+  disable-all: false
+  fast: false

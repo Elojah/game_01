@@ -31,7 +31,7 @@ func (s *Store) GetTemplate(id ulid.ID) (entity.Template, error) {
 	if err := e.Unmarshal([]byte(val)); err != nil {
 		return entity.Template{}, errors.Wrapf(err, "get template %s", id.String())
 	}
-	return entity.Template(e), nil
+	return e, nil
 }
 
 // SetTemplate implemented with redis.

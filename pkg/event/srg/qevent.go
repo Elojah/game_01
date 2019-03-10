@@ -27,5 +27,5 @@ func (s *Store) PublishEvent(e event.E, id ulid.ID) error {
 
 // SubscribeEvent implementation with redis pubsub.
 func (s *Store) SubscribeEvent(id ulid.ID) *infra.Subscription {
-	return (*infra.Subscription)(s.Subscribe(qeventKey + id.String()))
+	return s.Subscribe(qeventKey + id.String())
 }

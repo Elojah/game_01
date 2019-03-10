@@ -23,7 +23,7 @@ func TestTriggerService(t *testing.T) {
 			Action: event.Action{
 				PerformSource: &event.PerformSource{
 					Targets: map[string]ability.Targets{
-						"test": ability.Targets{
+						"test": {
 							Entities: gulid.NewIDs(3),
 						},
 					},
@@ -96,7 +96,7 @@ func TestTriggerService(t *testing.T) {
 			Action: event.Action{
 				PerformSource: &event.PerformSource{
 					Targets: map[string]ability.Targets{
-						"test": ability.Targets{
+						"test": {
 							Entities: gulid.NewIDs(2),
 						},
 					},

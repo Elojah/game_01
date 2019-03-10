@@ -10,12 +10,12 @@ import (
 // TriggerStore mocks an event trigger store.
 type TriggerStore struct {
 	SetTriggerFunc   func(t event.Trigger) error
-	SetTriggerCount  int32
 	GetTriggerFunc   func(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error)
-	GetTriggerCount  int32
 	ListTriggerFunc  func(triggerID gulid.ID) ([]event.Trigger, error)
-	ListTriggerCount int32
 	DelTriggerFunc   func(triggerID gulid.ID, entityID gulid.ID) error
+	SetTriggerCount  int32
+	GetTriggerCount  int32
+	ListTriggerCount int32
 	DelTriggerCount  int32
 }
 
@@ -63,8 +63,8 @@ func NewTriggerStore() *TriggerStore {
 // TriggerService is mock for event.TriggerService.
 type TriggerService struct {
 	SetFunc     func(event.E, gulid.ID) error
-	SetCount    int32
 	CancelFunc  func(event.E) error
+	SetCount    int32
 	CancelCount int32
 }
 

@@ -10,12 +10,12 @@ import (
 // Store mocks entity.Store.
 type Store struct {
 	SetEntityFunc      func(entity.E, uint64) error
-	SetEntityCount     int32
 	GetEntityFunc      func(ulid.ID, uint64) (entity.E, error)
-	GetEntityCount     int32
 	DelEntityFunc      func(ulid.ID) error
-	DelEntityCount     int32
 	DelEntityByTSFunc  func(ulid.ID, uint64) error
+	SetEntityCount     int32
+	GetEntityCount     int32
+	DelEntityCount     int32
 	DelEntityByTSCount int32
 }
 

@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/elojah/game_01/cmd/integration/log_analyzer"
+	"github.com/elojah/game_01/cmd/integration/loganalyzer"
 )
 
 // Service wraps client helpers.

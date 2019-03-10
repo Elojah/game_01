@@ -8,7 +8,7 @@ import (
 
 	"github.com/elojah/game_01/cmd/integration/auth"
 	"github.com/elojah/game_01/cmd/integration/client"
-	"github.com/elojah/game_01/cmd/integration/log_analyzer"
+	"github.com/elojah/game_01/cmd/integration/loganalyzer"
 	"github.com/elojah/game_01/cmd/integration/tool"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -22,12 +22,12 @@ func main() {
 	la := loganalyzer.NewLA()
 
 	cmds := [][]string{
-		[]string{"sync", "./bin/game_sync", "./configs/config_sync.json"},
-		[]string{"core", "./bin/game_core", "./configs/config_core.json"},
-		[]string{"api", "./bin/game_api", "./configs/config_api.json"},
-		[]string{"auth", "./bin/game_auth", "./configs/config_auth.json"},
-		[]string{"revoker", "./bin/game_revoker", "./configs/config_revoker.json"},
-		[]string{"tool", "./bin/game_tool", "./configs/config_tool.json"},
+		{"sync", "./bin/game_sync", "./configs/config_sync.json"},
+		{"core", "./bin/game_core", "./configs/config_core.json"},
+		{"api", "./bin/game_api", "./configs/config_api.json"},
+		{"auth", "./bin/game_auth", "./configs/config_auth.json"},
+		{"revoker", "./bin/game_revoker", "./configs/config_revoker.json"},
+		{"tool", "./bin/game_tool", "./configs/config_tool.json"},
 	}
 
 	defer la.Close()

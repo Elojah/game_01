@@ -7,7 +7,7 @@ import (
 
 const (
 	username0 = "test_bwzFEZBgxu"
-	password0 = "test_NYYovlaKoFZUVR"
+	password0 = "test_NYYovlaKoFZUVR" // nolint: gosec
 )
 
 // Case0 :

@@ -122,7 +122,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Create PC from the template.
-	pc := entity.PC(template)
+	pc := template
 	pc.Type = pc.ID
 	pc.ID = gulid.NewID()
 	logger = logger.With().Str("pc", pc.ID.String()).Logger()
@@ -277,7 +277,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Creates entity cloned from pc.
-	e := entity.E(pc)
+	e := pc
 	e.ID = gulid.NewID()
 	logger = logger.With().Str("entity", e.ID.String()).Logger()
 	if err := h.EntityStore.SetEntity(e, ulid.Now()); err != nil {

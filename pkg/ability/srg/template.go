@@ -31,13 +31,12 @@ func (s *Store) GetTemplate(id ulid.ID) (ability.Template, error) {
 	if err := a.Unmarshal([]byte(val)); err != nil {
 		return ability.Template{}, errors.Wrapf(err, "get template %s", id.String())
 	}
-	return ability.Template(a), nil
+	return a, nil
 }
 
 // SetTemplate implemented with redis.
 func (s *Store) SetTemplate(t ability.Template) error {
-	a := ability.A(t)
-	raw, err := a.Marshal()
+	raw, err := t.Marshal()
 	if err != nil {
 		return errors.Wrapf(err, "set template %s", t.ID.String())
 	}
