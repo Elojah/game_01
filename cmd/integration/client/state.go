@@ -6,12 +6,11 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/elojah/game_01/pkg/entity"
-	"github.com/elojah/game_01/pkg/geometry"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// GetState retrieve an entity state sent from recurrer to client when entity reach position.
-func (s *Service) GetState(id gulid.ID) (entity.E, error) {
+// GetState retrieve an entity state sent from recurrer to client.
+func (s *Service) GetState(id gulid.ID, max int) (entity.E, error) {
 
 	var actual entity.E
 	if err := s.LA.Retrieve(func(s string) (bool, error) {
@@ -27,15 +26,15 @@ func (s *Service) GetState(id gulid.ID) (entity.E, error) {
 			return true, nil
 		}
 		return false, nil
-	}, 50); err != nil {
+	}, max); err != nil {
 		return actual, errors.Wrap(err, "get state")
 	}
 
 	return actual, nil
 }
 
-// GetState retrieve an entity state sent from recurrer to client when entity reach position.
-func (s *Service) GetStateAtPosition(id gulid.ID, pos geometry.Position) (entity.E, error) {
+// GetStateAt retrieve an entity state sent from recurrer to client when f is positive.
+func (s *Service) GetStateAt(id gulid.ID, max int, f func(entity.E) bool) (entity.E, error) {
 
 	var actual entity.E
 	if err := s.LA.Retrieve(func(s string) (bool, error) {
@@ -47,13 +46,11 @@ func (s *Service) GetStateAtPosition(id gulid.ID, pos geometry.Position) (entity
 		if actual.ID.IsZero() {
 			return false, nil
 		}
-		if actual.ID.Compare(id) == 0 &&
-			actual.Position.SectorID.Compare(pos.SectorID) == 0 &&
-			actual.Position.Coord == pos.Coord {
+		if actual.ID.Compare(id) == 0 && f(actual) {
 			return true, nil
 		}
 		return false, nil
-	}, 50); err != nil {
+	}, max); err != nil {
 		return actual, errors.Wrap(err, "get state")
 	}
 

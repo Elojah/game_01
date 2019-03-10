@@ -7,6 +7,7 @@ import (
 
 	"github.com/elojah/game_01/cmd/integration/auth"
 	"github.com/elojah/game_01/cmd/integration/client"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/geometry"
 )
 
@@ -50,7 +51,7 @@ func Case5(as *auth.Service, cs *client.Service) error {
 	// Wait for sequencer/subs to be ready
 	time.Sleep(50 * time.Millisecond)
 	// Retrieve current entity state
-	ent, err = cs.GetState(ent.ID)
+	ent, err = cs.GetState(ent.ID, 50)
 	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}
@@ -60,7 +61,10 @@ func Case5(as *auth.Service, cs *client.Service) error {
 		return errors.Wrap(err, "case_5")
 	}
 	// Check entity moved at correct position
-	_, err = cs.GetStateAtPosition(ent.ID, geometry.Position{SectorID: ent.Position.SectorID, Coord: newCoord})
+	_, err = cs.GetStateAt(ent.ID, 50, func(actual entity.E) bool {
+		return actual.Position.SectorID.Compare(ent.Position.SectorID) == 0 &&
+			actual.Position.Coord == newCoord
+	})
 	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}

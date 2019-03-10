@@ -8,6 +8,7 @@ import (
 	"github.com/elojah/game_01/cmd/integration/auth"
 	"github.com/elojah/game_01/cmd/integration/client"
 	"github.com/elojah/game_01/cmd/integration/tool"
+	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/geometry"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
@@ -53,7 +54,7 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	// Wait for sequencer/subs to be ready
 	time.Sleep(50 * time.Millisecond)
 	// Retrieve current entity state
-	ent, err = cs.GetState(ent.ID)
+	ent, err = cs.GetState(ent.ID, 50)
 	if err != nil {
 		return errors.Wrap(err, "case_6")
 	}
@@ -86,7 +87,11 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		return errors.Wrap(err, "case_6")
 	}
 	// Check entity moved at correct position
-	_, err = cs.GetStateAtPosition(ent.ID, newPos)
+	_, err = cs.GetStateAt(ent.ID, 50, func(actual entity.E) bool {
+		return actual.Position.SectorID.Compare(newPos.SectorID) == 0 &&
+			actual.Position.Coord == newPos.Coord
+	})
+
 	if err != nil {
 		return errors.Wrap(err, "case_6")
 	}
