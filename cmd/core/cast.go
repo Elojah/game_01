@@ -28,17 +28,17 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				Source: id.String(),
 				Target: cs.AbilityID.String(),
 			},
-			"retrieve ability",
+			"cast source",
 		)
 	}
 	if err != nil {
-		return errors.Wrap(err, "retrieve ability")
+		return errors.Wrap(err, "cast source")
 	}
 
 	// #Check MP consumption
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrap(err, "retrieve entity")
+		return errors.Wrap(err, "cast source")
 	}
 	if source.MP < ab.MPConsumption {
 		return errors.Wrap(
@@ -47,7 +47,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				MPLeft:        source.MP,
 				AbilityID:     ab.ID.String(),
 				MPConsumption: ab.MPConsumption,
-			}, "check ability validity",
+			}, "cast source",
 		)
 	}
 
@@ -61,7 +61,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				LastUsed:  ab.LastUsed,
 				CD:        ab.CD,
 			},
-			"check ability validity",
+			"cast source",
 		)
 	}
 
@@ -72,7 +72,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 			return errors.Wrap(gerrors.ErrMissingTarget{
 				AbilityID:   ab.ID.String(),
 				ComponentID: cid,
-			}, "check ability validity")
+			}, "cast source")
 		}
 		if uint64(len(targets.Entities)) > component.NTargets {
 			return errors.Wrap(gerrors.ErrTooManyTargets{
@@ -80,7 +80,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				Max:         component.NTargets,
 				AbilityID:   ab.ID.String(),
 				ComponentID: cid,
-			}, "check ability validity")
+			}, "cast source")
 		}
 		if uint64(len(targets.Positions)) > component.NPositions {
 			return errors.Wrap(gerrors.ErrTooManyTargets{
@@ -88,14 +88,14 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 				Max:         component.NPositions,
 				AbilityID:   ab.ID.String(),
 				ComponentID: cid,
-			}, "check ability validity")
+			}, "cast source")
 		}
 	}
 
 	// #Set entity new state with decreased MP and casting up.
 	source.CastAbility(ab, ts)
 	if err := a.EntityStore.SetEntity(source, ts); err != nil {
-		return errors.Wrap(err, "validate ability")
+		return errors.Wrap(err, "cast source")
 	}
 
 	// #Publish casted event to event set.
@@ -110,6 +110,6 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 			},
 			Trigger: e.ID,
 		}, id),
-		"validate ability",
+		"cast source",
 	)
 }

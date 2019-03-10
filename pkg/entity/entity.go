@@ -28,7 +28,7 @@ func (e *E) CastAbility(ab ability.A, ts uint64) {
 }
 
 // Damage applies a direct damage component dd from entity source to entity e.
-func (e *E) Damage(source *E, dd ability.Damage) *ability.DamageFeedback {
+func (e *E) Damage(source *E, dd *ability.Damage) *ability.DamageFeedback {
 	var amount uint64
 	if dd.Amount >= e.HP {
 		amount = e.HP
@@ -42,7 +42,7 @@ func (e *E) Damage(source *E, dd ability.Damage) *ability.DamageFeedback {
 }
 
 // DamageFeedback applies a direct damage feedback dd from entity source to entity e.
-func (e *E) DamageFeedback(source *E, dd ability.DamageFeedback) {
+func (e *E) DamageFeedback(source *E, dd *ability.DamageFeedback) {
 	if dd.Amount >= e.HP {
 		e.HP = 0
 		e.Dead = true
@@ -60,15 +60,15 @@ func (e *E) ApplyEffects(source *E, effects []ability.Effect) ([]ability.EffectF
 	for _, effect := range effects {
 		veffect := effect.GetValue()
 		switch v := veffect.(type) {
-		case ability.Damage:
+		case *ability.Damage:
 			fbes = append(fbes, ability.EffectFeedback{
 				DamageFeedback: e.Damage(source, v),
 			})
-		case ability.Heal:
+		case *ability.Heal:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-		case ability.HealOverTime:
+		case *ability.HealOverTime:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-		case ability.DamageOverTime:
+		case *ability.DamageOverTime:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
 		default:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
@@ -86,13 +86,13 @@ func (e *E) ApplyEffectFeedbacks(source *E, effects []ability.EffectFeedback) er
 	for _, effect := range effects {
 		veffect := effect.GetValue()
 		switch v := veffect.(type) {
-		case ability.DamageFeedback:
+		case *ability.DamageFeedback:
 			e.DamageFeedback(source, v)
-		case ability.HealFeedback:
+		case *ability.HealFeedback:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-		case ability.HealOverTimeFeedback:
+		case *ability.HealOverTimeFeedback:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-		case ability.DamageOverTimeFeedback:
+		case *ability.DamageOverTimeFeedback:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
 		default:
 			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})

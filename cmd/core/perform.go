@@ -16,10 +16,6 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	ps := e.Action.PerformSource
 	ts := e.ID.Time()
 
-	if err := a.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
-		return errors.Wrap(err, "perform source")
-	}
-
 	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
@@ -226,7 +222,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Publish feedback to source.
 	return a.EventQStore.PublishEvent(event.E{
-		ID: ulid.NewTimeID(ts),
+		ID: ulid.NewTimeID(ts + 1),
 		Action: event.Action{
 			FeedbackTarget: &event.FeedbackTarget{
 				ID:     fb.ID,

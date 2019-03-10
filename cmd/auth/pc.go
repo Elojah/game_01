@@ -286,6 +286,13 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// #Copy PC abilities
+	if err := h.AbilityService.CopyAbilities(pc.ID, e.ID); err != nil {
+		logger.Error().Err(err).Msg("failed to copy abilities to entity")
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
+		return
+	}
+
 	logger = logger.With().Str("sector", pc.Position.SectorID.String()).Logger()
 	// #Add entity to PC sector.
 	if err := h.SectorEntitiesStore.AddEntityToSector(e.ID, pc.Position.SectorID); err != nil {
