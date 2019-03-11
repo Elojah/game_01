@@ -60,7 +60,7 @@ func (r *reader) Dial(cfg Config) error {
 		return err
 	}
 
-	d := time.Duration(r.tolerance * 1000)
+	d := time.Duration(time.Second / time.Duration(r.tolerance))
 	r.ticker = time.NewTicker(d)
 	go r.Run()
 	go r.HandleACK()

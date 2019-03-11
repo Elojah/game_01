@@ -51,7 +51,7 @@ func (s *Service) GetStateAt(id gulid.ID, max int, f func(entity.E) bool) (entit
 		}
 		return false, nil
 	}, max); err != nil {
-		return actual, errors.Wrap(err, "get state")
+		return actual, errors.Wrap(err, "get state at")
 	}
 
 	return actual, nil

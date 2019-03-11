@@ -17,7 +17,7 @@
 	},
 	"reader": {
 		"address": "127.0.0.1:3400",
-		"tolerance": 9000
+		"tolerance": 60
 	},
 	"handler": {}
 }

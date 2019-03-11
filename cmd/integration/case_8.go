@@ -16,13 +16,13 @@ import (
 )
 
 const (
-	username8_0 = "test_hzOADnuxelP"
-	password8_0 = "test_FRKsnfbDFFd" // nolint: gosec
-	pcName8_0   = "test_uxbQmPNwdyXxJ"
+	username8_0 = "test_case8_0"
+	password8_0 = "test_case8_0" // nolint: gosec
+	pcName8_0   = "test_case8_0"
 
-	username8_1 = "test_yNRkOPVlGbWod"
-	password8_1 = "test_hSNMmjIuDCpONZAx" // nolint: gosec
-	pcName8_1   = "test_qAp"
+	username8_1 = "test_case8_1"
+	password8_1 = "test_case8_1" // nolint: gosec
+	pcName8_1   = "test_case8_1"
 
 	pcType8 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
 )

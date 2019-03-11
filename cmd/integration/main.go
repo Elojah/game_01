@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -22,7 +23,6 @@ func main() {
 	la := loganalyzer.NewLA()
 
 	cmds := [][]string{
-		{"sync", "./bin/game_sync", "./configs/config_sync.json"},
 		{"core", "./bin/game_core", "./configs/config_core.json"},
 		{"api", "./bin/game_api", "./configs/config_api.json"},
 		{"auth", "./bin/game_auth", "./configs/config_auth.json"},
@@ -36,6 +36,17 @@ func main() {
 			log.Error().Err(err).Msg("failed to start")
 			return
 		}
+	}
+
+	laSync := loganalyzer.NewLA()
+	defer laSync.Close()
+	if err := laSync.NewProcess(
+		"sync",
+		"./bin/game_sync",
+		"./configs/config_sync.json",
+	); err != nil {
+		log.Error().Err(err).Msg("failed to start")
+		return
 	}
 
 	laClient := loganalyzer.NewLA()
@@ -99,12 +110,14 @@ func main() {
 	log.Info().Msg("case5 ok")
 	if err := Case6(authService, clientService, toolService); err != nil {
 		log.Error().Err(err).Msg("case failure")
+		fmt.Println("FUCK DAT")
+		laClient.Consume(200)
 		return
 	}
 	log.Info().Msg("case6 ok")
 	if err := Case7(authService, clientService, toolService); err != nil {
 		log.Error().Err(err).Msg("case failure")
-		la.Consume(200)
+		// la.Consume(200)
 		return
 	}
 	log.Info().Msg("case7 ok")

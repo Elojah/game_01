@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	username6 = "test_EOvnhzSznpRCenMi"
-	password6 = "test_sffBzXAZKFdxCw" // nolint: gosec
+	username6 = "test_case6"
+	password6 = "test_case6" // nolint: gosec
 
-	pcName6 = "test_MKvmGgqOIMupVmJJw"
+	pcName6 = "test_case6"
 	pcType6 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
 )
 
@@ -91,10 +91,10 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		return actual.Position.SectorID.Compare(newPos.SectorID) == 0 &&
 			actual.Position.Coord == newPos.Coord
 	})
-
 	if err != nil {
 		return errors.Wrap(err, "case_6")
 	}
+
 	if err := as.DisconnectPC(tok.ID); err != nil {
 		return errors.Wrap(err, "case_6")
 	}

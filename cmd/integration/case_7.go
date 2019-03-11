@@ -16,13 +16,13 @@ import (
 )
 
 const (
-	username7_0 = "test_AABuDcSdojJirTUl"
-	password7_0 = "test_NMxa" // nolint: gosec
-	pcName7_0   = "test_vUWjHGvgrPvPfOEsZh"
+	username7_0 = "test_case7_0"
+	password7_0 = "test_case7_0" // nolint: gosec
+	pcName7_0   = "test_case7_0"
 
-	username7_1 = "test_qFlZQbvOrXIDNOmvbcnF"
-	password7_1 = "test_hQpmMWfMk" // nolint: gosec
-	pcName7_1   = "test_TGqiqWAdNhscn"
+	username7_1 = "test_case7_1"
+	password7_1 = "test_case7_1" // nolint: gosec
+	pcName7_1   = "test_case7_1"
 
 	pcType7 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
 )
@@ -139,7 +139,7 @@ func Case7(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	time.Sleep(1000 * time.Millisecond) // cast time last 1000 ms
 
 	// Check entity caster used mana
-	_, err = cs.GetStateAt(ent0.ID, 500, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent0.ID, 1000, func(actual entity.E) bool {
 		return actual.MP == 250-10
 	})
 	if err != nil {
