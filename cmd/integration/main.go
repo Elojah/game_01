@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -110,7 +109,6 @@ func main() {
 	log.Info().Msg("case5 ok")
 	if err := Case6(authService, clientService, toolService); err != nil {
 		log.Error().Err(err).Msg("case failure")
-		fmt.Println("FUCK DAT")
 		laClient.Consume(200)
 		return
 	}
