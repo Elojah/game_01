@@ -95,7 +95,7 @@ func Case7(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 
 	// Wait for sequencer/subs to be ready
-	time.Sleep(70 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 	// Retrieve current entity state
 
 	ent0, err = cs.GetState(ent0.ID, 50)

@@ -95,7 +95,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 
 	// Wait for sequencer/subs to be ready
-	time.Sleep(80 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 	// Retrieve current entity state
 
 	ent0, err = cs.GetState(ent0.ID, 50)
@@ -117,8 +117,8 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 
 	// Move ent1 close to caster
 	if err := ts.EntityMove(ent1.ID, geometry.Position{
-		SectorID: ent1.Position.SectorID,
-		Coord:    geometry.Vec3{X: 10, Y: 10, Z: 0},
+		SectorID: gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ"),
+		Coord:    geometry.Vec3{X: 10, Y: 0, Z: 0},
 	}); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
@@ -128,7 +128,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	// Cast from ent0 to ent1 with starter skill
 	if err := cs.Cast(tok0.ID, event.Cast{
 		Source:    ent0.ID,
-		AbilityID: gulid.MustParse("01CP2Z4SDEWZK8YF29E08GPDVC"),
+		AbilityID: gulid.MustParse("01CP2Z4SDEWZK8YF29E07GPDVC"),
 		Targets: map[string]ability.Targets{
 			"01CPFBN88EESQ4QA8N820RV924": {
 				Entities: []gulid.ID{ent1.ID},
@@ -141,7 +141,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	time.Sleep(1000 * time.Millisecond) // cast time last 1000 ms
 
 	// Check entity caster used mana
-	_, err = cs.GetStateAt(ent0.ID, 500, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent0.ID, 50, func(actual entity.E) bool {
 		return actual.MP == 250-10
 	})
 	if err != nil {

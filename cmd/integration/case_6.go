@@ -51,8 +51,10 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_6")
 	}
+
 	// Wait for sequencer/subs to be ready
 	time.Sleep(50 * time.Millisecond)
+
 	// Retrieve current entity state
 	ent, err = cs.GetState(ent.ID, 50)
 	if err != nil {
