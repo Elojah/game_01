@@ -147,7 +147,7 @@ tidy:
 
 # Check
 .PHONY: check
-check: lint test
+check: vendor lint test
 
 # Lint
 .PHONY: lint
