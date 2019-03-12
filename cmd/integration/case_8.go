@@ -130,7 +130,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		Source:    ent0.ID,
 		AbilityID: gulid.MustParse("01CP2Z4SDEWZK8YF29E07GPDVC"),
 		Targets: map[string]ability.Targets{
-			"01CPFBN88EESQ4QA8N820RV924": {
+			"01CPFBN87EESQ4QA8N820RV924": {
 				Entities: []gulid.ID{ent1.ID},
 			},
 		},
@@ -149,7 +149,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 
 	// Check entity target took damage
-	_, err = cs.GetStateAt(ent1.ID, 50, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent1.ID, 100, func(actual entity.E) bool {
 		return actual.HP == 150-30
 	})
 	if err != nil {
