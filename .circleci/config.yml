@@ -12,7 +12,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: make vendor
+          command: make tidy
 
   test:
     docker:
