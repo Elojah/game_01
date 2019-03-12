@@ -114,7 +114,6 @@ func main() {
 	log.Info().Msg("case6 ok")
 	if err := Case7(authService, clientService, toolService); err != nil {
 		log.Error().Err(err).Msg("case failure")
-		la.Consume(500)
 		return
 	}
 	log.Info().Msg("case7 ok")
