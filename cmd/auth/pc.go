@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/oklog/ulid"
 	"github.com/rs/zerolog/log"
@@ -156,6 +157,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Assign new position to PC and set it.
+	rand.Seed(time.Now().UnixNano())
 	pc.Position = geometry.Position{
 		SectorID: sec.ID,
 		Coord:    geometry.Vec3{X: sec.Dim.X * rand.Float64(), Y: sec.Dim.Y * rand.Float64(), Z: sec.Dim.Z * rand.Float64()},

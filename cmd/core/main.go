@@ -79,6 +79,7 @@ func run(prog string, filename string) {
 		EventTriggerService: &eventsvc.TriggerService{
 			TriggerStore: eventStore,
 			Store:        eventStore,
+			QStore:       eventStore,
 		},
 
 		EntitiesStore: sectorStore,

@@ -59,7 +59,7 @@ func (h *handler) handleACK(ctx context.Context, raw []byte) error {
 
 	logger := log.With().Str("packet", ctx.Value(mux.Key("packet")).(string)).Logger()
 
-	// #Unmarshal entity.
+	// #Unmarshal ack.
 	var ack infra.ACK
 	if err := ack.Unmarshal(raw); err != nil {
 		logger.Error().Err(err).Str("status", "unformatted").Msg("packet rejected")

@@ -72,6 +72,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 		return err
 	}
 	addr.Port = int(h.port)
+	logger.Info().Str("id", ack.ID.String()).Str("addr", addr.String()).Msg("send ack")
 	go h.Send(raw, addr)
 
 	// #Check TS in tolerance range.

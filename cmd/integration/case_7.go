@@ -114,7 +114,6 @@ func Case7(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}); err != nil {
 		return errors.Wrap(err, "case_7")
 	}
-
 	// Move ent1 close to caster
 	if err := ts.EntityMove(ent1.ID, geometry.Position{
 		SectorID: ent1.Position.SectorID,
@@ -122,6 +121,8 @@ func Case7(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}); err != nil {
 		return errors.Wrap(err, "case_7")
 	}
+	// Wait for moves to be effective
+	time.Sleep(50 * time.Millisecond)
 
 	// Cast from ent0 to ent1 with starter skill
 	if err := cs.Cast(tok0.ID, event.Cast{
@@ -139,14 +140,14 @@ func Case7(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	time.Sleep(1000 * time.Millisecond) // cast time last 1000 ms
 
 	// Check entity caster used mana
-	_, err = cs.GetStateAt(ent0.ID, 1000, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent0.ID, 500, func(actual entity.E) bool {
 		return actual.MP == 250-10
 	})
 	if err != nil {
 		return errors.Wrap(err, "case_7")
 	}
 	// Check entity target took damage
-	_, err = cs.GetStateAt(ent1.ID, 50, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent1.ID, 500, func(actual entity.E) bool {
 		return actual.HP == 150-30
 	})
 	if err != nil {

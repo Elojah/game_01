@@ -66,6 +66,9 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}); err != nil {
 		return errors.Wrap(err, "case_6")
 	}
+	// Wait for move to be effective
+	time.Sleep(50 * time.Millisecond)
+
 	// Neighbour is 01CKQQPVZN5KQC8XC9Q9NK8YXQ relative at (1024, 0, 0)
 	/*
 		       1024
@@ -87,7 +90,7 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		return errors.Wrap(err, "case_6")
 	}
 	// Check entity moved at correct position
-	_, err = cs.GetStateAt(ent.ID, 50, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent.ID, 500, func(actual entity.E) bool {
 		return actual.Position.SectorID.Compare(newPos.SectorID) == 0 &&
 			actual.Position.Coord == newPos.Coord
 	})

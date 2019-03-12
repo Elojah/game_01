@@ -12,7 +12,6 @@ import (
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	gulid "github.com/elojah/game_01/pkg/ulid"
-	"github.com/oklog/ulid"
 )
 
 // MoveSameSector move an entity of vec but stay in same sector if entity position + vec is going outside.
@@ -25,7 +24,7 @@ func (s *Service) MoveSameSector(tokID gulid.ID, ent entity.E, vec geometry.Vec3
 	}
 
 	moveSameSector := event.DTO{
-		ID:    gulid.NewTimeID(ulid.Now()),
+		ID:    gulid.NewID(),
 		Token: tokID,
 		Query: event.Query{
 			Move: &event.Move{
@@ -54,7 +53,7 @@ func (s *Service) MoveSameSector(tokID gulid.ID, ent entity.E, vec geometry.Vec3
 func (s *Service) Move(tokID gulid.ID, ent entity.E, pos geometry.Position) error {
 
 	moveNextSector := event.DTO{
-		ID:    gulid.NewTimeID(ulid.Now()),
+		ID:    gulid.NewID(),
 		Token: tokID,
 		Query: event.Query{
 			Move: &event.Move{

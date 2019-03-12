@@ -142,6 +142,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Check range validity.
 	if pt.Source.Position.SectorID.Compare(target.Position.SectorID) == 0 {
+
 		dist := geometry.Segment(pt.Source.Position.Coord, target.Position.Coord)
 		if dist > component.Range {
 			return errors.Wrapf(
@@ -161,8 +162,8 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 				target.Position.Coord.Z,
 			)
 		}
-
 	} else {
+
 		sec, err := a.SectorStore.GetSector(pt.Source.Position.SectorID)
 		if err != nil {
 			return errors.Wrapf(err, "get sector %s", pt.Source.Position.SectorID)

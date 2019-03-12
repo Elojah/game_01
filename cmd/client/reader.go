@@ -60,7 +60,7 @@ func (r *reader) Dial(cfg Config) error {
 		return err
 	}
 
-	d := time.Duration(time.Second / time.Duration(r.tolerance))
+	d := time.Second / time.Duration(r.tolerance)
 	r.ticker = time.NewTicker(d)
 	go r.Run()
 	go r.HandleACK()
@@ -87,13 +87,14 @@ func (r reader) Run() {
 
 // HandleACK handles events sending and received acks.
 func (r reader) HandleACK() {
+	d := uint64(time.Second / time.Duration(r.tolerance))
 	for {
 		select {
 		case <-r.ticker.C:
 			now := ulid.Now()
 			for _, e := range r.events {
 				t := e.ID.Time()
-				if t > now || now-t < r.tolerance {
+				if t > now || now-t < d {
 					continue
 				}
 				go func(e event.DTO) {
@@ -106,8 +107,10 @@ func (r reader) HandleACK() {
 				}(e)
 			}
 		case e := <-r.event:
+			r.logger.Info().Str("id", e.ID.String()).Msg("event received")
 			r.events[e.ID] = e
 		case id := <-r.ack:
+			r.logger.Info().Str("id", id.String()).Msg("ack received")
 			delete(r.events, id)
 		}
 	}

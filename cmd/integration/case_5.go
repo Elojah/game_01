@@ -61,7 +61,7 @@ func Case5(as *auth.Service, cs *client.Service) error {
 		return errors.Wrap(err, "case_5")
 	}
 	// Check entity moved at correct position
-	_, err = cs.GetStateAt(ent.ID, 50, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent.ID, 500, func(actual entity.E) bool {
 		return actual.Position.SectorID.Compare(ent.Position.SectorID) == 0 &&
 			actual.Position.Coord == newCoord
 	})

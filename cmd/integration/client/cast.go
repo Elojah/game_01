@@ -9,14 +9,13 @@ import (
 
 	"github.com/elojah/game_01/pkg/event"
 	gulid "github.com/elojah/game_01/pkg/ulid"
-	"github.com/oklog/ulid"
 )
 
 // Cast move an entity at position pos. Don't check any distance limit reach.
 func (s *Service) Cast(tokID gulid.ID, cast event.Cast) error {
 
 	castDTO := event.DTO{
-		ID:    gulid.NewTimeID(ulid.Now()),
+		ID:    gulid.NewID(),
 		Token: tokID,
 		Query: event.Query{
 			Cast: &cast,

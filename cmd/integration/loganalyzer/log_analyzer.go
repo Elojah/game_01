@@ -10,9 +10,10 @@ import (
 )
 
 type process struct {
-	Cmd    *exec.Cmd
-	In     io.WriteCloser
-	closer chan struct{}
+	Cmd       *exec.Cmd
+	In        io.WriteCloser
+	closer    chan struct{}
+	closerErr chan struct{}
 }
 
 func newProcess(out chan<- string, args ...string) (*process, error) {
@@ -33,10 +34,38 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 	}
 	p.In = stdin
 
+	stderr, err := p.Cmd.StderrPipe()
+	if err != nil {
+		log.Error().Err(err).Str("cmd", args[0]).Msg("failed to pipe err")
+		return nil, err
+	}
+
+	p.closerErr = make(chan struct{}, 1)
+	go func() {
+		for {
+			select {
+			case <-p.closerErr:
+				return
+			default:
+			}
+			r := bufio.NewReader(stderr)
+			s, err := r.ReadString('\n')
+			if err == io.EOF {
+				continue
+			}
+			if err != nil {
+				log.Error().Err(err).Msgf("failed to read err %s", args[0])
+				return
+			}
+			fmt.Printf("STDERR:%s\n", s)
+		}
+	}()
+
 	p.closer = make(chan struct{}, 1)
 	go func() {
 		defer stdout.Close()
 		defer stdin.Close()
+		defer stderr.Close()
 		r := bufio.NewReader(stdout)
 		for {
 			select {
@@ -61,6 +90,7 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 
 func (p *process) close() error {
 	p.closer <- struct{}{}
+	p.closerErr <- struct{}{}
 	return p.Cmd.Process.Kill()
 }
 

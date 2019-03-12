@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/elojah/game_01/pkg/event"
-	gulid "github.com/elojah/game_01/pkg/ulid"
+	"github.com/oklog/ulid"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 )
@@ -35,7 +35,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 	}
 	logger.Info().Int("targets", len(move.Targets)).Msg("found")
 
-	ts := gulid.NewID().Time()
+	ts := ulid.Now()
 	for _, targetID := range move.Targets {
 
 		// #Get current entity state.

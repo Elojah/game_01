@@ -122,6 +122,8 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
+	// Wait for moves to be effective
+	time.Sleep(50 * time.Millisecond)
 
 	// Cast from ent0 to ent1 with starter skill
 	if err := cs.Cast(tok0.ID, event.Cast{
