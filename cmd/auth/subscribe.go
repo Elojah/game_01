@@ -160,7 +160,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, pc := range pcs {
-		if err := h.EntityPCStore.DelPC(a.ID, pc.ID); err != nil {
+		if err := h.EntityPCService.RemovePC(a.ID, pc.ID); err != nil {
 			logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to delete pc")
 			http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 			return

@@ -21,6 +21,10 @@ type Service interface {
 	Disconnect(id gulid.ID) error
 }
 
+type PCService interface {
+	RemovePC(gulid.ID, gulid.ID) error
+}
+
 // CastAbility decreases MP (without check) and assign a new cast to entity.
 func (e *E) CastAbility(ab ability.A, ts uint64) {
 	e.MP -= ab.MPConsumption

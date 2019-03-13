@@ -6,7 +6,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/ability"
 	gerrors "github.com/elojah/game_01/pkg/errors"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -14,7 +14,7 @@ const (
 )
 
 // ListAbility implemented with redis.
-func (s *Store) ListAbility(entityID ulid.ID) ([]ability.A, error) {
+func (s *Store) ListAbility(entityID gulid.ID) ([]ability.A, error) {
 	keys, err := s.Keys(aKey + entityID.String() + "*").Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -42,7 +42,7 @@ func (s *Store) ListAbility(entityID ulid.ID) ([]ability.A, error) {
 }
 
 // GetAbility implemented with redis.
-func (s *Store) GetAbility(entityID ulid.ID, id ulid.ID) (ability.A, error) {
+func (s *Store) GetAbility(entityID gulid.ID, id gulid.ID) (ability.A, error) {
 	val, err := s.Get(aKey + entityID.String() + ":" + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -64,7 +64,7 @@ func (s *Store) GetAbility(entityID ulid.ID, id ulid.ID) (ability.A, error) {
 }
 
 // SetAbility implemented with redis.
-func (s *Store) SetAbility(a ability.A, entityID ulid.ID) error {
+func (s *Store) SetAbility(a ability.A, entityID gulid.ID) error {
 	raw, err := a.Marshal()
 	if err != nil {
 		return errors.Wrapf(err, "set ability %s for entity %s", a.ID.String(), entityID.String())
@@ -73,6 +73,25 @@ func (s *Store) SetAbility(a ability.A, entityID ulid.ID) error {
 		s.Set(aKey+entityID.String()+":"+a.ID.String(), raw, 0).Err(),
 		"set ability %s for entity %s",
 		a.ID.String(),
+		entityID.String(),
+	)
+}
+
+// DelAbility deletes an ability from an entity in redis.
+func (s *Store) DelAbility(entityID gulid.ID, abilityID gulid.ID) error {
+	return errors.Wrapf(
+		s.Del(aKey+entityID.String()+":"+abilityID.String()).Err(),
+		"del ability %s for entity %s",
+		abilityID.String(),
+		entityID.String(),
+	)
+}
+
+// DelAbilities deletes all abilities for a given entity.
+func (s *Store) DelAbilities(entityID gulid.ID) error {
+	return errors.Wrapf(
+		s.Del(aKey+entityID.String()+":*").Err(),
+		"del all abilities for entity %s",
 		entityID.String(),
 	)
 }

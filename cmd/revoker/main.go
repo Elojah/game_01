@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
 	accountsvc "github.com/elojah/game_01/pkg/account/svc"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
@@ -43,6 +44,7 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
+	abilityStore := abilitysrg.NewStore(rd)
 	accountStore := accountsrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
@@ -59,6 +61,7 @@ func run(prog string, filename string) {
 			EntityPCStore:         entityStore,
 			EntityPermissionStore: entityStore,
 			EntityService: &entitysvc.Service{
+				AbilityStore:          abilityStore,
 				EntityStore:           entityLRUStore,
 				EntityPermissionStore: entityStore,
 				SectorEntitiesStore:   sectorStore,

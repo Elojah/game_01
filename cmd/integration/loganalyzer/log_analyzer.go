@@ -57,7 +57,7 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 				log.Error().Err(err).Msgf("failed to read err %s", args[0])
 				return
 			}
-			fmt.Printf("STDERR:%s\n", s)
+			fmt.Printf("|STDERR|%s", s)
 		}
 	}()
 

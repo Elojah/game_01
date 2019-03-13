@@ -73,6 +73,11 @@ func run(prog string, filename string) {
 		SectorEntitiesStore: sectorStore,
 		SectorStarterStore:  sectorStore,
 
+		AbilityService: &abilitysvc.Service{
+			AbilityStore:         abilityStore,
+			AbilityStarterStore:  abilityStore,
+			AbilityTemplateStore: abilityStore,
+		},
 		AccountTokenService: &accountsvc.TokenService{
 			AccountStore:          accountStore,
 			AccountTokenStore:     accountStore,
@@ -80,6 +85,7 @@ func run(prog string, filename string) {
 			EntityPCStore:         entityStore,
 			EntityPermissionStore: entityStore,
 			EntityService: &entitysvc.Service{
+				AbilityStore:          abilityStore,
 				EntityStore:           entityLRUStore,
 				EntityPermissionStore: entityStore,
 				SectorEntitiesStore:   sectorStore,
@@ -90,10 +96,10 @@ func run(prog string, filename string) {
 				},
 			},
 		},
-		AbilityService: &abilitysvc.Service{
-			AbilityStore:         abilityStore,
-			AbilityStarterStore:  abilityStore,
-			AbilityTemplateStore: abilityStore,
+		EntityPCService: &entitysvc.PCService{
+			AbilityStore:      abilityStore,
+			EntityPCStore:     entityStore,
+			EntityPCLeftStore: entityStore,
 		},
 		InfraSequencerService: &infrasvc.SequencerService{
 			InfraQSequencer: infraStore,

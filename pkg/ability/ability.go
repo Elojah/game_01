@@ -8,7 +8,9 @@ import (
 type Store interface {
 	SetAbility(A, gulid.ID) error
 	GetAbility(gulid.ID, gulid.ID) (A, error)
-	ListAbility(entityID gulid.ID) ([]A, error)
+	ListAbility(gulid.ID) ([]A, error)
+	DelAbility(gulid.ID, gulid.ID) error
+	DelAbilities(gulid.ID) error
 }
 
 // Service wraps ability helpers.

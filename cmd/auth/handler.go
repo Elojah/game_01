@@ -30,10 +30,11 @@ type handler struct {
 	SectorStarterStore  sector.StarterStore
 	SectorStore         sector.Store
 
+	AbilityService        ability.Service
 	AccountTokenService   account.TokenService
+	EntityPCService       entity.PCService
 	InfraSequencerService infra.SequencerService
 	InfraRecurrerService  infra.RecurrerService
-	AbilityService        ability.Service
 
 	srv *http.Server
 }
