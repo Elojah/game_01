@@ -144,6 +144,12 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
 		}
+		// #Close token recurrer.
+		if err := h.InfraRecurrerService.Remove(a.Token); err != nil {
+			logger.Error().Err(err).Str("token", a.Token.String()).Msg("failed to remove recurrer")
+			http.Error(w, "failed to remove recurrer", http.StatusInternalServerError)
+			return
+		}
 		// #Delete token
 		if err := h.AccountTokenStore.DelToken(a.Token); err != nil {
 			logger.Error().Err(err).Msg("failed to delete token")

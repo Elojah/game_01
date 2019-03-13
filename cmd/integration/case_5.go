@@ -68,9 +68,6 @@ func Case5(as *auth.Service, cs *client.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_5")
 	}
-	if err := as.DisconnectPC(tok.ID); err != nil {
-		return errors.Wrap(err, "case_5")
-	}
 	if err := as.SignOut(tok.ID, username5); err != nil {
 		return errors.Wrap(err, "case_5")
 	}

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/oklog/ulid"
+	perrors "github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 
 	"github.com/elojah/game_01/pkg/account"
@@ -39,6 +40,12 @@ func (spc SetPC) Check() error {
 // ListPC represents the payload to list token PCs.
 type ListPC struct {
 	Token gulid.ID
+}
+
+// DelPC represents the payload to delete a PC.
+type DelPC struct {
+	Token gulid.ID
+	PC    gulid.ID
 }
 
 // ConnectPC represents the payload to connect to an existing PC.
@@ -408,4 +415,67 @@ func (h *handler) disconnectPC(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	logger.Info().Msg("disconnect success")
+}
+
+// delPC deletes a PC.
+func (h *handler) delPC(w http.ResponseWriter, r *http.Request) {
+
+	switch r.Method {
+	case "POST":
+		// continue
+	default:
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	logger := log.With().Str("route", "/pc/del").Str("address", r.RemoteAddr).Logger()
+
+	// #Read body
+	var del DelPC
+	if err := json.NewDecoder(r.Body).Decode(&del); err != nil {
+		logger.Error().Err(err).Msg("payload invalid")
+		http.Error(w, "payload invalid", http.StatusBadRequest)
+		return
+	}
+
+	logger = logger.With().Str("token", del.Token.String()).Logger()
+
+	// #Get and check token.
+	tok, err := h.AccountTokenService.Access(del.Token, r.RemoteAddr)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve token")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// #Disconnect token entities.
+	// It is not possible to be connected when deleting a PC to avoid a resave (would lead to a wrong pcleft+1).
+	if err := h.AccountTokenService.Disconnect(tok.ID); err != nil {
+		logger.Error().Err(err).Msg("failed to disconnect token")
+		http.Error(w, "failed to disconnect token", http.StatusInternalServerError)
+		return
+	}
+
+	// #Close token recurrer.
+	if err := h.InfraRecurrerService.Remove(tok.ID); err != nil {
+		switch perrors.Cause(err).(type) {
+		case gerrors.ErrNotFound:
+		default:
+			logger.Error().Err(err).Msg("failed to remove recurrer")
+			http.Error(w, "failed to remove recurrer", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	// #Remove PC through service
+	if err := h.EntityPCService.RemovePC(tok.Account, del.PC); err != nil {
+		logger.Error().Err(err).Msg("failed to remove PC")
+		http.Error(w, "failed to remove PC", http.StatusInternalServerError)
+		return
+	}
+
+	// #Write response
+	w.WriteHeader(http.StatusOK)
+
+	logger.Info().Msg("delete pc success")
 }

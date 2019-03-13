@@ -157,9 +157,6 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 
 	// #0
-	if err := as.DisconnectPC(tok0.ID); err != nil {
-		return errors.Wrap(err, "case_8")
-	}
 	if err := as.SignOut(tok0.ID, username8_0); err != nil {
 		return errors.Wrap(err, "case_8")
 	}
@@ -167,9 +164,6 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		return errors.Wrap(err, "case_8")
 	}
 	// #1
-	if err := as.DisconnectPC(tok1.ID); err != nil {
-		return errors.Wrap(err, "case_8")
-	}
 	if err := as.SignOut(tok1.ID, username8_1); err != nil {
 		return errors.Wrap(err, "case_8")
 	}

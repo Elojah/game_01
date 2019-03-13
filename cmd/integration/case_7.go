@@ -155,9 +155,6 @@ func Case7(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 
 	// #0
-	if err := as.DisconnectPC(tok0.ID); err != nil {
-		return errors.Wrap(err, "case_7")
-	}
 	if err := as.SignOut(tok0.ID, username7_0); err != nil {
 		return errors.Wrap(err, "case_7")
 	}
@@ -165,9 +162,6 @@ func Case7(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		return errors.Wrap(err, "case_7")
 	}
 	// #1
-	if err := as.DisconnectPC(tok1.ID); err != nil {
-		return errors.Wrap(err, "case_7")
-	}
 	if err := as.SignOut(tok1.ID, username7_1); err != nil {
 		return errors.Wrap(err, "case_7")
 	}
