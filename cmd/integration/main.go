@@ -100,6 +100,12 @@ func main() {
 		return
 	}
 	log.Info().Msg("case4 ok")
+	// TODO reorder
+	if err := Case9(authService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		return
+	}
+	log.Info().Msg("case9 ok")
 
 	clientService := client.NewService(laClient)
 	if err := Case5(authService, clientService); err != nil {

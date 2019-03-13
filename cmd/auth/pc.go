@@ -477,5 +477,5 @@ func (h *handler) delPC(w http.ResponseWriter, r *http.Request) {
 	// #Write response
 	w.WriteHeader(http.StatusOK)
 
-	logger.Info().Msg("delete pc success")
+	logger.Info().Msg("del pc success")
 }

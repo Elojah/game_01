@@ -56,6 +56,25 @@ func (s *Service) ListPC(tokenID gulid.ID) ([]entity.PC, error) {
 	return pcs, nil
 }
 
+// DelPC deletes a PC.
+func (s *Service) DelPC(tokenID gulid.ID, pcID gulid.ID) error {
+	raw, err := json.Marshal(map[string]string{
+		"token": tokenID.String(),
+		"pc":    pcID.String(),
+	})
+	if err != nil {
+		return errors.Wrap(err, "del pc")
+	}
+	resp, err := http.Post(s.url+"/pc/del", "application/json", bytes.NewBuffer(raw))
+	if err != nil {
+		return errors.Wrap(err, "del pc")
+	}
+	if resp.StatusCode != http.StatusOK {
+		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "create pc")
+	}
+	return nil
+}
+
 // ConnectPC connects to a PC associated to token/account and returns the corresponding entity.
 func (s *Service) ConnectPC(tokenID gulid.ID, pcID gulid.ID) (entity.E, error) {
 	raw, err := json.Marshal(map[string]string{
