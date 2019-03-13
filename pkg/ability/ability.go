@@ -10,7 +10,6 @@ type Store interface {
 	GetAbility(gulid.ID, gulid.ID) (A, error)
 	ListAbility(gulid.ID) ([]A, error)
 	DelAbility(gulid.ID, gulid.ID) error
-	DelAbilities(gulid.ID) error
 }
 
 // Service wraps ability helpers.

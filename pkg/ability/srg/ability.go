@@ -86,12 +86,3 @@ func (s *Store) DelAbility(entityID gulid.ID, abilityID gulid.ID) error {
 		entityID.String(),
 	)
 }
-
-// DelAbilities deletes all abilities for a given entity.
-func (s *Store) DelAbilities(entityID gulid.ID) error {
-	return errors.Wrapf(
-		s.Del(aKey+entityID.String()+":*").Err(),
-		"del all abilities for entity %s",
-		entityID.String(),
-	)
-}

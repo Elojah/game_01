@@ -18,8 +18,14 @@ type PCService struct {
 func (s PCService) RemovePC(accountID gulid.ID, id gulid.ID) error {
 
 	// Delete pc abilities
-	if err := s.AbilityStore.DelAbilities(id); err != nil {
+	abs, err := s.AbilityStore.ListAbility(id)
+	if err != nil {
 		return errors.Wrap(err, "remove pc")
+	}
+	for _, ab := range abs {
+		if err := s.AbilityStore.DelAbility(id, ab.ID); err != nil {
+			return errors.Wrap(err, "remove pc")
+		}
 	}
 
 	// #Delete pc

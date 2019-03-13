@@ -40,9 +40,15 @@ func (s Service) Disconnect(id gulid.ID) error {
 		return errors.Wrap(err, "disconnect entity")
 	}
 
-	// Delete entity abilities
-	if err := s.AbilityStore.DelAbilities(id); err != nil {
-		return errors.Wrap(err, "remove pc")
+	// Delete pc abilities
+	abs, err := s.AbilityStore.ListAbility(id)
+	if err != nil {
+		return errors.Wrap(err, "disconnect entity")
+	}
+	for _, ab := range abs {
+		if err := s.AbilityStore.DelAbility(id, ab.ID); err != nil {
+			return errors.Wrap(err, "disconnect entity")
+		}
 	}
 
 	// #Delete pc entity
