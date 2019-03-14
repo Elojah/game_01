@@ -1,4 +1,4 @@
-package main
+package cases
 
 import (
 	"time"
@@ -14,14 +14,14 @@ import (
 )
 
 const (
-	username6 = "test_case6"
-	password6 = "test_case6" // nolint: gosec
+	usernameMoveSector = "test_move_sector"
+	passwordMoveSector = "test_move_sector" // nolint: gosec
 
-	pcName6 = "test_case6"
-	pcType6 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+	pcNameMoveSector = "test_move_sector"
+	pcTypeMoveSector = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
 )
 
-// Case5 :
+// MoveSector :
 // - Subscribe
 // - SignIn
 // - CreatePC
@@ -32,24 +32,24 @@ const (
 // - DisconnectPC
 // - SignOut
 // - Unsubscribe
-func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
-	if err := as.Subscribe(username6, password6); err != nil {
-		return errors.Wrap(err, "case_6")
+func MoveSector(as *auth.Service, cs *client.Service, ts *tool.Service) error {
+	if err := as.Subscribe(usernameMoveSector, passwordMoveSector); err != nil {
+		return errors.Wrap(err, "case_move_sector")
 	}
-	tok, err := as.SignIn(username6, password6)
+	tok, err := as.SignIn(usernameMoveSector, passwordMoveSector)
 	if err != nil {
-		return errors.Wrap(err, "case_6")
+		return errors.Wrap(err, "case_move_sector")
 	}
-	if err := as.CreatePC(tok.ID, pcName6, pcType6); err != nil {
-		return errors.Wrap(err, "case_6")
+	if err := as.CreatePC(tok.ID, pcNameMoveSector, pcTypeMoveSector); err != nil {
+		return errors.Wrap(err, "case_move_sector")
 	}
 	pcs, err := as.ListPC(tok.ID)
 	if err != nil || len(pcs) != 1 {
-		return errors.Wrap(err, "case_6")
+		return errors.Wrap(err, "case_move_sector")
 	}
 	ent, err := as.ConnectPC(tok.ID, pcs[0].ID)
 	if err != nil {
-		return errors.Wrap(err, "case_6")
+		return errors.Wrap(err, "case_move_sector")
 	}
 
 	// Wait for sequencer/subs to be ready
@@ -58,7 +58,7 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	// Retrieve current entity state
 	ent, err = cs.GetState(ent.ID, 50)
 	if err != nil {
-		return errors.Wrap(err, "case_6")
+		return errors.Wrap(err, "case_move_sector")
 	}
 	// Force move entity on sector border with tool
 	// Starter is unique: 01CF001HTBA3CDR1ERJ6RF183A (1024, 1024, 1024)
@@ -66,7 +66,7 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		SectorID: ent.Position.SectorID,
 		Coord:    geometry.Vec3{X: 1024, Y: 0, Z: 0},
 	}); err != nil {
-		return errors.Wrap(err, "case_6")
+		return errors.Wrap(err, "case_move_sector")
 	}
 	// Wait for move to be effective
 	time.Sleep(50 * time.Millisecond)
@@ -89,7 +89,7 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 	// Move entity at X:10 in next sector
 	if err := cs.Move(tok.ID, ent, newPos); err != nil {
-		return errors.Wrap(err, "case_6")
+		return errors.Wrap(err, "case_move_sector")
 	}
 	// Check entity moved at correct position
 	_, err = cs.GetStateAt(ent.ID, 500, func(actual entity.E) bool {
@@ -97,14 +97,14 @@ func Case6(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 			actual.Position.Coord == newPos.Coord
 	})
 	if err != nil {
-		return errors.Wrap(err, "case_6")
+		return errors.Wrap(err, "case_move_sector")
 	}
 
-	if err := as.SignOut(tok.ID, username6); err != nil {
-		return errors.Wrap(err, "case_6")
+	if err := as.SignOut(tok.ID, usernameMoveSector); err != nil {
+		return errors.Wrap(err, "case_move_sector")
 	}
-	if err := as.Unsubscribe(username6, password6); err != nil {
-		return errors.Wrap(err, "case_6")
+	if err := as.Unsubscribe(usernameMoveSector, passwordMoveSector); err != nil {
+		return errors.Wrap(err, "case_move_sector")
 	}
 	return nil
 }

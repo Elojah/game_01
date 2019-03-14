@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/elojah/game_01/cmd/integration/auth"
+	"github.com/elojah/game_01/cmd/integration/cases"
 	"github.com/elojah/game_01/cmd/integration/client"
 	"github.com/elojah/game_01/cmd/integration/loganalyzer"
 	"github.com/elojah/game_01/cmd/integration/tool"
@@ -75,58 +76,63 @@ func main() {
 	log.Info().Msg("static ok")
 
 	authService := auth.NewService("https://localhost:8080")
-	if err := Case0(authService); err != nil {
+	if err := cases.Subscribe(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case0 ok")
-	if err := Case1(authService); err != nil {
+	log.Info().Msg("case subscribe ok")
+	if err := cases.Sign(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case1 ok")
-	if err := Case2(authService); err != nil {
+	log.Info().Msg("case sign ok")
+	if err := cases.SignBis(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case2 ok")
-	if err := Case3(authService); err != nil {
+	log.Info().Msg("case sign_bis ok")
+	if err := cases.CreatePC(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case3 ok")
-	if err := Case4(authService); err != nil {
+	log.Info().Msg("case create_pc ok")
+	if err := cases.ConnectPC(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case4 ok")
-	// TODO reorder
-	if err := Case9(authService); err != nil {
+	log.Info().Msg("case connect_pc ok")
+	if err := cases.DelPC(authService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case9 ok")
+	log.Info().Msg("case del_pc ok")
+	if err := cases.DelPCBis(authService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		return
+	}
+	log.Info().Msg("case del_pc_bis ok")
 
 	clientService := client.NewService(laClient)
-	if err := Case5(authService, clientService); err != nil {
+	if err := cases.Move(authService, clientService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case5 ok")
-	if err := Case6(authService, clientService, toolService); err != nil {
+	log.Info().Msg("case move ok")
+	if err := cases.MoveSector(authService, clientService, toolService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case6 ok")
-	if err := Case7(authService, clientService, toolService); err != nil {
+	log.Info().Msg("case move_sector ok")
+	if err := cases.Cast(authService, clientService, toolService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case7 ok")
-	if err := Case8(authService, clientService, toolService); err != nil {
+	log.Info().Msg("case cast ok")
+	if err := cases.CastSector(authService, clientService, toolService); err != nil {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case8 ok")
+	log.Info().Msg("case cast_sector ok")
+
 	log.Info().Msg("integration ok")
 }

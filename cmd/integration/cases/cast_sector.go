@@ -1,4 +1,4 @@
-package main
+package cases
 
 import (
 	"time"
@@ -16,18 +16,18 @@ import (
 )
 
 const (
-	username8_0 = "test_case8_0"
-	password8_0 = "test_case8_0" // nolint: gosec
-	pcName8_0   = "test_case8_0"
+	usernameCastSector0 = "test_case_cast_sector_0"
+	passwordCastSector0 = "test_case_cast_sector_0" // nolint: gosec
+	pcNameCastSector0   = "test_case_cast_sector_0"
 
-	username8_1 = "test_case8_1"
-	password8_1 = "test_case8_1" // nolint: gosec
-	pcName8_1   = "test_case8_1"
+	usernameCastSector1 = "test_case_cast_sector_1"
+	passwordCastSector1 = "test_case_cast_sector_1" // nolint: gosec
+	pcNameCastSector1   = "test_case_cast_sector_1"
 
-	pcType8 = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+	pcTypeCastSector = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
 )
 
-// Case8 :
+// CastSector :
 // #0
 // - Subscribe
 // - SignIn
@@ -52,46 +52,46 @@ const (
 // - DisconnectPC
 // - SignOut
 // - Unsubscribe
-func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
+func CastSector(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 
 	// #0
-	if err := as.Subscribe(username8_0, password8_0); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.Subscribe(usernameCastSector0, passwordCastSector0); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
-	tok0, err := as.SignIn(username8_0, password8_0)
+	tok0, err := as.SignIn(usernameCastSector0, passwordCastSector0)
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
-	if err := as.CreatePC(tok0.ID, pcName8_0, pcType8); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.CreatePC(tok0.ID, pcNameCastSector0, pcTypeCastSector); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	pcs0, err := as.ListPC(tok0.ID)
 	if err != nil || len(pcs0) != 1 {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	ent0, err := as.ConnectPC(tok0.ID, pcs0[0].ID)
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 
 	// #1
-	if err := as.Subscribe(username8_1, password8_1); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.Subscribe(usernameCastSector1, passwordCastSector1); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
-	tok1, err := as.SignIn(username8_1, password8_1)
+	tok1, err := as.SignIn(usernameCastSector1, passwordCastSector1)
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
-	if err := as.CreatePC(tok1.ID, pcName8_1, pcType8); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.CreatePC(tok1.ID, pcNameCastSector1, pcTypeCastSector); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	pcs1, err := as.ListPC(tok1.ID)
 	if err != nil || len(pcs1) != 1 {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	ent1, err := as.ConnectPC(tok1.ID, pcs1[0].ID)
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 
 	// Wait for sequencer/subs to be ready
@@ -100,11 +100,11 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 
 	ent0, err = cs.GetState(ent0.ID, 50)
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	ent1, err = cs.GetState(ent1.ID, 50)
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 
 	// Starter is unique: 01CF001HTBA3CDR1ERJ6RF183A (1024, 1024, 1024)
@@ -112,7 +112,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		SectorID: ent0.Position.SectorID,
 		Coord:    geometry.Vec3{X: 1020, Y: 0, Z: 0},
 	}); err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 
 	// Move ent1 close to caster
@@ -120,7 +120,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		SectorID: gulid.MustParse("01CKQQPVZN5KQC8XC9Q9NK8YXQ"),
 		Coord:    geometry.Vec3{X: 10, Y: 0, Z: 0},
 	}); err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	// Wait for moves to be effective
 	time.Sleep(50 * time.Millisecond)
@@ -135,7 +135,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 			},
 		},
 	}); err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 
 	time.Sleep(1000 * time.Millisecond) // cast time last 1000 ms
@@ -145,7 +145,7 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		return actual.MP == 250-10
 	})
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 
 	// Check entity target took damage
@@ -153,22 +153,22 @@ func Case8(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		return actual.HP == 150-30
 	})
 	if err != nil {
-		return errors.Wrap(err, "case_8")
+		return errors.Wrap(err, "case_cast_sector")
 	}
 
 	// #0
-	if err := as.SignOut(tok0.ID, username8_0); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.SignOut(tok0.ID, usernameCastSector0); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
-	if err := as.Unsubscribe(username8_0, password8_0); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.Unsubscribe(usernameCastSector0, passwordCastSector0); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	// #1
-	if err := as.SignOut(tok1.ID, username8_1); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.SignOut(tok1.ID, usernameCastSector1); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
-	if err := as.Unsubscribe(username8_1, password8_1); err != nil {
-		return errors.Wrap(err, "case_8")
+	if err := as.Unsubscribe(usernameCastSector1, passwordCastSector1); err != nil {
+		return errors.Wrap(err, "case_cast_sector")
 	}
 	return nil
 }
