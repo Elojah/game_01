@@ -183,6 +183,8 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		err = a.ConsumeSource(id, e)
 	case *event.ConsumeTarget:
 		err = a.ConsumeTarget(id, e)
+	case *event.ConsumeFeedback:
+		err = a.ConsumeFeedback(id, e)
 	default:
 		logger.Error().Msg("unrecognized action")
 	}

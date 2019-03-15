@@ -12,7 +12,7 @@ type Store interface {
 // IsConsumable returns if an item is consumable for an entitty.
 func (it I) IsConsumable() bool {
 	switch it.Type.GetValue().(type) {
-	case Orb:
+	case *Orb:
 		return true
 	}
 	return false

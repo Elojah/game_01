@@ -102,7 +102,7 @@ func (a *app) ConsumeTarget(id gulid.ID, e event.E) error {
 
 	// #Consume action item I on entity E.
 	switch v := it.Type.GetValue().(type) {
-	case item.Orb:
+	case *item.Orb:
 		ab, err := a.AbilityTemplateStore.GetTemplate(v.AbilityID)
 		if err != nil {
 			return errors.Wrap(err, "consume target")
