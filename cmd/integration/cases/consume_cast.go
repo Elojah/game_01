@@ -175,7 +175,7 @@ func ConsumeCast(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		Source:    ent0.ID,
 		AbilityID: gulid.MustParse("01D614CA6ZJZTDQ7B54ZDH9WN7"),
 		Targets: map[string]ability.Targets{
-			"01CPFBN87EESQ4QA8N820RV924": {
+			"01D614E5FW3ZK463YD7M2DE6Q6": {
 				Entities: []gulid.ID{ent1.ID},
 			},
 		},
@@ -187,7 +187,7 @@ func ConsumeCast(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 
 	// Check entity caster used mana
 	_, err = cs.GetStateAt(ent0.ID, 500, func(actual entity.E) bool {
-		return actual.MP == 250-20 // 15+5 post consumption
+		return actual.MP == 250-15
 	})
 	if err != nil {
 		return errors.Wrap(err, "case_consume_cast")

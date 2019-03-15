@@ -18,9 +18,8 @@ message A {
 	bytes Animation                    = 5 [(gogoproto.customtype)  = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 
 	uint64 MPConsumption               = 6;
-	uint64 PostMPConsumption           = 7;
-	uint64 CD                          = 8;
-	uint64 LastUsed                    = 9;
-	uint64 CastTime                    = 10;
-	map<string, Component> Components  = 11 [(gogoproto.nullable)   = false];
+	uint64 CD                          = 7;
+	uint64 LastUsed                    = 8;
+	uint64 CastTime                    = 9;
+	map<string, Component> Components  = 10 [(gogoproto.nullable)   = false];
 }
