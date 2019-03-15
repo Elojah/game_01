@@ -7,16 +7,15 @@ import (
 	"github.com/elojah/game_01/pkg/ability"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/geometry"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) PerformSource(id ulid.ID, e event.E) error {
+func (a *app) PerformSource(id gulid.ID, e event.E) error {
 
 	ps := e.Action.PerformSource
 	ts := e.ID.Time()
 
-	// #Retrieve entity
+	// #Retrieve source
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrapf(err, "get entity %s", id.String())
@@ -45,6 +44,8 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Set ability LastUsed
+	// LastUsed is set in PerformSource and not in feedback because there are potentially X multiple targets.
+	// If one or all target(s) fails (e.g: too far), we still apply to other targets.
 	ab.LastUsed = ts
 	if err := a.AbilityStore.SetAbility(ab, source.ID); err != nil {
 		return errors.Wrapf(err, "set ability %s for %s", ab.ID.String(), source.ID.String())
@@ -65,11 +66,11 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 
 		// #Send event to all targets
 		e := event.E{
-			ID: ulid.NewTimeID(ts + i),
+			ID: gulid.NewTimeID(ts + i + 1),
 			Action: event.Action{
 				PerformTarget: &event.PerformTarget{
 					AbilityID:   ab.ID,
-					ComponentID: ulid.MustParse(cid),
+					ComponentID: gulid.MustParse(cid),
 					Source:      source,
 				},
 			},
@@ -98,7 +99,7 @@ func (a *app) PerformSource(id ulid.ID, e event.E) error {
 	return nil
 }
 
-func (a *app) PerformTarget(id ulid.ID, e event.E) error {
+func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 
 	pt := e.Action.PerformTarget
 	ts := e.ID.Time()
@@ -125,7 +126,7 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Initialize feedback.
 	fb := ability.Feedback{
-		ID:          ulid.NewID(),
+		ID:          gulid.NewID(),
 		AbilityID:   ab.ID,
 		ComponentID: pt.ComponentID,
 	}
@@ -140,70 +141,19 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 		}, "ability %s component %s", ab.ID.String(), cid)
 	}
 
-	// #Check range validity.
-	if pt.Source.Position.SectorID.Compare(target.Position.SectorID) == 0 {
-
-		dist := geometry.Segment(pt.Source.Position.Coord, target.Position.Coord)
-		if dist > component.Range {
-			return errors.Wrapf(
-				gerrors.ErrOutOfRange{
-					Dist:  dist,
-					Range: component.Range,
-				},
-				"source %s (%f , %f , %f) out of range %f for target %s (%f , %f , %f)",
-				pt.Source.ID.String(),
-				pt.Source.Position.Coord.X,
-				pt.Source.Position.Coord.Y,
-				pt.Source.Position.Coord.Z,
-				component.Range,
-				target.ID.String(),
-				target.Position.Coord.X,
-				target.Position.Coord.Y,
-				target.Position.Coord.Z,
-			)
-		}
-	} else {
-
-		sec, err := a.SectorStore.GetSector(pt.Source.Position.SectorID)
-		if err != nil {
-			return errors.Wrapf(err, "get sector %s", pt.Source.Position.SectorID)
-		}
-		neigh, ok := sec.Neighbours[target.Position.SectorID.String()]
-		if !ok {
-			return errors.Wrapf(
-				gerrors.ErrOutOfRange{
-					Dist:  -1,
-					Range: component.Range,
-				},
-				"source %s in sector %s not neighbour to target %s in sector %s",
-				pt.Source.ID.String(),
-				pt.Source.Position.SectorID.String(),
-				target.ID.String(),
-				target.Position.SectorID.String(),
-			)
-		}
-
-		dist := geometry.Segment(pt.Source.Position.Coord, target.Position.Coord.MoveReference(neigh))
-		if dist > component.Range {
-			return errors.Wrapf(
-				gerrors.ErrOutOfRange{
-					Dist:  dist,
-					Range: component.Range,
-				},
-				"source %s sector %s (%f , %f , %f) out of range %f for target %s sector %s (%f , %f , %f)",
-				pt.Source.ID.String(),
-				pt.Source.Position.SectorID.String(),
-				pt.Source.Position.Coord.X,
-				pt.Source.Position.Coord.Y,
-				pt.Source.Position.Coord.Z,
-				component.Range,
-				target.ID.String(),
-				target.Position.SectorID.String(),
-				target.Position.Coord.X,
-				target.Position.Coord.Y,
-				target.Position.Coord.Z,
-			)
-		}
+	// #Check distance between source and target
+	dist, err := a.SectorService.Segment(pt.Source.Position, target.Position)
+	if err != nil {
+		return errors.Wrap(err, "consume target")
+	}
+	if dist > component.Range {
+		return errors.Wrap(
+			gerrors.ErrOutOfRange{
+				Dist:  dist,
+				Range: component.Range,
+			},
+			"consume target",
+		)
 	}
 
 	// #Apply all ability components.
@@ -223,13 +173,40 @@ func (a *app) PerformTarget(id ulid.ID, e event.E) error {
 
 	// #Publish feedback to source.
 	return a.EventQStore.PublishEvent(event.E{
-		ID: ulid.NewTimeID(ts + 1),
+		ID: gulid.NewTimeID(ts + 1),
 		Action: event.Action{
-			FeedbackTarget: &event.FeedbackTarget{
+			PerformFeedback: &event.PerformFeedback{
 				ID:     fb.ID,
-				Source: target,
+				Target: target,
 			},
 		},
 		Trigger: e.ID,
 	}, pt.Source.ID)
+}
+
+func (a *app) PerformFeedback(id gulid.ID, e event.E) error {
+
+	ft := e.Action.PerformFeedback
+	ts := e.ID.Time()
+
+	// #Retrieve previous source state.
+	source, err := a.EntityStore.GetEntity(id, ts)
+	if err != nil {
+		return errors.Wrap(err, "retrieve entity")
+	}
+
+	// #Retrieve feedback.
+	fb, err := a.FeedbackStore.GetFeedback(ft.ID)
+	switch errors.Cause(err).(type) {
+	case gerrors.ErrNotFound:
+		return errors.Wrapf(err, "retrieve feedback")
+	}
+
+	// #Apply all ability components.
+	if err := source.ApplyEffectFeedbacks(&ft.Target, fb.Effects); err != nil {
+		return errors.Wrap(err, "apply feedback")
+	}
+
+	// #Set entity new state.
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "validate feeback")
 }

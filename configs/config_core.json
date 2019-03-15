@@ -3,7 +3,8 @@
 		"id": "01CCS1SZ4B20G98XYMFGVC9VS4",
 		"limit": 65535,
 		"move_tolerance": 100,
-		"loot_radius": 5
+		"loot_radius": 5,
+		"consume_radius": 50
 	},
 	"redis": {
 		"addr": "127.0.0.1:6379",

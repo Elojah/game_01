@@ -12,6 +12,7 @@ type Config struct {
 	Limit         int     `json:"limit"`
 	MoveTolerance float64 `json:"move_tolerance"`
 	LootRadius    float64 `json:"loot_radius"`
+	ConsumeRadius float64 `json:"consume_radius"`
 }
 
 // Equal returns is both configs are equal.
@@ -67,6 +68,15 @@ func (c *Config) Dial(fileconf interface{}) error {
 	c.LootRadius, ok = cLootRadius.(float64)
 	if !ok {
 		return errors.New("key loot_radius invalid. must be numeric")
+	}
+
+	cConsumeRadius, ok := fconf["consume_radius"]
+	if !ok {
+		return errors.New("missing key consume_radius")
+	}
+	c.ConsumeRadius, ok = cConsumeRadius.(float64)
+	if !ok {
+		return errors.New("key consume_radius invalid. must be numeric")
 	}
 
 	return nil

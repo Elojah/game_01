@@ -100,8 +100,8 @@ func (s *TriggerService) Cancel(e event.E) error {
 		return s.CancelPerformSource(e)
 	case *event.PerformTarget:
 		return s.CancelPerformTarget(e)
-	case *event.FeedbackTarget:
-		return s.CancelFeedbackTarget(e)
+	case *event.PerformFeedback:
+		return s.CancelPerformFeedback(e)
 	case *event.LootSource:
 		return s.CancelLootSource(e)
 	case *event.LootTarget:
@@ -112,6 +112,8 @@ func (s *TriggerService) Cancel(e event.E) error {
 		return s.CancelConsumeSource(e)
 	case *event.ConsumeTarget:
 		return s.CancelConsumeTarget(e)
+	case *event.ConsumeFeedback:
+		return s.CancelConsumeFeedback(e)
 	}
 	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }
@@ -172,8 +174,8 @@ func (s *TriggerService) CancelPerformTarget(e event.E) error {
 	return errors.Wrapf(s.QStore.PublishEvent(e, pt.Source.ID), "cancel perform target")
 }
 
-// CancelFeedbackTarget cancels a FeedbackTarget event.
-func (s *TriggerService) CancelFeedbackTarget(e event.E) error {
+// CancelPerformFeedback cancels a PerformFeedback event.
+func (s *TriggerService) CancelPerformFeedback(e event.E) error {
 	// Leaf
 	return nil
 }
@@ -202,7 +204,7 @@ func (s *TriggerService) CancelLootTarget(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(s.QStore.PublishEvent(e, lt.SourceID), "cancel loot target")
+	return errors.Wrapf(s.QStore.PublishEvent(e, lt.Source.ID), "cancel loot target")
 }
 
 // CancelLootFeedback cancels a LootFeedback event.
@@ -218,5 +220,10 @@ func (s *TriggerService) CancelConsumeSource(e event.E) error {
 
 // CancelConsumeTarget cancels a ConsumeTarget event.
 func (s *TriggerService) CancelConsumeTarget(e event.E) error {
+	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
+}
+
+// CancelConsumeFeedback cancels a ConsumeTarget event.
+func (s *TriggerService) CancelConsumeFeedback(e event.E) error {
 	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }

@@ -38,7 +38,7 @@ type Cancel struct {
 func (m *Cancel) Reset()      { *m = Cancel{} }
 func (*Cancel) ProtoMessage() {}
 func (*Cancel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{0}
+	return fileDescriptor_action_98c97669884f4595, []int{0}
 }
 func (m *Cancel) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -76,7 +76,7 @@ type MoveTarget struct {
 func (m *MoveTarget) Reset()      { *m = MoveTarget{} }
 func (*MoveTarget) ProtoMessage() {}
 func (*MoveTarget) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{1}
+	return fileDescriptor_action_98c97669884f4595, []int{1}
 }
 func (m *MoveTarget) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -113,8 +113,8 @@ func (m *MoveTarget) GetPosition() geometry.Position {
 }
 
 type CastSource struct {
-	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=AbilityID,json=abilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
-	Targets              map[string]ability.Targets            `protobuf:"bytes,2,rep,name=Targets,json=targets" json:"Targets" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value"`
+	Targets              map[string]ability.Targets            `protobuf:"bytes,1,rep,name=Targets,json=targets" json:"Targets" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value"`
+	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=AbilityID,json=abilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
 }
@@ -122,7 +122,7 @@ type CastSource struct {
 func (m *CastSource) Reset()      { *m = CastSource{} }
 func (*CastSource) ProtoMessage() {}
 func (*CastSource) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{2}
+	return fileDescriptor_action_98c97669884f4595, []int{2}
 }
 func (m *CastSource) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -158,55 +158,9 @@ func (m *CastSource) GetTargets() map[string]ability.Targets {
 	return nil
 }
 
-type FeedbackTarget struct {
-	ID                   github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=ID,json=iD,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
-	Source               entity.E                              `protobuf:"bytes,2,opt,name=Source,json=source" json:"Source"`
-	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
-	XXX_sizecache        int32                                 `json:"-"`
-}
-
-func (m *FeedbackTarget) Reset()      { *m = FeedbackTarget{} }
-func (*FeedbackTarget) ProtoMessage() {}
-func (*FeedbackTarget) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{3}
-}
-func (m *FeedbackTarget) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *FeedbackTarget) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_FeedbackTarget.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalTo(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (dst *FeedbackTarget) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FeedbackTarget.Merge(dst, src)
-}
-func (m *FeedbackTarget) XXX_Size() int {
-	return m.Size()
-}
-func (m *FeedbackTarget) XXX_DiscardUnknown() {
-	xxx_messageInfo_FeedbackTarget.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_FeedbackTarget proto.InternalMessageInfo
-
-func (m *FeedbackTarget) GetSource() entity.E {
-	if m != nil {
-		return m.Source
-	}
-	return entity.E{}
-}
-
 type PerformSource struct {
-	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=AbilityID,json=abilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
-	Targets              map[string]ability.Targets            `protobuf:"bytes,2,rep,name=Targets,json=targets" json:"Targets" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value"`
+	Targets              map[string]ability.Targets            `protobuf:"bytes,1,rep,name=Targets,json=targets" json:"Targets" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value"`
+	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=AbilityID,json=abilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
 }
@@ -214,7 +168,7 @@ type PerformSource struct {
 func (m *PerformSource) Reset()      { *m = PerformSource{} }
 func (*PerformSource) ProtoMessage() {}
 func (*PerformSource) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{4}
+	return fileDescriptor_action_98c97669884f4595, []int{3}
 }
 func (m *PerformSource) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -251,9 +205,9 @@ func (m *PerformSource) GetTargets() map[string]ability.Targets {
 }
 
 type PerformTarget struct {
-	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=AbilityID,json=abilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
-	ComponentID          github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ComponentID,json=componentID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ComponentID"`
-	Source               entity.E                              `protobuf:"bytes,3,opt,name=Source,json=source" json:"Source"`
+	Source               entity.E                              `protobuf:"bytes,1,opt,name=Source,json=source" json:"Source"`
+	AbilityID            github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=AbilityID,json=abilityID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"AbilityID"`
+	ComponentID          github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,3,opt,name=ComponentID,json=componentID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ComponentID"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
 }
@@ -261,7 +215,7 @@ type PerformTarget struct {
 func (m *PerformTarget) Reset()      { *m = PerformTarget{} }
 func (*PerformTarget) ProtoMessage() {}
 func (*PerformTarget) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{5}
+	return fileDescriptor_action_98c97669884f4595, []int{4}
 }
 func (m *PerformTarget) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -297,6 +251,52 @@ func (m *PerformTarget) GetSource() entity.E {
 	return entity.E{}
 }
 
+type PerformFeedback struct {
+	Target               entity.E                              `protobuf:"bytes,1,opt,name=Target,json=target" json:"Target"`
+	ID                   github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ID,json=iD,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ID"`
+	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
+	XXX_sizecache        int32                                 `json:"-"`
+}
+
+func (m *PerformFeedback) Reset()      { *m = PerformFeedback{} }
+func (*PerformFeedback) ProtoMessage() {}
+func (*PerformFeedback) Descriptor() ([]byte, []int) {
+	return fileDescriptor_action_98c97669884f4595, []int{5}
+}
+func (m *PerformFeedback) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *PerformFeedback) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_PerformFeedback.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalTo(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (dst *PerformFeedback) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PerformFeedback.Merge(dst, src)
+}
+func (m *PerformFeedback) XXX_Size() int {
+	return m.Size()
+}
+func (m *PerformFeedback) XXX_DiscardUnknown() {
+	xxx_messageInfo_PerformFeedback.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PerformFeedback proto.InternalMessageInfo
+
+func (m *PerformFeedback) GetTarget() entity.E {
+	if m != nil {
+		return m.Target
+	}
+	return entity.E{}
+}
+
 type LootSource struct {
 	TargetID             github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=TargetID,json=targetID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"TargetID"`
 	ItemID               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ItemID,json=itemID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemID"`
@@ -307,7 +307,7 @@ type LootSource struct {
 func (m *LootSource) Reset()      { *m = LootSource{} }
 func (*LootSource) ProtoMessage() {}
 func (*LootSource) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{6}
+	return fileDescriptor_action_98c97669884f4595, []int{6}
 }
 func (m *LootSource) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -337,7 +337,7 @@ func (m *LootSource) XXX_DiscardUnknown() {
 var xxx_messageInfo_LootSource proto.InternalMessageInfo
 
 type LootTarget struct {
-	SourceID             github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=SourceID,json=sourceID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"SourceID"`
+	Source               entity.E                              `protobuf:"bytes,1,opt,name=Source,json=source" json:"Source"`
 	ItemID               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ItemID,json=itemID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemID"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
@@ -346,7 +346,7 @@ type LootTarget struct {
 func (m *LootTarget) Reset()      { *m = LootTarget{} }
 func (*LootTarget) ProtoMessage() {}
 func (*LootTarget) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{7}
+	return fileDescriptor_action_98c97669884f4595, []int{7}
 }
 func (m *LootTarget) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -375,8 +375,15 @@ func (m *LootTarget) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_LootTarget proto.InternalMessageInfo
 
+func (m *LootTarget) GetSource() entity.E {
+	if m != nil {
+		return m.Source
+	}
+	return entity.E{}
+}
+
 type LootFeedback struct {
-	SourceID             github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=SourceID,json=sourceID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"SourceID"`
+	TargetID             github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=TargetID,json=targetID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"TargetID"`
 	ItemID               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ItemID,json=itemID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemID"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
@@ -385,7 +392,7 @@ type LootFeedback struct {
 func (m *LootFeedback) Reset()      { *m = LootFeedback{} }
 func (*LootFeedback) ProtoMessage() {}
 func (*LootFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{8}
+	return fileDescriptor_action_98c97669884f4595, []int{8}
 }
 func (m *LootFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -424,7 +431,7 @@ type ConsumeSource struct {
 func (m *ConsumeSource) Reset()      { *m = ConsumeSource{} }
 func (*ConsumeSource) ProtoMessage() {}
 func (*ConsumeSource) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{9}
+	return fileDescriptor_action_98c97669884f4595, []int{9}
 }
 func (m *ConsumeSource) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -454,7 +461,7 @@ func (m *ConsumeSource) XXX_DiscardUnknown() {
 var xxx_messageInfo_ConsumeSource proto.InternalMessageInfo
 
 type ConsumeTarget struct {
-	SourceID             github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=SourceID,json=sourceID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"SourceID"`
+	Source               entity.E                              `protobuf:"bytes,1,opt,name=Source,json=source" json:"Source"`
 	ItemID               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ItemID,json=itemID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemID"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
@@ -463,7 +470,7 @@ type ConsumeTarget struct {
 func (m *ConsumeTarget) Reset()      { *m = ConsumeTarget{} }
 func (*ConsumeTarget) ProtoMessage() {}
 func (*ConsumeTarget) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{10}
+	return fileDescriptor_action_98c97669884f4595, []int{10}
 }
 func (m *ConsumeTarget) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -492,8 +499,15 @@ func (m *ConsumeTarget) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_ConsumeTarget proto.InternalMessageInfo
 
+func (m *ConsumeTarget) GetSource() entity.E {
+	if m != nil {
+		return m.Source
+	}
+	return entity.E{}
+}
+
 type ConsumeFeedback struct {
-	SourceID             github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=SourceID,json=sourceID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"SourceID"`
+	TargetID             github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,1,opt,name=TargetID,json=targetID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"TargetID"`
 	ItemID               github_com_elojah_game_01_pkg_ulid.ID `protobuf:"bytes,2,opt,name=ItemID,json=itemID,proto3,customtype=github.com/elojah/game_01/pkg/ulid.ID" json:"ItemID"`
 	XXX_NoUnkeyedLiteral struct{}                              `json:"-"`
 	XXX_sizecache        int32                                 `json:"-"`
@@ -502,7 +516,7 @@ type ConsumeFeedback struct {
 func (m *ConsumeFeedback) Reset()      { *m = ConsumeFeedback{} }
 func (*ConsumeFeedback) ProtoMessage() {}
 func (*ConsumeFeedback) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{11}
+	return fileDescriptor_action_98c97669884f4595, []int{11}
 }
 func (m *ConsumeFeedback) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -537,7 +551,7 @@ type Action struct {
 	CastSource           *CastSource      `protobuf:"bytes,3,opt,name=CastSource,json=castSource" json:"CastSource,omitempty"`
 	PerformSource        *PerformSource   `protobuf:"bytes,4,opt,name=PerformSource,json=performSource" json:"PerformSource,omitempty"`
 	PerformTarget        *PerformTarget   `protobuf:"bytes,5,opt,name=PerformTarget,json=performTarget" json:"PerformTarget,omitempty"`
-	FeedbackTarget       *FeedbackTarget  `protobuf:"bytes,6,opt,name=FeedbackTarget,json=feedbackTarget" json:"FeedbackTarget,omitempty"`
+	PerformFeedback      *PerformFeedback `protobuf:"bytes,6,opt,name=PerformFeedback,json=performFeedback" json:"PerformFeedback,omitempty"`
 	LootSource           *LootSource      `protobuf:"bytes,7,opt,name=LootSource,json=lootSource" json:"LootSource,omitempty"`
 	LootTarget           *LootTarget      `protobuf:"bytes,8,opt,name=LootTarget,json=lootTarget" json:"LootTarget,omitempty"`
 	LootFeedback         *LootFeedback    `protobuf:"bytes,9,opt,name=LootFeedback,json=lootFeedback" json:"LootFeedback,omitempty"`
@@ -551,7 +565,7 @@ type Action struct {
 func (m *Action) Reset()      { *m = Action{} }
 func (*Action) ProtoMessage() {}
 func (*Action) Descriptor() ([]byte, []int) {
-	return fileDescriptor_action_d3203102feb9b532, []int{12}
+	return fileDescriptor_action_98c97669884f4595, []int{12}
 }
 func (m *Action) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -615,9 +629,9 @@ func (m *Action) GetPerformTarget() *PerformTarget {
 	return nil
 }
 
-func (m *Action) GetFeedbackTarget() *FeedbackTarget {
+func (m *Action) GetPerformFeedback() *PerformFeedback {
 	if m != nil {
-		return m.FeedbackTarget
+		return m.PerformFeedback
 	}
 	return nil
 }
@@ -669,10 +683,10 @@ func init() {
 	proto.RegisterType((*MoveTarget)(nil), "event.MoveTarget")
 	proto.RegisterType((*CastSource)(nil), "event.CastSource")
 	proto.RegisterMapType((map[string]ability.Targets)(nil), "event.CastSource.TargetsEntry")
-	proto.RegisterType((*FeedbackTarget)(nil), "event.FeedbackTarget")
 	proto.RegisterType((*PerformSource)(nil), "event.PerformSource")
 	proto.RegisterMapType((map[string]ability.Targets)(nil), "event.PerformSource.TargetsEntry")
 	proto.RegisterType((*PerformTarget)(nil), "event.PerformTarget")
+	proto.RegisterType((*PerformFeedback)(nil), "event.PerformFeedback")
 	proto.RegisterType((*LootSource)(nil), "event.LootSource")
 	proto.RegisterType((*LootTarget)(nil), "event.LootTarget")
 	proto.RegisterType((*LootFeedback)(nil), "event.LootFeedback")
@@ -745,9 +759,6 @@ func (this *CastSource) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.AbilityID.Equal(that1.AbilityID) {
-		return false
-	}
 	if len(this.Targets) != len(that1.Targets) {
 		return false
 	}
@@ -758,31 +769,7 @@ func (this *CastSource) Equal(that interface{}) bool {
 			return false
 		}
 	}
-	return true
-}
-func (this *FeedbackTarget) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*FeedbackTarget)
-	if !ok {
-		that2, ok := that.(FeedbackTarget)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !this.ID.Equal(that1.ID) {
-		return false
-	}
-	if !this.Source.Equal(&that1.Source) {
+	if !this.AbilityID.Equal(that1.AbilityID) {
 		return false
 	}
 	return true
@@ -806,9 +793,6 @@ func (this *PerformSource) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.AbilityID.Equal(that1.AbilityID) {
-		return false
-	}
 	if len(this.Targets) != len(that1.Targets) {
 		return false
 	}
@@ -818,6 +802,9 @@ func (this *PerformSource) Equal(that interface{}) bool {
 		if !(&a).Equal(&b) {
 			return false
 		}
+	}
+	if !this.AbilityID.Equal(that1.AbilityID) {
+		return false
 	}
 	return true
 }
@@ -840,13 +827,40 @@ func (this *PerformTarget) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
+	if !this.Source.Equal(&that1.Source) {
+		return false
+	}
 	if !this.AbilityID.Equal(that1.AbilityID) {
 		return false
 	}
 	if !this.ComponentID.Equal(that1.ComponentID) {
 		return false
 	}
-	if !this.Source.Equal(&that1.Source) {
+	return true
+}
+func (this *PerformFeedback) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*PerformFeedback)
+	if !ok {
+		that2, ok := that.(PerformFeedback)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !this.Target.Equal(&that1.Target) {
+		return false
+	}
+	if !this.ID.Equal(that1.ID) {
 		return false
 	}
 	return true
@@ -897,7 +911,7 @@ func (this *LootTarget) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.SourceID.Equal(that1.SourceID) {
+	if !this.Source.Equal(&that1.Source) {
 		return false
 	}
 	if !this.ItemID.Equal(that1.ItemID) {
@@ -924,7 +938,7 @@ func (this *LootFeedback) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.SourceID.Equal(that1.SourceID) {
+	if !this.TargetID.Equal(that1.TargetID) {
 		return false
 	}
 	if !this.ItemID.Equal(that1.ItemID) {
@@ -978,7 +992,7 @@ func (this *ConsumeTarget) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.SourceID.Equal(that1.SourceID) {
+	if !this.Source.Equal(&that1.Source) {
 		return false
 	}
 	if !this.ItemID.Equal(that1.ItemID) {
@@ -1005,7 +1019,7 @@ func (this *ConsumeFeedback) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if !this.SourceID.Equal(that1.SourceID) {
+	if !this.TargetID.Equal(that1.TargetID) {
 		return false
 	}
 	if !this.ItemID.Equal(that1.ItemID) {
@@ -1047,7 +1061,7 @@ func (this *Action) Equal(that interface{}) bool {
 	if !this.PerformTarget.Equal(that1.PerformTarget) {
 		return false
 	}
-	if !this.FeedbackTarget.Equal(that1.FeedbackTarget) {
+	if !this.PerformFeedback.Equal(that1.PerformFeedback) {
 		return false
 	}
 	if !this.LootSource.Equal(that1.LootSource) {
@@ -1095,7 +1109,6 @@ func (this *CastSource) GoString() string {
 	}
 	s := make([]string, 0, 6)
 	s = append(s, "&event.CastSource{")
-	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
 	keysForTargets := make([]string, 0, len(this.Targets))
 	for k, _ := range this.Targets {
 		keysForTargets = append(keysForTargets, k)
@@ -1109,17 +1122,7 @@ func (this *CastSource) GoString() string {
 	if this.Targets != nil {
 		s = append(s, "Targets: "+mapStringForTargets+",\n")
 	}
-	s = append(s, "}")
-	return strings.Join(s, "")
-}
-func (this *FeedbackTarget) GoString() string {
-	if this == nil {
-		return "nil"
-	}
-	s := make([]string, 0, 6)
-	s = append(s, "&event.FeedbackTarget{")
-	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
-	s = append(s, "Source: "+strings.Replace(this.Source.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -1129,7 +1132,6 @@ func (this *PerformSource) GoString() string {
 	}
 	s := make([]string, 0, 6)
 	s = append(s, "&event.PerformSource{")
-	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
 	keysForTargets := make([]string, 0, len(this.Targets))
 	for k, _ := range this.Targets {
 		keysForTargets = append(keysForTargets, k)
@@ -1143,6 +1145,7 @@ func (this *PerformSource) GoString() string {
 	if this.Targets != nil {
 		s = append(s, "Targets: "+mapStringForTargets+",\n")
 	}
+	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -1152,9 +1155,20 @@ func (this *PerformTarget) GoString() string {
 	}
 	s := make([]string, 0, 7)
 	s = append(s, "&event.PerformTarget{")
+	s = append(s, "Source: "+strings.Replace(this.Source.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "AbilityID: "+fmt.Sprintf("%#v", this.AbilityID)+",\n")
 	s = append(s, "ComponentID: "+fmt.Sprintf("%#v", this.ComponentID)+",\n")
-	s = append(s, "Source: "+strings.Replace(this.Source.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "}")
+	return strings.Join(s, "")
+}
+func (this *PerformFeedback) GoString() string {
+	if this == nil {
+		return "nil"
+	}
+	s := make([]string, 0, 6)
+	s = append(s, "&event.PerformFeedback{")
+	s = append(s, "Target: "+strings.Replace(this.Target.GoString(), `&`, ``, 1)+",\n")
+	s = append(s, "ID: "+fmt.Sprintf("%#v", this.ID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
 }
@@ -1175,7 +1189,7 @@ func (this *LootTarget) GoString() string {
 	}
 	s := make([]string, 0, 6)
 	s = append(s, "&event.LootTarget{")
-	s = append(s, "SourceID: "+fmt.Sprintf("%#v", this.SourceID)+",\n")
+	s = append(s, "Source: "+strings.Replace(this.Source.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "ItemID: "+fmt.Sprintf("%#v", this.ItemID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -1186,7 +1200,7 @@ func (this *LootFeedback) GoString() string {
 	}
 	s := make([]string, 0, 6)
 	s = append(s, "&event.LootFeedback{")
-	s = append(s, "SourceID: "+fmt.Sprintf("%#v", this.SourceID)+",\n")
+	s = append(s, "TargetID: "+fmt.Sprintf("%#v", this.TargetID)+",\n")
 	s = append(s, "ItemID: "+fmt.Sprintf("%#v", this.ItemID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -1208,7 +1222,7 @@ func (this *ConsumeTarget) GoString() string {
 	}
 	s := make([]string, 0, 6)
 	s = append(s, "&event.ConsumeTarget{")
-	s = append(s, "SourceID: "+fmt.Sprintf("%#v", this.SourceID)+",\n")
+	s = append(s, "Source: "+strings.Replace(this.Source.GoString(), `&`, ``, 1)+",\n")
 	s = append(s, "ItemID: "+fmt.Sprintf("%#v", this.ItemID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -1219,7 +1233,7 @@ func (this *ConsumeFeedback) GoString() string {
 	}
 	s := make([]string, 0, 6)
 	s = append(s, "&event.ConsumeFeedback{")
-	s = append(s, "SourceID: "+fmt.Sprintf("%#v", this.SourceID)+",\n")
+	s = append(s, "TargetID: "+fmt.Sprintf("%#v", this.TargetID)+",\n")
 	s = append(s, "ItemID: "+fmt.Sprintf("%#v", this.ItemID)+",\n")
 	s = append(s, "}")
 	return strings.Join(s, "")
@@ -1245,8 +1259,8 @@ func (this *Action) GoString() string {
 	if this.PerformTarget != nil {
 		s = append(s, "PerformTarget: "+fmt.Sprintf("%#v", this.PerformTarget)+",\n")
 	}
-	if this.FeedbackTarget != nil {
-		s = append(s, "FeedbackTarget: "+fmt.Sprintf("%#v", this.FeedbackTarget)+",\n")
+	if this.PerformFeedback != nil {
+		s = append(s, "PerformFeedback: "+fmt.Sprintf("%#v", this.PerformFeedback)+",\n")
 	}
 	if this.LootSource != nil {
 		s = append(s, "LootSource: "+fmt.Sprintf("%#v", this.LootSource)+",\n")
@@ -1336,17 +1350,9 @@ func (m *CastSource) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	dAtA[i] = 0xa
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.AbilityID.Size()))
-	n2, err := m.AbilityID.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n2
 	if len(m.Targets) > 0 {
 		for k, _ := range m.Targets {
-			dAtA[i] = 0x12
+			dAtA[i] = 0xa
 			i++
 			v := m.Targets[k]
 			msgSize := 0
@@ -1363,47 +1369,21 @@ func (m *CastSource) MarshalTo(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 			i++
 			i = encodeVarintAction(dAtA, i, uint64((&v).Size()))
-			n3, err := (&v).MarshalTo(dAtA[i:])
+			n2, err := (&v).MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
-			i += n3
+			i += n2
 		}
 	}
-	return i, nil
-}
-
-func (m *FeedbackTarget) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalTo(dAtA)
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *FeedbackTarget) MarshalTo(dAtA []byte) (int, error) {
-	var i int
-	_ = i
-	var l int
-	_ = l
-	dAtA[i] = 0xa
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.ID.Size()))
-	n4, err := m.ID.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n4
 	dAtA[i] = 0x12
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
-	n5, err := m.Source.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.AbilityID.Size()))
+	n3, err := m.AbilityID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
-	i += n5
+	i += n3
 	return i, nil
 }
 
@@ -1422,17 +1402,9 @@ func (m *PerformSource) MarshalTo(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	dAtA[i] = 0xa
-	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.AbilityID.Size()))
-	n6, err := m.AbilityID.MarshalTo(dAtA[i:])
-	if err != nil {
-		return 0, err
-	}
-	i += n6
 	if len(m.Targets) > 0 {
 		for k, _ := range m.Targets {
-			dAtA[i] = 0x12
+			dAtA[i] = 0xa
 			i++
 			v := m.Targets[k]
 			msgSize := 0
@@ -1449,13 +1421,21 @@ func (m *PerformSource) MarshalTo(dAtA []byte) (int, error) {
 			dAtA[i] = 0x12
 			i++
 			i = encodeVarintAction(dAtA, i, uint64((&v).Size()))
-			n7, err := (&v).MarshalTo(dAtA[i:])
+			n4, err := (&v).MarshalTo(dAtA[i:])
 			if err != nil {
 				return 0, err
 			}
-			i += n7
+			i += n4
 		}
 	}
+	dAtA[i] = 0x12
+	i++
+	i = encodeVarintAction(dAtA, i, uint64(m.AbilityID.Size()))
+	n5, err := m.AbilityID.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n5
 	return i, nil
 }
 
@@ -1476,24 +1456,58 @@ func (m *PerformTarget) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
+	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
+	n6, err := m.Source.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n6
+	dAtA[i] = 0x12
+	i++
 	i = encodeVarintAction(dAtA, i, uint64(m.AbilityID.Size()))
-	n8, err := m.AbilityID.MarshalTo(dAtA[i:])
+	n7, err := m.AbilityID.MarshalTo(dAtA[i:])
+	if err != nil {
+		return 0, err
+	}
+	i += n7
+	dAtA[i] = 0x1a
+	i++
+	i = encodeVarintAction(dAtA, i, uint64(m.ComponentID.Size()))
+	n8, err := m.ComponentID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n8
-	dAtA[i] = 0x12
+	return i, nil
+}
+
+func (m *PerformFeedback) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalTo(dAtA)
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *PerformFeedback) MarshalTo(dAtA []byte) (int, error) {
+	var i int
+	_ = i
+	var l int
+	_ = l
+	dAtA[i] = 0xa
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.ComponentID.Size()))
-	n9, err := m.ComponentID.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.Target.Size()))
+	n9, err := m.Target.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
 	i += n9
-	dAtA[i] = 0x1a
+	dAtA[i] = 0x12
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
-	n10, err := m.Source.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.ID.Size()))
+	n10, err := m.ID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
@@ -1552,8 +1566,8 @@ func (m *LootTarget) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.SourceID.Size()))
-	n13, err := m.SourceID.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
+	n13, err := m.Source.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
@@ -1586,8 +1600,8 @@ func (m *LootFeedback) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.SourceID.Size()))
-	n15, err := m.SourceID.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.TargetID.Size()))
+	n15, err := m.TargetID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
@@ -1654,8 +1668,8 @@ func (m *ConsumeTarget) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.SourceID.Size()))
-	n19, err := m.SourceID.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.Source.Size()))
+	n19, err := m.Source.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
@@ -1688,8 +1702,8 @@ func (m *ConsumeFeedback) MarshalTo(dAtA []byte) (int, error) {
 	_ = l
 	dAtA[i] = 0xa
 	i++
-	i = encodeVarintAction(dAtA, i, uint64(m.SourceID.Size()))
-	n21, err := m.SourceID.MarshalTo(dAtA[i:])
+	i = encodeVarintAction(dAtA, i, uint64(m.TargetID.Size()))
+	n21, err := m.TargetID.MarshalTo(dAtA[i:])
 	if err != nil {
 		return 0, err
 	}
@@ -1770,11 +1784,11 @@ func (m *Action) MarshalTo(dAtA []byte) (int, error) {
 		}
 		i += n27
 	}
-	if m.FeedbackTarget != nil {
+	if m.PerformFeedback != nil {
 		dAtA[i] = 0x32
 		i++
-		i = encodeVarintAction(dAtA, i, uint64(m.FeedbackTarget.Size()))
-		n28, err := m.FeedbackTarget.MarshalTo(dAtA[i:])
+		i = encodeVarintAction(dAtA, i, uint64(m.PerformFeedback.Size()))
+		n28, err := m.PerformFeedback.MarshalTo(dAtA[i:])
 		if err != nil {
 			return 0, err
 		}
@@ -1870,26 +1884,15 @@ func NewPopulatedMoveTarget(r randyAction, easy bool) *MoveTarget {
 
 func NewPopulatedCastSource(r randyAction, easy bool) *CastSource {
 	this := &CastSource{}
-	v2 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.AbilityID = *v2
 	if r.Intn(10) != 0 {
-		v3 := r.Intn(10)
+		v2 := r.Intn(10)
 		this.Targets = make(map[string]ability.Targets)
-		for i := 0; i < v3; i++ {
+		for i := 0; i < v2; i++ {
 			this.Targets[randStringAction(r)] = *ability.NewPopulatedTargets(r, easy)
 		}
 	}
-	if !easy && r.Intn(10) != 0 {
-	}
-	return this
-}
-
-func NewPopulatedFeedbackTarget(r randyAction, easy bool) *FeedbackTarget {
-	this := &FeedbackTarget{}
-	v4 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.ID = *v4
-	v5 := entity.NewPopulatedE(r, easy)
-	this.Source = *v5
+	v3 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.AbilityID = *v3
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -1897,15 +1900,15 @@ func NewPopulatedFeedbackTarget(r randyAction, easy bool) *FeedbackTarget {
 
 func NewPopulatedPerformSource(r randyAction, easy bool) *PerformSource {
 	this := &PerformSource{}
-	v6 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.AbilityID = *v6
 	if r.Intn(10) != 0 {
-		v7 := r.Intn(10)
+		v4 := r.Intn(10)
 		this.Targets = make(map[string]ability.Targets)
-		for i := 0; i < v7; i++ {
+		for i := 0; i < v4; i++ {
 			this.Targets[randStringAction(r)] = *ability.NewPopulatedTargets(r, easy)
 		}
 	}
+	v5 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.AbilityID = *v5
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -1913,12 +1916,23 @@ func NewPopulatedPerformSource(r randyAction, easy bool) *PerformSource {
 
 func NewPopulatedPerformTarget(r randyAction, easy bool) *PerformTarget {
 	this := &PerformTarget{}
+	v6 := entity.NewPopulatedE(r, easy)
+	this.Source = *v6
+	v7 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.AbilityID = *v7
 	v8 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.AbilityID = *v8
-	v9 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.ComponentID = *v9
-	v10 := entity.NewPopulatedE(r, easy)
-	this.Source = *v10
+	this.ComponentID = *v8
+	if !easy && r.Intn(10) != 0 {
+	}
+	return this
+}
+
+func NewPopulatedPerformFeedback(r randyAction, easy bool) *PerformFeedback {
+	this := &PerformFeedback{}
+	v9 := entity.NewPopulatedE(r, easy)
+	this.Target = *v9
+	v10 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
+	this.ID = *v10
 	if !easy && r.Intn(10) != 0 {
 	}
 	return this
@@ -1937,8 +1951,8 @@ func NewPopulatedLootSource(r randyAction, easy bool) *LootSource {
 
 func NewPopulatedLootTarget(r randyAction, easy bool) *LootTarget {
 	this := &LootTarget{}
-	v13 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.SourceID = *v13
+	v13 := entity.NewPopulatedE(r, easy)
+	this.Source = *v13
 	v14 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.ItemID = *v14
 	if !easy && r.Intn(10) != 0 {
@@ -1949,7 +1963,7 @@ func NewPopulatedLootTarget(r randyAction, easy bool) *LootTarget {
 func NewPopulatedLootFeedback(r randyAction, easy bool) *LootFeedback {
 	this := &LootFeedback{}
 	v15 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.SourceID = *v15
+	this.TargetID = *v15
 	v16 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.ItemID = *v16
 	if !easy && r.Intn(10) != 0 {
@@ -1970,8 +1984,8 @@ func NewPopulatedConsumeSource(r randyAction, easy bool) *ConsumeSource {
 
 func NewPopulatedConsumeTarget(r randyAction, easy bool) *ConsumeTarget {
 	this := &ConsumeTarget{}
-	v19 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.SourceID = *v19
+	v19 := entity.NewPopulatedE(r, easy)
+	this.Source = *v19
 	v20 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.ItemID = *v20
 	if !easy && r.Intn(10) != 0 {
@@ -1982,7 +1996,7 @@ func NewPopulatedConsumeTarget(r randyAction, easy bool) *ConsumeTarget {
 func NewPopulatedConsumeFeedback(r randyAction, easy bool) *ConsumeFeedback {
 	this := &ConsumeFeedback{}
 	v21 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
-	this.SourceID = *v21
+	this.TargetID = *v21
 	v22 := github_com_elojah_game_01_pkg_ulid.NewPopulatedID(r)
 	this.ItemID = *v22
 	if !easy && r.Intn(10) != 0 {
@@ -2005,7 +2019,7 @@ func NewPopulatedAction(r randyAction, easy bool) *Action {
 	case 4:
 		this.PerformTarget = NewPopulatedPerformTarget(r, easy)
 	case 5:
-		this.FeedbackTarget = NewPopulatedFeedbackTarget(r, easy)
+		this.PerformFeedback = NewPopulatedPerformFeedback(r, easy)
 	case 6:
 		this.LootSource = NewPopulatedLootSource(r, easy)
 	case 7:
@@ -2111,8 +2125,6 @@ func (m *MoveTarget) Size() (n int) {
 func (m *CastSource) Size() (n int) {
 	var l int
 	_ = l
-	l = m.AbilityID.Size()
-	n += 1 + l + sovAction(uint64(l))
 	if len(m.Targets) > 0 {
 		for k, v := range m.Targets {
 			_ = k
@@ -2122,15 +2134,7 @@ func (m *CastSource) Size() (n int) {
 			n += mapEntrySize + 1 + sovAction(uint64(mapEntrySize))
 		}
 	}
-	return n
-}
-
-func (m *FeedbackTarget) Size() (n int) {
-	var l int
-	_ = l
-	l = m.ID.Size()
-	n += 1 + l + sovAction(uint64(l))
-	l = m.Source.Size()
+	l = m.AbilityID.Size()
 	n += 1 + l + sovAction(uint64(l))
 	return n
 }
@@ -2138,8 +2142,6 @@ func (m *FeedbackTarget) Size() (n int) {
 func (m *PerformSource) Size() (n int) {
 	var l int
 	_ = l
-	l = m.AbilityID.Size()
-	n += 1 + l + sovAction(uint64(l))
 	if len(m.Targets) > 0 {
 		for k, v := range m.Targets {
 			_ = k
@@ -2149,17 +2151,29 @@ func (m *PerformSource) Size() (n int) {
 			n += mapEntrySize + 1 + sovAction(uint64(mapEntrySize))
 		}
 	}
+	l = m.AbilityID.Size()
+	n += 1 + l + sovAction(uint64(l))
 	return n
 }
 
 func (m *PerformTarget) Size() (n int) {
 	var l int
 	_ = l
+	l = m.Source.Size()
+	n += 1 + l + sovAction(uint64(l))
 	l = m.AbilityID.Size()
 	n += 1 + l + sovAction(uint64(l))
 	l = m.ComponentID.Size()
 	n += 1 + l + sovAction(uint64(l))
-	l = m.Source.Size()
+	return n
+}
+
+func (m *PerformFeedback) Size() (n int) {
+	var l int
+	_ = l
+	l = m.Target.Size()
+	n += 1 + l + sovAction(uint64(l))
+	l = m.ID.Size()
 	n += 1 + l + sovAction(uint64(l))
 	return n
 }
@@ -2177,7 +2191,7 @@ func (m *LootSource) Size() (n int) {
 func (m *LootTarget) Size() (n int) {
 	var l int
 	_ = l
-	l = m.SourceID.Size()
+	l = m.Source.Size()
 	n += 1 + l + sovAction(uint64(l))
 	l = m.ItemID.Size()
 	n += 1 + l + sovAction(uint64(l))
@@ -2187,7 +2201,7 @@ func (m *LootTarget) Size() (n int) {
 func (m *LootFeedback) Size() (n int) {
 	var l int
 	_ = l
-	l = m.SourceID.Size()
+	l = m.TargetID.Size()
 	n += 1 + l + sovAction(uint64(l))
 	l = m.ItemID.Size()
 	n += 1 + l + sovAction(uint64(l))
@@ -2207,7 +2221,7 @@ func (m *ConsumeSource) Size() (n int) {
 func (m *ConsumeTarget) Size() (n int) {
 	var l int
 	_ = l
-	l = m.SourceID.Size()
+	l = m.Source.Size()
 	n += 1 + l + sovAction(uint64(l))
 	l = m.ItemID.Size()
 	n += 1 + l + sovAction(uint64(l))
@@ -2217,7 +2231,7 @@ func (m *ConsumeTarget) Size() (n int) {
 func (m *ConsumeFeedback) Size() (n int) {
 	var l int
 	_ = l
-	l = m.SourceID.Size()
+	l = m.TargetID.Size()
 	n += 1 + l + sovAction(uint64(l))
 	l = m.ItemID.Size()
 	n += 1 + l + sovAction(uint64(l))
@@ -2247,8 +2261,8 @@ func (m *Action) Size() (n int) {
 		l = m.PerformTarget.Size()
 		n += 1 + l + sovAction(uint64(l))
 	}
-	if m.FeedbackTarget != nil {
-		l = m.FeedbackTarget.Size()
+	if m.PerformFeedback != nil {
+		l = m.PerformFeedback.Size()
 		n += 1 + l + sovAction(uint64(l))
 	}
 	if m.LootSource != nil {
@@ -2325,19 +2339,8 @@ func (this *CastSource) String() string {
 	}
 	mapStringForTargets += "}"
 	s := strings.Join([]string{`&CastSource{`,
-		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
 		`Targets:` + mapStringForTargets + `,`,
-		`}`,
-	}, "")
-	return s
-}
-func (this *FeedbackTarget) String() string {
-	if this == nil {
-		return "nil"
-	}
-	s := strings.Join([]string{`&FeedbackTarget{`,
-		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
-		`Source:` + strings.Replace(strings.Replace(this.Source.String(), "E", "entity.E", 1), `&`, ``, 1) + `,`,
+		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2357,8 +2360,8 @@ func (this *PerformSource) String() string {
 	}
 	mapStringForTargets += "}"
 	s := strings.Join([]string{`&PerformSource{`,
-		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
 		`Targets:` + mapStringForTargets + `,`,
+		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2368,9 +2371,20 @@ func (this *PerformTarget) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&PerformTarget{`,
+		`Source:` + strings.Replace(strings.Replace(this.Source.String(), "E", "entity.E", 1), `&`, ``, 1) + `,`,
 		`AbilityID:` + fmt.Sprintf("%v", this.AbilityID) + `,`,
 		`ComponentID:` + fmt.Sprintf("%v", this.ComponentID) + `,`,
-		`Source:` + strings.Replace(strings.Replace(this.Source.String(), "E", "entity.E", 1), `&`, ``, 1) + `,`,
+		`}`,
+	}, "")
+	return s
+}
+func (this *PerformFeedback) String() string {
+	if this == nil {
+		return "nil"
+	}
+	s := strings.Join([]string{`&PerformFeedback{`,
+		`Target:` + strings.Replace(strings.Replace(this.Target.String(), "E", "entity.E", 1), `&`, ``, 1) + `,`,
+		`ID:` + fmt.Sprintf("%v", this.ID) + `,`,
 		`}`,
 	}, "")
 	return s
@@ -2391,7 +2405,7 @@ func (this *LootTarget) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&LootTarget{`,
-		`SourceID:` + fmt.Sprintf("%v", this.SourceID) + `,`,
+		`Source:` + strings.Replace(strings.Replace(this.Source.String(), "E", "entity.E", 1), `&`, ``, 1) + `,`,
 		`ItemID:` + fmt.Sprintf("%v", this.ItemID) + `,`,
 		`}`,
 	}, "")
@@ -2402,7 +2416,7 @@ func (this *LootFeedback) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&LootFeedback{`,
-		`SourceID:` + fmt.Sprintf("%v", this.SourceID) + `,`,
+		`TargetID:` + fmt.Sprintf("%v", this.TargetID) + `,`,
 		`ItemID:` + fmt.Sprintf("%v", this.ItemID) + `,`,
 		`}`,
 	}, "")
@@ -2424,7 +2438,7 @@ func (this *ConsumeTarget) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&ConsumeTarget{`,
-		`SourceID:` + fmt.Sprintf("%v", this.SourceID) + `,`,
+		`Source:` + strings.Replace(strings.Replace(this.Source.String(), "E", "entity.E", 1), `&`, ``, 1) + `,`,
 		`ItemID:` + fmt.Sprintf("%v", this.ItemID) + `,`,
 		`}`,
 	}, "")
@@ -2435,7 +2449,7 @@ func (this *ConsumeFeedback) String() string {
 		return "nil"
 	}
 	s := strings.Join([]string{`&ConsumeFeedback{`,
-		`SourceID:` + fmt.Sprintf("%v", this.SourceID) + `,`,
+		`TargetID:` + fmt.Sprintf("%v", this.TargetID) + `,`,
 		`ItemID:` + fmt.Sprintf("%v", this.ItemID) + `,`,
 		`}`,
 	}, "")
@@ -2451,7 +2465,7 @@ func (this *Action) String() string {
 		`CastSource:` + strings.Replace(fmt.Sprintf("%v", this.CastSource), "CastSource", "CastSource", 1) + `,`,
 		`PerformSource:` + strings.Replace(fmt.Sprintf("%v", this.PerformSource), "PerformSource", "PerformSource", 1) + `,`,
 		`PerformTarget:` + strings.Replace(fmt.Sprintf("%v", this.PerformTarget), "PerformTarget", "PerformTarget", 1) + `,`,
-		`FeedbackTarget:` + strings.Replace(fmt.Sprintf("%v", this.FeedbackTarget), "FeedbackTarget", "FeedbackTarget", 1) + `,`,
+		`PerformFeedback:` + strings.Replace(fmt.Sprintf("%v", this.PerformFeedback), "PerformFeedback", "PerformFeedback", 1) + `,`,
 		`LootSource:` + strings.Replace(fmt.Sprintf("%v", this.LootSource), "LootSource", "LootSource", 1) + `,`,
 		`LootTarget:` + strings.Replace(fmt.Sprintf("%v", this.LootTarget), "LootTarget", "LootTarget", 1) + `,`,
 		`LootFeedback:` + strings.Replace(fmt.Sprintf("%v", this.LootFeedback), "LootFeedback", "LootFeedback", 1) + `,`,
@@ -2486,8 +2500,8 @@ func (this *Action) GetValue() interface{} {
 	if this.PerformTarget != nil {
 		return this.PerformTarget
 	}
-	if this.FeedbackTarget != nil {
-		return this.FeedbackTarget
+	if this.PerformFeedback != nil {
+		return this.PerformFeedback
 	}
 	if this.LootSource != nil {
 		return this.LootSource
@@ -2522,8 +2536,8 @@ func (this *Action) SetValue(value interface{}) bool {
 		this.PerformSource = vt
 	case *PerformTarget:
 		this.PerformTarget = vt
-	case *FeedbackTarget:
-		this.FeedbackTarget = vt
+	case *PerformFeedback:
+		this.PerformFeedback = vt
 	case *LootSource:
 		this.LootSource = vt
 	case *LootTarget:
@@ -2702,36 +2716,6 @@ func (m *CastSource) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AbilityID", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthAction
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.AbilityID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
 			}
 			var msglen int
@@ -2853,59 +2837,9 @@ func (m *CastSource) Unmarshal(dAtA []byte) error {
 			}
 			m.Targets[mapkey] = *mapvalue
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipAction(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthAction
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *FeedbackTarget) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowAction
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= (uint64(b) & 0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: FeedbackTarget: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: FeedbackTarget: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AbilityID", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -2929,37 +2863,7 @@ func (m *FeedbackTarget) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.ID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthAction
-			}
-			postIndex := iNdEx + msglen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.AbilityID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3015,36 +2919,6 @@ func (m *PerformSource) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AbilityID", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowAction
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthAction
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.AbilityID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Targets", wireType)
 			}
 			var msglen int
@@ -3166,6 +3040,36 @@ func (m *PerformSource) Unmarshal(dAtA []byte) error {
 			}
 			m.Targets[mapkey] = *mapvalue
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AbilityID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAction
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.AbilityID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipAction(dAtA[iNdEx:])
@@ -3218,6 +3122,36 @@ func (m *PerformTarget) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthAction
+			}
+			postIndex := iNdEx + msglen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AbilityID", wireType)
 			}
 			var byteLen int
@@ -3246,7 +3180,7 @@ func (m *PerformTarget) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ComponentID", wireType)
 			}
@@ -3276,9 +3210,59 @@ func (m *PerformTarget) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 3:
+		default:
+			iNdEx = preIndex
+			skippy, err := skipAction(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthAction
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *PerformFeedback) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowAction
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= (uint64(b) & 0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: PerformFeedback: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: PerformFeedback: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Target", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -3302,7 +3286,37 @@ func (m *PerformTarget) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Target.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ID", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowAction
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= (int(b) & 0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthAction
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.ID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3468,9 +3482,9 @@ func (m *LootTarget) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SourceID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
 			}
-			var byteLen int
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAction
@@ -3480,19 +3494,19 @@ func (m *LootTarget) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
+				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthAction
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + msglen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.SourceID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3578,7 +3592,7 @@ func (m *LootFeedback) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SourceID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TargetID", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3602,7 +3616,7 @@ func (m *LootFeedback) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.SourceID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.TargetID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3798,9 +3812,9 @@ func (m *ConsumeTarget) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SourceID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Source", wireType)
 			}
-			var byteLen int
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowAction
@@ -3810,19 +3824,19 @@ func (m *ConsumeTarget) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				byteLen |= (int(b) & 0x7F) << shift
+				msglen |= (int(b) & 0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			if byteLen < 0 {
+			if msglen < 0 {
 				return ErrInvalidLengthAction
 			}
-			postIndex := iNdEx + byteLen
+			postIndex := iNdEx + msglen
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.SourceID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.Source.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -3908,7 +3922,7 @@ func (m *ConsumeFeedback) Unmarshal(dAtA []byte) error {
 		switch fieldNum {
 		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SourceID", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field TargetID", wireType)
 			}
 			var byteLen int
 			for shift := uint(0); ; shift += 7 {
@@ -3932,7 +3946,7 @@ func (m *ConsumeFeedback) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if err := m.SourceID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.TargetID.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4183,7 +4197,7 @@ func (m *Action) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 6:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field FeedbackTarget", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PerformFeedback", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -4207,10 +4221,10 @@ func (m *Action) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			if m.FeedbackTarget == nil {
-				m.FeedbackTarget = &FeedbackTarget{}
+			if m.PerformFeedback == nil {
+				m.PerformFeedback = &PerformFeedback{}
 			}
-			if err := m.FeedbackTarget.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := m.PerformFeedback.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -4538,57 +4552,57 @@ var (
 	ErrIntOverflowAction   = fmt.Errorf("proto: integer overflow")
 )
 
-func init() { proto.RegisterFile("action.proto", fileDescriptor_action_d3203102feb9b532) }
+func init() { proto.RegisterFile("action.proto", fileDescriptor_action_98c97669884f4595) }
 
-var fileDescriptor_action_d3203102feb9b532 = []byte{
-	// 775 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x4d, 0x6f, 0xd3, 0x4c,
-	0x10, 0xc7, 0xb3, 0x69, 0xe3, 0x26, 0x93, 0xa4, 0x2f, 0x7e, 0x1e, 0x90, 0x95, 0xc3, 0xb6, 0x44,
-	0x2a, 0xf4, 0x52, 0x87, 0xb4, 0x20, 0xaa, 0x48, 0x20, 0x9a, 0xa4, 0x48, 0x11, 0x45, 0x54, 0x86,
-	0x3b, 0x72, 0xdc, 0x6d, 0x6a, 0x6a, 0x7b, 0xa3, 0x64, 0x53, 0x91, 0x1b, 0x1f, 0x81, 0x4f, 0x80,
-	0x8a, 0xb8, 0x20, 0xf1, 0x05, 0x38, 0x72, 0xec, 0xb1, 0x27, 0x84, 0x38, 0x54, 0xc4, 0x1c, 0xe0,
-	0x82, 0xd4, 0x23, 0x47, 0x94, 0xf5, 0x3a, 0xb6, 0xd3, 0x2a, 0x12, 0x51, 0x41, 0x39, 0xf9, 0x65,
-	0xfc, 0xdb, 0xfd, 0xcf, 0x8c, 0x76, 0xfe, 0x86, 0x8c, 0x6e, 0x30, 0x93, 0x3a, 0x6a, 0xb3, 0x45,
-	0x19, 0x95, 0x13, 0xe4, 0x90, 0x38, 0x2c, 0xb7, 0xda, 0x30, 0xd9, 0x7e, 0xa7, 0xae, 0x1a, 0xd4,
-	0x2e, 0x34, 0x68, 0x83, 0x16, 0x78, 0xb4, 0xde, 0xd9, 0xe3, 0x4f, 0xfc, 0x81, 0xdf, 0x79, 0x54,
-	0xee, 0x76, 0xe8, 0x73, 0x62, 0xd1, 0xe7, 0xfa, 0x7e, 0xa1, 0xa1, 0xdb, 0xe4, 0xd9, 0xcd, 0x62,
-	0xa1, 0x79, 0xd0, 0x28, 0x34, 0x08, 0xb5, 0x09, 0x6b, 0x75, 0x0b, 0x4d, 0xda, 0x36, 0x83, 0xcd,
-	0x72, 0xeb, 0xa3, 0x31, 0xbd, 0x6e, 0x5a, 0x26, 0xeb, 0x16, 0x98, 0xde, 0x6a, 0x10, 0xd6, 0x16,
-	0x50, 0x71, 0x34, 0x44, 0x1c, 0xd6, 0x67, 0xbc, 0x8b, 0x87, 0xe4, 0x93, 0x20, 0x55, 0x74, 0xc7,
-	0x20, 0x56, 0xbe, 0x0c, 0xf0, 0x88, 0x1e, 0x92, 0xa7, 0x7c, 0x45, 0xf9, 0x16, 0x24, 0x77, 0x84,
-	0x22, 0x05, 0x2d, 0xa1, 0x95, 0xf4, 0x9a, 0xac, 0xfa, 0x5a, 0x55, 0x3f, 0x52, 0x9e, 0x3e, 0x3e,
-	0x5d, 0x8c, 0x69, 0x49, 0x5f, 0x7b, 0xfe, 0x3b, 0x02, 0xa8, 0xe8, 0x6d, 0xf6, 0x84, 0x76, 0x5a,
-	0x06, 0x91, 0x1f, 0x42, 0x6a, 0xd3, 0x13, 0x5a, 0xab, 0xf2, 0x55, 0x32, 0xe5, 0xd5, 0x3e, 0xf1,
-	0xe5, 0x74, 0x71, 0x79, 0xb4, 0xd4, 0x8e, 0x65, 0xee, 0xaa, 0xb5, 0xaa, 0x96, 0xd2, 0x7d, 0x5e,
-	0xbe, 0x07, 0x33, 0x9e, 0xb6, 0xb6, 0x12, 0x5f, 0x9a, 0x5a, 0x49, 0xaf, 0x61, 0x95, 0x37, 0x44,
-	0x0d, 0x36, 0x54, 0xc5, 0x07, 0x5b, 0x0e, 0x6b, 0x75, 0x85, 0xb8, 0x19, 0x51, 0xa2, 0xdc, 0x36,
-	0x64, 0xc2, 0x61, 0x79, 0x1e, 0xa6, 0x0e, 0x48, 0x97, 0xcb, 0x4a, 0x69, 0xfd, 0x5b, 0xf9, 0x3a,
-	0x24, 0x0e, 0x75, 0xab, 0x43, 0x94, 0x38, 0x4f, 0x78, 0x5e, 0x15, 0x9b, 0xfb, 0xcb, 0x6a, 0x5e,
-	0xb8, 0x14, 0xdf, 0x40, 0xf9, 0x17, 0x30, 0xfb, 0x80, 0x90, 0xdd, 0xba, 0x6e, 0x1c, 0x88, 0x8a,
-	0xdd, 0x85, 0xf8, 0xb8, 0x59, 0xc6, 0xcd, 0xaa, 0x7c, 0x03, 0x24, 0x2f, 0x09, 0xb1, 0x7b, 0x4a,
-	0x15, 0x7d, 0xda, 0x12, 0x89, 0x48, 0x6d, 0x1e, 0xce, 0xff, 0x44, 0x90, 0xdd, 0x21, 0xad, 0x3d,
-	0xda, 0xb2, 0xff, 0x46, 0x99, 0x37, 0x87, 0xcb, 0x7c, 0x4d, 0x94, 0x39, 0xb2, 0xe7, 0x3f, 0xac,
-	0xf4, 0xa7, 0x20, 0x5f, 0x51, 0xe9, 0x4b, 0xcd, 0xf7, 0x31, 0xa4, 0x2b, 0xd4, 0x6e, 0x52, 0x87,
-	0x38, 0xac, 0x56, 0xe5, 0x82, 0xfe, 0x78, 0xb9, 0xb4, 0x11, 0xac, 0x10, 0x6a, 0xe4, 0xd4, 0xe8,
-	0x46, 0xbe, 0x46, 0x00, 0xdb, 0x94, 0xfa, 0x87, 0xa5, 0x06, 0x49, 0x2f, 0xbf, 0x71, 0x93, 0x4a,
-	0x32, 0x81, 0xcb, 0x5b, 0x20, 0xd5, 0x18, 0xb1, 0xc7, 0x4d, 0x47, 0x32, 0x39, 0x3c, 0x10, 0x28,
-	0xca, 0x5e, 0x83, 0xa4, 0x27, 0x75, 0x6c, 0x81, 0x6d, 0x81, 0x5f, 0x96, 0xc0, 0x23, 0x04, 0x99,
-	0xbe, 0x40, 0xff, 0x24, 0x4e, 0xa0, 0xc4, 0x37, 0x08, 0xb2, 0x15, 0xea, 0xb4, 0x3b, 0x36, 0x99,
-	0xd8, 0x3e, 0x87, 0x34, 0x4e, 0x6c, 0xab, 0xdf, 0x22, 0x98, 0x13, 0x1a, 0x27, 0xb8, 0xdb, 0xef,
-	0x13, 0x20, 0x6d, 0xf2, 0x7f, 0x06, 0x79, 0xd9, 0x37, 0x56, 0x61, 0x9f, 0xd9, 0x81, 0x5b, 0xf5,
-	0x5f, 0x6a, 0x92, 0xc1, 0xaf, 0x72, 0x31, 0xec, 0xba, 0x62, 0x1c, 0x2e, 0x88, 0x4f, 0x83, 0x80,
-	0x06, 0x76, 0x60, 0xcd, 0xc5, 0xb0, 0xc7, 0x8a, 0x21, 0xb3, 0x70, 0xce, 0x0b, 0x35, 0x30, 0x02,
-	0x23, 0x2e, 0x0d, 0x59, 0x86, 0x32, 0xcd, 0xa9, 0xff, 0x2f, 0x1a, 0xed, 0x5a, 0xb6, 0x19, 0x71,
-	0x97, 0xd2, 0xd0, 0xf8, 0x55, 0x12, 0x17, 0xb1, 0x42, 0xa7, 0xcf, 0x0e, 0x3c, 0x71, 0xc8, 0x25,
-	0x15, 0x89, 0xc3, 0x57, 0x04, 0x1c, 0x0d, 0x6a, 0xb3, 0x7b, 0x51, 0x4b, 0x2d, 0x86, 0x07, 0xa4,
-	0x32, 0x13, 0xc9, 0x34, 0x08, 0x68, 0x60, 0x05, 0x53, 0xb4, 0x18, 0x1e, 0x59, 0x4a, 0xf2, 0x1c,
-	0xe2, 0xd7, 0xd3, 0x0a, 0xe6, 0xda, 0x9d, 0xe8, 0x10, 0x51, 0x52, 0x1c, 0xfa, 0x2f, 0x04, 0xf9,
-	0x21, 0x2d, 0x63, 0x85, 0xa7, 0x4d, 0x69, 0xe8, 0x68, 0x2b, 0x10, 0xa9, 0x4c, 0x24, 0xa6, 0x65,
-	0x8d, 0xc8, 0x14, 0x28, 0x0d, 0x1d, 0x39, 0x25, 0x7d, 0x11, 0xeb, 0x57, 0xd5, 0x88, 0x9c, 0xce,
-	0xfb, 0xe7, 0x8e, 0x82, 0x92, 0xe1, 0xf4, 0xd5, 0x28, 0x3d, 0x90, 0x3d, 0x67, 0x44, 0x5f, 0x94,
-	0xa6, 0x8f, 0x8f, 0x16, 0x51, 0x79, 0xe3, 0xa4, 0x87, 0x63, 0x9f, 0x7b, 0x38, 0x76, 0xd6, 0xc3,
-	0xe8, 0x57, 0x0f, 0xa3, 0x97, 0x2e, 0x46, 0xef, 0x5c, 0x8c, 0x3e, 0xb8, 0x18, 0x7d, 0x74, 0x31,
-	0x3a, 0x76, 0x31, 0x3a, 0x71, 0x31, 0xfa, 0xea, 0x62, 0xf4, 0xc3, 0xc5, 0xb1, 0x33, 0x17, 0xa3,
-	0x57, 0xdf, 0x70, 0xac, 0x2e, 0xf1, 0x9f, 0xc7, 0xf5, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x43,
-	0xb2, 0x4e, 0x77, 0x21, 0x0b, 0x00, 0x00,
+var fileDescriptor_action_98c97669884f4595 = []byte{
+	// 778 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x56, 0xcf, 0x6b, 0x13, 0x4f,
+	0x14, 0xcf, 0xa4, 0xcd, 0x36, 0x79, 0x49, 0x48, 0xbf, 0xfb, 0x15, 0x59, 0x72, 0x98, 0xd6, 0x40,
+	0xb5, 0x97, 0x6e, 0x4c, 0xab, 0x58, 0x02, 0x4a, 0x9b, 0xa4, 0x42, 0xb0, 0x62, 0x59, 0xbd, 0xcb,
+	0x66, 0x3b, 0x4d, 0xd7, 0xee, 0xee, 0x84, 0x64, 0x52, 0x08, 0x08, 0xfa, 0x27, 0xf8, 0x17, 0x48,
+	0xc5, 0x8b, 0x27, 0xcf, 0x1e, 0x3d, 0xf6, 0xd8, 0x93, 0x88, 0x87, 0x62, 0xd6, 0x83, 0x5e, 0x84,
+	0x1e, 0x3d, 0x4a, 0x66, 0x67, 0xb3, 0x3f, 0x5a, 0x0b, 0x2d, 0x05, 0xeb, 0x29, 0xbb, 0xfb, 0xe6,
+	0xf3, 0xde, 0xfb, 0xbc, 0x37, 0xef, 0xf3, 0x02, 0x39, 0xdd, 0x60, 0x26, 0x75, 0xd4, 0x4e, 0x97,
+	0x32, 0x2a, 0xa7, 0xc8, 0x2e, 0x71, 0x58, 0x71, 0xa1, 0x6d, 0xb2, 0xed, 0x7e, 0x4b, 0x35, 0xa8,
+	0x5d, 0x6e, 0xd3, 0x36, 0x2d, 0x73, 0x6b, 0xab, 0xbf, 0xc5, 0xdf, 0xf8, 0x0b, 0x7f, 0xf2, 0x50,
+	0xc5, 0xdb, 0xa1, 0xe3, 0xc4, 0xa2, 0xcf, 0xf4, 0xed, 0x72, 0x5b, 0xb7, 0xc9, 0xd3, 0x9b, 0x95,
+	0x72, 0x67, 0xa7, 0x5d, 0x6e, 0x13, 0x6a, 0x13, 0xd6, 0x1d, 0x94, 0x3b, 0xb4, 0x67, 0x06, 0xc1,
+	0x8a, 0x4b, 0xa7, 0xc3, 0xf4, 0x96, 0x69, 0x99, 0x6c, 0x50, 0x66, 0x7a, 0xb7, 0x4d, 0x58, 0x4f,
+	0x80, 0x2a, 0xa7, 0x83, 0x88, 0xc3, 0x46, 0x18, 0xef, 0xc7, 0x83, 0x94, 0xd2, 0x20, 0xd5, 0x75,
+	0xc7, 0x20, 0x56, 0xa9, 0x06, 0xf0, 0x90, 0xee, 0x92, 0x27, 0xdc, 0xa3, 0x7c, 0x0b, 0xd2, 0x1b,
+	0x22, 0x23, 0x05, 0xcd, 0xa2, 0xf9, 0xec, 0xa2, 0xac, 0xfa, 0xb9, 0xaa, 0xbe, 0xa5, 0x36, 0xb9,
+	0x7f, 0x38, 0x93, 0xd0, 0xd2, 0x7e, 0xee, 0xa5, 0xef, 0x08, 0xa0, 0xae, 0xf7, 0xd8, 0x63, 0xda,
+	0xef, 0x1a, 0x44, 0xbe, 0x07, 0x53, 0x9e, 0xbb, 0x9e, 0x82, 0x66, 0x27, 0xe6, 0xb3, 0x8b, 0x58,
+	0xe5, 0x35, 0x54, 0x83, 0x33, 0xaa, 0x38, 0xb0, 0xe6, 0xb0, 0xee, 0x40, 0xf8, 0x9b, 0x12, 0xac,
+	0xe4, 0x07, 0x90, 0x59, 0xf5, 0x88, 0x36, 0x1b, 0x4a, 0x72, 0x16, 0xcd, 0xe7, 0x6a, 0x0b, 0xa3,
+	0x13, 0x5f, 0x0e, 0x67, 0xe6, 0x4e, 0xa7, 0xda, 0xb7, 0xcc, 0x4d, 0xb5, 0xd9, 0xd0, 0x32, 0xba,
+	0x8f, 0x2f, 0xae, 0x43, 0x2e, 0x1c, 0x4b, 0x9e, 0x86, 0x89, 0x1d, 0x32, 0xe0, 0xe4, 0x32, 0xda,
+	0xe8, 0x51, 0xbe, 0x0e, 0xa9, 0x5d, 0xdd, 0xea, 0x13, 0x1e, 0x2a, 0xbb, 0x38, 0xad, 0x0a, 0xb0,
+	0x9f, 0xa3, 0xe6, 0x99, 0xab, 0xc9, 0x65, 0x54, 0xfa, 0x89, 0x20, 0xbf, 0x41, 0xba, 0x5b, 0xb4,
+	0x6b, 0x0b, 0xb2, 0xab, 0x71, 0xb2, 0xd7, 0x04, 0xd9, 0xc8, 0xb1, 0x7f, 0x95, 0xef, 0xa7, 0x80,
+	0xaf, 0xb8, 0x21, 0x37, 0x40, 0xf2, 0x28, 0x89, 0xfb, 0x91, 0x51, 0xc5, 0xc5, 0x5a, 0x13, 0xb4,
+	0xa4, 0x9e, 0x57, 0x98, 0x8b, 0x64, 0x25, 0x3f, 0x82, 0x6c, 0x9d, 0xda, 0x1d, 0xea, 0x10, 0x87,
+	0x35, 0x1b, 0xca, 0xc4, 0x79, 0xdc, 0x65, 0x8d, 0xc0, 0x43, 0x69, 0x00, 0x05, 0xc1, 0xeb, 0x3e,
+	0x21, 0x9b, 0x2d, 0xdd, 0xd8, 0x19, 0x31, 0xf3, 0x38, 0xfe, 0x91, 0x99, 0xd7, 0x30, 0xf9, 0x2e,
+	0x24, 0xcf, 0x4b, 0x29, 0x69, 0x36, 0x4a, 0xaf, 0x11, 0xc0, 0x3a, 0xa5, 0xfe, 0xb4, 0x34, 0x21,
+	0xed, 0x85, 0x6d, 0x36, 0x78, 0xe0, 0x33, 0xfb, 0x4c, 0x33, 0x01, 0x97, 0xd7, 0x40, 0x6a, 0x32,
+	0x62, 0x9f, 0x37, 0x39, 0xc9, 0xe4, 0xe0, 0xd2, 0x73, 0x2f, 0xbf, 0xb3, 0x36, 0xfc, 0x82, 0xa2,
+	0xef, 0x21, 0xc8, 0x8d, 0xc2, 0x8f, 0xfb, 0x72, 0xf9, 0x0a, 0xf4, 0x06, 0x41, 0xbe, 0x4e, 0x9d,
+	0x5e, 0xdf, 0x26, 0x97, 0xb6, 0x89, 0x2f, 0xc6, 0x29, 0xfe, 0xa5, 0x3e, 0xbe, 0x45, 0x50, 0x10,
+	0x19, 0x5c, 0xe2, 0x56, 0xbe, 0x4f, 0x81, 0xb4, 0xca, 0xd7, 0xbd, 0x3c, 0xe7, 0xef, 0x44, 0x51,
+	0xa0, 0xfc, 0x78, 0x6b, 0x8d, 0x3e, 0x6a, 0x92, 0xc1, 0x7f, 0xe5, 0x4a, 0x78, 0x61, 0x0a, 0x0d,
+	0xfd, 0x4f, 0x1c, 0x0d, 0x0c, 0x1a, 0xd8, 0xc1, 0x56, 0xad, 0x84, 0xd7, 0x23, 0x17, 0xaf, 0x00,
+	0x12, 0x18, 0x34, 0x30, 0x82, 0x1d, 0x5a, 0x8d, 0xed, 0x19, 0x65, 0x92, 0xa3, 0xae, 0x9c, 0xb4,
+	0x5c, 0xb4, 0x7c, 0x27, 0xb2, 0x92, 0xaa, 0x31, 0xcd, 0x56, 0x52, 0x27, 0x61, 0x45, 0x9e, 0x3e,
+	0x56, 0xa4, 0xba, 0x72, 0x4c, 0x17, 0x15, 0x89, 0xa3, 0xaf, 0x46, 0xd1, 0xbe, 0x55, 0x2b, 0x74,
+	0x62, 0x32, 0x5a, 0x09, 0xab, 0x9b, 0x32, 0x15, 0x21, 0x1b, 0x18, 0x34, 0xb0, 0x02, 0x09, 0xac,
+	0x84, 0x05, 0x47, 0x49, 0x1f, 0x83, 0xf8, 0x25, 0xb5, 0x02, 0x55, 0xba, 0x13, 0x15, 0x09, 0x25,
+	0xc3, 0x41, 0xff, 0x87, 0x40, 0xe3, 0x0c, 0x73, 0x56, 0x58, 0x4d, 0xaa, 0xb1, 0xd1, 0x55, 0x20,
+	0x52, 0x9c, 0x88, 0x4d, 0xcb, 0x1b, 0x91, 0x29, 0xaf, 0xc6, 0x66, 0x4a, 0xc9, 0x9e, 0x84, 0xf5,
+	0x0b, 0x6b, 0x44, 0xc6, 0x6f, 0xe5, 0xd8, 0x34, 0x28, 0xb9, 0x48, 0x61, 0x63, 0x56, 0xad, 0x60,
+	0x44, 0x3f, 0x54, 0x27, 0xf7, 0xf7, 0x66, 0x50, 0x6d, 0xf9, 0x60, 0x88, 0x13, 0x9f, 0x87, 0x38,
+	0x71, 0x34, 0xc4, 0xe8, 0xd7, 0x10, 0xa3, 0x97, 0x2e, 0x46, 0xef, 0x5c, 0x8c, 0x3e, 0xb8, 0x18,
+	0x7d, 0x74, 0x31, 0xda, 0x77, 0x31, 0x3a, 0x70, 0x31, 0xfa, 0xea, 0x62, 0xf4, 0xc3, 0xc5, 0x89,
+	0x23, 0x17, 0xa3, 0x57, 0xdf, 0x70, 0xa2, 0x25, 0xf1, 0xbf, 0x7e, 0x4b, 0xbf, 0x03, 0x00, 0x00,
+	0xff, 0xff, 0x21, 0xee, 0xdc, 0x4c, 0xdf, 0x0a, 0x00, 0x00,
 }

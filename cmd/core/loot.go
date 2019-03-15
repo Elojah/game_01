@@ -24,18 +24,12 @@ func (a *app) LootSource(id gulid.ID, e event.E) error {
 		return errors.Wrap(err, "loot source")
 	}
 
-	// #Retrieve target entity
-	target, err := a.EntityStore.GetEntity(ls.TargetID, ts)
-	if err != nil {
-		return errors.Wrap(err, "loot source")
-	}
-
 	// #Check if target is lootable
-	if ok, err := a.ItemLootStore.GetLoot(target.ID); !ok || err != nil {
+	if ok, err := a.ItemLootStore.GetLoot(ls.TargetID); !ok || err != nil {
 		if err != nil {
 			return errors.Wrap(err, "loot source")
 		}
-		return errors.Wrap(gerrors.ErrNotLootableEntity{EntityID: target.ID.String()}, "loot source")
+		return errors.Wrap(gerrors.ErrNotLootableEntity{EntityID: ls.TargetID.String()}, "loot source")
 	}
 
 	// #Retrieve source inventory to check if has a free spot
@@ -52,33 +46,18 @@ func (a *app) LootSource(id gulid.ID, e event.E) error {
 		)
 	}
 
-	// #Check distance between source and target
-	dist, err := a.SectorService.Segment(source.Position, target.Position)
-	if err != nil {
-		return errors.Wrap(err, "loot source")
-	}
-	if dist > a.lootRadius {
-		return errors.Wrap(
-			gerrors.ErrOutOfRange{
-				Dist:  dist,
-				Range: a.lootRadius,
-			},
-			"loot source",
-		)
-	}
-
 	// #Publish loot event to target.
 	return errors.Wrap(a.EventQStore.PublishEvent(
 		event.E{
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
 				LootTarget: &event.LootTarget{
-					SourceID: id,
-					ItemID:   ls.ItemID,
+					Source: source,
+					ItemID: ls.ItemID,
 				},
 			},
 			Trigger: e.ID,
-		}, target.ID),
+		}, ls.TargetID),
 		"loot source",
 	)
 }
@@ -109,6 +88,21 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 		}, "loot target")
 	}
 
+	// #Check distance between source and target
+	dist, err := a.SectorService.Segment(lt.Source.Position, target.Position)
+	if err != nil {
+		return errors.Wrap(err, "loot target")
+	}
+	if dist > a.lootRadius {
+		return errors.Wrap(
+			gerrors.ErrOutOfRange{
+				Dist:  dist,
+				Range: a.lootRadius,
+			},
+			"loot target",
+		)
+	}
+
 	// #Remove item from inventory
 	if n == 1 {
 		delete(targetInventory.Items, lt.ItemID.String())
@@ -134,11 +128,12 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
 				LootFeedback: &event.LootFeedback{
-					SourceID: id,
+					TargetID: target.ID,
 					ItemID:   lt.ItemID,
 				},
 			},
-		}, target.ID),
+			Trigger: e.ID,
+		}, lt.Source.ID),
 		"loot target",
 	)
 }

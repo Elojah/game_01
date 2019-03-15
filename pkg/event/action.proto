@@ -19,24 +19,25 @@ message MoveTarget {
 }
 
 message CastSource {
-	bytes AbilityID                      = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	map<string, ability.Targets> Targets = 2 [(gogoproto.nullable)   = false];
-}
-
-message FeedbackTarget {
-	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	entity.E Source                      = 2 [(gogoproto.nullable)   = false];
+	map<string, ability.Targets> Targets = 1 [(gogoproto.nullable)   = false];
+	bytes AbilityID                      = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message PerformSource {
-	bytes AbilityID                      = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	map<string, ability.Targets> Targets = 2 [(gogoproto.nullable)   = false];
+	map<string, ability.Targets> Targets = 1 [(gogoproto.nullable)   = false];
+	bytes AbilityID                      = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message PerformTarget {
-	bytes AbilityID                      = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes ComponentID                    = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	entity.E Source                      = 3 [(gogoproto.nullable)   = false];
+	entity.E Source                      = 1 [(gogoproto.nullable)   = false];
+	bytes AbilityID                      = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes ComponentID                    = 3 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
+message PerformFeedback {
+	entity.E Target                      = 1 [(gogoproto.nullable)   = false];
+	bytes ID                             = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+
 }
 
 message LootSource {
@@ -45,12 +46,12 @@ message LootSource {
 }
 
 message LootTarget {
-	bytes SourceID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	entity.E Source                      = 1 [(gogoproto.nullable)   = false];
 	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message LootFeedback {
-	bytes SourceID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes TargetID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
@@ -60,12 +61,12 @@ message ConsumeSource {
 }
 
 message ConsumeTarget {
-	bytes SourceID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	entity.E Source                      = 1 [(gogoproto.nullable)   = false];
 	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
 message ConsumeFeedback {
-	bytes SourceID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+	bytes TargetID                       = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
@@ -76,7 +77,7 @@ message Action {
 	CastSource CastSource                = 3;
 	PerformSource PerformSource          = 4;
 	PerformTarget PerformTarget          = 5;
-	FeedbackTarget FeedbackTarget        = 6;
+	PerformFeedback PerformFeedback      = 6;
 	LootSource LootSource                = 7;
 	LootTarget LootTarget                = 8;
 	LootFeedback LootFeedback            = 9;

@@ -47,14 +47,16 @@ type app struct {
 	subs map[ulid.ID]*infra.Subscription
 	seqs map[ulid.ID]*Sequencer
 
-	limit      int
-	lootRadius float64
+	limit         int
+	lootRadius    float64
+	consumeRadius float64
 }
 
 func (a *app) Dial(c Config) error {
 	a.id = c.ID
 	a.limit = c.Limit
 	a.lootRadius = c.LootRadius
+	a.consumeRadius = c.ConsumeRadius
 	if err := a.SectorService.Up(c.MoveTolerance); err != nil {
 		return err
 	}
@@ -169,8 +171,8 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		err = a.PerformSource(id, e)
 	case *event.PerformTarget:
 		err = a.PerformTarget(id, e)
-	case *event.FeedbackTarget:
-		err = a.FeedbackTarget(id, e)
+	case *event.PerformFeedback:
+		err = a.PerformFeedback(id, e)
 	case *event.LootSource:
 		err = a.LootSource(id, e)
 	case *event.LootTarget:
@@ -179,6 +181,8 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		err = a.LootFeedback(id, e)
 	case *event.ConsumeSource:
 		err = a.ConsumeSource(id, e)
+	case *event.ConsumeTarget:
+		err = a.ConsumeTarget(id, e)
 	default:
 		logger.Error().Msg("unrecognized action")
 	}
