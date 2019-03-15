@@ -143,6 +143,11 @@ func main() {
 		return
 	}
 	log.Info().Msg("case consume ok")
+	if err := cases.ConsumeCast(authService, clientService, toolService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		return
+	}
+	log.Info().Msg("case consume_cast ok")
 
 	log.Info().Msg("integration ok")
 }

@@ -26,5 +26,33 @@
                 "Shape": "00000000000000000000000000"
             }
         }
+    },
+    {
+        "ID": "01D614CA6ZJZTDQ7B54ZDH9WN7",
+        "Type": "00000000000000000000000000",
+        "Animation": "01D614CRKGA1SDJ44NJDQCPWEZ",
+        "Name": "Iceshard",
+        "MPConsumption": 15,
+        "PostMPConsumption": 5,
+        "CD": 7000,
+        "LastUsed": 0,
+        "CastTime": 500,
+        "Components": {
+            "01D614E5FW3ZK463YD7M2DE6Q6": {
+                "Effects": [
+                {
+                    "Damage": {
+                        "Amount": 50,
+                        "Element": 0
+                    }
+                }
+                ],
+                "NTargets": 3,
+                "Range": 60,
+                "NPositions": 0,
+                "PositionRange": 0,
+                "Shape": "00000000000000000000000000"
+            }
+        }
     }
 ]
