@@ -6,12 +6,12 @@ import (
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/item"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) ConsumeSource(id ulid.ID, e event.E) error {
+func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
 
-	ls := e.Action.ConsumeSource
+	cs := e.Action.ConsumeSource
 	ts := e.ID.Time()
 
 	// #Check permission source/token
@@ -32,15 +32,16 @@ func (a *app) ConsumeSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Check item exists in inventory
-	if n, ok := sourceInventory.Items[ls.ItemID.String()]; !ok || n == 0 {
+	n, ok := sourceInventory.Items[cs.ItemID.String()]
+	if !ok || n < 1 {
 		return errors.Wrap(gerrors.ErrMissingItem{
-			ItemID:      ls.ItemID.String(),
+			ItemID:      cs.ItemID.String(),
 			InventoryID: sourceInventory.ID.String(),
 		}, "consume source")
 	}
 
 	// #Retrieve item
-	it, err := a.ItemStore.GetItem(ls.ItemID)
+	it, err := a.ItemStore.GetItem(cs.ItemID)
 	if err != nil {
 		return errors.Wrap(err, "consume source")
 	}
@@ -57,10 +58,29 @@ func (a *app) ConsumeSource(id ulid.ID, e event.E) error {
 		if err != nil {
 			return errors.Wrap(err, "consume source")
 		}
-		return a.AbilityStore.SetAbility(ab, source.ID)
+		if err := a.AbilityStore.SetAbility(ab, source.ID); err != nil {
+			return errors.Wrap(err, "consume source")
+		}
+	default:
+		return errors.Wrap(gerrors.ErrNotImplementedYet{
+			Version: "0.2.0",
+		}, "consume source")
 	}
 
-	return errors.Wrap(gerrors.ErrNotImplementedYet{
-		Version: "0.2.0",
-	}, "consume source")
+	// #Remove item from inventory
+	if n == 1 {
+		delete(sourceInventory.Items, cs.ItemID.String())
+	} else {
+		sourceInventory.Items[cs.ItemID.String()]--
+	}
+
+	// #Create new inventory
+	sourceInventory.ID = gulid.NewID()
+	if err := a.EntityInventoryStore.SetInventory(sourceInventory); err != nil {
+		return errors.Wrap(err, "loot feedback")
+	}
+
+	// Set new inventory
+	source.InventoryID = sourceInventory.ID
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "loot feedback")
 }

@@ -103,13 +103,10 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 	// #Check item exists in inventory
 	n, ok := targetInventory.Items[lt.ItemID.String()]
 	if !ok || n < 1 {
-		return errors.Wrap(
-			gerrors.ErrMissingItem{
-				ItemID:      lt.ItemID.String(),
-				InventoryID: target.ID.String(),
-			},
-			"loot target",
-		)
+		return errors.Wrap(gerrors.ErrMissingItem{
+			ItemID:      lt.ItemID.String(),
+			InventoryID: target.ID.String(),
+		}, "loot target")
 	}
 
 	// #Remove item from inventory
@@ -163,7 +160,7 @@ func (a *app) LootFeedback(id gulid.ID, e event.E) error {
 		return errors.Wrap(err, "loot feedback")
 	}
 
-	// #Check item exists in inventory
+	// #Add item in inventory
 	_, ok := sourceInventory.Items[lf.ItemID.String()]
 	if !ok {
 		sourceInventory.Items[lf.ItemID.String()] = 1
