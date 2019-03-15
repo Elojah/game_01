@@ -60,6 +60,7 @@ func run(prog string, filename string) {
 		AccountTokenStore: accountStore,
 
 		EntityStore:           entityLRUStore,
+		EntityInventoryStore:  entityStore,
 		EntityPCStore:         entityStore,
 		EntityPCLeftStore:     entityStore,
 		EntityPermissionStore: entityStore,

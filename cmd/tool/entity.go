@@ -41,6 +41,7 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
+		// Add entity to sector
 		if err := h.SectorEntitiesStore.AddEntityToSector(e.ID, e.Position.SectorID); err != nil {
 			logger.Error().Err(err).
 				Str("entity", e.ID.String()).
@@ -49,6 +50,17 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
+		// #Creates a new sequencer for this entity.
+		sequencer, err := h.InfraSequencerService.New(e.ID)
+		if err != nil {
+			logger.Error().Err(err).
+				Str("sequencer", sequencer.ID.String()).
+				Str("entity", e.ID.String()).
+				Msg("failed to create entity sequencer")
+			http.Error(w, "store failure", http.StatusInternalServerError)
+			return
+		}
+
 	}
 	w.WriteHeader(http.StatusOK)
 }

@@ -141,9 +141,22 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	}
 	pc.Name = setPC.Name
 
-	// #Set starter abilities to entity
+	// #Set starter abilities to pc.
 	if err := h.AbilityService.SetStarterAbilities(pc.ID, pc.Type); err != nil {
 		logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to set starter abilities")
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// #Set inventory to PC.
+	pc.InventoryID = gulid.NewID()
+	if err := h.EntityInventoryStore.SetInventory(entity.Inventory{
+		ID:    pc.InventoryID,
+		PCID:  pc.ID,
+		Size_: 42, // TODO config ? redis kv ?
+		Items: make(map[string]uint64),
+	}); err != nil {
+		logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to set inventory")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

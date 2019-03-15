@@ -19,6 +19,7 @@ type handler struct {
 	AccountTokenStore account.TokenStore
 
 	EntityStore           entity.Store
+	EntityInventoryStore  entity.InventoryStore
 	EntityPCStore         entity.PCStore
 	EntityPCLeftStore     entity.PCLeftStore
 	EntityPermissionStore entity.PermissionStore
