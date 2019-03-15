@@ -14,6 +14,7 @@ import (
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
 	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
+	itemsrg "github.com/elojah/game_01/pkg/item/srg"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -46,6 +47,7 @@ func run(prog string, filename string) {
 	accountStore := accountsrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
+	itemStore := itemsrg.NewStore(rd)
 	infraStore := infrasrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
 
@@ -57,14 +59,17 @@ func run(prog string, filename string) {
 		AccountStore:         accountStore,
 		EntityStore:          entityLRUStore,
 		EntityTemplateStore:  entityStore,
-		SequencerService: &infrasvc.SequencerService{
+		EntityInventoryStore: entityStore,
+		ItemStore:            itemStore,
+		ItemLootStore:        itemStore,
+		InfraSequencerService: &infrasvc.SequencerService{
 			InfraQSequencer: infraStore,
 			InfraSequencer:  infraStore,
 			InfraCore:       infraStore,
 		},
-		SectorStore:   sectorStore,
-		EntitiesStore: sectorStore,
-		StarterStore:  sectorStore,
+		SectorStore:         sectorStore,
+		SectorEntitiesStore: sectorStore,
+		SectorStarterStore:  sectorStore,
 	}
 	hl := h.NewLauncher(Namespaces{
 		Tool: "tool",

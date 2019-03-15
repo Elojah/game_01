@@ -10,6 +10,7 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	"github.com/elojah/game_01/pkg/infra"
+	"github.com/elojah/game_01/pkg/item"
 	"github.com/elojah/game_01/pkg/sector"
 )
 
@@ -20,14 +21,18 @@ type handler struct {
 
 	AccountStore account.Store
 
-	EntityStore         entity.Store
-	EntityTemplateStore entity.TemplateStore
+	EntityStore          entity.Store
+	EntityTemplateStore  entity.TemplateStore
+	EntityInventoryStore entity.InventoryStore
 
-	infra.SequencerService
+	ItemStore     item.Store
+	ItemLootStore item.LootStore
 
-	SectorStore sector.Store
-	sector.EntitiesStore
-	sector.StarterStore
+	InfraSequencerService infra.SequencerService
+
+	SectorStore         sector.Store
+	SectorEntitiesStore sector.EntitiesStore
+	SectorStarterStore  sector.StarterStore
 
 	srv *http.Server
 }
@@ -43,6 +48,11 @@ func (h *handler) Dial(c Config) error {
 	mux.HandleFunc("/entity", h.entity)
 	mux.HandleFunc("/entity/template", h.entityTemplate)
 	mux.HandleFunc("/entity/move", h.entityMove)
+
+	mux.HandleFunc("/inventory", h.inventory)
+	mux.HandleFunc("/item", h.item)
+
+	mux.HandleFunc("/loot", h.loot)
 
 	mux.HandleFunc("/sector", h.sector)
 	mux.HandleFunc("/sector/entities", h.sectorEntities)

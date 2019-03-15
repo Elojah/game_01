@@ -34,7 +34,7 @@ func (h *handler) postSectorsStarter(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("starters", len(starters)).Msg("found")
 
 	for _, s := range starters {
-		if err := h.SetStarter(s); err != nil {
+		if err := h.SectorStarterStore.SetStarter(s); err != nil {
 			logger.Error().Err(err).Str("starter", s.SectorID.String()).Msg("failed to set starter")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

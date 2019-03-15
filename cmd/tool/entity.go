@@ -41,6 +41,14 @@ func (h *handler) postEntities(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
 		}
+		if err := h.SectorEntitiesStore.AddEntityToSector(e.ID, e.Position.SectorID); err != nil {
+			logger.Error().Err(err).
+				Str("entity", e.ID.String()).
+				Str("sector", e.Position.SectorID.String()).
+				Msg("failed to add entity to sector")
+			http.Error(w, "store failure", http.StatusInternalServerError)
+			return
+		}
 	}
 	w.WriteHeader(http.StatusOK)
 }

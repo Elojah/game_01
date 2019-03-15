@@ -49,7 +49,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 		if e.Position.SectorID.Compare(move.Position.SectorID) != 0 {
 
 			// #Add entity to new sector and remove from previous if necessary.
-			if err := h.AddEntityToSector(targetID, move.Position.SectorID); err != nil {
+			if err := h.SectorEntitiesStore.AddEntityToSector(targetID, move.Position.SectorID); err != nil {
 				logger.Error().Err(errors.Wrapf(
 					err,
 					"add entity %s to sector %s",
@@ -59,7 +59,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "failed to add entity to new sector", http.StatusInternalServerError)
 				return
 			}
-			if err := h.RemoveEntityFromSector(targetID, e.Position.SectorID); err != nil {
+			if err := h.SectorEntitiesStore.RemoveEntityFromSector(targetID, e.Position.SectorID); err != nil {
 				logger.Error().Err(errors.Wrapf(
 					err,
 					"remove entity %s from sector %s",

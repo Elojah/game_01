@@ -35,7 +35,7 @@ func (h *handler) postSectorEntities(w http.ResponseWriter, r *http.Request) {
 
 	for _, e := range entities {
 		for _, entityID := range e.EntityIDs {
-			if err := h.AddEntityToSector(entityID, e.SectorID); err != nil {
+			if err := h.SectorEntitiesStore.AddEntityToSector(entityID, e.SectorID); err != nil {
 				logger.Error().Err(err).
 					Str("sector", e.SectorID.String()).
 					Str("entity", entityID.String()).
