@@ -119,65 +119,6 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 |
 |_vendor #vendoring packages (dep)
 ```
-### Domain
-
-- ability.A
-- ability.Component
-- ability.Feedback
-- ability.ComponentFeedback
-- ability.Template
-
-- account.A
-- account.Token
-
-- entity.E
-- entity.PC
-- entity.Permission
-- entity.Template
-
-- event.Action
-- event.DTO
-- event.E
-
-- geometry.Position
-
-- infra.ACK
-- infra.Core (no marshal)
-- infra.Sequencer
-- infra.Recurrer
-- infra.Sync (no marshal)
-
-- sector.Entities
-- sector.S
-- sector.Starter
-
-- ulid.ID
-
-### Reserved redis keys
-
-- "ability:"
-- "afb:"
-- "atpl:"
-- "account:"
-- "token_hc:"
-- "pc:"
-- "token:"
-- "entity:"
-- "etpl:"
-- "pc_left:"
-- "eperm:"
-- "event:"
-- "qevent:"
-- "core:"
-- "sequencer:"
-- "qsequencer:"
-- "qrecurrer:"
-- "recurrer:"
-- "sync:"
-- "sent:"
-- "sector:"
-- "starter:"
-
 
 ## Meta
 
