@@ -10,9 +10,9 @@ import (
 )
 
 // Entity creates a new entity (with sector add).
-func (s *Service) Entity(e entity.E) error {
+func (s *Service) Entity(es []entity.E) error {
 
-	raw, err := json.Marshal(e)
+	raw, err := json.Marshal(es)
 	if err != nil {
 		return err
 	}

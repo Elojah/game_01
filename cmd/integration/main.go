@@ -132,7 +132,12 @@ func main() {
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
-	log.Info().Msg("case cast_sector ok")
+	log.Info().Msg("case loot ok")
+	if err := cases.Loot(authService, clientService, toolService); err != nil {
+		log.Error().Err(err).Msg("case failure")
+		return
+	}
+	log.Info().Msg("case loot ok")
 
 	log.Info().Msg("integration ok")
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/elojah/game_01/cmd/integration/client"
 	"github.com/elojah/game_01/cmd/integration/tool"
 	"github.com/elojah/game_01/pkg/entity"
+	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/geometry"
 	"github.com/elojah/game_01/pkg/item"
 	gulid "github.com/elojah/game_01/pkg/ulid"
@@ -93,7 +94,7 @@ func Loot(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 	lootableInventory := entity.Inventory{
 		ID:    gulid.NewID(),
-		Size_: 42,
+		Size_: 1,
 		Items: map[string]uint64{
 			it.ID.String(): 1,
 		},
@@ -103,7 +104,7 @@ func Loot(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 
 	// Create lootable entity
-	e := entity.E{
+	target := entity.E{
 		ID:        gulid.NewID(),
 		Name:      entNameLoot,
 		Direction: geometry.Vec3{},
@@ -113,33 +114,27 @@ func Loot(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		},
 		InventoryID: lootableInventory.ID,
 	}
-	if err := ts.Entity(e); err != nil {
+	if err := ts.Entity([]entity.E{target}); err != nil {
 		return errors.Wrap(err, "case_loot")
 	}
-	if err := ts.Loot([]gulid.ID{e.ID}); err != nil {
+	if err := ts.Loot([]gulid.ID{target.ID}); err != nil {
 		return errors.Wrap(err, "case_loot")
 	}
 	// Wait for moves to be effective
 	time.Sleep(50 * time.Millisecond)
 
-	// // Loot from ent to ent1 with starter skill
-	// if err := cs.Loot(tok.ID, event.Loot{
-	// 	Source:    ent.ID,
-	// 	AbilityID: gulid.MustParse("01CP2Z4SDEWZK8YF29E07GPDVC"),
-	// 	Targets: map[string]ability.Targets{
-	// 		"01CPFBN87EESQ4QA8N820RV924": {
-	// 			Entities: []gulid.ID{ent1.ID},
-	// 		},
-	// 	},
-	// }); err != nil {
-	// 	return errors.Wrap(err, "case_loot")
-	// }
-
-	time.Sleep(1000 * time.Millisecond) // loot time last 1000 ms
+	// Loot item from lootableEntity
+	if err := cs.Loot(tok.ID, event.Loot{
+		Source:   ent.ID,
+		TargetID: target.ID,
+		ItemID:   it.ID,
+	}); err != nil {
+		return errors.Wrap(err, "case_loot")
+	}
 
 	// Check entity looter used mana
 	_, err = cs.GetStateAt(ent.ID, 500, func(actual entity.E) bool {
-		return actual.MP == 250-10
+		return actual.InventoryID.Compare(ent.InventoryID) != 0
 	})
 	if err != nil {
 		return errors.Wrap(err, "case_loot")

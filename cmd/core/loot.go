@@ -161,8 +161,11 @@ func (a *app) LootFeedback(id gulid.ID, e event.E) error {
 	}
 
 	// #Add item in inventory
-	_, ok := sourceInventory.Items[lf.ItemID.String()]
-	if !ok {
+	if sourceInventory.Items == nil {
+		sourceInventory.Items = map[string]uint64{
+			lf.ItemID.String(): 1,
+		}
+	} else if _, ok := sourceInventory.Items[lf.ItemID.String()]; !ok {
 		sourceInventory.Items[lf.ItemID.String()] = 1
 	} else {
 		sourceInventory.Items[lf.ItemID.String()]++
