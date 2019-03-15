@@ -5,10 +5,10 @@ import (
 
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) LootSource(id ulid.ID, e event.E) error {
+func (a *app) LootSource(id gulid.ID, e event.E) error {
 
 	ls := e.Action.LootSource
 	ts := e.ID.Time()
@@ -38,7 +38,7 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 		return errors.Wrap(gerrors.ErrNotLootableEntity{EntityID: target.ID.String()}, "loot source")
 	}
 
-	// #Retrieve source inventory
+	// #Retrieve source inventory to check if has a free spot
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {
 		return errors.Wrap(err, "loot source")
@@ -70,7 +70,7 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 	// #Publish loot event to target.
 	return errors.Wrap(a.EventQStore.PublishEvent(
 		event.E{
-			ID: ulid.NewTimeID(ts + 1),
+			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
 				LootTarget: &event.LootTarget{
 					SourceID: id,
@@ -83,7 +83,7 @@ func (a *app) LootSource(id ulid.ID, e event.E) error {
 	)
 }
 
-func (a *app) LootTarget(id ulid.ID, e event.E) error {
+func (a *app) LootTarget(id gulid.ID, e event.E) error {
 
 	lt := e.Action.LootTarget
 	ts := e.ID.Time()
@@ -119,15 +119,22 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 		targetInventory.Items[lt.ItemID.String()]--
 	}
 
-	// Set new inventory
+	// Create new inventory
+	targetInventory.ID = gulid.NewID()
 	if err := a.EntityInventoryStore.SetInventory(targetInventory); err != nil {
+		return errors.Wrap(err, "loot target")
+	}
+
+	target.InventoryID = targetInventory.ID
+	// Set new inventory to target
+	if err := a.EntityStore.SetEntity(target, ts); err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
 	// #Publish loot event to target.
 	return errors.Wrap(a.EventQStore.PublishEvent(
 		event.E{
-			ID: ulid.NewTimeID(ts + 1),
+			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
 				LootFeedback: &event.LootFeedback{
 					SourceID: id,
@@ -139,7 +146,7 @@ func (a *app) LootTarget(id ulid.ID, e event.E) error {
 	)
 }
 
-func (a *app) LootFeedback(id ulid.ID, e event.E) error {
+func (a *app) LootFeedback(id gulid.ID, e event.E) error {
 
 	lf := e.Action.LootFeedback
 	ts := e.ID.Time()
@@ -164,6 +171,13 @@ func (a *app) LootFeedback(id ulid.ID, e event.E) error {
 		sourceInventory.Items[lf.ItemID.String()]++
 	}
 
+	// #Create new inventory
+	sourceInventory.ID = gulid.NewID()
+	if err := a.EntityInventoryStore.SetInventory(sourceInventory); err != nil {
+		return errors.Wrap(err, "loot feedback")
+	}
+
 	// Set new inventory
-	return errors.Wrap(a.EntityInventoryStore.SetInventory(sourceInventory), "validate loot")
+	source.InventoryID = sourceInventory.ID
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "loot feedback")
 }
