@@ -26,6 +26,11 @@ func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
 		return errors.Wrap(err, "consume source")
 	}
 
+	// #Check if entity is alive
+	if source.Dead {
+		return errors.Wrap(gerrors.ErrIsDead{EntityID: id.String()}, "consume source")
+	}
+
 	// #Retrieve source inventory
 	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
 	if err != nil {

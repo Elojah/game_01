@@ -21,6 +21,11 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 		return errors.Wrap(err, "perform source")
 	}
 
+	// #Check if entity is alive
+	if source.Dead {
+		return errors.Wrap(gerrors.ErrIsDead{EntityID: id.String()}, "perform source")
+	}
+
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(source.ID, ps.AbilityID)
 	if err != nil {

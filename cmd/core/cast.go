@@ -35,11 +35,18 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 		return errors.Wrap(err, "cast source")
 	}
 
-	// #Check MP consumption
+	// #Retrieve entity
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "cast source")
 	}
+
+	// #Check if entity is alive
+	if source.Dead {
+		return errors.Wrap(gerrors.ErrIsDead{EntityID: id.String()}, "cast source")
+	}
+
+	// #Check MP consumption
 	if source.MP < ab.MPConsumption {
 		return errors.Wrap(
 			gerrors.ErrMissingMP{

@@ -24,6 +24,11 @@ func (a *app) LootSource(id gulid.ID, e event.E) error {
 		return errors.Wrap(err, "loot source")
 	}
 
+	// #Check if entity is alive
+	if source.Dead {
+		return errors.Wrap(gerrors.ErrIsDead{EntityID: id.String()}, "loot source")
+	}
+
 	// #Check if target is lootable
 	if ok, err := a.ItemLootStore.GetLoot(ls.TargetID); !ok || err != nil {
 		if err != nil {

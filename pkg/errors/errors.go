@@ -262,6 +262,24 @@ func (err ErrIneffectiveCancel) Error() string {
 	return fmt.Sprintf("ineffective cancel trigger %s", err.TriggerID)
 }
 
+// ErrIsDead is raised when an action is applied on a dead target and is denied.
+type ErrIsDead struct {
+	EntityID string
+}
+
+func (err ErrIsDead) Error() string {
+	return fmt.Sprintf("entity %s is dead", err.EntityID)
+}
+
+// ErrIsNotDead is raised when an action is applied on an alive target and is denied.
+type ErrIsNotDead struct {
+	EntityID string
+}
+
+func (err ErrIsNotDead) Error() string {
+	return fmt.Sprintf("entity %s is still alive", err.EntityID)
+}
+
 // IsGameLogicError returns if error type is a game logic error and needs a cancel propagation.
 func IsGameLogicError(err error) bool {
 	switch perrors.Cause(err).(type) {
@@ -290,6 +308,8 @@ func IsGameLogicError(err error) bool {
 	case ErrNotLootableEntity:
 		return true
 	case ErrFullInventory:
+		return true
+	case ErrIsDead:
 		return true
 	}
 	return false

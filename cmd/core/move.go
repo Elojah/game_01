@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/pkg/errors"
 
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -21,6 +22,11 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "move target")
+	}
+
+	// #Check if entity is alive
+	if target.Dead {
+		return errors.Wrap(gerrors.ErrIsDead{EntityID: id.String()}, "move target")
 	}
 
 	if target, err = a.SectorService.Move(target, mt.Position); err != nil {

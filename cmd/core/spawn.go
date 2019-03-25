@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/pkg/errors"
 
+	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/event"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
@@ -13,13 +14,18 @@ func (a *app) Spawn(id gulid.ID, e event.E) error {
 	sp := e.Action.Spawn
 	ts := e.ID.Time()
 
-	s, err := a.EntitySpawnStore.GetSpawn(sp.ID)
+	// #Retrieve previous target state.
+	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "spawn")
 	}
 
-	// #Retrieve previous target state.
-	target, err := a.EntityStore.GetEntity(id, ts)
+	// #Check entity is dead
+	if !target.Dead {
+		return errors.Wrap(gerrors.ErrIsNotDead{EntityID: id.String()}, "spawn")
+	}
+
+	s, err := a.EntitySpawnStore.GetSpawn(sp.ID)
 	if err != nil {
 		return errors.Wrap(err, "spawn")
 	}
