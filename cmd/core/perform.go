@@ -18,21 +18,13 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 	// #Retrieve source
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s", id.String())
+		return errors.Wrap(err, "perform source")
 	}
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(source.ID, ps.AbilityID)
-	switch errors.Cause(err).(type) {
-	case gerrors.ErrNotFound:
-		return errors.Wrapf(gerrors.ErrInsufficientACLs{
-			Value:  -1,
-			Source: source.ID.String(),
-			Target: ps.AbilityID.String(),
-		}, "get ability %s for %s", ps.AbilityID.String(), id.String())
-	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", ps.AbilityID.String(), id.String())
+		return errors.Wrap(err, "perform source")
 	}
 
 	// #Check cast was not interrupted.
@@ -48,7 +40,7 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 	// If one or all target(s) fails (e.g: too far), we still apply to other targets.
 	ab.LastUsed = ts
 	if err := a.AbilityStore.SetAbility(ab, source.ID); err != nil {
-		return errors.Wrapf(err, "set ability %s for %s", ab.ID.String(), source.ID.String())
+		return errors.Wrap(err, "perform source")
 	}
 
 	// #For all ability components.
@@ -58,10 +50,13 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 		// #Retrieve targets for this component.
 		target, ok := ps.Targets[cid]
 		if !ok {
-			return errors.Wrapf(gerrors.ErrMissingTarget{
-				AbilityID:   ab.ID.String(),
-				ComponentID: cid,
-			}, "ability %s component %s ", ab.ID.String(), cid)
+			return errors.Wrap(
+				gerrors.ErrMissingTarget{
+					AbilityID:   ab.ID.String(),
+					ComponentID: cid,
+				},
+				"perform source",
+			)
 		}
 
 		// #Send event to all targets
@@ -78,7 +73,7 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 		}
 
 		if len(target.Positions) != 0 {
-			return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
+			return errors.Wrap(gerrors.ErrNotImplementedYet{Version: "0.2.0"}, "perform source")
 		}
 
 		var g errgroup.Group
@@ -86,7 +81,7 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 			id := id
 			g.Go(func() error {
 				if err := a.EventQStore.PublishEvent(e, id); err != nil {
-					return errors.Wrapf(err, "publish perform target event %s to target %s", e.ID.String(), target.String())
+					return errors.Wrap(err, "perform source")
 				}
 				return nil
 			})
@@ -107,21 +102,13 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 	// #Retrieve previous target state.
 	target, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrapf(err, "get entity %s at max ts %d", id.String(), ts)
+		return errors.Wrapf(err, "perform target")
 	}
 
 	// #Retrieve ability.
 	ab, err := a.AbilityStore.GetAbility(pt.Source.ID, pt.AbilityID)
-	switch errors.Cause(err).(type) {
-	case gerrors.ErrNotFound:
-		return errors.Wrapf(gerrors.ErrInsufficientACLs{
-			Value:  -1,
-			Source: pt.Source.ID.String(),
-			Target: pt.AbilityID.String(),
-		}, "get ability %s for %s", pt.AbilityID.String(), pt.Source.ID.String())
-	}
 	if err != nil {
-		return errors.Wrapf(err, "get ability %s for %s", pt.AbilityID.String(), pt.Source.ID.String())
+		return errors.Wrapf(err, "perform target")
 	}
 
 	// #Initialize feedback.
@@ -135,16 +122,19 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 	cid := pt.ComponentID.String()
 	component, ok := ab.Components[cid]
 	if !ok {
-		return errors.Wrapf(gerrors.ErrMissingTarget{
-			AbilityID:   ab.ID.String(),
-			ComponentID: cid,
-		}, "ability %s component %s", ab.ID.String(), cid)
+		return errors.Wrap(
+			gerrors.ErrMissingTarget{
+				AbilityID:   ab.ID.String(),
+				ComponentID: cid,
+			},
+			"perform target",
+		)
 	}
 
 	// #Check distance between source and target
 	dist, err := a.SectorService.Segment(pt.Source.Position, target.Position)
 	if err != nil {
-		return errors.Wrap(err, "consume target")
+		return errors.Wrap(err, "perform target")
 	}
 	if dist > component.Range {
 		return errors.Wrap(
@@ -152,27 +142,49 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 				Dist:  dist,
 				Range: component.Range,
 			},
-			"consume target",
+			"perform target",
 		)
 	}
 
+	wasDead := target.Dead
+
 	// #Apply all ability components.
 	if fb.Effects, err = target.ApplyEffects(&pt.Source, component.Effects); err != nil {
-		return errors.Wrapf(err, "apply effects to target %s", target.ID.String())
+		return errors.Wrapf(err, "perform target")
+	}
+
+	// #Add a spawn event to a freshly dead entity.
+	// wasDead is a guard against multiple spawn events.
+	if !wasDead && target.Dead {
+		sp, err := a.EntitySpawnStore.GetSpawn(target.ID)
+		if err != nil {
+			return errors.Wrap(err, "perform target")
+		}
+		if err := a.EventQStore.PublishEvent(event.E{
+			ID: gulid.NewTimeID(ts + sp.Duration + 1),
+			Action: event.Action{
+				Spawn: &event.Spawn{
+					ID: target.SpawnID,
+				},
+			},
+			Trigger: e.ID,
+		}, id); err != nil {
+			return errors.Wrapf(err, "perform target")
+		}
 	}
 
 	// #Set entity new state.
 	if err := a.EntityStore.SetEntity(target, ts); err != nil {
-		return errors.Wrapf(err, "set entity %s", pt.Source.ID.String())
+		return errors.Wrapf(err, "perform target")
 	}
 
 	// #Set feedback.
 	if err := a.FeedbackStore.SetFeedback(fb); err != nil {
-		return errors.Wrapf(err, "set feedback %s from %s", fb.ID.String(), target.ID.String())
+		return errors.Wrapf(err, "perform target")
 	}
 
 	// #Publish feedback to source.
-	return a.EventQStore.PublishEvent(event.E{
+	return errors.Wrap(a.EventQStore.PublishEvent(event.E{
 		ID: gulid.NewTimeID(ts + 1),
 		Action: event.Action{
 			PerformFeedback: &event.PerformFeedback{
@@ -181,7 +193,9 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 			},
 		},
 		Trigger: e.ID,
-	}, pt.Source.ID)
+	}, pt.Source.ID),
+		"perform target",
+	)
 }
 
 func (a *app) PerformFeedback(id gulid.ID, e event.E) error {
@@ -192,21 +206,21 @@ func (a *app) PerformFeedback(id gulid.ID, e event.E) error {
 	// #Retrieve previous source state.
 	source, err := a.EntityStore.GetEntity(id, ts)
 	if err != nil {
-		return errors.Wrap(err, "retrieve entity")
+		return errors.Wrap(err, "perform feedback")
 	}
 
 	// #Retrieve feedback.
 	fb, err := a.FeedbackStore.GetFeedback(ft.ID)
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
-		return errors.Wrapf(err, "retrieve feedback")
+		return errors.Wrap(err, "perform feedback")
 	}
 
 	// #Apply all ability components.
 	if err := source.ApplyEffectFeedbacks(&ft.Target, fb.Effects); err != nil {
-		return errors.Wrap(err, "apply feedback")
+		return errors.Wrap(err, "perform feedback")
 	}
 
 	// #Set entity new state.
-	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "validate feeback")
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "perform feedback")
 }

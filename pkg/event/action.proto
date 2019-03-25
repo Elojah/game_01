@@ -70,6 +70,10 @@ message ConsumeFeedback {
 	bytes ItemID                         = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }
 
+message Spawn {
+	bytes ID                             = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+}
+
 message Action {
 	option (gogoproto.onlyone)           = true;
 	Cancel Cancel                        = 1;
@@ -84,4 +88,5 @@ message Action {
 	ConsumeSource ConsumeSource          = 10;
 	ConsumeTarget ConsumeTarget          = 11;
 	ConsumeFeedback ConsumeFeedback      = 12;
+	Spawn Spawn                          = 13;
 }

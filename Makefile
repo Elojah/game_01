@@ -121,6 +121,7 @@ proto:
 	$Q cd pkg/item     && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. item.proto
 	$Q cd pkg/entity   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. entity.proto
 	$Q cd pkg/entity   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. inventory.proto
+	$Q cd pkg/entity   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. spawn.proto
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. action.proto
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. dto.proto
 	$Q cd pkg/event    && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. event.proto

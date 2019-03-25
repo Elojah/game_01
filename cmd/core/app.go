@@ -22,18 +22,19 @@ type app struct {
 
 	account.TokenStore
 
-	EntityTemplateStore     entity.TemplateStore
-	EntityStore             entity.Store
-	EntityPermissionStore   entity.PermissionStore
 	EntityInventoryStore    entity.InventoryStore
 	EntityPermissionService entity.PermissionService
+	EntityPermissionStore   entity.PermissionStore
+	EntitySpawnStore        entity.SpawnStore
+	EntityStore             entity.Store
+	EntityTemplateStore     entity.TemplateStore
 
 	EventQStore         event.QStore
 	EventStore          event.Store
 	EventTriggerService event.TriggerService
 
-	infra.QSequencerStore
 	infra.CoreStore
+	infra.QSequencerStore
 
 	ItemStore     item.Store
 	ItemLootStore item.LootStore
@@ -185,6 +186,8 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		err = a.ConsumeTarget(id, e)
 	case *event.ConsumeFeedback:
 		err = a.ConsumeFeedback(id, e)
+	case *event.Spawn:
+		err = a.Spawn(id, e)
 	default:
 		logger.Error().Msg("unrecognized action")
 	}

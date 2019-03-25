@@ -30,4 +30,6 @@ message E {
 	Cast Cast                  = 11 [(gogoproto.nullable)   = true];
 
 	bytes InventoryID          = 12 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	bytes SpawnID              = 13 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

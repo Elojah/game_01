@@ -10,6 +10,7 @@ var _ entity.PermissionStore = (*Store)(nil)
 var _ entity.TemplateStore = (*Store)(nil)
 var _ entity.PCStore = (*Store)(nil)
 var _ entity.PCLeftStore = (*Store)(nil)
+var _ entity.SpawnStore = (*Store)(nil)
 
 // Store implements token and entity.
 type Store struct {
