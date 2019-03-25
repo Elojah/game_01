@@ -70,6 +70,7 @@ func run(prog string, filename string) {
 		EntityPermissionService: entitysvc.PermissionService{
 			EntityPermissionStore: entityStore,
 		},
+		EntitySpawnStore: entityStore,
 
 		QSequencerStore: infraStore,
 		CoreStore:       infraStore,

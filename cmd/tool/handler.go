@@ -24,6 +24,7 @@ type handler struct {
 	EntityStore          entity.Store
 	EntityTemplateStore  entity.TemplateStore
 	EntityInventoryStore entity.InventoryStore
+	EntitySpawnStore     entity.SpawnStore
 
 	ItemStore     item.Store
 	ItemLootStore item.LootStore
@@ -59,6 +60,8 @@ func (h *handler) Dial(c Config) error {
 	mux.HandleFunc("/sector/starter", h.sectorStarter)
 
 	mux.HandleFunc("/sequencer", h.sequencer)
+
+	mux.HandleFunc("/spawn", h.spawn)
 
 	h.srv = &http.Server{
 		Addr:    c.Address,

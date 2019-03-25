@@ -60,6 +60,7 @@ func run(prog string, filename string) {
 		EntityStore:          entityLRUStore,
 		EntityTemplateStore:  entityStore,
 		EntityInventoryStore: entityStore,
+		EntitySpawnStore:     entityStore,
 		ItemStore:            itemStore,
 		ItemLootStore:        itemStore,
 		InfraSequencerService: &infrasvc.SequencerService{
