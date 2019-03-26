@@ -31,40 +31,7 @@ make tool && bin/game_tool configs/config_tool.json
 ```
 
 ## Usage example
-
-(run with integration)
-
-```sh
-# Fill static data
-curl -k -X POST https://127.0.0.1:8081/entity/template -d @static/entity_templates.json
-curl -k -X POST https://127.0.0.1:8081/ability/template -d @static/ability_templates.json
-curl -k -X POST https://127.0.0.1:8081/sector -d @static/sector.json
-curl -k -X POST https://127.0.0.1:8081/sector/starter -d @static/sector_starter.json
-
-# Obtain access token
-curl -k -X POST https://127.0.0.1:8080/subscribe -d '{"username": "test", "password": "testtest"}'
-curl -k -X POST https://127.0.0.1:8080/signin -d '{"username": "test", "password": "testtest"}'
-{"ID":"01CRQZF39HF3JYKRX1SGARGQBN"}
-curl -k -X POST https://127.0.0.1:8080/pc/create -d '{"token":"01CRQZF39HF3JYKRX1SGARGQBN","type":"01CE3J5ASXJSVC405QTES4M221", "name": "roger_lemour"}'
-# Token is token obtained at signin and type is an entity ID described in templates/entity_templates.json.
-curl -k -X POST https://127.0.0.1:8080/pc/list -d '{"token":"01CRQZF39HF3JYKRX1SGARGQBN"}'
-[{"id":"01CRQZFPT8NV61SEGDXAF07EEX","type":"00000000000000000000000000","name":"mesmerist","hp":150,"mp":250,"position":{"Coord":{"x":39.19956060954395,"y":37.77876652333657,"z":36.315239570760646},"SectorID":"01CF001HTBA3CDR1ERJ6RF183A"}}]
-curl -k -X POST https://127.0.0.1:8080/pc/connect -d '{"token":"01CRQZF39HF3JYKRX1SGARGQBN","target":"01CRQZFPT8NV61SEGDXAF07EEX"}'
-{"ID":"01CKEKJQE019KNYENTM5XDG63V"}
-# Target is a PC ID in /list results
-
-# Paste token in config_client.json: {... "app": {"token": 01CRQZF39HF3JYKRX1SGARGQBN,...}}
-make client && bin/game_client configs/config_client.json
-{"type":"move","action":{"source":"01CKEKJQE019KNYENTM5XDG63V","target":"01CKEKJQE019KNYENTM5XDG63V","position":{"X":94.0164,"Y":80.5287,"Z":70.7539}}}
-...
-
-# Disconnect PC only (may reconnect with same token)
-curl -k -X POST https://127.0.0.1:8080/pc/disconnect -d '{"token": "01CRQZF39HF3JYKRX1SGARGQBN"}'
-# Signout
-curl -k -X POST https://127.0.0.1:8080/signout -d '{"username": "test", "token": "01CRQZF39HF3JYKRX1SGARGQBN"}'
-
-```
-
+*TODO*
 _For more examples and usage, please refer to the [Wiki][wiki]._
 
 ## Release History
@@ -81,7 +48,7 @@ See [trello](https://trello.com/b/GX9gz3Js/game01) for more informations.
 client <-> api -> core -> redis-lru
 redis-lru -> sync -> client
 ```
-Authentication and char creation/connect is handled by auth and associate a session token at each signin.
+Authentication and char creation/connection is handled by auth and associate a session token at each signin.
 Revoker regularly revokes unused tokens.
 GAME_01 also comes with a Tool API to create world data like entities/abilities/sectors.
 
