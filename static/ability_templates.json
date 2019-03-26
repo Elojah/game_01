@@ -52,5 +52,32 @@
                 "Shape": "00000000000000000000000000"
             }
         }
+    },
+    {
+        "ID": "01D6WRF5KQJFHZFKQGFVVJVM7P",
+        "Type": "00000000000000000000000000",
+        "Animation": "01D6WRFS2WW32DBN32JSSFJ0NN",
+        "Name": "Energy discharge",
+        "MPConsumption": 200,
+        "CD": 90000,
+        "LastUsed": 0,
+        "CastTime": 1000,
+        "Components": {
+            "01D6WS5MRXRG7KGM1190SBJFHA": {
+                "Effects": [
+                {
+                    "Damage": {
+                        "Amount": 150,
+                        "Element": 0
+                    }
+                }
+                ],
+                "NTargets": 1,
+                "Range": 10,
+                "NPositions": 0,
+                "PositionRange": 0,
+                "Shape": "00000000000000000000000000"
+            }
+        }
     }
 ]
