@@ -133,6 +133,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	pc := template
 	pc.Type = pc.ID
 	pc.ID = gulid.NewID()
+	pc.SpawnID = gulid.MustParse("01D6WJF3XF8ADHAGASDR6PW12P") // TODO config ? redis kv ?
 	logger = logger.With().Str("pc", pc.ID.String()).Logger()
 	if err := pc.Check(); err != nil {
 		logger.Error().Err(err).Msg("wrong pc")
