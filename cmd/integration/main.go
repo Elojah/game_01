@@ -149,6 +149,7 @@ func main() {
 	}
 	log.Info().Msg("case consume_cast ok")
 	if err := cases.Spawn(authService, clientService, toolService); err != nil {
+		// la.Consume(500)
 		log.Error().Err(err).Msg("case failure")
 		return
 	}

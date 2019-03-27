@@ -130,7 +130,7 @@ func Spawn(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 		Source:    ent0.ID,
 		AbilityID: gulid.MustParse("01D6WRF5KQJFHZFKQGFVVJVM7P"),
 		Targets: map[string]ability.Targets{
-			"01CPFBN87EESQ4QA8N820RV924": {
+			"01D6WS5MRXRG7KGM1190SBJFHA": {
 				Entities: []gulid.ID{ent1.ID},
 			},
 		},
@@ -147,13 +147,13 @@ func Spawn(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_spawn")
 	}
-	// Check entity target took damage
-	_, err = cs.GetStateAt(ent1.ID, 500, func(actual entity.E) bool {
-		return actual.Dead == true
-	})
-	if err != nil {
-		return errors.Wrap(err, "case_spawn")
-	}
+	// // Check entity target took damage
+	// _, err = cs.GetStateAt(ent1.ID, 500, func(actual entity.E) bool {
+	// 	return actual.Dead == true
+	// })
+	// if err != nil {
+	// 	return errors.Wrap(err, "case_spawn")
+	// }
 
 	// #0
 	if err := as.SignOut(tok0.ID, usernameSpawn0); err != nil {

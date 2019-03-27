@@ -161,7 +161,7 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 	// #Add a spawn event to a freshly dead entity.
 	// wasDead is a guard against multiple spawn events.
 	if !wasDead && target.Dead {
-		sp, err := a.EntitySpawnStore.GetSpawn(target.ID)
+		sp, err := a.EntitySpawnStore.GetSpawn(target.SpawnID)
 		if err != nil {
 			return errors.Wrap(err, "perform target")
 		}
