@@ -53,7 +53,7 @@ const (
 // - DisconnectPC
 // - SignOut
 // - Unsubscribe
-func Spawn(as *auth.Service, cs *client.Service, ts *tool.Service) error {
+func Spawn(as *auth.Service, cs *client.Service, ts *tool.Service) error { //nolint:gocyclo
 
 	// #0
 	if err := as.Subscribe(usernameSpawn0, passwordSpawn0); err != nil {
