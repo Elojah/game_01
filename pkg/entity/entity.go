@@ -38,21 +38,12 @@ func (e *E) Damage(source *E, dd *ability.Damage) *ability.DamageFeedback {
 		amount = e.HP
 		e.HP = 0
 		e.Dead = true
+		e.Cast = nil
 	} else {
 		amount = dd.Amount
 		e.HP -= dd.Amount
 	}
 	return &ability.DamageFeedback{Amount: amount}
-}
-
-// DamageFeedback applies a direct damage feedback dd from entity source to entity e.
-func (e *E) DamageFeedback(source *E, dd *ability.DamageFeedback) {
-	if dd.Amount >= e.HP {
-		e.HP = 0
-		e.Dead = true
-	} else {
-		e.HP -= dd.Amount
-	}
 }
 
 // ApplyEffects applies all ability components.
@@ -85,23 +76,27 @@ func (e *E) ApplyEffects(source *E, effects []ability.Effect) ([]ability.EffectF
 // ApplyEffectFeedbacks applies all feedback effects.
 func (e *E) ApplyEffectFeedbacks(source *E, effects []ability.EffectFeedback) error {
 
-	var result *multierror.Error
+	return nil
+	/*
+		var result *multierror.Error
 
-	for _, effect := range effects {
-		veffect := effect.GetValue()
-		switch v := veffect.(type) {
-		case *ability.DamageFeedback:
-			e.DamageFeedback(source, v)
-		case *ability.HealFeedback:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-		case *ability.HealOverTimeFeedback:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-		case *ability.DamageOverTimeFeedback:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-		default:
-			result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
+		for _, effect := range effects {
+			veffect := effect.GetValue()
+			switch veffect.(type) {
+			case *ability.DamageFeedback:
+				// e.DamageFeedback(source, v)
+				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
+			case *ability.HealFeedback:
+				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
+			case *ability.HealOverTimeFeedback:
+				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
+			case *ability.DamageOverTimeFeedback:
+				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
+			default:
+				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
+			}
 		}
-	}
 
-	return result.ErrorOrNil()
+		return result.ErrorOrNil()
+	*/
 }

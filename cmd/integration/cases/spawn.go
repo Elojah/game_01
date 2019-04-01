@@ -142,18 +142,35 @@ func Spawn(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 
 	// Check entity caster used mana
 	_, err = cs.GetStateAt(ent0.ID, 500, func(actual entity.E) bool {
-		return actual.MP == 250-200
+		return actual.MP == 400-200
 	})
 	if err != nil {
 		return errors.Wrap(err, "case_spawn")
 	}
-	// // Check entity target took damage
-	// _, err = cs.GetStateAt(ent1.ID, 500, func(actual entity.E) bool {
-	// 	return actual.Dead == true
-	// })
-	// if err != nil {
-	// 	return errors.Wrap(err, "case_spawn")
-	// }
+
+	// Check entity target took damage and is dead
+	_, err = cs.GetStateAt(ent1.ID, 500, func(actual entity.E) bool {
+		return actual.Dead == true
+	})
+	if err != nil {
+		return errors.Wrap(err, "case_spawn")
+	}
+
+	time.Sleep(1000 * time.Millisecond) // respawn time last 1000 ms
+
+	// Check entity target took respawned
+	_, err = cs.GetStateAt(ent1.ID, 500, func(actual entity.E) bool {
+		return actual.Dead == false &&
+			actual.Position.SectorID.Compare(gulid.MustParse("01CF001HTBA3CDR1ERJ6RF183A")) == 0 &&
+			actual.Position.Coord.X == 250 &&
+			actual.Position.Coord.Y == 838 &&
+			actual.Position.Coord.Z == 891 &&
+			actual.HP == actual.MaxHP &&
+			actual.MP == actual.MaxMP
+	})
+	if err != nil {
+		return errors.Wrap(err, "case_spawn")
+	}
 
 	// #0
 	if err := as.SignOut(tok0.ID, usernameSpawn0); err != nil {

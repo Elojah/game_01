@@ -15,9 +15,9 @@ import (
 
 // Recurrer retrieves entity data associated to pc id and send it at regular ticks.
 type Recurrer struct {
-	EntityStore entity.Store
-	SectorStore sector.Store
-	sector.EntitiesStore
+	EntityStore         entity.Store
+	SectorStore         sector.Store
+	SectorEntitiesStore sector.EntitiesStore
 
 	logger   zerolog.Logger
 	id       gulid.ID
@@ -41,7 +41,7 @@ func NewRecurrer(rec infra.Recurrer, tick uint32, callback func(entity.E)) *Recu
 
 // Close close the tick sender.
 func (r *Recurrer) Close() error {
-	r.logger.Info().Msg("close recurrer")
+	r.logger.Info().Msg("close")
 	r.ticker.Stop()
 	return nil
 }
@@ -49,31 +49,31 @@ func (r *Recurrer) Close() error {
 // Run starts to read the ticker and send entities.
 func (r *Recurrer) Run() {
 	for t := range r.ticker.C {
-		en, err := r.EntityStore.GetEntity(r.entityID, ulid.Timestamp(t))
+		e, err := r.EntityStore.GetEntity(r.entityID, ulid.Timestamp(t))
 		if err != nil {
-			r.logger.Error().Err(err).Msg("failed to retrieve entity")
+			r.logger.Error().Err(err).Msg("run")
 			continue
 		}
-		sector, err := r.SectorStore.GetSector(en.Position.SectorID)
+		sector, err := r.SectorStore.GetSector(e.Position.SectorID)
 		if err != nil {
-			r.logger.Error().Err(err).Msg("failed to retrieve current sector")
+			r.logger.Error().Err(err).Msg("run")
 			continue
 		}
-		go r.sendSector(sector.ID, t)
+		r.sendSector(sector.ID, t)
 		for _, id := range sector.Exposed {
-			go r.sendSector(id, t)
+			r.sendSector(id, t)
 		}
 	}
 }
 
 func (r *Recurrer) sendSector(sectorID gulid.ID, t time.Time) {
-	se, err := r.GetEntities(sectorID)
+	se, err := r.SectorEntitiesStore.GetEntities(sectorID)
 	if err != nil {
-		r.logger.Error().Err(err).Str("id", sectorID.String()).Msg("failed to retrieve sector")
+		r.logger.Error().Err(err).Str("sector", sectorID.String()).Msg("send sector")
 		return
 	}
 	for _, entityID := range se.EntityIDs {
-		go r.sendEntity(entityID, t)
+		r.sendEntity(entityID, t)
 	}
 }
 
@@ -81,7 +81,7 @@ func (r *Recurrer) sendEntity(entityID gulid.ID, t time.Time) {
 	// TODO Use t-token ping instead of t.
 	e, err := r.EntityStore.GetEntity(entityID, ulid.Timestamp(t))
 	if err != nil {
-		r.logger.Error().Err(err).Str("id", entityID.String()).Msg("failed to retrieve entity")
+		r.logger.Error().Err(err).Str("entity", entityID.String()).Msg("send entity")
 		return
 	}
 	r.callback(e)

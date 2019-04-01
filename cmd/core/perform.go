@@ -96,7 +96,10 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 		}
 		i++
 	}
-	return nil
+
+	// #Remove cast state from source
+	source.Cast = nil
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "perform source")
 }
 
 func (a *app) PerformTarget(id gulid.ID, e event.E) error {
@@ -205,7 +208,7 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 
 func (a *app) PerformFeedback(id gulid.ID, e event.E) error {
 
-	ft := e.Action.PerformFeedback
+	pf := e.Action.PerformFeedback
 	ts := e.ID.Time()
 
 	// #Retrieve previous source state.
@@ -215,14 +218,14 @@ func (a *app) PerformFeedback(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve feedback.
-	fb, err := a.FeedbackStore.GetFeedback(ft.ID)
+	fb, err := a.FeedbackStore.GetFeedback(pf.ID)
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
 		return errors.Wrap(err, "perform feedback")
 	}
 
 	// #Apply all ability components.
-	if err := source.ApplyEffectFeedbacks(&ft.Target, fb.Effects); err != nil {
+	if err := source.ApplyEffectFeedbacks(&pf.Target, fb.Effects); err != nil {
 		return errors.Wrap(err, "perform feedback")
 	}
 

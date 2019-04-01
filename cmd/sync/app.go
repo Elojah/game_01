@@ -127,7 +127,7 @@ func (a *app) Recurrer(msg *infra.Message) {
 		a.Send(raw, addr)
 	})
 	rec.EntityStore = a.EntityStore
-	rec.EntitiesStore = a.EntitiesStore
+	rec.SectorEntitiesStore = a.EntitiesStore
 	rec.SectorStore = a.SectorStore
 
 	go rec.Run()

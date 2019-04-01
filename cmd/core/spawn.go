@@ -35,6 +35,8 @@ func (a *app) Spawn(id gulid.ID, e event.E) error {
 	// #Restore HP & MP
 	target.HP = target.MaxHP
 	target.MP = target.MaxMP
+	// #Target is not dead anymore \o/
+	target.Dead = false
 
 	// #Set entity new state.
 	return errors.Wrap(a.EntityStore.SetEntity(target, ts), "spawn")

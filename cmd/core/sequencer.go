@@ -35,7 +35,7 @@ type Sequencer struct {
 
 // Close kills both fetch/input goroutines.
 func (s *Sequencer) Close() error {
-	s.logger.Info().Msg("close sequencer")
+	s.logger.Info().Msg("close")
 	close(s.input)
 	close(s.fetch)
 	close(s.process)
@@ -70,16 +70,16 @@ func (s *Sequencer) listenFetch() {
 	var min ulid.ID
 	for id := range s.fetch {
 		if !min.IsZero() && min.Compare(id) < 0 {
-			s.logger.Info().Str("id", id.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
+			s.logger.Info().Str("event", id.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
 			continue
 		}
 		if err := s.EntityStore.DelEntityByTS(s.id, id.Time()); err != nil {
-			s.logger.Error().Err(err).Msg("failed to clear entities")
+			s.logger.Error().Err(err).Msg("fetch")
 			continue
 		}
 		events, err := s.EventStore.ListEvent(s.id, id)
 		if err != nil {
-			s.logger.Error().Err(err).Msg("failed to fetch events")
+			s.logger.Error().Err(err).Msg("fetch")
 			continue
 		}
 	Event:
@@ -125,7 +125,7 @@ func (s *Sequencer) Run() {
 func (s *Sequencer) Handler(msg *infra.Message) {
 	var e event.E
 	if err := e.Unmarshal([]byte(msg.Payload)); err != nil {
-		s.logger.Error().Err(err).Msg("error unmarshaling event")
+		s.logger.Error().Err(err).Msg("handler")
 		return
 	}
 	if err := s.EventTriggerService.Set(e, s.id); err != nil {
@@ -133,7 +133,7 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		case gerrors.ErrIneffectiveCancel:
 			s.logger.Info().Err(err).Msg("event not processed")
 		default:
-			s.logger.Error().Err(err).Msg("error setting event")
+			s.logger.Error().Err(err).Msg("handler")
 		}
 		return
 	}
