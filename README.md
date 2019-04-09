@@ -1,3 +1,5 @@
+![alt text](https://cdn.discordapp.com/attachments/372380523173249026/565096030090166283/logo.png "GAME_01")
+
 # GAME_01
 
 **WORK IN PROGRESS**
