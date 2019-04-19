@@ -10,7 +10,6 @@ import "github.com/gogo/protobuf/gogoproto/gogo.proto";
 
 message Inventory {
 	bytes ID                        = 1 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	bytes PCID                      = 2 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
-	uint64 Size                     = 3;
-	map<string, uint64> Items       = 4 [(gogoproto.nullable)   = false];
+	uint64 Size                     = 2;
+	map<string, uint64> Items       = 3 [(gogoproto.nullable)   = false];
 }

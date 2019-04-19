@@ -153,7 +153,6 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	pc.InventoryID = gulid.NewID()
 	if err := h.EntityInventoryStore.SetInventory(entity.Inventory{
 		ID:    pc.InventoryID,
-		PCID:  pc.ID,
 		Size_: 42, // TODO config ? redis kv ?
 		Items: make(map[string]uint64),
 	}); err != nil {

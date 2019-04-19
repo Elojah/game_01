@@ -49,7 +49,7 @@ func run(prog string, filename string) {
 	launchers.Add(cl)
 
 	// Stores and applicatives
-	eventStore := eventsrg.NewStore(rd)
+	eventStore := eventsrg.NewStore(rdlru)
 	accountStore := accountsrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
 	infraStore := infrasrg.NewStore(rd)

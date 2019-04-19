@@ -50,7 +50,7 @@ func run(prog string, filename string) {
 	abilityStore := abilitysrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
-	eventStore := eventsrg.NewStore(rd)
+	eventStore := eventsrg.NewStore(rdlru)
 	infraStore := infrasrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
 

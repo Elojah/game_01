@@ -46,7 +46,7 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
-	eventStore := eventsrg.NewStore(rd)
+	eventStore := eventsrg.NewStore(rdlru)
 	abilityStore := abilitysrg.NewStore(rd)
 	accountStore := accountsrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
