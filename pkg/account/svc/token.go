@@ -15,11 +15,13 @@ import (
 
 // TokenService represents token usecases.
 type TokenService struct {
-	AccountStore          account.Store
-	AccountTokenStore     account.TokenStore
-	EntityStore           entity.Store
-	EntityPCStore         entity.PCStore
-	EntityPermissionStore entity.PermissionStore
+	AccountStore           account.Store
+	AccountTokenStore      account.TokenStore
+	EntityStore            entity.Store
+	EntityPCStore          entity.PCStore
+	EntityPermissionStore  entity.PermissionStore
+	EntityMRInventoryStore entity.MRInventoryStore
+	EntityInventoryService entity.InventoryService
 
 	EntityService entity.Service
 }
@@ -125,7 +127,19 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 		return errors.Wrap(err, "disconnect token")
 	}
 
-	// # Disconnect all entities associated with token.
+	// #Save last inventory state into MR store as pc and remove entity inv in MR store
+	inv, err := s.EntityInventoryService.Get(e.InventoryID, e.ID)
+	if err != nil {
+		return errors.Wrap(err, "disconnect token")
+	}
+	if err := s.EntityMRInventoryStore.SetMRInventory(pc.ID, inv); err != nil {
+		return errors.Wrap(err, "disconnect token")
+	}
+	if err := s.EntityMRInventoryStore.DelMRInventory(e.ID); err != nil {
+		return errors.Wrap(err, "disconnect token")
+	}
+
+	// #Disconnect all entities associated with token.
 	ps, err := s.EntityPermissionStore.ListPermission(t.ID.String())
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")

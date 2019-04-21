@@ -59,12 +59,17 @@ func run(prog string, filename string) {
 		AccountStore:      accountStore,
 		AccountTokenStore: accountStore,
 
-		EntityStore:           entityLRUStore,
-		EntityInventoryStore:  entityStore,
-		EntityPCStore:         entityStore,
-		EntityPCLeftStore:     entityStore,
-		EntityPermissionStore: entityStore,
-		EntityTemplateStore:   entityStore,
+		EntityStore:            entityLRUStore,
+		EntityInventoryStore:   entityLRUStore,
+		EntityMRInventoryStore: entityStore,
+		EntityPCStore:          entityStore,
+		EntityPCLeftStore:      entityStore,
+		EntityPermissionStore:  entityStore,
+		EntityTemplateStore:    entityStore,
+		EntityInventoryService: &entitysvc.InventoryService{
+			EntityInventoryStore:   entityLRUStore,
+			EntityMRInventoryStore: entityStore,
+		},
 
 		EventQStore: eventStore,
 
@@ -96,11 +101,17 @@ func run(prog string, filename string) {
 					InfraCore:       infraStore,
 				},
 			},
+			EntityMRInventoryStore: entityStore,
+			EntityInventoryService: &entitysvc.InventoryService{
+				EntityInventoryStore:   entityLRUStore,
+				EntityMRInventoryStore: entityStore,
+			},
 		},
 		EntityPCService: &entitysvc.PCService{
-			AbilityStore:      abilityStore,
-			EntityPCStore:     entityStore,
-			EntityPCLeftStore: entityStore,
+			AbilityStore:           abilityStore,
+			EntityPCStore:          entityStore,
+			EntityPCLeftStore:      entityStore,
+			EntityMRInventoryStore: entityStore,
 		},
 		InfraSequencerService: &infrasvc.SequencerService{
 			InfraQSequencer: infraStore,

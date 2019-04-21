@@ -151,7 +151,8 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 
 	// #Set inventory to PC.
 	pc.InventoryID = gulid.NewID()
-	if err := h.EntityInventoryStore.SetInventory(entity.Inventory{
+	// set inventory in mr only, will be written in lru at connection
+	if err := h.EntityMRInventoryStore.SetMRInventory(pc.ID, entity.Inventory{
 		ID:    pc.InventoryID,
 		Size_: 42, // TODO config ? redis kv ?
 		Items: make(map[string]uint64),
@@ -311,6 +312,19 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	// #Copy PC abilities
 	if err := h.AbilityService.CopyAbilities(pc.ID, e.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to copy abilities to entity")
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
+		return
+	}
+
+	// #Copy inventory and add inventory in lru
+	inv, err := h.EntityMRInventoryStore.GetMRInventory(pc.ID)
+	if err != nil {
+		logger.Error().Err(err).Msg("failed to retrieve inventory from pc")
+		http.Error(w, "failed to connect", http.StatusInternalServerError)
+		return
+	}
+	if err := h.EntityInventoryService.SetMR(e.ID, inv); err != nil {
+		logger.Error().Err(err).Msg("failed to set inventory to entity")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return
 	}

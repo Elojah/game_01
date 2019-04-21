@@ -114,6 +114,7 @@ func main() {
 
 	clientService := client.NewService(laClient)
 	if err := cases.Move(authService, clientService); err != nil {
+		la.Consume(500)
 		log.Error().Err(err).Msg("case failure")
 		return
 	}

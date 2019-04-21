@@ -84,3 +84,8 @@ func (s *Store) SetMRInventory(entityID ulid.ID, inv entity.Inventory) error {
 		entityID.String(),
 	)
 }
+
+// DelMRInventory implemented with redis.
+func (s *Store) DelMRInventory(entityID ulid.ID) error {
+	return errors.Wrapf(s.Del(inventoryMRKey+entityID.String()).Err(), "del inventory for entity %s", entityID.String())
+}

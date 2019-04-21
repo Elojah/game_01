@@ -9,15 +9,16 @@ import (
 
 // PCService provides a clean pc removal.
 type PCService struct {
-	AbilityStore      ability.Store
-	EntityPCStore     entity.PCStore
-	EntityPCLeftStore entity.PCLeftStore
+	AbilityStore           ability.Store
+	EntityPCStore          entity.PCStore
+	EntityPCLeftStore      entity.PCLeftStore
+	EntityMRInventoryStore entity.MRInventoryStore
 }
 
 // RemovePC remove a pc and clean associated abilities.
 func (s PCService) RemovePC(accountID gulid.ID, id gulid.ID) error {
 
-	// Delete pc abilities
+	// #Delete pc abilities
 	abs, err := s.AbilityStore.ListAbility(id)
 	if err != nil {
 		return errors.Wrap(err, "remove pc")
@@ -26,6 +27,11 @@ func (s PCService) RemovePC(accountID gulid.ID, id gulid.ID) error {
 		if err := s.AbilityStore.DelAbility(id, ab.ID); err != nil {
 			return errors.Wrap(err, "remove pc")
 		}
+	}
+
+	// #Delete pc inventory
+	if err := s.EntityMRInventoryStore.DelMRInventory(id); err != nil {
+		return errors.Wrap(err, "remove pc")
 	}
 
 	// #Delete pc

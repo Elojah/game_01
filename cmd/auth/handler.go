@@ -18,12 +18,14 @@ type handler struct {
 	AccountStore      account.Store
 	AccountTokenStore account.TokenStore
 
-	EntityStore           entity.Store
-	EntityInventoryStore  entity.InventoryStore
-	EntityPCStore         entity.PCStore
-	EntityPCLeftStore     entity.PCLeftStore
-	EntityPermissionStore entity.PermissionStore
-	EntityTemplateStore   entity.TemplateStore
+	EntityStore            entity.Store
+	EntityInventoryStore   entity.InventoryStore
+	EntityMRInventoryStore entity.MRInventoryStore
+	EntityInventoryService entity.InventoryService
+	EntityPCStore          entity.PCStore
+	EntityPCLeftStore      entity.PCLeftStore
+	EntityPermissionStore  entity.PermissionStore
+	EntityTemplateStore    entity.TemplateStore
 
 	EventQStore         event.QStore
 	InfraSyncStore      infra.SyncStore

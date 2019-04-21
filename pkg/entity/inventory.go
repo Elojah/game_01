@@ -13,6 +13,7 @@ type InventoryStore interface {
 type MRInventoryStore interface {
 	GetMRInventory(ulid.ID) (Inventory, error)
 	SetMRInventory(ulid.ID, Inventory) error
+	DelMRInventory(ulid.ID) error
 }
 
 // InventoryService wraps operations for MR logic.
