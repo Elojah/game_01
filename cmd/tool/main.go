@@ -59,7 +59,7 @@ func run(prog string, filename string) {
 		AccountStore:         accountStore,
 		EntityStore:          entityLRUStore,
 		EntityTemplateStore:  entityStore,
-		EntityInventoryStore: entityStore,
+		EntityInventoryStore: entityLRUStore,
 		EntitySpawnStore:     entityStore,
 		ItemStore:            itemStore,
 		ItemLootStore:        itemStore,
