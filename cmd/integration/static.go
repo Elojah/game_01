@@ -19,9 +19,6 @@ func Static(s *tool.Service) error {
 	if err := s.AddSector("./static/sector.json"); err != nil {
 		return errors.Wrap(err, "static")
 	}
-	if err := s.AddSectorStarter("./static/sector_starter.json"); err != nil {
-		return errors.Wrap(err, "static")
-	}
 	if err := s.AddSpawn("./static/spawn.json"); err != nil {
 		return errors.Wrap(err, "static")
 	}

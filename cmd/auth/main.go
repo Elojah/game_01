@@ -65,6 +65,7 @@ func run(prog string, filename string) {
 		EntityPCStore:          entityStore,
 		EntityPCLeftStore:      entityStore,
 		EntityPermissionStore:  entityStore,
+		EntitySpawnStore:       entityStore,
 		EntityTemplateStore:    entityStore,
 		EntityInventoryService: &entitysvc.InventoryService{
 			EntityInventoryStore:   entityLRUStore,
@@ -77,7 +78,6 @@ func run(prog string, filename string) {
 
 		SectorStore:         sectorStore,
 		SectorEntitiesStore: sectorStore,
-		SectorStarterStore:  sectorStore,
 
 		AbilityService: &abilitysvc.Service{
 			AbilityStore:         abilityStore,

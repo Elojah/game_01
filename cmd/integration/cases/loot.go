@@ -24,6 +24,8 @@ const (
 	entNameLoot  = "test_loot"
 
 	pcTypeLoot = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnLoot = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // Loot :
@@ -51,7 +53,7 @@ func Loot(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_loot")
 	}
-	if err := as.CreatePC(tok.ID, pcNameLoot, pcTypeLoot); err != nil {
+	if err := as.CreatePC(tok.ID, pcNameLoot, pcTypeLoot, pcSpawnLoot); err != nil {
 		return errors.Wrap(err, "case_loot")
 	}
 	pcs, err := as.ListPC(tok.ID)

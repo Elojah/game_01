@@ -2,6 +2,10 @@ package entity
 
 import "github.com/elojah/game_01/pkg/ulid"
 
+const (
+	DefaultInventorySize = 42
+)
+
 // InventoryStore wraps inventory interactions.
 type InventoryStore interface {
 	GetInventory(ulid.ID) (Inventory, error)

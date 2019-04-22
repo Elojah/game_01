@@ -48,6 +48,7 @@ func run(prog string, filename string) {
 	// Stores and applicatives
 	eventStore := eventsrg.NewStore(rdlru)
 	abilityStore := abilitysrg.NewStore(rd)
+	abilityLRUStore := abilitysrg.NewStore(rdlru)
 	accountStore := accountsrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
@@ -59,7 +60,7 @@ func run(prog string, filename string) {
 	a := &app{
 		AbilityStore:         abilityStore,
 		AbilityTemplateStore: abilityStore,
-		FeedbackStore:        abilityStore,
+		AbilityFeedbackStore: abilityLRUStore,
 
 		TokenStore: accountStore,
 

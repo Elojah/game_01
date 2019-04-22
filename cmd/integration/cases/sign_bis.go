@@ -13,6 +13,8 @@ const (
 
 	pcNameSignBis = "test_sign_bis"
 	pcTypeSignBis = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnSignBis = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // SignBis :
@@ -32,7 +34,7 @@ func SignBis(s *auth.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_sign_bis")
 	}
-	if err := s.CreatePC(tok.ID, pcNameSignBis, pcTypeSignBis); err != nil {
+	if err := s.CreatePC(tok.ID, pcNameSignBis, pcTypeSignBis, pcSpawnSignBis); err != nil {
 		return errors.Wrap(err, "case_sign_bis")
 	}
 	pcs, err := s.ListPC(tok.ID)

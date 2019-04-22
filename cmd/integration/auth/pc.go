@@ -13,11 +13,12 @@ import (
 )
 
 // CreatePC creates a new PC for token.
-func (s *Service) CreatePC(tokenID gulid.ID, pcName string, pcType string) error {
+func (s *Service) CreatePC(tokenID gulid.ID, pcName string, pcType string, spawnID string) error {
 	raw, err := json.Marshal(map[string]string{
 		"token": tokenID.String(),
 		"name":  pcName,
 		"type":  pcType,
+		"spawn": spawnID,
 	})
 	if err != nil {
 		return errors.Wrap(err, "create pc")

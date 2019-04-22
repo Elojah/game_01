@@ -22,6 +22,8 @@ const (
 	itemNameConsume = "test_consume"
 
 	pcTypeConsume = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnConsume = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // Consume :
@@ -47,7 +49,7 @@ func Consume(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_consume")
 	}
-	if err := as.CreatePC(tok.ID, pcNameConsume, pcTypeConsume); err != nil {
+	if err := as.CreatePC(tok.ID, pcNameConsume, pcTypeConsume, pcSpawnConsume); err != nil {
 		return errors.Wrap(err, "case_consume")
 	}
 	pcs, err := as.ListPC(tok.ID)

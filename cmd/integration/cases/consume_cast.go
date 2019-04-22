@@ -28,6 +28,8 @@ const (
 	itemNameConsumeCast = "test_consume_cast"
 
 	pcTypeConsumeCast = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnConsumeCast = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // ConsumeCast :
@@ -65,7 +67,7 @@ func ConsumeCast(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_consume_cast")
 	}
-	if err := as.CreatePC(tok0.ID, pcNameConsumeCast0, pcTypeConsumeCast); err != nil {
+	if err := as.CreatePC(tok0.ID, pcNameConsumeCast0, pcTypeConsumeCast, pcSpawnConsumeCast); err != nil {
 		return errors.Wrap(err, "case_consume_cast")
 	}
 	pcs0, err := as.ListPC(tok0.ID)
@@ -85,7 +87,7 @@ func ConsumeCast(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_consume_cast")
 	}
-	if err := as.CreatePC(tok1.ID, pcNameConsumeCast1, pcTypeConsumeCast); err != nil {
+	if err := as.CreatePC(tok1.ID, pcNameConsumeCast1, pcTypeConsumeCast, pcSpawnConsumeCast); err != nil {
 		return errors.Wrap(err, "case_consume_cast")
 	}
 	pcs1, err := as.ListPC(tok1.ID)

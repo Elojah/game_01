@@ -187,7 +187,7 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 	}
 
 	// #Set feedback.
-	if err := a.FeedbackStore.SetFeedback(fb); err != nil {
+	if err := a.AbilityFeedbackStore.SetFeedback(fb); err != nil {
 		return errors.Wrapf(err, "perform target")
 	}
 
@@ -218,7 +218,7 @@ func (a *app) PerformFeedback(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve feedback.
-	fb, err := a.FeedbackStore.GetFeedback(pf.ID)
+	fb, err := a.AbilityFeedbackStore.GetFeedback(pf.ID)
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
 		return errors.Wrap(err, "perform feedback")

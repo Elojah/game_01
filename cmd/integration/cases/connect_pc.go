@@ -13,6 +13,8 @@ const (
 
 	pcNameConnectPC = "test_connect_pc"
 	pcTypeConnectPC = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnConnectPC = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // ConnectPC :
@@ -32,7 +34,7 @@ func ConnectPC(s *auth.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_connect_pc")
 	}
-	if err := s.CreatePC(tok.ID, pcNameConnectPC, pcTypeConnectPC); err != nil {
+	if err := s.CreatePC(tok.ID, pcNameConnectPC, pcTypeConnectPC, pcSpawnConnectPC); err != nil {
 		return errors.Wrap(err, "case_connect_pc")
 	}
 	pcs, err := s.ListPC(tok.ID)

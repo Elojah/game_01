@@ -3,10 +3,8 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"math/rand"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/oklog/ulid"
 	perrors "github.com/pkg/errors"
@@ -15,7 +13,6 @@ import (
 	"github.com/elojah/game_01/pkg/account"
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
-	"github.com/elojah/game_01/pkg/geometry"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
@@ -24,6 +21,7 @@ type SetPC struct {
 	Token gulid.ID
 	Name  string
 	Type  gulid.ID
+	Spawn gulid.ID
 }
 
 // Check checks setpc validity.
@@ -133,7 +131,6 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	pc := template
 	pc.Type = pc.ID
 	pc.ID = gulid.NewID()
-	pc.SpawnID = gulid.MustParse("01D6WJF3XF8ADHAGASDR6PW12P") // TODO config ? redis kv ?
 	logger = logger.With().Str("pc", pc.ID.String()).Logger()
 	if err := pc.Check(); err != nil {
 		logger.Error().Err(err).Msg("wrong pc")
@@ -154,7 +151,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	// set inventory in mr only, will be written in lru at connection
 	if err := h.EntityMRInventoryStore.SetMRInventory(pc.ID, entity.Inventory{
 		ID:    pc.InventoryID,
-		Size_: 42, // TODO config ? redis kv ?
+		Size_: entity.DefaultInventorySize,
 		Items: make(map[string]uint64),
 	}); err != nil {
 		logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to set inventory")
@@ -162,27 +159,18 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// #Retrieve a random starter sector.
-	sst, err := h.SectorStarterStore.GetRandomStarter()
+	// #Retrieve pc spawn.
+	pc.SpawnID = setPC.Spawn
+	logger = logger.With().Str("spawn", pc.SpawnID.String()).Logger()
+	sp, err := h.EntitySpawnStore.GetSpawn(pc.SpawnID)
 	if err != nil {
-		logger.Error().Err(err).Msg("failed to pick random starter")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	logger = logger.With().Str("sector", sst.SectorID.String()).Logger()
-	sec, err := h.SectorStore.GetSector(sst.SectorID)
-	if err != nil {
-		logger.Error().Err(err).Msg("failed to retrieve starter sector")
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logger.Error().Err(err).Msg("failed to retrieve spawn")
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// #Assign new position to PC and set it.
-	rand.Seed(time.Now().UnixNano())
-	pc.Position = geometry.Position{
-		SectorID: sec.ID,
-		Coord:    geometry.Vec3{X: sec.Dim.X * rand.Float64(), Y: sec.Dim.Y * rand.Float64(), Z: sec.Dim.Z * rand.Float64()},
-	}
+	// #Assign pc position at spawn and set pc.
+	pc.Position = sp.Position
 	if err := h.EntityPCStore.SetPC(pc, tok.Account); err != nil {
 		logger.Error().Err(err).Msg("failed to create pc")
 		http.Error(w, err.Error(), http.StatusBadRequest)

@@ -17,6 +17,8 @@ const (
 
 	pcNameMove = "test_move"
 	pcTypeMove = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnMove = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // Move :
@@ -37,7 +39,7 @@ func Move(as *auth.Service, cs *client.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_move")
 	}
-	if err := as.CreatePC(tok.ID, pcNameMove, pcTypeMove); err != nil {
+	if err := as.CreatePC(tok.ID, pcNameMove, pcTypeMove, pcSpawnMove); err != nil {
 		return errors.Wrap(err, "case_move")
 	}
 	pcs, err := as.ListPC(tok.ID)

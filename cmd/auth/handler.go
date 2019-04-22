@@ -25,12 +25,12 @@ type handler struct {
 	EntityPCStore          entity.PCStore
 	EntityPCLeftStore      entity.PCLeftStore
 	EntityPermissionStore  entity.PermissionStore
+	EntitySpawnStore       entity.SpawnStore
 	EntityTemplateStore    entity.TemplateStore
 
 	EventQStore         event.QStore
 	InfraSyncStore      infra.SyncStore
 	SectorEntitiesStore sector.EntitiesStore
-	SectorStarterStore  sector.StarterStore
 	SectorStore         sector.Store
 
 	AbilityService        ability.Service

@@ -16,7 +16,7 @@ func (s *Service) Entity(es []entity.E) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post("https://localhost:8081/entity", "application/json", bytes.NewReader(raw))
+	resp, err := http.Post(s.url+"/entity", "application/json", bytes.NewReader(raw))
 	if err != nil {
 		return err
 	}

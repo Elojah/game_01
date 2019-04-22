@@ -16,7 +16,7 @@ func (s *Service) Inventory(ins []entity.Inventory) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post("https://localhost:8081/inventory", "application/json", bytes.NewReader(raw))
+	resp, err := http.Post(s.url+"/inventory", "application/json", bytes.NewReader(raw))
 	if err != nil {
 		return err
 	}

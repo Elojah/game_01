@@ -33,7 +33,6 @@ type handler struct {
 
 	SectorStore         sector.Store
 	SectorEntitiesStore sector.EntitiesStore
-	SectorStarterStore  sector.StarterStore
 
 	srv *http.Server
 }
@@ -57,7 +56,6 @@ func (h *handler) Dial(c Config) error {
 
 	mux.HandleFunc("/sector", h.sector)
 	mux.HandleFunc("/sector/entities", h.sectorEntities)
-	mux.HandleFunc("/sector/starter", h.sectorStarter)
 
 	mux.HandleFunc("/sequencer", h.sequencer)
 

@@ -7,7 +7,6 @@ import (
 
 var _ sector.Store = (*Store)(nil)
 var _ sector.EntitiesStore = (*Store)(nil)
-var _ sector.StarterStore = (*Store)(nil)
 
 // Store implements token and entity.
 type Store struct {

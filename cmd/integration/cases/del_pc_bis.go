@@ -13,6 +13,8 @@ const (
 
 	pcNameDelPCBis = "test_del_pc_bis"
 	pcTypeDelPCBis = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnDelPCBis = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // DelPCBis :
@@ -33,7 +35,7 @@ func DelPCBis(s *auth.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_del_pc_bis")
 	}
-	if err := s.CreatePC(tok.ID, pcNameDelPCBis, pcTypeDelPCBis); err != nil {
+	if err := s.CreatePC(tok.ID, pcNameDelPCBis, pcTypeDelPCBis, pcSpawnDelPCBis); err != nil {
 		return errors.Wrap(err, "case_del_pc_bis")
 	}
 	pcs, err := s.ListPC(tok.ID)

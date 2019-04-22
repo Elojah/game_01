@@ -25,6 +25,8 @@ const (
 	pcNameCast1   = "test_cast_1"
 
 	pcTypeCast = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnCast = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // Cast :
@@ -62,7 +64,7 @@ func Cast(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_cast")
 	}
-	if err := as.CreatePC(tok0.ID, pcNameCast0, pcTypeCast); err != nil {
+	if err := as.CreatePC(tok0.ID, pcNameCast0, pcTypeCast, pcSpawnCast); err != nil {
 		return errors.Wrap(err, "case_cast")
 	}
 	pcs0, err := as.ListPC(tok0.ID)
@@ -82,7 +84,7 @@ func Cast(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_cast")
 	}
-	if err := as.CreatePC(tok1.ID, pcNameCast1, pcTypeCast); err != nil {
+	if err := as.CreatePC(tok1.ID, pcNameCast1, pcTypeCast, pcSpawnCast); err != nil {
 		return errors.Wrap(err, "case_cast")
 	}
 	pcs1, err := as.ListPC(tok1.ID)

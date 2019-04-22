@@ -16,7 +16,7 @@ func (s *Service) Item(its []item.I) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post("https://localhost:8081/item", "application/json", bytes.NewReader(raw))
+	resp, err := http.Post(s.url+"/item", "application/json", bytes.NewReader(raw))
 	if err != nil {
 		return err
 	}

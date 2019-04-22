@@ -70,7 +70,6 @@ func run(prog string, filename string) {
 		},
 		SectorStore:         sectorStore,
 		SectorEntitiesStore: sectorStore,
-		SectorStarterStore:  sectorStore,
 	}
 	hl := h.NewLauncher(Namespaces{
 		Tool: "tool",

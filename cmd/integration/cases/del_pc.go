@@ -11,6 +11,8 @@ const (
 
 	pcNameDelPC = "test_del_pc"
 	pcTypeDelPC = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnDelPC = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // DelPC :
@@ -29,7 +31,7 @@ func DelPC(s *auth.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_del_pc")
 	}
-	if err := s.CreatePC(tok.ID, pcNameDelPC, pcTypeDelPC); err != nil {
+	if err := s.CreatePC(tok.ID, pcNameDelPC, pcTypeDelPC, pcSpawnDelPC); err != nil {
 		return errors.Wrap(err, "case_del_pc")
 	}
 	pcs, err := s.ListPC(tok.ID)

@@ -21,7 +21,7 @@ func (s *Service) EntityMove(id gulid.ID, pos geometry.Position) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post("https://localhost:8081/entity/move", "application/json", bytes.NewReader(raw))
+	resp, err := http.Post(s.url+"/entity/move", "application/json", bytes.NewReader(raw))
 	if err != nil {
 		return err
 	}

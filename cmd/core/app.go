@@ -18,7 +18,7 @@ import (
 type app struct {
 	AbilityStore         ability.Store
 	AbilityTemplateStore ability.TemplateStore
-	ability.FeedbackStore
+	AbilityFeedbackStore ability.FeedbackStore
 
 	account.TokenStore
 

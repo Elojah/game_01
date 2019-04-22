@@ -16,7 +16,7 @@ func (s *Service) Loot(ids []gulid.ID) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.Post("https://localhost:8081/loot", "application/json", bytes.NewReader(raw))
+	resp, err := http.Post(s.url+"/loot", "application/json", bytes.NewReader(raw))
 	if err != nil {
 		return err
 	}

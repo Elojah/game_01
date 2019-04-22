@@ -19,6 +19,8 @@ const (
 
 	pcNameMoveSector = "test_move_sector"
 	pcTypeMoveSector = "01CE3J5ASXJSVC405QTES4M221" // mesmerist
+
+	pcSpawnMoveSector = "01D6WJF3XF8ADHAGASDR6PW12P"
 )
 
 // MoveSector :
@@ -40,7 +42,7 @@ func MoveSector(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	if err != nil {
 		return errors.Wrap(err, "case_move_sector")
 	}
-	if err := as.CreatePC(tok.ID, pcNameMoveSector, pcTypeMoveSector); err != nil {
+	if err := as.CreatePC(tok.ID, pcNameMoveSector, pcTypeMoveSector, pcSpawnMoveSector); err != nil {
 		return errors.Wrap(err, "case_move_sector")
 	}
 	pcs, err := as.ListPC(tok.ID)
