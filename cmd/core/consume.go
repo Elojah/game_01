@@ -32,7 +32,7 @@ func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve source inventory
-	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
+	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "consume source")
 	}
@@ -149,7 +149,7 @@ func (a *app) ConsumeFeedback(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve source inventory
-	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
+	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "consume feedback")
 	}
@@ -172,7 +172,7 @@ func (a *app) ConsumeFeedback(id gulid.ID, e event.E) error {
 
 	// #Create new inventory
 	sourceInventory.ID = gulid.NewID()
-	if err := a.EntityInventoryStore.SetInventory(sourceInventory); err != nil {
+	if err := a.EntityInventoryService.SetMR(source.ID, sourceInventory); err != nil {
 		return errors.Wrap(err, "consume feedback")
 	}
 

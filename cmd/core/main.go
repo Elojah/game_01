@@ -66,7 +66,10 @@ func run(prog string, filename string) {
 		EntityStore:           entityLRUStore,
 		EntityTemplateStore:   entityStore,
 		EntityPermissionStore: entityStore,
-		EntityInventoryStore:  entityLRUStore,
+		EntityInventoryService: &entitysvc.InventoryService{
+			EntityInventoryStore:   entityLRUStore,
+			EntityMRInventoryStore: entityStore,
+		},
 		EntityPermissionService: entitysvc.PermissionService{
 			EntityPermissionStore: entityStore,
 		},

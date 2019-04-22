@@ -22,12 +22,12 @@ type app struct {
 
 	account.TokenStore
 
-	EntityInventoryStore    entity.InventoryStore
 	EntityPermissionService entity.PermissionService
 	EntityPermissionStore   entity.PermissionStore
 	EntitySpawnStore        entity.SpawnStore
 	EntityStore             entity.Store
 	EntityTemplateStore     entity.TemplateStore
+	EntityInventoryService  entity.InventoryService
 
 	EventQStore         event.QStore
 	EventStore          event.Store

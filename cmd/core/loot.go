@@ -38,7 +38,7 @@ func (a *app) LootSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve source inventory to check if has a free spot
-	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
+	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot source")
 	}
@@ -79,7 +79,7 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve target inventory
-	targetInventory, err := a.EntityInventoryStore.GetInventory(target.InventoryID)
+	targetInventory, err := a.EntityInventoryService.Get(target.InventoryID, target.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot target")
 	}
@@ -117,7 +117,7 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 
 	// Create new inventory
 	targetInventory.ID = gulid.NewID()
-	if err := a.EntityInventoryStore.SetInventory(targetInventory); err != nil {
+	if err := a.EntityInventoryService.SetMR(target.ID, targetInventory); err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
@@ -155,7 +155,7 @@ func (a *app) LootFeedback(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve source inventory
-	sourceInventory, err := a.EntityInventoryStore.GetInventory(source.InventoryID)
+	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
@@ -173,7 +173,7 @@ func (a *app) LootFeedback(id gulid.ID, e event.E) error {
 
 	// #Create new inventory
 	sourceInventory.ID = gulid.NewID()
-	if err := a.EntityInventoryStore.SetInventory(sourceInventory); err != nil {
+	if err := a.EntityInventoryService.SetMR(source.ID, sourceInventory); err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
 
