@@ -19,7 +19,7 @@
 		"db" : 0
 	},
 	"redis-lru": {
-		"addr" : "127.0.0.1:6379",
+		"addr" : "127.0.0.1:6380",
 		"password" : "secret",
 		"db" : 0
 	}

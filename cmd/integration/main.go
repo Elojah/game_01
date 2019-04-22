@@ -114,7 +114,6 @@ func main() {
 
 	clientService := client.NewService(laClient)
 	if err := cases.Move(authService, clientService); err != nil {
-		la.Consume(500)
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
@@ -150,8 +149,6 @@ func main() {
 	}
 	log.Info().Msg("case consume_cast ok")
 	if err := cases.Spawn(authService, clientService, toolService); err != nil {
-		laSync.Consume(500)
-		laClient.Consume(500)
 		log.Error().Err(err).Msg("case failure")
 		return
 	}
