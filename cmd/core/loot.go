@@ -123,7 +123,7 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 
 	target.InventoryID = targetInventory.ID
 	// Set new inventory to target
-	if err := a.EntityStore.SetEntity(target, ts); err != nil {
+	if err := a.EntityStore.SetEntity(target, ts+1); err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
@@ -179,5 +179,5 @@ func (a *app) LootFeedback(id gulid.ID, e event.E) error {
 
 	// Set new inventory
 	source.InventoryID = sourceInventory.ID
-	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "loot feedback")
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts+1), "loot feedback")
 }

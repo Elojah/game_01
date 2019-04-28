@@ -151,7 +151,7 @@ func CastSector(as *auth.Service, cs *client.Service, ts *tool.Service) error {
 	}
 
 	// Check entity target took damage
-	_, err = cs.GetStateAt(ent1.ID, 100, func(actual entity.E) bool {
+	_, err = cs.GetStateAt(ent1.ID, 200, func(actual entity.E) bool {
 		return actual.HP == 150-30
 	})
 	if err != nil {

@@ -21,13 +21,14 @@ func (s *Store) SetEntity(e entity.E, ts uint64) error {
 	if err != nil {
 		return errors.Wrapf(err, "set entity %s at %d", e.ID.String(), ts)
 	}
-	return errors.Wrapf(s.ZAddNX(
+	err = errors.Wrapf(s.ZAddNX(
 		entityKey+e.ID.String(),
 		redis.Z{
 			Score:  float64(ts),
 			Member: raw,
 		},
 	).Err(), "set entity %s at %d", e.ID.String(), ts)
+	return err
 }
 
 // GetEntity retrieves entity in Redis using ZRevRangeByScore.

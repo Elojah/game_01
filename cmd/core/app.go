@@ -158,7 +158,7 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 		Str("core", a.id.String()).
 		Str("sequencer", id.String()).
 		Str("event", e.ID.String()).
-		Uint64("ts", id.Time()).
+		Uint64("ts", e.ID.Time()).
 		Str("action", e.Action.String()).
 		Logger()
 

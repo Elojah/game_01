@@ -99,7 +99,7 @@ func (a *app) PerformSource(id gulid.ID, e event.E) error {
 
 	// #Remove cast state from source
 	source.Cast = nil
-	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "perform source")
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts+1), "perform source")
 }
 
 func (a *app) PerformTarget(id gulid.ID, e event.E) error {
@@ -182,7 +182,7 @@ func (a *app) PerformTarget(id gulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state.
-	if err := a.EntityStore.SetEntity(target, ts); err != nil {
+	if err := a.EntityStore.SetEntity(target, ts+1); err != nil {
 		return errors.Wrapf(err, "perform target")
 	}
 
@@ -230,5 +230,5 @@ func (a *app) PerformFeedback(id gulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state.
-	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "perform feedback")
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts+1), "perform feedback")
 }

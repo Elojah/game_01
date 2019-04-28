@@ -178,5 +178,5 @@ func (a *app) ConsumeFeedback(id gulid.ID, e event.E) error {
 
 	// Set new inventory
 	source.InventoryID = sourceInventory.ID
-	return errors.Wrap(a.EntityStore.SetEntity(source, ts), "consume feedback")
+	return errors.Wrap(a.EntityStore.SetEntity(source, ts+1), "consume feedback")
 }

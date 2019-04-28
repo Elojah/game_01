@@ -171,7 +171,7 @@ func Spawn(as *auth.Service, cs *client.Service, ts *tool.Service) error { //nol
 	}
 	spawn := spawns[0]
 
-	// Check entity target took respawned
+	// Check entity target respawned
 	_, err = cs.GetStateAt(ent1.ID, 500, func(actual entity.E) bool {
 		return actual.Dead == false &&
 			actual.Position.SectorID.Compare(spawn.Position.SectorID) == 0 &&

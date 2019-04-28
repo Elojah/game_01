@@ -39,5 +39,5 @@ func (a *app) Spawn(id gulid.ID, e event.E) error {
 	target.Dead = false
 
 	// #Set entity new state.
-	return errors.Wrap(a.EntityStore.SetEntity(target, ts), "spawn")
+	return errors.Wrap(a.EntityStore.SetEntity(target, ts+1), "spawn")
 }

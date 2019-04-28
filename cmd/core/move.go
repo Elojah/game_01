@@ -33,5 +33,5 @@ func (a *app) MoveTarget(id ulid.ID, e event.E) error {
 		return errors.Wrap(err, "move target")
 	}
 
-	return errors.Wrap(a.EntityStore.SetEntity(target, ts), "move target")
+	return errors.Wrap(a.EntityStore.SetEntity(target, ts+1), "move target")
 }

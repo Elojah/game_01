@@ -76,80 +76,96 @@ func main() {
 	log.Info().Msg("static ok")
 
 	authService := auth.NewService("https://localhost:8080")
-	if err := cases.Subscribe(authService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case subscribe ok")
-	if err := cases.Sign(authService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case sign ok")
-	if err := cases.SignBis(authService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case sign_bis ok")
-	if err := cases.CreatePC(authService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case create_pc ok")
-	if err := cases.ConnectPC(authService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case connect_pc ok")
-	if err := cases.DelPC(authService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case del_pc ok")
-	if err := cases.DelPCBis(authService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case del_pc_bis ok")
-
 	clientService := client.NewService(laClient)
-	if err := cases.Move(authService, clientService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case move ok")
-	if err := cases.MoveSector(authService, clientService, toolService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case move_sector ok")
-	if err := cases.Cast(authService, clientService, toolService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case cast ok")
-	if err := cases.CastSector(authService, clientService, toolService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case cast_sector ok")
-	if err := cases.Loot(authService, clientService, toolService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case loot ok")
-	if err := cases.Consume(authService, clientService, toolService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case consume ok")
-	if err := cases.ConsumeCast(authService, clientService, toolService); err != nil {
-		log.Error().Err(err).Msg("case failure")
-		return
-	}
-	log.Info().Msg("case consume_cast ok")
+
+	// if err := cases.Subscribe(authService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case subscribe ok")
+
+	// if err := cases.Sign(authService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case sign ok")
+
+	// if err := cases.SignBis(authService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case sign_bis ok")
+
+	// if err := cases.CreatePC(authService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case create_pc ok")
+
+	// if err := cases.ConnectPC(authService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case connect_pc ok")
+
+	// if err := cases.DelPC(authService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case del_pc ok")
+
+	// if err := cases.DelPCBis(authService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case del_pc_bis ok")
+
+	// if err := cases.Move(authService, clientService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case move ok")
+
+	// if err := cases.MoveSector(authService, clientService, toolService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case move_sector ok")
+
+	// if err := cases.Cast(authService, clientService, toolService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case cast ok")
+
+	// if err := cases.CastSector(authService, clientService, toolService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case cast_sector ok")
+
+	// if err := cases.Loot(authService, clientService, toolService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case loot ok")
+
+	// if err := cases.Consume(authService, clientService, toolService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case consume ok")
+
+	// if err := cases.ConsumeCast(authService, clientService, toolService); err != nil {
+	// 	log.Error().Err(err).Msg("case failure")
+	// 	return
+	// }
+	// log.Info().Msg("case consume_cast ok")
+
 	if err := cases.Spawn(authService, clientService, toolService); err != nil {
-		laClient.Consume(500)
+		// laSync.Consume(1000)
+		la.Consume(500)
+		// laClient.Consume(500)
 		log.Error().Err(err).Msg("case failure")
 		return
 	}

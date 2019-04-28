@@ -101,7 +101,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Set entity new state with decreased MP and casting up.
 	source.CastAbility(ab, ts)
-	if err := a.EntityStore.SetEntity(source, ts); err != nil {
+	if err := a.EntityStore.SetEntity(source, ts+1); err != nil {
 		return errors.Wrap(err, "cast source")
 	}
 
