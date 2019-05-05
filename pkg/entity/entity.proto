@@ -32,4 +32,7 @@ message E {
 	bytes InventoryID          = 12 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 
 	bytes SpawnID              = 13 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
+
+	// State is a technical requirement for redis set, each "state" of entity must be unique.
+	bytes State                = 14 [(gogoproto.customtype) = "github.com/elojah/game_01/pkg/ulid.ID", (gogoproto.nullable) = false];
 }

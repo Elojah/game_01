@@ -8,7 +8,7 @@ import (
 
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
-	"github.com/elojah/game_01/pkg/ulid"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 const (
@@ -17,22 +17,22 @@ const (
 
 // SetEntity implemented with redis.
 func (s *Store) SetEntity(e entity.E, ts uint64) error {
+	e.State = gulid.NewID()
 	raw, err := e.Marshal()
 	if err != nil {
 		return errors.Wrapf(err, "set entity %s at %d", e.ID.String(), ts)
 	}
-	err = errors.Wrapf(s.ZAddNX(
+	return errors.Wrapf(s.ZAddNX(
 		entityKey+e.ID.String(),
 		redis.Z{
 			Score:  float64(ts),
 			Member: raw,
 		},
 	).Err(), "set entity %s at %d", e.ID.String(), ts)
-	return err
 }
 
 // GetEntity retrieves entity in Redis using ZRevRangeByScore.
-func (s *Store) GetEntity(id ulid.ID, max uint64) (entity.E, error) {
+func (s *Store) GetEntity(id gulid.ID, max uint64) (entity.E, error) {
 	vals, err := s.ZRevRangeByScore(
 		entityKey+id.String(),
 		redis.ZRangeBy{
@@ -60,12 +60,12 @@ func (s *Store) GetEntity(id ulid.ID, max uint64) (entity.E, error) {
 }
 
 // DelEntity deletes all entity states in redis.
-func (s *Store) DelEntity(id ulid.ID) error {
+func (s *Store) DelEntity(id gulid.ID) error {
 	return errors.Wrapf(s.Del(entityKey+id.String()).Err(), "del entity %s", id.String())
 }
 
 // DelEntityByTS deletes entity states in redis from minTS to +inf.
-func (s *Store) DelEntityByTS(id ulid.ID, min uint64) error {
+func (s *Store) DelEntityByTS(id gulid.ID, min uint64) error {
 	return errors.Wrapf(s.ZRemRangeByScore(
 		entityKey+id.String(),
 		strconv.FormatUint(min, 10),
