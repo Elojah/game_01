@@ -8,8 +8,7 @@
 
 > GAME_01 is a multi services scalable MMORPG server
 
-GAME_01 is a set of services and tools to build a MMORPG server the easiest way possible
-*UE4 integration in progress*
+GAME_01 wraps all backend services required for game_01.
 
 ## Installation
 
@@ -24,12 +23,7 @@ go get -u github.com/elojah/game_01
 ```sh
 # Start services
 docker-compose -d
-make vendor
-make sync && bin/game_sync configs/config_sync.json
-make core && bin/game_core configs/config_core.json
-make api && bin/game_api configs/config_api.json
-make auth && bin/game_auth configs/config_auth.json
-make tool && bin/game_tool configs/config_tool.json
+# TODO run integration
 ```
 
 ## Usage example
@@ -47,12 +41,12 @@ See [trello](https://trello.com/b/GX9gz3Js/game01) for more informations.
 
 ## How it works
 ```
-client <-> api -> core -> redis-lru
-redis-lru -> sync -> client
+|client| <-udp with ack-> |api| -redis pubsub-> |core| -> |redis|
+|redis| -ticker-> |sync| -udp without ack-> |client|
 ```
-Authentication and char creation/connection is handled by auth and associate a session token at each signin.
-Revoker regularly revokes unused tokens.
-GAME_01 also comes with a Tool API to create world data like entities/abilities/sectors.
+Authentication and char creation/connection is handled by `auth` and associate a session token at each signin.
+`revoker` regularly revokes unused tokens.
+GAME_01 also comes with a `tool` API to create world data like entities/abilities/sectors.
 
 ## Code architecture
 ```
@@ -63,6 +57,7 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 |     |_auth #HTTPS JSON API for signin/connect
 |     |_client #client/server to communicate with API and JSON serialize
 |     |_core #order and apply game events
+|     |_integration #test integration runner
 |     |_revoker #revoke unused tokens
 |     |_sync #send entity data to clients
 |     |_tool #HTTPS JSON API for world data. Must be private.
@@ -75,14 +70,6 @@ GAME_01 also comes with a Tool API to create world data like entities/abilities/
 |     |_ability_ # domain
 |     |         |_svc # service/usecases
 |     |         |_srg # storage/database
-|     |
-|     |_account
-|     |_entity
-|     |_event
-|     |_geometry
-|     |_infra
-|     |_sector
-|     |_ulid
 |
 |_static #example template files for tool
 |
