@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package entity;
+
+option (gogoproto.testgen_all)  = true;
+option (gogoproto.benchgen_all) = true;
+option (gogoproto.populate_all) = true;
+
+import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "entity.proto";
+
+message DTO {
+	repeated E Entities = 1 [(gogoproto.nullable) = false];
+}

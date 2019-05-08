@@ -47,7 +47,7 @@ func run(prog string, filename string) {
 		Handler: "handler",
 	}, "handler")
 	launchers.Add(hl)
-	h.M.Handler = h.handleEntity
+	h.M.Handler = h.handleDTO
 
 	ha := handler{
 		M: &ma,

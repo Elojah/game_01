@@ -10,6 +10,7 @@ import (
 type Config struct {
 	ID         ulid.ID `json:"id"`
 	TickRate   uint32  `json:"tick_rate"`
+	BatchSize  uint32  `json:"batch_size"`
 	EntityPort uint    `json:"entity_port"`
 }
 
@@ -35,6 +36,16 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("key tick_rate invalid. must be numeric")
 	}
 	c.TickRate = uint32(cTickRateFloat64)
+
+	cBatchSize, ok := fconf["batch_size"]
+	if !ok {
+		return errors.New("missing key batch_size")
+	}
+	cBatchSizeFloat64, ok := cBatchSize.(float64)
+	if !ok {
+		return errors.New("key batch_size invalid. must be numeric")
+	}
+	c.BatchSize = uint32(cBatchSizeFloat64)
 
 	cEntityPort, ok := fconf["entity_port"]
 	if !ok {

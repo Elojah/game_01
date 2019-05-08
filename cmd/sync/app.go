@@ -36,12 +36,14 @@ type app struct {
 
 	port      uint
 	tickRate  uint32
+	batchSize uint32
 	recurrers map[ulid.ID]*Recurrer
 }
 
 func (a *app) Dial(c Config) error {
 	a.port = c.EntityPort
 	a.tickRate = c.TickRate
+	a.batchSize = c.BatchSize
 	a.id = c.ID
 	go a.Run()
 	return nil
@@ -117,13 +119,12 @@ func (a *app) Recurrer(msg *infra.Message) {
 	}
 	addr.Port = int(a.port)
 	logger = logger.With().Str("address", addr.String()).Logger()
-	rec := NewRecurrer(r, a.tickRate, func(e entity.E) {
-		raw, err := e.Marshal()
+	rec := NewRecurrer(r, a.tickRate, a.batchSize, func(dto entity.DTO) {
+		raw, err := dto.Marshal()
 		if err != nil {
 			logger.Error().Err(err).Msg("failed to marshal entity")
 			return
 		}
-		logger.Info().Str("entity", e.ID.String()).Msg("send entity")
 		a.Send(raw, addr)
 	})
 	rec.EntityStore = a.EntityStore

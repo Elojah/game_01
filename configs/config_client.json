@@ -7,7 +7,7 @@
 	},
 	"entity": {
 		"addresses": ["127.0.0.1:42000"],
-		"middlewares": [],
+		"middlewares": ["snappy"],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},

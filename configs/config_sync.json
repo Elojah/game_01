@@ -2,16 +2,11 @@
 	"sync": {
 		"id": "01CGBKPGMC4TG961QMQ71TEV2P",
 		"tick_rate": 10,
+		"batch_size": 200,
 		"entity_port": 42000
 	},
-	"server": {
-		"addresses": ["127.0.0.1:3401"],
-		"middlewares": [],
-		"packet_size": 1024,
-		"server_protocol": "udp"
-	},
 	"client": {
-		"middlewares": [],
+		"middlewares": ["snappy"],
 		"packet_size": 1024
 	},
 	"redis": {

@@ -23,19 +23,21 @@ type Recurrer struct {
 	id       gulid.ID
 	entityID gulid.ID
 
-	ticker   *time.Ticker
-	callback func(entity.E)
+	ticker    *time.Ticker
+	batchSize uint32
+	callback  func(entity.DTO)
 }
 
 // NewRecurrer returns a new recurrer which sends entity data associated to id to addr, tick times per second.
-func NewRecurrer(rec infra.Recurrer, tick uint32, callback func(entity.E)) *Recurrer {
+func NewRecurrer(rec infra.Recurrer, tick uint32, batchSize uint32, callback func(entity.DTO)) *Recurrer {
 	return &Recurrer{
 		logger:   log.With().Str("recurrer", rec.TokenID.String()).Logger(),
 		id:       rec.TokenID,
 		entityID: rec.EntityID,
 		callback: callback,
 
-		ticker: time.NewTicker(time.Second / time.Duration(tick)),
+		ticker:    time.NewTicker(time.Second / time.Duration(tick)),
+		batchSize: batchSize,
 	}
 }
 
@@ -72,17 +74,28 @@ func (r *Recurrer) sendSector(sectorID gulid.ID, t time.Time) {
 		r.logger.Error().Err(err).Str("sector", sectorID.String()).Msg("send sector")
 		return
 	}
-	for _, entityID := range se.EntityIDs {
-		r.sendEntity(entityID, t)
-	}
-}
 
-func (r *Recurrer) sendEntity(entityID gulid.ID, t time.Time) {
-	// TODO Use t-token ping instead of t.
-	e, err := r.EntityStore.GetEntity(entityID, ulid.Timestamp(t))
-	if err != nil {
-		r.logger.Error().Err(err).Str("entity", entityID.String()).Msg("send entity")
-		return
+	dto := entity.DTO{Entities: make([]entity.E, r.batchSize)}
+	var i uint32
+	for _, entityID := range se.EntityIDs {
+		var err error
+		dto.Entities[i], err = r.EntityStore.GetEntity(entityID, ulid.Timestamp(t))
+		if err != nil {
+			// Soft error
+			r.logger.Error().Err(err).Str("entity", entityID.String()).Msg("send entity")
+			continue
+		}
+		i++
+		// if batch size is complete, send it and reset current counter
+		if i == r.batchSize {
+			r.callback(dto)
+			i = 0
+		}
 	}
-	r.callback(e)
+	// if there is still unsend entities, send them
+	if i != 0 {
+		// Reduce entities size to remove empty or previous data.
+		dto.Entities = append(dto.Entities[:i])
+		r.callback(dto)
+	}
 }
