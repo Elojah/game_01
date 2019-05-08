@@ -16,3 +16,92 @@ services:
       - ./docker/redis/redis-lru.conf:/usr/local/etc/redis/redis.conf
     ports:
       - 6380:6379
+
+  # API
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    ports:
+      - 3400:3400
+    links:
+      - redis
+      - redis-lru
+
+  # Auth
+  auth:
+    build:
+      context: .
+      dockerfile: docker/auth/Dockerfile
+    ports:
+      - 8080:8080
+    links:
+      - redis
+      - redis-lru
+
+  # Client
+  client:
+    build:
+      context: .
+      dockerfile: docker/client/Dockerfile
+    ports:
+      - 42000:42000
+      - 42001:42001
+    links:
+      - redis
+      - redis-lru
+
+  # Core
+  core:
+    build:
+      context: .
+      dockerfile: docker/core/Dockerfile
+    ports:
+      - 8080:8080
+    links:
+      - redis
+      - redis-lru
+
+  # Integration
+  integration:
+    build:
+      context: .
+      dockerfile: docker/integration/Dockerfile
+    ports:
+      - 8080:8080
+    links:
+      - redis
+      - redis-lru
+
+  # Revoker
+  revoker:
+    build:
+      context: .
+      dockerfile: docker/revoker/Dockerfile
+    ports:
+      - 8080:8080
+    links:
+      - redis
+      - redis-lru
+
+  # Sync
+  sync:
+    build:
+      context: .
+      dockerfile: docker/sync/Dockerfile
+    ports:
+      - 8080:8080
+    links:
+      - redis
+      - redis-lru
+
+  # Tool
+  tool:
+    build:
+      context: .
+      dockerfile: docker/auth/Dockerfile
+    ports:
+      - 8080:8080
+    links:
+      - redis
+      - redis-lru

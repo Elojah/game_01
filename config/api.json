@@ -4,7 +4,7 @@
 		"ack_port": 42001
 	},
 	"server": {
-		"addresses": ["127.0.0.1:3400"],
+		"addresses": ["0.0.0.0:3400"],
 		"middlewares": [],
 		"packet_size": 1024,
 		"server_protocol": "udp"
@@ -14,12 +14,12 @@
 		"packet_size": 1024
 	},
 	"redis": {
-		"addr" : "127.0.0.1:6379",
+		"addr" : "redis:6379",
 		"password" : "secret",
 		"db" : 0
 	},
 	"redis-lru": {
-		"addr" : "127.0.0.1:6380",
+		"addr" : "redis-lru:6380",
 		"password" : "secret",
 		"db" : 0
 	}
