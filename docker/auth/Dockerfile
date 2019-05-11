@@ -9,5 +9,4 @@ RUN env GOARCH=386 GOOS=linux CGO_ENABLED=0 make auth
 FROM alpine
 WORKDIR /app
 COPY --from=builder /auth/bin/game_auth .
-COPY --from=builder /auth/config/auth.json .
 ENTRYPOINT ["/app/game_auth", "/app/auth.json"]

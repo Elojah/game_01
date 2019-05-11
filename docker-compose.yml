@@ -22,6 +22,8 @@ services:
     build:
       context: .
       dockerfile: docker/api/Dockerfile
+    volumes:
+      - ./config/api.json:/app/api.json
     ports:
       - 3400:3400
     links:
@@ -33,6 +35,8 @@ services:
     build:
       context: .
       dockerfile: docker/auth/Dockerfile
+    volumes:
+      - ./config/auth.json:/app/auth.json
     ports:
       - 8080:8080
     links:
@@ -44,6 +48,8 @@ services:
     build:
       context: .
       dockerfile: docker/client/Dockerfile
+    volumes:
+      - ./config/client.json:/app/client.json
     ports:
       - 42000:42000
       - 42001:42001
@@ -56,6 +62,8 @@ services:
     build:
       context: .
       dockerfile: docker/core/Dockerfile
+    volumes:
+      - ./config/core.json:/app/core.json
     ports:
       - 8080:8080
     links:
@@ -67,6 +75,8 @@ services:
     build:
       context: .
       dockerfile: docker/integration/Dockerfile
+    volumes:
+      - ./config/integration.json:/app/integration.json
     ports:
       - 8080:8080
     links:
@@ -78,6 +88,8 @@ services:
     build:
       context: .
       dockerfile: docker/revoker/Dockerfile
+    volumes:
+      - ./config/revoker.json:/app/revoker.json
     ports:
       - 8080:8080
     links:
@@ -89,6 +101,8 @@ services:
     build:
       context: .
       dockerfile: docker/sync/Dockerfile
+    volumes:
+      - ./config/sync.json:/app/sync.json
     ports:
       - 8080:8080
     links:
@@ -99,7 +113,9 @@ services:
   tool:
     build:
       context: .
-      dockerfile: docker/auth/Dockerfile
+      dockerfile: docker/tool/Dockerfile
+    volumes:
+      - ./config/tool.json:/app/tool.json
     ports:
       - 8080:8080
     links:
