@@ -81,18 +81,6 @@ services:
       - redis
       - redis-lru
 
-  # Integration
-  integration:
-    build:
-      context: .
-      dockerfile: docker/integration/Dockerfile
-    links:
-      - api
-      - client
-      - core
-      - sync
-      - tool
-
   # Revoker
   revoker:
     build:
@@ -111,8 +99,6 @@ services:
       dockerfile: docker/sync/Dockerfile
     volumes:
       - ./config/sync.json:/app/sync.json
-    ports:
-      - 8080:8080
     links:
       - redis
       - redis-lru
@@ -124,6 +110,8 @@ services:
       dockerfile: docker/tool/Dockerfile
     volumes:
       - ./config/tool.json:/app/tool.json
+      - ./config/server.crt:/app/server.crt
+      - ./config/server.key:/app/server.key
     expose:
       - 8081
     ports:
