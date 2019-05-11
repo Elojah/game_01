@@ -23,11 +23,11 @@ func main() {
 	la := loganalyzer.NewLA()
 
 	cmds := [][]string{
-		{"core", "./bin/game_core", "./configs/config_core.json"},
-		{"api", "./bin/game_api", "./configs/config_api.json"},
-		{"auth", "./bin/game_auth", "./configs/config_auth.json"},
-		{"revoker", "./bin/game_revoker", "./configs/config_revoker.json"},
-		{"tool", "./bin/game_tool", "./configs/config_tool.json"},
+		{"core", "./bin/game_core", "./config/core.json"},
+		{"api", "./bin/game_api", "./config/api.json"},
+		{"auth", "./bin/game_auth", "./config/auth.json"},
+		{"revoker", "./bin/game_revoker", "./config/revoker.json"},
+		{"tool", "./bin/game_tool", "./config/tool.json"},
 	}
 
 	defer la.Close()
@@ -43,7 +43,7 @@ func main() {
 	if err := laSync.NewProcess(
 		"sync",
 		"./bin/game_sync",
-		"./configs/config_sync.json",
+		"./config/sync.json",
 	); err != nil {
 		log.Error().Err(err).Msg("failed to start")
 		return
@@ -54,7 +54,7 @@ func main() {
 	if err := laClient.NewProcess(
 		"client",
 		"./bin/game_client",
-		"./configs/config_client.json",
+		"./config/client.json",
 	); err != nil {
 		log.Error().Err(err).Msg("failed to start")
 		return
