@@ -5,7 +5,7 @@
 	},
 	"server": {
 		"addresses": ["0.0.0.0:3400"],
-		"middlewares": [],
+		"middlewares": ["snappy"],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
@@ -19,7 +19,7 @@
 		"db" : 0
 	},
 	"redis-lru": {
-		"addr" : "redis-lru:6380",
+		"addr" : "redis-lru:6379",
 		"password" : "secret",
 		"db" : 0
 	}

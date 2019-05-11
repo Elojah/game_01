@@ -22,24 +22,12 @@ func run(prog string, filename string) {
 
 	launchers := services.Launchers{}
 
+	// Handle entity DTO from sync
 	m := mux.M{}
 	muxl := m.NewLauncher(mux.Namespaces{
 		M: "entity",
 	}, "entity")
 	launchers.Add(muxl)
-
-	ma := mux.M{}
-	mauxl := ma.NewLauncher(mux.Namespaces{
-		M: "ack",
-	}, "ack")
-	launchers.Add(mauxl)
-
-	c := client.C{}
-	cl := c.NewLauncher(client.Namespaces{
-		Client: "client",
-	}, "client")
-	launchers.Add(cl)
-
 	h := handler{
 		M: &m,
 	}
@@ -48,6 +36,13 @@ func run(prog string, filename string) {
 	}, "handler")
 	launchers.Add(hl)
 	h.M.Handler = h.handleDTO
+
+	// Handle ACK from api
+	ma := mux.M{}
+	mauxl := ma.NewLauncher(mux.Namespaces{
+		M: "ack",
+	}, "ack")
+	launchers.Add(mauxl)
 
 	ha := handler{
 		M: &ma,
@@ -58,6 +53,11 @@ func run(prog string, filename string) {
 	launchers.Add(hal)
 	ha.M.Handler = ha.handleACK
 
+	c := client.C{}
+	cl := c.NewLauncher(client.Namespaces{
+		Client: "client",
+	}, "client")
+	launchers.Add(cl)
 	rd := newReader(&c, ha.ACK)
 	rdl := rd.NewLauncher(NamespacesReader{
 		Reader: "reader",

@@ -12,7 +12,7 @@
 		"db": 0
 	},
 	"redis-lru": {
-		"addr": "redis-lru:6380",
+		"addr": "redis-lru:6379",
 		"password": "secret",
 		"db": 0
 	}

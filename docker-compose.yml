@@ -6,6 +6,8 @@ services:
     build: docker/redis
     volumes:
       - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    expose:
+      - 6379
     ports:
       - 6379:6379
 
@@ -14,6 +16,8 @@ services:
     build: docker/redis
     volumes:
       - ./docker/redis/redis-lru.conf:/usr/local/etc/redis/redis.conf
+    expose:
+      - 6379
     ports:
       - 6380:6379
 
@@ -24,6 +28,8 @@ services:
       dockerfile: docker/api/Dockerfile
     volumes:
       - ./config/api.json:/app/api.json
+    expose:
+      - 3400
     ports:
       - 3400:3400
     links:
@@ -37,6 +43,10 @@ services:
       dockerfile: docker/auth/Dockerfile
     volumes:
       - ./config/auth.json:/app/auth.json
+      - ./config/server.crt:/app/server.crt
+      - ./config/server.key:/app/server.key
+    expose:
+      - 8080
     ports:
       - 8080:8080
     links:
@@ -50,12 +60,15 @@ services:
       dockerfile: docker/client/Dockerfile
     volumes:
       - ./config/client.json:/app/client.json
+    expose:
+      - 42000
+      - 42001
     ports:
       - 42000:42000
       - 42001:42001
     links:
-      - redis
-      - redis-lru
+      - api
+      - sync
 
   # Core
   core:
@@ -64,8 +77,6 @@ services:
       dockerfile: docker/core/Dockerfile
     volumes:
       - ./config/core.json:/app/core.json
-    ports:
-      - 8080:8080
     links:
       - redis
       - redis-lru
@@ -75,13 +86,12 @@ services:
     build:
       context: .
       dockerfile: docker/integration/Dockerfile
-    volumes:
-      - ./config/integration.json:/app/integration.json
-    ports:
-      - 8080:8080
     links:
-      - redis
-      - redis-lru
+      - api
+      - client
+      - core
+      - sync
+      - tool
 
   # Revoker
   revoker:
@@ -90,8 +100,6 @@ services:
       dockerfile: docker/revoker/Dockerfile
     volumes:
       - ./config/revoker.json:/app/revoker.json
-    ports:
-      - 8080:8080
     links:
       - redis
       - redis-lru
@@ -116,8 +124,10 @@ services:
       dockerfile: docker/tool/Dockerfile
     volumes:
       - ./config/tool.json:/app/tool.json
+    expose:
+      - 8081
     ports:
-      - 8080:8080
+      - 8081:8081
     links:
       - redis
       - redis-lru
