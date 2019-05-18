@@ -36,69 +36,65 @@ M         = $(shell printf "\033[0;35m▶\033[0m")
 
 all: client auth api core sync revoker tool
 
-# Help
-go-version:
-	$Q echo $(GO)
-
 # Executables
-client:
-	$(info $(M) building executable client…) @ ## Build program binary
+client:  ## Build client binary
+	$(info $(M) building executable client…) @
 	$Q cd cmd/$(CLIENT) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(CLIENT)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(CLIENT)_$(VERSION) bin/$(PACKAGE)_$(CLIENT)
 
-auth:
-	$(info $(M) building executable auth…) @ ## Build program binary
+auth:  ## Build auth binary
+	$(info $(M) building executable auth…) @
 	$Q cd cmd/$(AUTH) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(AUTH)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(AUTH)_$(VERSION) bin/$(PACKAGE)_$(AUTH)
 
-api:
-	$(info $(M) building executable api…) @ ## Build program binary
+api:  ## Build api binary
+	$(info $(M) building executable api…) @
 	$Q cd cmd/$(API) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(API)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(API)_$(VERSION) bin/$(PACKAGE)_$(API)
 
-core:
-	$(info $(M) building executable core…) @ ## Build program binary
+core:  ## Build core binary
+	$(info $(M) building executable core…) @
 	$Q cd cmd/$(CORE) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(CORE)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(CORE)_$(VERSION) bin/$(PACKAGE)_$(CORE)
 
-sync:
-	$(info $(M) building executable sync…) @ ## Build program binary
+sync:  ## Build sync binary
+	$(info $(M) building executable sync…) @
 	$Q cd cmd/$(SYNC) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(SYNC)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(SYNC)_$(VERSION) bin/$(PACKAGE)_$(SYNC)
 
-revoker:
-	$(info $(M) building executable revoker…) @ ## Build program binary
+revoker:  ## Build revoker binary
+	$(info $(M) building executable revoker…) @
 	$Q cd cmd/$(REVOKER) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(REVOKER)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(REVOKER)_$(VERSION) bin/$(PACKAGE)_$(REVOKER)
 
-tool:
-	$(info $(M) building executable tool…) @ ## Build program binary
+tool:  ## Build tool binary
+	$(info $(M) building executable tool…) @
 	$Q cd cmd/$(TOOL) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(TOOL)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(TOOL)_$(VERSION) bin/$(PACKAGE)_$(TOOL)
 
-integration:
-	$(info $(M) building executable integration…) @ ## Build program binary
+integration:  ## Build integration binary
+	$(info $(M) building executable integration…) @
 	$Q cd cmd/$(INTEGRATION) &&  $(GO) build \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
@@ -107,7 +103,7 @@ integration:
 
 # Utils
 .PHONY: proto
-proto:
+proto: ## Generate .proto files
 	$(info $(M) running protobuf…) @
 	$Q cd pkg/ability  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. component.proto
 	$Q cd pkg/ability  && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. ability.proto
@@ -135,54 +131,58 @@ proto:
 	$Q cd pkg/sector   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. items.proto
 	$Q cd pkg/sector   && protoc -I=. -I=$(GOPATH)/src --gogoslick_out=. sector.proto
 
-# Vendor
+# Vendoring
 .PHONY: vendor
-vendor:
+vendor: ## Write dependencies into vendor
 	$(info $(M) running go mod vendor…) @
 	$Q $(GO) mod vendor
 
-# Tidy
 .PHONY: tidy
-tidy:
+tidy: ## Remove unused dependencies and add new required
 	$(info $(M) running go mod tidy…) @
 	$Q $(GO) mod tidy
 
 # Check
-.PHONY: check
+.PHONY: check ## lint + test
 check: vendor lint test
 
 # Lint
 .PHONY: lint
-lint:
+lint: ## Check code respect linter rules
 	$(info $(M) running $(GOLINT)…)
 	$Q $(GOLINT) run
 
 # Test
 .PHONY: test
-test:
+test: ## Run unit tests only
 	$(info $(M) running go test…) @
 	$Q $(GO) test -cover -race -v ./...
 
+
+# Helpers
+go-version: ## Print go version used in this makefile
+	$Q echo $(GO)
+
 .PHONY: fmt
-fmt:
+fmt: ## Format code
 	$(info $(M) running $(GOFMT)…) @
 	$Q $(GOFMT) ./...
 
 .PHONY: doc
-doc:
+doc: ## Generate project documentation
 	$(info $(M) running $(GODOC)…) @
 	$Q $(GODOC) ./...
 
 .PHONY: clean
-clean:
+clean: ## Clean generated binaries
 	$(info $(M) cleaning…)	@ ## Cleanup everything
 	@rm -rf bin/$(PACKAGE)_*
 
+.PHONY: version
+version: ## Print current project version
+	@echo $(VERSION)
+
 .PHONY: help
-help:
+help: ## Print this
 	@grep -E '^[ a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
-
-.PHONY: version
-version:
-	@echo $(VERSION)
