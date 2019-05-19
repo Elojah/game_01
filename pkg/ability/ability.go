@@ -4,7 +4,7 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// Store contains basic operations fo ability A object.
+// Store contains basic operations for ability A object.
 type Store interface {
 	Insert(A, gulid.ID) error
 	Fetch(gulid.ID, gulid.ID) (A, error)

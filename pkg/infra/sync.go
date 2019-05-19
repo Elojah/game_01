@@ -9,9 +9,9 @@ type Sync struct {
 	ID ulid.ID
 }
 
-// SyncStore maps sync data interactions.
+// SyncStore contains basic operations for infra sync object.
 type SyncStore interface {
-	GetRandomSync() (Sync, error)
-	SetSync(Sync) error
-	DelSync(ulid.ID) error
+	InsertSync(Sync) error
+	FetchRandomSync() (Sync, error)
+	RemoveSync(ulid.ID) error
 }

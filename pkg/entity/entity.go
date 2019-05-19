@@ -8,7 +8,7 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// Store contains basic operations fo entity E object.
+// Store contains basic operations for entity E object.
 type Store interface {
 	Insert(E, uint64) error
 	Fetch(gulid.ID, uint64) (E, error)

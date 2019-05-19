@@ -4,16 +4,10 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// TriggerStore set and get triggers.
+// TriggerStore contains basic operations for event trigger object.
 type TriggerStore interface {
-	SetTrigger(Trigger) error
-	GetTrigger(gulid.ID, gulid.ID) (gulid.ID, error)
+	InsertTrigger(Trigger) error
+	FetchTrigger(gulid.ID, gulid.ID) (gulid.ID, error)
 	ListTrigger(gulid.ID) ([]Trigger, error)
-	DelTrigger(gulid.ID, gulid.ID) error
-}
-
-// TriggerService handles trigger event interactions.
-type TriggerService interface {
-	Set(E, gulid.ID) error
-	Cancel(E) error
+	RemoveTrigger(gulid.ID, gulid.ID) error
 }

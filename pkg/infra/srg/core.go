@@ -13,31 +13,31 @@ const (
 	coreKey = "core:"
 )
 
-// GetRandomCore redis implementation.
-func (s *Store) GetRandomCore() (infra.Core, error) {
+// FetchRandomCore redis implementation.
+func (s *Store) FetchRandomCore() (infra.Core, error) {
 	val, err := s.SRandMember(coreKey).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return infra.Core{}, errors.Wrap(err, "get random core")
+			return infra.Core{}, errors.Wrap(err, "fetch random core")
 		}
 		return infra.Core{}, errors.Wrap(
 			gerrors.ErrNotFound{Store: coreKey, Index: "random"},
-			"get random core",
+			"fetch random core",
 		)
 	}
 
 	return infra.Core{ID: ulid.MustParse(val)}, nil
 }
 
-// SetCore redis implementation.
-func (s *Store) SetCore(core infra.Core) error {
+// InsertCore redis implementation.
+func (s *Store) InsertCore(core infra.Core) error {
 	return errors.Wrapf(s.SAdd(
 		coreKey,
 		core.ID.String(),
-	).Err(), "set core %s", core.ID.String())
+	).Err(), "insert core %s", core.ID.String())
 }
 
-// DelCore redis implementation.
-func (s *Store) DelCore(id ulid.ID) error {
-	return errors.Wrapf(s.SRem(coreKey, id.String()).Err(), "del core %s", id.String())
+// RemoveCore redis implementation.
+func (s *Store) RemoveCore(id ulid.ID) error {
+	return errors.Wrapf(s.SRem(coreKey, id.String()).Err(), "remove core %s", id.String())
 }

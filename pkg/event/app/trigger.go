@@ -1,4 +1,4 @@
-package svc
+package app
 
 import (
 	"github.com/pkg/errors"
@@ -9,22 +9,22 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// TriggerService implements set event with trigger interactions
-type TriggerService struct {
-	event.TriggerStore
-	event.Store
+// A implements events usecases.
+type A struct {
 	event.QStore
+	event.Store
+	event.TriggerStore
 }
 
-// Set event if necessary considering trigger update or removal.
-func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
+// Create creates an event if necessary considering trigger update or removal.
+func (app *A) Create(e event.E, entityID gulid.ID) error {
 
 	if e.Trigger.IsZero() {
 		// Set event
-		return errors.Wrapf(s.Store.SetEvent(e, entityID), "set event with trigger")
+		return errors.Wrapf(app.Store.Insert(e, entityID), "create event with trigger")
 	}
 
-	prevID, err := s.TriggerStore.GetTrigger(e.Trigger, entityID)
+	prevID, err := app.TriggerStore.FetchTrigger(e.Trigger, entityID)
 	if err != nil {
 		switch errors.Cause(err).(type) {
 		// Trigger doesn't exist yet so write event+trigger
@@ -34,18 +34,18 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 			if e.Action.Cancel != nil {
 				return errors.Wrapf(gerrors.ErrIneffectiveCancel{
 					TriggerID: e.Trigger.String(),
-				}, "set event with trigger")
+				}, "create event with trigger")
 			}
-			if err := s.Store.SetEvent(e, entityID); err != nil {
-				return errors.Wrapf(err, "set event with trigger")
+			if err := app.Store.Insert(e, entityID); err != nil {
+				return errors.Wrapf(err, "create event with trigger")
 			}
-			return errors.Wrapf(s.TriggerStore.SetTrigger(event.Trigger{
+			return errors.Wrapf(app.TriggerStore.InsertTrigger(event.Trigger{
 				EntityID:      entityID,
 				EventSourceID: e.Trigger,
 				EventTargetID: e.ID,
-			}), "set event with trigger")
+			}), "create event with trigger")
 		default:
-			return errors.Wrapf(err, "set event with trigger")
+			return errors.Wrapf(err, "create event with trigger")
 		}
 	}
 
@@ -53,20 +53,20 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	// In this case we clean previous event and previous trigger
 
 	// Retrieve and delete previous event.
-	prev, err := s.Store.GetEvent(prevID, entityID)
+	prev, err := app.Store.Fetch(prevID, entityID)
 	if err != nil {
-		return errors.Wrapf(err, "set event with trigger")
+		return errors.Wrapf(err, "create event with trigger")
 	}
-	if err := s.Store.DelEvent(prevID, entityID); err != nil {
-		return errors.Wrapf(err, "set event with trigger")
+	if err := app.Store.Remove(prevID, entityID); err != nil {
+		return errors.Wrapf(err, "create event with trigger")
 	}
 	// Delete trigger
-	if err := s.TriggerStore.DelTrigger(e.Trigger, entityID); err != nil {
-		return errors.Wrapf(err, "set event with trigger")
+	if err := app.TriggerStore.RemoveTrigger(e.Trigger, entityID); err != nil {
+		return errors.Wrapf(err, "create event with trigger")
 	}
 	// Cancel previous event
-	if err := s.Cancel(prev); err != nil {
-		return errors.Wrapf(err, "set event with trigger")
+	if err := app.Cancel(prev); err != nil {
+		return errors.Wrapf(err, "create event with trigger")
 	}
 	// If event is a cancellation, don't set event or trigger and stop here
 	if e.Action.Cancel != nil {
@@ -74,15 +74,15 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 	}
 
 	// Set event and trigger
-	if err := s.Store.SetEvent(e, entityID); err != nil {
-		return errors.Wrapf(err, "set event with trigger")
+	if err := app.Store.Insert(e, entityID); err != nil {
+		return errors.Wrapf(err, "create event with trigger")
 	}
-	if err := s.TriggerStore.SetTrigger(event.Trigger{
+	if err := app.TriggerStore.InsertTrigger(event.Trigger{
 		EntityID:      entityID,
 		EventSourceID: e.Trigger,
 		EventTargetID: e.ID,
 	}); err != nil {
-		return errors.Wrapf(err, "set event with trigger")
+		return errors.Wrapf(err, "create event with trigger")
 	}
 
 	return nil
@@ -90,49 +90,49 @@ func (s *TriggerService) Set(e event.E, entityID gulid.ID) error {
 
 // Cancel cancels an event sending a cancel action to all events triggered by e.
 // Works recursively
-func (s *TriggerService) Cancel(e event.E) error {
+func (app *A) Cancel(e event.E) error {
 	switch e.Action.GetValue().(type) {
 	case *event.MoveTarget:
-		return s.CancelMoveTarget(e)
+		return app.CancelMoveTarget(e)
 	case *event.CastSource:
-		return s.CancelCastSource(e)
+		return app.CancelCastSource(e)
 	case *event.PerformSource:
-		return s.CancelPerformSource(e)
+		return app.CancelPerformSource(e)
 	case *event.PerformTarget:
-		return s.CancelPerformTarget(e)
+		return app.CancelPerformTarget(e)
 	case *event.PerformFeedback:
-		return s.CancelPerformFeedback(e)
+		return app.CancelPerformFeedback(e)
 	case *event.LootSource:
-		return s.CancelLootSource(e)
+		return app.CancelLootSource(e)
 	case *event.LootTarget:
-		return s.CancelLootTarget(e)
+		return app.CancelLootTarget(e)
 	case *event.LootFeedback:
-		return s.CancelLootFeedback(e)
+		return app.CancelLootFeedback(e)
 	case *event.ConsumeSource:
-		return s.CancelConsumeSource(e)
+		return app.CancelConsumeSource(e)
 	case *event.ConsumeTarget:
-		return s.CancelConsumeTarget(e)
+		return app.CancelConsumeTarget(e)
 	case *event.ConsumeFeedback:
-		return s.CancelConsumeFeedback(e)
+		return app.CancelConsumeFeedback(e)
 	}
 	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }
 
 // CancelMoveTarget cancels a MoveTarget event.
-func (s *TriggerService) CancelMoveTarget(e event.E) error {
+func (app *A) CancelMoveTarget(e event.E) error {
 	// Actually move interacts with all sector entities so cancel may trigger area abilities for example
 	return nil
 }
 
 // CancelCastSource cancels a CastSource event.
-func (s *TriggerService) CancelCastSource(e event.E) error {
+func (app *A) CancelCastSource(e event.E) error {
 	// Cancel CastSource automatically propagates on itself
 	return nil
 }
 
 // CancelPerformSource cancels a PerformSource event.
 // Cancels perform target if cast source was cancelled.
-func (s *TriggerService) CancelPerformSource(e event.E) error {
+func (app *A) CancelPerformSource(e event.E) error {
 	ps := e.Action.PerformSource
 	e = event.E{
 		ID: gulid.NewTimeID(e.ID.Time()),
@@ -150,7 +150,7 @@ func (s *TriggerService) CancelPerformSource(e event.E) error {
 		for _, target := range targets.Entities {
 			target := target
 			g.Go(func() error {
-				return errors.Wrapf(s.QStore.PublishEvent(e, target), "cancel move target")
+				return errors.Wrapf(app.QStore.PublishEvent(e, target), "cancel move target")
 			})
 		}
 		if err := g.Wait(); err != nil {
@@ -161,7 +161,7 @@ func (s *TriggerService) CancelPerformSource(e event.E) error {
 }
 
 // CancelPerformTarget cancels a PerformTarget event.
-func (s *TriggerService) CancelPerformTarget(e event.E) error {
+func (app *A) CancelPerformTarget(e event.E) error {
 
 	pt := e.Action.PerformTarget
 	e = event.E{
@@ -171,17 +171,17 @@ func (s *TriggerService) CancelPerformTarget(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(s.QStore.PublishEvent(e, pt.Source.ID), "cancel perform target")
+	return errors.Wrapf(app.QStore.PublishEvent(e, pt.Source.ID), "cancel perform target")
 }
 
 // CancelPerformFeedback cancels a PerformFeedback event.
-func (s *TriggerService) CancelPerformFeedback(e event.E) error {
+func (app *A) CancelPerformFeedback(e event.E) error {
 	// Leaf
 	return nil
 }
 
 // CancelLootSource cancels a LootSource event.
-func (s *TriggerService) CancelLootSource(e event.E) error {
+func (app *A) CancelLootSource(e event.E) error {
 	ls := e.Action.LootSource
 	e = event.E{
 		ID: gulid.NewTimeID(e.ID.Time()),
@@ -190,11 +190,11 @@ func (s *TriggerService) CancelLootSource(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(s.QStore.PublishEvent(e, ls.TargetID), "cancel loot source")
+	return errors.Wrapf(app.QStore.PublishEvent(e, ls.TargetID), "cancel loot source")
 }
 
 // CancelLootTarget cancels a LootTarget event.
-func (s *TriggerService) CancelLootTarget(e event.E) error {
+func (app *A) CancelLootTarget(e event.E) error {
 	lt := e.Action.LootTarget
 	// #Publish move event to source.
 	e = event.E{
@@ -204,26 +204,26 @@ func (s *TriggerService) CancelLootTarget(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(s.QStore.PublishEvent(e, lt.Source.ID), "cancel loot target")
+	return errors.Wrapf(app.QStore.PublishEvent(e, lt.Source.ID), "cancel loot target")
 }
 
 // CancelLootFeedback cancels a LootFeedback event.
-func (s *TriggerService) CancelLootFeedback(e event.E) error {
+func (app *A) CancelLootFeedback(e event.E) error {
 	// Leaf
 	return nil
 }
 
 // CancelConsumeSource cancels a ConsumeSource event.
-func (s *TriggerService) CancelConsumeSource(e event.E) error {
+func (app *A) CancelConsumeSource(e event.E) error {
 	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }
 
 // CancelConsumeTarget cancels a ConsumeTarget event.
-func (s *TriggerService) CancelConsumeTarget(e event.E) error {
+func (app *A) CancelConsumeTarget(e event.E) error {
 	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }
 
 // CancelConsumeFeedback cancels a ConsumeTarget event.
-func (s *TriggerService) CancelConsumeFeedback(e event.E) error {
+func (app *A) CancelConsumeFeedback(e event.E) error {
 	return gerrors.ErrNotImplementedYet{Version: "0.2.0"}
 }

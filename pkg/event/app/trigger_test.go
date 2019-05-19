@@ -1,4 +1,4 @@
-package svc
+package app
 
 import (
 	"testing"

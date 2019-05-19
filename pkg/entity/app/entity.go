@@ -102,32 +102,32 @@ func (app A) ErasePC(accountID gulid.ID, id gulid.ID) error {
 	// #Delete pc abilities
 	abs, err := app.AbilityStore.List(id)
 	if err != nil {
-		return errors.Wrap(err, "remove pc")
+		return errors.Wrap(err, "erase pc")
 	}
 	for _, ab := range abs {
 		if err := app.AbilityStore.Remove(id, ab.ID); err != nil {
-			return errors.Wrap(err, "remove pc")
+			return errors.Wrap(err, "erase pc")
 		}
 	}
 
 	// #Delete pc inventory
 	if err := app.MRInventoryStore.RemoveMRInventory(id); err != nil {
-		return errors.Wrap(err, "remove pc")
+		return errors.Wrap(err, "erase pc")
 	}
 
 	// #Delete pc
 	if err := app.PCStore.RemovePC(accountID, id); err != nil {
-		return errors.Wrap(err, "remove pc")
+		return errors.Wrap(err, "erase pc")
 	}
 
 	// #Add 1 to pc left
 	pcLeft, err := app.PCLeftStore.FetchPCLeft(accountID)
 	if err != nil {
-		return errors.Wrap(err, "remove pc")
+		return errors.Wrap(err, "erase pc")
 	}
 	pcLeft = pcLeft - 1
 	if err := app.PCLeftStore.InsertPCLeft(pcLeft, accountID); err != nil {
-		return errors.Wrap(err, "remove pc")
+		return errors.Wrap(err, "erase pc")
 	}
 
 	return nil

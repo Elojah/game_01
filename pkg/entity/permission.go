@@ -10,7 +10,7 @@ type Permission struct {
 	Value  int
 }
 
-// PermissionStore contains basic operations fo entity permission object.
+// PermissionStore contains basic operations for entity permission object.
 type PermissionStore interface {
 	InsertPermission(Permission) error
 	FetchPermission(string, string) (Permission, error)

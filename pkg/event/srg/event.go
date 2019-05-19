@@ -15,11 +15,11 @@ const (
 	eventKey = "event:"
 )
 
-// SetEvent implemented with redis.
-func (s *Store) SetEvent(e event.E, id gulid.ID) error {
+// Insert implemented with redis.
+func (s *Store) Insert(e event.E, id gulid.ID) error {
 	raw, err := e.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "set event %s for entity %s", e.ID.String(), id.String())
+		return errors.Wrapf(err, "insert event %s for entity %s", e.ID.String(), id.String())
 	}
 	return errors.Wrapf(s.ZAddNX(
 		eventKey+id.String(),
@@ -27,11 +27,11 @@ func (s *Store) SetEvent(e event.E, id gulid.ID) error {
 			Score:  float64(e.ID.Time()),
 			Member: raw,
 		},
-	).Err(), "set event %s for entity %s", e.ID.String(), id.String())
+	).Err(), "insert event %s for entity %s", e.ID.String(), id.String())
 }
 
-// GetEvent implemented with redis.
-func (s *Store) GetEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
+// FetchEvent implemented with redis.
+func (s *Store) FetchEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
 	vals, err := s.ZRangeByScore(
 		eventKey+entityID.String(),
 		redis.ZRangeBy{
@@ -41,23 +41,23 @@ func (s *Store) GetEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
 		},
 	).Result()
 	if err != nil {
-		return event.E{}, errors.Wrapf(err, "get event for entity %s at %d", entityID.String(), id.Time())
+		return event.E{}, errors.Wrapf(err, "fetch event for entity %s at %d", entityID.String(), id.Time())
 	}
 	if len(vals) != 0 {
 		return event.E{}, errors.Wrapf(gerrors.ErrNotFound{
 			Store: eventKey,
 			Index: eventKey + entityID.String(),
-		}, "get event at %d", id.Time())
+		}, "fetch event at %d", id.Time())
 	}
 
 	var e event.E
 	if err := e.Unmarshal([]byte(vals[0])); err != nil {
-		return event.E{}, errors.Wrapf(err, "get event for entity %s at %d", entityID.String(), id.Time())
+		return event.E{}, errors.Wrapf(err, "fetch event for entity %s at %d", entityID.String(), id.Time())
 	}
 	return e, nil
 }
 
-// ListEvent list events in redis set key from min (included).
+// ListEvent list events in redis insert key from min (included).
 func (s *Store) ListEvent(id gulid.ID, min gulid.ID) ([]event.E, error) {
 	vals, err := s.ZRangeByScore(
 		eventKey+id.String(),
@@ -78,10 +78,10 @@ func (s *Store) ListEvent(id gulid.ID, min gulid.ID) ([]event.E, error) {
 	return events, nil
 }
 
-// DelEvent implemented with redis.
-func (s *Store) DelEvent(eventID gulid.ID, id gulid.ID) error {
+// RemoveEvent implemented with redis.
+func (s *Store) RemoveEvent(eventID gulid.ID, id gulid.ID) error {
 	return errors.Wrapf(s.ZRem(
 		eventKey+id.String(),
 		eventID.String(),
-	).Err(), "del event %s for entity %s", eventID.String(), id.String())
+	).Err(), "remove event %s for entity %s", eventID.String(), id.String())
 }

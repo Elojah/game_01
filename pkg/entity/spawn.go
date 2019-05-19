@@ -4,7 +4,7 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// SpawnStore contains basic operations fo entity spawn object.
+// SpawnStore contains basic operations for entity spawn object.
 type SpawnStore interface {
 	InsertSpawn(Spawn) error
 	FetchSpawn(ulid.ID) (Spawn, error)

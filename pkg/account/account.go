@@ -2,7 +2,7 @@ package account
 
 import "github.com/elojah/game_01/pkg/ulid"
 
-// Store contains basic operations fo account A.
+// Store contains basic operations for account A.
 type Store interface {
 	InsertAccount(A) error
 	FetchAccount(string) (A, error)

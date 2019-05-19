@@ -31,7 +31,7 @@ func (pc PC) Check() error {
 	return nil
 }
 
-// PCStore contains basic operations fo entity PC object.
+// PCStore contains basic operations for entity PC object.
 type PCStore interface {
 	InsertPC(PC, ulid.ID) error
 	FetchPC(ulid.ID, ulid.ID) (PC, error)
@@ -42,7 +42,7 @@ type PCStore interface {
 // PCLeft represents the number of character an account can still create.
 type PCLeft int
 
-// PCLeftStore contains basic operations fo entity PCLeft object.
+// PCLeftStore contains basic operations for entity PCLeft object.
 type PCLeftStore interface {
 	InsertPCLeft(PCLeft, ulid.ID) error
 	FetchPCLeft(ulid.ID) (PCLeft, error)

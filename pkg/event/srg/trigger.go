@@ -15,31 +15,31 @@ const (
 	triggerKey = "trigger:"
 )
 
-// SetTrigger implemented with redis.
-func (s *Store) SetTrigger(t event.Trigger) error {
+// InsertTrigger implemented with redis.
+func (s *Store) InsertTrigger(t event.Trigger) error {
 	return errors.Wrapf(
 		s.Set(
 			triggerKey+t.EventSourceID.String()+":"+t.EntityID.String(),
 			t.EventTargetID.String(),
 			0,
 		).Err(),
-		"set trigger %s to %s for entity %s",
+		"insert trigger %s to %s for entity %s",
 		t.EventSourceID.String(),
 		t.EventTargetID.String(),
 		t.EntityID.String(),
 	)
 }
 
-// GetTrigger redis implementation.
-func (s *Store) GetTrigger(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error) {
+// FetchTrigger redis implementation.
+func (s *Store) FetchTrigger(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error) {
 	val, err := s.Get(triggerKey + triggerID.String() + ":" + entityID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return gulid.ID{}, errors.Wrapf(err, "get trigger %s for entity %s", triggerID.String(), entityID.String())
+			return gulid.ID{}, errors.Wrapf(err, "fetch trigger %s for entity %s", triggerID.String(), entityID.String())
 		}
 		return gulid.ID{}, errors.Wrapf(
 			gerrors.ErrNotFound{Store: triggerKey, Index: triggerID.String() + ":" + entityID.String()},
-			"get trigger %s for entity %s",
+			"fetch trigger %s for entity %s",
 			triggerID.String(),
 			entityID.String(),
 		)
@@ -69,11 +69,11 @@ func (s *Store) ListTrigger(triggerID gulid.ID) ([]event.Trigger, error) {
 	return triggers, nil
 }
 
-// DelTrigger redis implementation.
-func (s *Store) DelTrigger(triggerID gulid.ID, entityID gulid.ID) error {
+// RemoveTrigger redis implementation.
+func (s *Store) RemoveTrigger(triggerID gulid.ID, entityID gulid.ID) error {
 	return errors.Wrapf(
 		s.Del(triggerKey+triggerID.String()+":"+entityID.String()).Err(),
-		"del trigger %s for entity %s",
+		"remove trigger %s for entity %s",
 		triggerID.String(),
 		entityID.String(),
 	)

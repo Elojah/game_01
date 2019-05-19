@@ -6,14 +6,14 @@ const (
 	DefaultInventorySize = 42
 )
 
-// InventoryStore contains basic operations fo entity inventory object.
+// InventoryStore contains basic operations for entity inventory object.
 type InventoryStore interface {
 	FetchInventory(ulid.ID) (Inventory, error)
 	InsertInventory(Inventory) error
 	RemoveInventory(ulid.ID) error
 }
 
-// MRInventoryStore contains basic operations fo entity most recent inventory object.
+// MRInventoryStore contains basic operations for entity most recent inventory object.
 type MRInventoryStore interface {
 	FetchMRInventory(ulid.ID) (Inventory, error)
 	InsertMRInventory(ulid.ID, Inventory) error

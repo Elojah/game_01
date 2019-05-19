@@ -13,34 +13,34 @@ const (
 	syncKey = "sync:"
 )
 
-// GetRandomSync redis implementation.
-func (s *Store) GetRandomSync() (infra.Sync, error) {
+// FetchRandomSync redis implementation.
+func (s *Store) FetchRandomSync() (infra.Sync, error) {
 	val, err := s.SRandMember(syncKey).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return infra.Sync{}, errors.Wrap(err, "get random sync")
+			return infra.Sync{}, errors.Wrap(err, "fetch random sync")
 		}
 		return infra.Sync{}, errors.Wrap(
 			gerrors.ErrNotFound{Store: syncKey, Index: "random"},
-			"get random sync",
+			"fetch random sync",
 		)
 	}
 
 	return infra.Sync{ID: ulid.MustParse(val)}, nil
 }
 
-// SetSync redis implementation.
-func (s *Store) SetSync(sync infra.Sync) error {
+// InsertSync redis implementation.
+func (s *Store) InsertSync(sync infra.Sync) error {
 	return errors.Wrapf(s.SAdd(
 		syncKey,
 		sync.ID.String(),
-	).Err(), "set sync %s", sync.ID.String())
+	).Err(), "insert sync %s", sync.ID.String())
 }
 
-// DelSync redis implementation.
-func (s *Store) DelSync(id ulid.ID) error {
+// RemoveSync redis implementation.
+func (s *Store) RemoveSync(id ulid.ID) error {
 	return errors.Wrapf(s.SRem(
 		syncKey,
 		id.String(),
-	).Err(), "del sync %s", id.String())
+	).Err(), "remove sync %s", id.String())
 }

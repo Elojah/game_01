@@ -18,6 +18,16 @@ func (err ErrNotImplementedYet) Error() string {
 	return fmt.Sprintf("not implemented in version %s", err.Version)
 }
 
+// ErrNotFound is raised when a mandatory resource is not found in storage.
+type ErrNotFound struct {
+	Store string
+	Index string
+}
+
+func (err ErrNotFound) Error() string {
+	return fmt.Sprintf("no results found in store %s for index %s", err.Store, err.Index)
+}
+
 // #Token/login errors
 
 // ErrWrongIP is raised when a source IP doesn't match with token-associated IP.
@@ -171,16 +181,6 @@ func (err ErrAbilityCDDown) Error() string {
 		err.LastUsed,
 		err.CD,
 	)
-}
-
-// ErrNotFound is raised when a mandatory resource is not found in storage.
-type ErrNotFound struct {
-	Store string
-	Index string
-}
-
-func (err ErrNotFound) Error() string {
-	return fmt.Sprintf("no results found in store %s for index %s", err.Store, err.Index)
 }
 
 // ErrMissingTarget is raised when a ability is performed with a missing component targets.

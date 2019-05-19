@@ -9,9 +9,9 @@ type Core struct {
 	ID ulid.ID
 }
 
-// CoreStore maps core data interactions.
+// CoreStore contains basic operations for infra core object.
 type CoreStore interface {
-	GetRandomCore() (Core, error)
-	SetCore(Core) error
-	DelCore(ulid.ID) error
+	InsertCore(Core) error
+	FetchRandomCore() (Core, error)
+	RemoveCore(ulid.ID) error
 }
