@@ -15,16 +15,16 @@ const (
 	permissionKey = "eperm:"
 )
 
-// GetPermission implemented with redis.
-func (s *Store) GetPermission(source string, target string) (entity.Permission, error) {
+// FetchPermission implemented with redis.
+func (s *Store) FetchPermission(source string, target string) (entity.Permission, error) {
 	val, err := s.Get(permissionKey + source + ":" + target).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return entity.Permission{}, errors.Wrapf(err, "get permission %s to %s", source, target)
+			return entity.Permission{}, errors.Wrapf(err, "fetch permission %s to %s", source, target)
 		}
 		return entity.Permission{}, errors.Wrapf(
 			gerrors.ErrNotFound{Store: permissionKey, Index: source + ":" + target},
-			"get permission %s to %s",
+			"fetch permission %s to %s",
 			source,
 			target,
 		)
@@ -36,24 +36,24 @@ func (s *Store) GetPermission(source string, target string) (entity.Permission, 
 	}
 	value, err := strconv.Atoi(val)
 	permission.Value = value
-	return permission, errors.Wrapf(err, "get permission %s to %s", source, target)
+	return permission, errors.Wrapf(err, "fetch permission %s to %s", source, target)
 }
 
-// SetPermission implemented with redis.
-func (s *Store) SetPermission(permission entity.Permission) error {
+// InsertPermission implemented with redis.
+func (s *Store) InsertPermission(permission entity.Permission) error {
 	return errors.Wrapf(
 		s.Set(permissionKey+permission.Source+":"+permission.Target, permission.Value, 0).Err(),
-		"set permission %s to %s",
+		"insert permission %s to %s",
 		permission.Source,
 		permission.Target,
 	)
 }
 
-// DelPermission implemented with redis.
-func (s *Store) DelPermission(source string, target string) error {
+// RemovePermission implemented with redis.
+func (s *Store) RemovePermission(source string, target string) error {
 	return errors.Wrapf(
 		s.Del(permissionKey+source+":"+target).Err(),
-		"del permission %s to %s",
+		"remove permission %s to %s",
 		source,
 		target,
 	)

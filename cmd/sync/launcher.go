@@ -8,23 +8,23 @@ import (
 
 // Namespaces maps configs used for api service with config file namespaces.
 type Namespaces struct {
-	App services.Namespace
+	Service services.Namespace
 }
 
-// Launcher represents a api launcher.
+// Launcher represents svc api launcher.
 type Launcher struct {
 	*services.Configs
 	ns Namespaces
 
-	a *app
-	m sync.Mutex
+	svc *service
+	m   sync.Mutex
 }
 
-// NewLauncher returns a new couchbase Launcher.
-func (a *app) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
+// NewLauncher returns svc new couchbase Launcher.
+func (svc *service) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
 	return &Launcher{
 		Configs: services.NewConfigs(nsRead...),
-		a:       a,
+		svc:     svc,
 		ns:      ns,
 	}
 }
@@ -35,10 +35,10 @@ func (l *Launcher) Up(configs services.Configs) error {
 	defer l.m.Unlock()
 
 	sconfig := Config{}
-	if err := sconfig.Dial(configs[l.ns.App]); err != nil {
+	if err := sconfig.Dial(configs[l.ns.Service]); err != nil {
 		return err
 	}
-	return l.a.Dial(sconfig)
+	return l.svc.Dial(sconfig)
 }
 
 // Down stops the couchbase service.

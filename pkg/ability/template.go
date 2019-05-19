@@ -8,9 +8,9 @@ import (
 // It represents semi static data. When creating abilities, those templates are used.
 type Template = A
 
-// TemplateStore is an interface for Template object.
+// TemplateStore is the communication interface for ability templates.
 type TemplateStore interface {
-	SetTemplate(Template) error
-	GetTemplate(ulid.ID) (Template, error)
+	InsertTemplate(Template) error
+	FetchTemplate(ulid.ID) (Template, error)
 	ListTemplate() ([]Template, error)
 }

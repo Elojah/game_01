@@ -1,5 +1,5 @@
 {
-	"revoker": {
+	"service": {
 		"lifespan": 72000
 	},
 	"redis": {

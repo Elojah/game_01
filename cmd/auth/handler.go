@@ -33,7 +33,7 @@ type handler struct {
 	SectorEntitiesStore sector.EntitiesStore
 	SectorStore         sector.Store
 
-	AbilityService        ability.Service
+	Ability               ability.App
 	AccountTokenService   account.TokenService
 	EntityPCService       entity.PCService
 	InfraSequencerService infra.SequencerService

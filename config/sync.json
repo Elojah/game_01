@@ -1,5 +1,5 @@
 {
-	"sync": {
+	"service": {
 		"id": "01CGBKPGMC4TG961QMQ71TEV2P",
 		"tick_rate": 10,
 		"batch_size": 200,

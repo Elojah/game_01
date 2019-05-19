@@ -6,20 +6,13 @@ import (
 
 // TokenStore is the service gate for Token resource.
 type TokenStore interface {
-	SetToken(Token) error
-	GetToken(ulid.ID) (Token, error)
-	DelToken(ulid.ID) error
+	InsertToken(Token) error
+	FetchToken(ulid.ID) (Token, error)
+	RemoveToken(ulid.ID) error
 }
 
 // TokenHCStore is the service gate for Token health check.
 type TokenHCStore interface {
-	SetTokenHC(ulid.ID, uint64) error
+	InsertTokenHC(ulid.ID, uint64) error
 	ListTokenHC(uint64) ([]ulid.ID, error)
-}
-
-// TokenService represents token usecases.
-type TokenService interface {
-	New(A, string) (Token, error)
-	Access(ulid.ID, string) (Token, error)
-	Disconnect(ulid.ID) error
 }

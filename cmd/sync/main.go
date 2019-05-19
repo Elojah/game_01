@@ -55,8 +55,8 @@ func run(prog string, filename string) {
 	infraStore := infrasrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
 
-	// main app
-	a := app{
+	// main service
+	svc := service{
 		C:              c,
 		TokenStore:     accountStore,
 		EntityStore:    entityLRUStore,
@@ -66,10 +66,10 @@ func run(prog string, filename string) {
 		EntitiesStore:  sectorStore,
 		SectorStore:    sectorStore,
 	}
-	al := a.NewLauncher(Namespaces{
-		App: "sync",
-	}, "sync")
-	launchers.Add(al)
+	svcl := svc.NewLauncher(Namespaces{
+		Service: "service",
+	}, "service")
+	launchers.Add(svcl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

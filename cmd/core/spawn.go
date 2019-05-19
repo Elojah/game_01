@@ -9,13 +9,13 @@ import (
 )
 
 // Spawn moves the entity to spawn position and restore HP and MP.
-func (a *app) Spawn(id gulid.ID, e event.E) error {
+func (svc *service) Spawn(id gulid.ID, e event.E) error {
 
 	sp := e.Action.Spawn
 	ts := e.ID.Time()
 
 	// #Retrieve previous target state.
-	target, err := a.EntityStore.GetEntity(id, ts)
+	target, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "spawn")
 	}
@@ -25,7 +25,7 @@ func (a *app) Spawn(id gulid.ID, e event.E) error {
 		return errors.Wrap(gerrors.ErrIsNotDead{EntityID: id.String()}, "spawn")
 	}
 
-	s, err := a.EntitySpawnStore.GetSpawn(sp.ID)
+	s, err := svc.EntitySpawnStore.GetSpawn(sp.ID)
 	if err != nil {
 		return errors.Wrap(err, "spawn")
 	}
@@ -39,5 +39,5 @@ func (a *app) Spawn(id gulid.ID, e event.E) error {
 	target.Dead = false
 
 	// #Set entity new state.
-	return errors.Wrap(a.EntityStore.SetEntity(target, ts+1), "spawn")
+	return errors.Wrap(svc.EntityStore.SetEntity(target, ts+1), "spawn")
 }

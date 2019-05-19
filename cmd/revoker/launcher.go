@@ -8,23 +8,23 @@ import (
 
 // Namespaces maps configs used for auth server.
 type Namespaces struct {
-	Revoker services.Namespace
+	Service services.Namespace
 }
 
-// Launcher represents a auth server launcher.
+// Launcher represents service auth server launcher.
 type Launcher struct {
 	*services.Configs
 	ns Namespaces
 
-	a *app
-	m sync.Mutex
+	service *service
+	m       sync.Mutex
 }
 
-// NewLauncher returns a new auth server Launcher.
-func (a *app) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
+// NewLauncher returns service new auth server Launcher.
+func (service *service) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
 	return &Launcher{
 		Configs: services.NewConfigs(nsRead...),
-		a:       a,
+		service: service,
 		ns:      ns,
 	}
 }
@@ -35,10 +35,10 @@ func (l *Launcher) Up(configs services.Configs) error {
 	defer l.m.Unlock()
 
 	sconfig := Config{}
-	if err := sconfig.Dial(configs[l.ns.Revoker]); err != nil {
+	if err := sconfig.Dial(configs[l.ns.Service]); err != nil {
 		return err
 	}
-	return l.a.Dial(sconfig)
+	return l.service.Dial(sconfig)
 }
 
 // Down stops the auth server service.
@@ -46,5 +46,5 @@ func (l *Launcher) Down(configs services.Configs) error {
 	l.m.Lock()
 	defer l.m.Unlock()
 
-	return l.a.Close()
+	return l.service.Close()
 }

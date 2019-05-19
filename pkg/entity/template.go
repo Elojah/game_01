@@ -6,9 +6,9 @@ import "github.com/elojah/game_01/pkg/ulid"
 // It represents semi static data. When creating PC/Entities, those templates are used.
 type Template = E
 
-// TemplateStore is an interface for Template object.
+// TemplateStore contains basic operations fo entity Template object.
 type TemplateStore interface {
-	SetTemplate(Template) error
-	GetTemplate(ulid.ID) (Template, error)
+	InsertTemplate(Template) error
+	FetchTemplate(ulid.ID) (Template, error)
 	ListTemplate() ([]Template, error)
 }

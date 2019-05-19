@@ -4,8 +4,8 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-// FeedbackStore is the communication interface for ability feedbacks.
+// FeedbackStore contains basic operations fo ability feedback object.
 type FeedbackStore interface {
-	SetFeedback(Feedback) error
-	GetFeedback(ulid.ID) (Feedback, error)
+	InsertFeedback(Feedback) error
+	FetchFeedback(ulid.ID) (Feedback, error)
 }

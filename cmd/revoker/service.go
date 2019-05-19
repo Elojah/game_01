@@ -8,7 +8,7 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-type app struct {
+type service struct {
 	account.TokenHCStore
 
 	TokenService account.TokenService
@@ -17,28 +17,28 @@ type app struct {
 }
 
 // Dial starts the auth server.
-func (a *app) Dial(c Config) error {
-	a.lifespan = c.Lifespan
-	go a.Run()
+func (service *service) Dial(c Config) error {
+	service.lifespan = c.Lifespan
+	go service.Run()
 	return nil
 }
 
 // Close shutdowns the server listening.
-func (a *app) Close() error {
+func (service *service) Close() error {
 	return nil
 }
 
 // Run start the revoker
-func (a *app) Run() {
+func (service *service) Run() {
 	logger := log.With().Str("revoker", "").Logger()
 
-	tokenIDs, err := a.ListTokenHC(ulid.Now() - a.lifespan)
+	tokenIDs, err := service.ListTokenHC(ulid.Now() - service.lifespan)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
 	}
 	for _, tokenID := range tokenIDs {
 		go func(tokenID gulid.ID) {
-			if err := a.TokenService.Disconnect(tokenID); err != nil {
+			if err := service.TokenService.Disconnect(tokenID); err != nil {
 				logger.Error().Err(err).Str("token", tokenID.String()).Msg("failed to disconnect expired token")
 			}
 		}(tokenID)

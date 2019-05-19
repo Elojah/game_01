@@ -1,5 +1,5 @@
 {
-	"app": {
+	"service": {
 		"id": "01CCS1SZ4B20G98XYMFGVC9VS4",
 		"limit": 65535,
 		"move_tolerance": 100,

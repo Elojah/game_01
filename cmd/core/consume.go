@@ -10,18 +10,18 @@ import (
 )
 
 // ConsumeSource checks if item exists and is consumable and send consume target.
-func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
+func (svc *service) ConsumeSource(id gulid.ID, e event.E) error {
 
 	cs := e.Action.ConsumeSource
 	ts := e.ID.Time()
 
 	// #Check permission source/token
-	if err := a.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
+	if err := svc.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
 		return errors.Wrap(err, "consume source")
 	}
 
 	// #Retrieve entity
-	source, err := a.EntityStore.GetEntity(id, ts)
+	source, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "consume source")
 	}
@@ -32,7 +32,7 @@ func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve source inventory
-	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
+	sourceInventory, err := svc.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "consume source")
 	}
@@ -47,7 +47,7 @@ func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve item
-	it, err := a.ItemStore.GetItem(cs.ItemID)
+	it, err := svc.ItemStore.GetItem(cs.ItemID)
 	if err != nil {
 		return errors.Wrap(err, "consume source")
 	}
@@ -57,7 +57,7 @@ func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
 		return errors.Wrap(gerrors.ErrNotConsumableItem{ItemID: it.ID.String()}, "consume source")
 	}
 
-	return errors.Wrap(a.EventQStore.PublishEvent(
+	return errors.Wrap(svc.EventQStore.PublishEvent(
 		event.E{
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
@@ -72,35 +72,35 @@ func (a *app) ConsumeSource(id gulid.ID, e event.E) error {
 	)
 }
 
-// ConsumeTarget checks distance and apply an item to a target from source.
-func (a *app) ConsumeTarget(id gulid.ID, e event.E) error {
+// ConsumeTarget checks distance and apply an item to svc target from source.
+func (svc *service) ConsumeTarget(id gulid.ID, e event.E) error {
 
 	ct := e.Action.ConsumeTarget
 	ts := e.ID.Time()
 
 	// #Retrieve target
-	target, err := a.EntityStore.GetEntity(id, ts)
+	target, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "consume target")
 	}
 
 	// #Check distance between source and target
-	dist, err := a.SectorService.Segment(ct.Source.Position, target.Position)
+	dist, err := svc.SectorService.Segment(ct.Source.Position, target.Position)
 	if err != nil {
 		return errors.Wrap(err, "consume target")
 	}
-	if dist > a.lootRadius {
+	if dist > svc.lootRadius {
 		return errors.Wrap(
 			gerrors.ErrOutOfRange{
 				Dist:  dist,
-				Range: a.consumeRadius,
+				Range: svc.consumeRadius,
 			},
 			"consume target",
 		)
 	}
 
 	// #Retrieve item
-	it, err := a.ItemStore.GetItem(ct.ItemID)
+	it, err := svc.ItemStore.GetItem(ct.ItemID)
 	if err != nil {
 		return errors.Wrap(err, "consume target")
 	}
@@ -108,11 +108,11 @@ func (a *app) ConsumeTarget(id gulid.ID, e event.E) error {
 	// #Consume action item I on entity E.
 	switch v := it.Type.GetValue().(type) {
 	case *item.Orb:
-		ab, err := a.AbilityTemplateStore.GetTemplate(v.AbilityID)
+		ab, err := svc.AbilityTemplateStore.GetTemplate(v.AbilityID)
 		if err != nil {
 			return errors.Wrap(err, "consume target")
 		}
-		if err := a.AbilityStore.SetAbility(ab, target.ID); err != nil {
+		if err := svc.AbilityStore.SetAbility(ab, target.ID); err != nil {
 			return errors.Wrap(err, "consume target")
 		}
 	default:
@@ -121,7 +121,7 @@ func (a *app) ConsumeTarget(id gulid.ID, e event.E) error {
 		}, "consume target")
 	}
 
-	return errors.Wrap(a.EventQStore.PublishEvent(
+	return errors.Wrap(svc.EventQStore.PublishEvent(
 		event.E{
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
@@ -137,19 +137,19 @@ func (a *app) ConsumeTarget(id gulid.ID, e event.E) error {
 }
 
 // ConsumeFeedback removes item from source inventory.
-func (a *app) ConsumeFeedback(id gulid.ID, e event.E) error {
+func (svc *service) ConsumeFeedback(id gulid.ID, e event.E) error {
 
 	cf := e.Action.ConsumeFeedback
 	ts := e.ID.Time()
 
 	// #Retrieve entity
-	source, err := a.EntityStore.GetEntity(id, ts)
+	source, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "consume feedback")
 	}
 
 	// #Retrieve source inventory
-	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
+	sourceInventory, err := svc.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "consume feedback")
 	}
@@ -172,11 +172,11 @@ func (a *app) ConsumeFeedback(id gulid.ID, e event.E) error {
 
 	// #Create new inventory
 	sourceInventory.ID = gulid.NewID()
-	if err := a.EntityInventoryService.SetMR(source.ID, sourceInventory); err != nil {
+	if err := svc.EntityInventoryService.SetMR(source.ID, sourceInventory); err != nil {
 		return errors.Wrap(err, "consume feedback")
 	}
 
 	// Set new inventory
 	source.InventoryID = sourceInventory.ID
-	return errors.Wrap(a.EntityStore.SetEntity(source, ts+1), "consume feedback")
+	return errors.Wrap(svc.EntityStore.SetEntity(source, ts+1), "consume feedback")
 }

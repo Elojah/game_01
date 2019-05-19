@@ -10,15 +10,10 @@ type Permission struct {
 	Value  int
 }
 
-// PermissionStore defines Permission operations.
+// PermissionStore contains basic operations fo entity permission object.
 type PermissionStore interface {
-	SetPermission(Permission) error
-	GetPermission(string, string) (Permission, error)
+	InsertPermission(Permission) error
+	FetchPermission(string, string) (Permission, error)
 	ListPermission(string) ([]Permission, error)
-	DelPermission(string, string) error
-}
-
-// PermissionService wraps permission usecases for entities.
-type PermissionService interface {
-	CheckPermission(gulid.ID, gulid.ID) error
+	RemovePermission(string, string) error
 }

@@ -1,4 +1,4 @@
-package svc
+package app
 
 import (
 	"net"
@@ -13,10 +13,12 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// TokenService represents token usecases.
-type TokenService struct {
-	AccountStore           account.Store
-	AccountTokenStore      account.TokenStore
+// A implements account applications.
+type A struct {
+	account.Store
+	account.TokenStore
+	account.TokenHCStore
+
 	EntityStore            entity.Store
 	EntityPCStore          entity.PCStore
 	EntityPermissionStore  entity.PermissionStore
@@ -26,49 +28,49 @@ type TokenService struct {
 	EntityService entity.Service
 }
 
-// New creates a new token from account payload A. Returns an error if the account is invalid.
-func (s TokenService) New(payload account.A, addr string) (account.Token, error) {
+// CreateToken creates app new token from account payload A. Returns an error if the account is invalid.
+func (app A) CreateToken(payload account.A, addr string) (account.Token, error) {
 
 	// #Search account in redis
-	a, err := s.AccountStore.GetAccount(payload.Username)
+	acc, err := app.Store.FetchAccount(payload.Username)
 	if err != nil {
 		return account.Token{}, errors.Wrap(err, "new token")
 	}
-	if a.Password != payload.Password {
+	if acc.Password != payload.Password {
 		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials{Username: payload.Username}, "new token")
 	}
-	if !a.Token.IsZero() {
-		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: a.ID.String()}, "new token")
+	if !acc.Token.IsZero() {
+		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: acc.ID.String()}, "new token")
 	}
 
 	// #Identify origin IP
 	ip, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
-		return account.Token{}, errors.Wrap(errors.Wrapf(err, "resolve address %s", addr), "new token")
+		return account.Token{}, errors.Wrap(errors.Wrapf(err, "resolve address %app", addr), "new token")
 	}
 
-	// #Set a new token
+	// #Set new token
 	t := account.Token{
 		ID:      gulid.NewID(),
-		Account: a.ID,
+		Account: acc.ID,
 		IP:      ip.String(),
 	}
-	if err := s.AccountTokenStore.SetToken(t); err != nil {
+	if err := app.TokenStore.InsertToken(t); err != nil {
 		return account.Token{}, errors.Wrap(err, "new token")
 	}
-	a.Token = t.ID
-	if err := s.AccountStore.SetAccount(a); err != nil {
+	acc.Token = t.ID
+	if err := app.Store.InsertAccount(acc); err != nil {
 		return account.Token{}, errors.Wrap(err, "new token")
 	}
 
 	return t, nil
 }
 
-// Access retrieves a token and check IP validity.
-func (s TokenService) Access(id gulid.ID, addr string) (account.Token, error) {
+// FetchTokenFromAddr retrieves acc token and check IP validity.
+func (app A) FetchTokenFromAddr(id gulid.ID, addr string) (account.Token, error) {
 
 	// #Search message UUID in storage.
-	t, err := s.AccountTokenStore.GetToken(id)
+	t, err := app.TokenStore.FetchToken(id)
 	if err != nil {
 		return account.Token{}, errors.Wrap(err, "access token")
 	}
@@ -85,14 +87,14 @@ func (s TokenService) Access(id gulid.ID, addr string) (account.Token, error) {
 	return t, nil
 }
 
-// Disconnect closes a token and all entities/sequencer/sync associated.
-func (s TokenService) Disconnect(id gulid.ID) error {
+// DisconnectToken closes acc token and all entities/sequencer/sync associated.
+func (app A) DisconnectToken(id gulid.ID) error {
 
 	// Disconnect must be permissive in case of infra failures.
 	var result *multierror.Error
 
 	// #Retrieve token
-	t, err := s.AccountTokenStore.GetToken(id)
+	t, err := app.TokenStore.FetchToken(id)
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
@@ -105,12 +107,12 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	// #Reset token entity.
 	te := t.Entity
 	t.Entity = gulid.Zero()
-	if err := s.AccountTokenStore.SetToken(t); err != nil {
+	if err := app.TokenStore.InsertToken(t); err != nil {
 		result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 	}
 
 	// #Retrieve entity
-	e, err := s.EntityStore.GetEntity(te, ulid.Now())
+	e, err := app.EntityStore.GetEntity(te, ulid.Now())
 	if err != nil {
 		// Token is valid but not connected to any entity.
 		switch errors.Cause(err).(type) {
@@ -123,35 +125,35 @@ func (s TokenService) Disconnect(id gulid.ID) error {
 	// #Save last entity state into PC
 	pc := e
 	pc.ID = t.PC
-	if err := s.EntityPCStore.SetPC(pc, t.Account); err != nil {
+	if err := app.EntityPCStore.SetPC(pc, t.Account); err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
 
 	// #Save last inventory state into MR store as pc and remove entity inv in MR store
-	inv, err := s.EntityInventoryService.Get(e.InventoryID, e.ID)
+	inv, err := app.EntityInventoryService.Get(e.InventoryID, e.ID)
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
-	if err := s.EntityMRInventoryStore.SetMRInventory(pc.ID, inv); err != nil {
+	if err := app.EntityMRInventoryStore.SetMRInventory(pc.ID, inv); err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
-	if err := s.EntityMRInventoryStore.DelMRInventory(e.ID); err != nil {
+	if err := app.EntityMRInventoryStore.DelMRInventory(e.ID); err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
 
 	// #Disconnect all entities associated with token.
-	ps, err := s.EntityPermissionStore.ListPermission(t.ID.String())
+	ps, err := app.EntityPermissionStore.ListPermission(t.ID.String())
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
 	for _, p := range ps {
 		targetID := gulid.MustParse(p.Target)
-		if err := s.EntityService.Disconnect(targetID); err != nil {
+		if err := app.EntityService.Disconnect(targetID); err != nil {
 			result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 			continue // don't remove permission in error case, it could lead to data loss
 		}
 		// #Delete token permission on entity
-		if err := s.EntityPermissionStore.DelPermission(p.Source, p.Target); err != nil {
+		if err := app.EntityPermissionStore.DelPermission(p.Source, p.Target); err != nil {
 			result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 		}
 	}

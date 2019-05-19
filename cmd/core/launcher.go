@@ -6,45 +6,45 @@ import (
 	"github.com/elojah/services"
 )
 
-// Namespaces maps configs used for api service with config file namespaces.
+// Namespaces maps configs used for core service with config file namespaces.
 type Namespaces struct {
-	App services.Namespace
+	Service services.Namespace
 }
 
-// Launcher represents a api launcher.
+// Launcher represents svc core launcher.
 type Launcher struct {
 	*services.Configs
 	ns Namespaces
 
-	a *app
-	m sync.Mutex
+	svc *service
+	m   sync.Mutex
 }
 
-// NewLauncher returns a new couchbase Launcher.
-func (a *app) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
+// NewLauncher returns svc new config Launcher.
+func (svc *service) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
 	return &Launcher{
 		Configs: services.NewConfigs(nsRead...),
-		a:       a,
+		svc:     svc,
 		ns:      ns,
 	}
 }
 
-// Up starts the couchbase service with new configs.
+// Up starts the config service with new configs.
 func (l *Launcher) Up(configs services.Configs) error {
 	l.m.Lock()
 	defer l.m.Unlock()
 
 	sconfig := Config{}
-	if err := sconfig.Dial(configs[l.ns.App]); err != nil {
+	if err := sconfig.Dial(configs[l.ns.Service]); err != nil {
 		return err
 	}
-	return l.a.Dial(sconfig)
+	return l.svc.Dial(sconfig)
 }
 
-// Down stops the couchbase service.
+// Down stops the config service.
 func (l *Launcher) Down(configs services.Configs) error {
 	l.m.Lock()
 	defer l.m.Unlock()
 
-	return l.a.Close()
+	return l.svc.Close()
 }

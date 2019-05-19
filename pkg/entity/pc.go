@@ -31,20 +31,20 @@ func (pc PC) Check() error {
 	return nil
 }
 
-// PCStore is an interface to create a new PC.
+// PCStore contains basic operations fo entity PC object.
 type PCStore interface {
-	SetPC(PC, ulid.ID) error
-	GetPC(ulid.ID, ulid.ID) (PC, error)
+	InsertPC(PC, ulid.ID) error
+	FetchPC(ulid.ID, ulid.ID) (PC, error)
 	ListPC(ulid.ID) ([]PC, error)
-	DelPC(ulid.ID, ulid.ID) error
+	RemovePC(ulid.ID, ulid.ID) error
 }
 
 // PCLeft represents the number of character an account can still create.
 type PCLeft int
 
-// PCLeftStore interfaces creation/retrieval of PCLeft.
+// PCLeftStore contains basic operations fo entity PCLeft object.
 type PCLeftStore interface {
-	SetPCLeft(PCLeft, ulid.ID) error
-	GetPCLeft(ulid.ID) (PCLeft, error)
-	DelPCLeft(ulid.ID) error
+	InsertPCLeft(PCLeft, ulid.ID) error
+	FetchPCLeft(ulid.ID) (PCLeft, error)
+	RemovePCLeft(ulid.ID) error
 }

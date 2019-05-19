@@ -9,8 +9,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	abilityapp "github.com/elojah/game_01/pkg/ability/app"
 	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
-	abilitysvc "github.com/elojah/game_01/pkg/ability/svc"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
 	accountsvc "github.com/elojah/game_01/pkg/account/svc"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
@@ -79,8 +79,8 @@ func run(prog string, filename string) {
 		SectorStore:         sectorStore,
 		SectorEntitiesStore: sectorStore,
 
-		AbilityService: &abilitysvc.Service{
-			AbilityStore:         abilityStore,
+		Ability: &abilityapp.App{
+			Store:                abilityStore,
 			AbilityStarterStore:  abilityStore,
 			AbilityTemplateStore: abilityStore,
 		},

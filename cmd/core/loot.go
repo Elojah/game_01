@@ -8,18 +8,18 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) LootSource(id gulid.ID, e event.E) error {
+func (svc *service) LootSource(id gulid.ID, e event.E) error {
 
 	ls := e.Action.LootSource
 	ts := e.ID.Time()
 
 	// #Check permission source/token
-	if err := a.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
+	if err := svc.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
 		return errors.Wrap(err, "loot source")
 	}
 
 	// #Retrieve entity
-	source, err := a.EntityStore.GetEntity(id, ts)
+	source, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "loot source")
 	}
@@ -30,15 +30,15 @@ func (a *app) LootSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Check if target is lootable
-	if ok, err := a.ItemLootStore.GetLoot(ls.TargetID); !ok || err != nil {
+	if ok, err := svc.ItemLootStore.GetLoot(ls.TargetID); !ok || err != nil {
 		if err != nil {
 			return errors.Wrap(err, "loot source")
 		}
 		return errors.Wrap(gerrors.ErrNotLootableEntity{EntityID: ls.TargetID.String()}, "loot source")
 	}
 
-	// #Retrieve source inventory to check if has a free spot
-	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
+	// #Retrieve source inventory to check if has svc free spot
+	sourceInventory, err := svc.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot source")
 	}
@@ -52,7 +52,7 @@ func (a *app) LootSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Publish loot event to target.
-	return errors.Wrap(a.EventQStore.PublishEvent(
+	return errors.Wrap(svc.EventQStore.PublishEvent(
 		event.E{
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
@@ -67,19 +67,19 @@ func (a *app) LootSource(id gulid.ID, e event.E) error {
 	)
 }
 
-func (a *app) LootTarget(id gulid.ID, e event.E) error {
+func (svc *service) LootTarget(id gulid.ID, e event.E) error {
 
 	lt := e.Action.LootTarget
 	ts := e.ID.Time()
 
 	// #Retrieve entity
-	target, err := a.EntityStore.GetEntity(id, ts)
+	target, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
 	// #Retrieve target inventory
-	targetInventory, err := a.EntityInventoryService.Get(target.InventoryID, target.ID)
+	targetInventory, err := svc.EntityInventoryService.Get(target.InventoryID, target.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot target")
 	}
@@ -94,15 +94,15 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 	}
 
 	// #Check distance between source and target
-	dist, err := a.SectorService.Segment(lt.Source.Position, target.Position)
+	dist, err := svc.SectorService.Segment(lt.Source.Position, target.Position)
 	if err != nil {
 		return errors.Wrap(err, "loot target")
 	}
-	if dist > a.lootRadius {
+	if dist > svc.lootRadius {
 		return errors.Wrap(
 			gerrors.ErrOutOfRange{
 				Dist:  dist,
-				Range: a.lootRadius,
+				Range: svc.lootRadius,
 			},
 			"loot target",
 		)
@@ -117,18 +117,18 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 
 	// Create new inventory
 	targetInventory.ID = gulid.NewID()
-	if err := a.EntityInventoryService.SetMR(target.ID, targetInventory); err != nil {
+	if err := svc.EntityInventoryService.SetMR(target.ID, targetInventory); err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
 	target.InventoryID = targetInventory.ID
 	// Set new inventory to target
-	if err := a.EntityStore.SetEntity(target, ts+1); err != nil {
+	if err := svc.EntityStore.SetEntity(target, ts+1); err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
 	// #Publish loot event to target.
-	return errors.Wrap(a.EventQStore.PublishEvent(
+	return errors.Wrap(svc.EventQStore.PublishEvent(
 		event.E{
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
@@ -143,19 +143,19 @@ func (a *app) LootTarget(id gulid.ID, e event.E) error {
 	)
 }
 
-func (a *app) LootFeedback(id gulid.ID, e event.E) error {
+func (svc *service) LootFeedback(id gulid.ID, e event.E) error {
 
 	lf := e.Action.LootFeedback
 	ts := e.ID.Time()
 
 	// #Retrieve entity
-	source, err := a.EntityStore.GetEntity(id, ts)
+	source, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
 
 	// #Retrieve source inventory
-	sourceInventory, err := a.EntityInventoryService.Get(source.InventoryID, source.ID)
+	sourceInventory, err := svc.EntityInventoryService.Get(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
@@ -173,11 +173,11 @@ func (a *app) LootFeedback(id gulid.ID, e event.E) error {
 
 	// #Create new inventory
 	sourceInventory.ID = gulid.NewID()
-	if err := a.EntityInventoryService.SetMR(source.ID, sourceInventory); err != nil {
+	if err := svc.EntityInventoryService.SetMR(source.ID, sourceInventory); err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
 
 	// Set new inventory
 	source.InventoryID = sourceInventory.ID
-	return errors.Wrap(a.EntityStore.SetEntity(source, ts+1), "loot feedback")
+	return errors.Wrap(svc.EntityStore.SetEntity(source, ts+1), "loot feedback")
 }

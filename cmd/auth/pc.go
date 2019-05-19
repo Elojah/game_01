@@ -140,7 +140,7 @@ func (h *handler) createPC(w http.ResponseWriter, r *http.Request) {
 	pc.Name = setPC.Name
 
 	// #Set starter abilities to pc.
-	if err := h.AbilityService.SetStarterAbilities(pc.ID, pc.Type); err != nil {
+	if err := h.Ability.SetStarterAbilities(pc.ID, pc.Type); err != nil {
 		logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to set starter abilities")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -298,7 +298,7 @@ func (h *handler) connectPC(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Copy PC abilities
-	if err := h.AbilityService.CopyAbilities(pc.ID, e.ID); err != nil {
+	if err := h.Ability.CopyAbilities(pc.ID, e.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to copy abilities to entity")
 		http.Error(w, "failed to connect", http.StatusInternalServerError)
 		return

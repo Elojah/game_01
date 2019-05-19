@@ -13,34 +13,34 @@ const (
 	templateKey = "atpl:"
 )
 
-// GetTemplate implemented with redis.
-func (s *Store) GetTemplate(id ulid.ID) (ability.Template, error) {
+// FetchTemplate implemented with redis.
+func (s *Store) FetchTemplate(id ulid.ID) (ability.Template, error) {
 	val, err := s.Get(templateKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return ability.Template{}, errors.Wrapf(err, "get template %s", id.String())
+			return ability.Template{}, errors.Wrapf(err, "fetch template %s", id.String())
 		}
 		return ability.Template{}, errors.Wrapf(
 			gerrors.ErrNotFound{Store: templateKey, Index: id.String()},
-			"get template %s",
+			"fetch template %s",
 			id.String(),
 		)
 	}
 
 	var a ability.A
 	if err := a.Unmarshal([]byte(val)); err != nil {
-		return ability.Template{}, errors.Wrapf(err, "get template %s", id.String())
+		return ability.Template{}, errors.Wrapf(err, "fetch template %s", id.String())
 	}
 	return a, nil
 }
 
-// SetTemplate implemented with redis.
-func (s *Store) SetTemplate(t ability.Template) error {
+// InsertTemplate implemented with redis.
+func (s *Store) InsertTemplate(t ability.Template) error {
 	raw, err := t.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "set template %s", t.ID.String())
+		return errors.Wrapf(err, "insert template %s", t.ID.String())
 	}
-	return errors.Wrapf(s.Set(templateKey+t.ID.String(), raw, 0).Err(), "set template %s", t.ID.String())
+	return errors.Wrapf(s.Set(templateKey+t.ID.String(), raw, 0).Err(), "insert template %s", t.ID.String())
 }
 
 // ListTemplate implemented with redis.

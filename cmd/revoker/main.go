@@ -51,8 +51,8 @@ func run(prog string, filename string) {
 	infraStore := infrasrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
 
-	// main app
-	a := &app{
+	// main service
+	svc := &service{
 		TokenHCStore: accountStore,
 		TokenService: &accountsvc.TokenService{
 			AccountStore:          accountStore,
@@ -73,10 +73,10 @@ func run(prog string, filename string) {
 			},
 		},
 	}
-	al := a.NewLauncher(Namespaces{
-		Revoker: "revoker",
-	}, "revoker")
-	launchers.Add(al)
+	svcl := svc.NewLauncher(Namespaces{
+		Service: "service",
+	}, "service")
+	launchers.Add(svcl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")

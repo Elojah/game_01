@@ -8,21 +8,30 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-// Store is an interface for E object.
+// Store contains basic operations fo entity E object.
 type Store interface {
-	SetEntity(E, uint64) error
-	GetEntity(gulid.ID, uint64) (E, error)
-	DelEntity(gulid.ID) error
-	DelEntityByTS(gulid.ID, uint64) error
+	Insert(E, uint64) error
+	Fetch(gulid.ID, uint64) (E, error)
+	Remove(gulid.ID) error
+	RemoveByTS(gulid.ID, uint64) error
 }
 
-// Service represents entity usecases.
-type Service interface {
+// App contains entity stores and applications.
+type App interface {
+	InventoryStore
+	MRInventoryStore
+	PCLeftStore
+	PCStore
+	PermissionStore
+	SpawnStore
+	Store
+	TemplateStore
+
 	Disconnect(id gulid.ID) error
-}
-
-type PCService interface {
-	RemovePC(gulid.ID, gulid.ID) error
+	ErasePC(gulid.ID, gulid.ID) error
+	FetchMRInventoryFromCache(gulid.ID, gulid.ID) (Inventory, error)
+	SetMRInventory(gulid.ID, Inventory) error
+	CheckPermission(gulid.ID, gulid.ID) error
 }
 
 // CastAbility decreases MP (without check) and assign a new cast to entity.
@@ -75,28 +84,5 @@ func (e *E) ApplyEffects(source *E, effects []ability.Effect) ([]ability.EffectF
 
 // ApplyEffectFeedbacks applies all feedback effects.
 func (e *E) ApplyEffectFeedbacks(source *E, effects []ability.EffectFeedback) error {
-
-	return nil
-	/*
-		var result *multierror.Error
-
-		for _, effect := range effects {
-			veffect := effect.GetValue()
-			switch veffect.(type) {
-			case *ability.DamageFeedback:
-				// e.DamageFeedback(source, v)
-				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-			case *ability.HealFeedback:
-				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-			case *ability.HealOverTimeFeedback:
-				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-			case *ability.DamageOverTimeFeedback:
-				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-			default:
-				result = multierror.Append(result, gerrors.ErrNotImplementedYet{Version: "0.2.0"})
-			}
-		}
-
-		return result.ErrorOrNil()
-	*/
+	return nil // TODO
 }

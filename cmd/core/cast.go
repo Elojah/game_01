@@ -8,18 +8,18 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-func (a *app) CastSource(id ulid.ID, e event.E) error {
+func (svc *service) CastSource(id ulid.ID, e event.E) error {
 
 	cs := e.Action.CastSource
 	ts := e.ID.Time()
 
 	// #Check permission source/token
-	if err := a.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
+	if err := svc.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
 		return errors.Wrap(err, "cast source")
 	}
 
 	// #Retrieve ability.
-	ab, err := a.AbilityStore.GetAbility(id, cs.AbilityID)
+	ab, err := svc.AbilityStore.GetAbility(id, cs.AbilityID)
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
 		return errors.Wrap(
@@ -36,7 +36,7 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 	}
 
 	// #Retrieve entity
-	source, err := a.EntityStore.GetEntity(id, ts)
+	source, err := svc.EntityStore.GetEntity(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "cast source")
 	}
@@ -101,12 +101,12 @@ func (a *app) CastSource(id ulid.ID, e event.E) error {
 
 	// #Set entity new state with decreased MP and casting up.
 	source.CastAbility(ab, ts)
-	if err := a.EntityStore.SetEntity(source, ts+1); err != nil {
+	if err := svc.EntityStore.SetEntity(source, ts+1); err != nil {
 		return errors.Wrap(err, "cast source")
 	}
 
 	// #Publish casted event to event set.
-	return errors.Wrap(a.EventQStore.PublishEvent(
+	return errors.Wrap(svc.EventQStore.PublishEvent(
 		event.E{
 			ID: ulid.NewTimeID(ts + ab.CastTime),
 			Action: event.Action{

@@ -14,78 +14,78 @@ const (
 	inventoryMRKey = "inventory_mr:"
 )
 
-// GetInventory implemented with redis.
-func (s *Store) GetInventory(id ulid.ID) (entity.Inventory, error) {
+// FetchInventory implemented with redis.
+func (s *Store) FetchInventory(id ulid.ID) (entity.Inventory, error) {
 	val, err := s.Get(inventoryKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return entity.Inventory{}, errors.Wrapf(err, "get inventory %s", id.String())
+			return entity.Inventory{}, errors.Wrapf(err, "fetch inventory %s", id.String())
 		}
 		return entity.Inventory{}, errors.Wrapf(
 			gerrors.ErrNotFound{Store: inventoryKey, Index: id.String()},
-			"get inventory %s",
+			"fetch inventory %s",
 			id.String(),
 		)
 	}
 
 	var inv entity.Inventory
 	if err := inv.Unmarshal([]byte(val)); err != nil {
-		return entity.Inventory{}, errors.Wrapf(err, "get inventory %s", id.String())
+		return entity.Inventory{}, errors.Wrapf(err, "fetch inventory %s", id.String())
 	}
 	return inv, nil
 }
 
-// SetInventory implemented with redis.
-func (s *Store) SetInventory(inv entity.Inventory) error {
+// InsertInventory implemented with redis.
+func (s *Store) InsertInventory(inv entity.Inventory) error {
 	raw, err := inv.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "set inventory %s", inv.ID.String())
+		return errors.Wrapf(err, "insert inventory %s", inv.ID.String())
 	}
-	return errors.Wrapf(s.Set(inventoryKey+inv.ID.String(), raw, 0).Err(), "set inventory %s", inv.ID.String())
+	return errors.Wrapf(s.Set(inventoryKey+inv.ID.String(), raw, 0).Err(), "insert inventory %s", inv.ID.String())
 }
 
-// DelInventory implemented with redis.
-func (s *Store) DelInventory(id ulid.ID) error {
-	return errors.Wrapf(s.Del(inventoryKey+id.String()).Err(), "del inventory %s", id.String())
+// RemoveInventory implemented with redis.
+func (s *Store) RemoveInventory(id ulid.ID) error {
+	return errors.Wrapf(s.Del(inventoryKey+id.String()).Err(), "remove inventory %s", id.String())
 }
 
-// GetMRInventory returns the Most Recent inventory saved for entityID.
-func (s *Store) GetMRInventory(entityID ulid.ID) (entity.Inventory, error) {
+// FetchMRInventory returns the Most Recent inventory saved for entityID.
+func (s *Store) FetchMRInventory(entityID ulid.ID) (entity.Inventory, error) {
 
 	val, err := s.Get(inventoryMRKey + entityID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return entity.Inventory{}, errors.Wrapf(err, "get most recent inventory for entity %s", entityID.String())
+			return entity.Inventory{}, errors.Wrapf(err, "fetch mr inventory for entity %s", entityID.String())
 		}
 		return entity.Inventory{}, errors.Wrapf(
 			gerrors.ErrNotFound{Store: inventoryMRKey, Index: entityID.String()},
-			"get most recent inventory for entity %s",
+			"fetch mr inventory for entity %s",
 			entityID.String(),
 		)
 	}
 
 	var inv entity.Inventory
 	if err := inv.Unmarshal([]byte(val)); err != nil {
-		return entity.Inventory{}, errors.Wrapf(err, "get inventory %s", entityID.String())
+		return entity.Inventory{}, errors.Wrapf(err, "fetch inventory %s", entityID.String())
 	}
 	return inv, nil
 }
 
-// SetMRInventory set most recent inventory for entityID.
-func (s *Store) SetMRInventory(entityID ulid.ID, inv entity.Inventory) error {
+// InsertMRInventory insert mr inventory for entityID.
+func (s *Store) InsertMRInventory(entityID ulid.ID, inv entity.Inventory) error {
 
 	raw, err := inv.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "set most recent inventory for entity %s", entityID.String())
+		return errors.Wrapf(err, "insert mr inventory for entity %s", entityID.String())
 	}
 	return errors.Wrapf(
 		s.Set(inventoryMRKey+entityID.String(), raw, 0).Err(),
-		"set most recent inventory for entity %s",
+		"insert mr inventory for entity %s",
 		entityID.String(),
 	)
 }
 
-// DelMRInventory implemented with redis.
-func (s *Store) DelMRInventory(entityID ulid.ID) error {
-	return errors.Wrapf(s.Del(inventoryMRKey+entityID.String()).Err(), "del inventory for entity %s", entityID.String())
+// RemoveMRInventory implemented with redis.
+func (s *Store) RemoveMRInventory(entityID ulid.ID) error {
+	return errors.Wrapf(s.Del(inventoryMRKey+entityID.String()).Err(), "remove inventory for entity %s", entityID.String())
 }

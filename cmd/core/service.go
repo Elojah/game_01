@@ -15,7 +15,7 @@ import (
 	"github.com/elojah/game_01/pkg/ulid"
 )
 
-type app struct {
+type service struct {
 	AbilityStore         ability.Store
 	AbilityTemplateStore ability.TemplateStore
 	AbilityFeedbackStore ability.FeedbackStore
@@ -53,46 +53,46 @@ type app struct {
 	consumeRadius float64
 }
 
-func (a *app) Dial(c Config) error {
-	a.id = c.ID
-	a.limit = c.Limit
-	a.lootRadius = c.LootRadius
-	a.consumeRadius = c.ConsumeRadius
-	if err := a.SectorService.Up(c.MoveTolerance); err != nil {
+func (svc *service) Dial(c Config) error {
+	svc.id = c.ID
+	svc.limit = c.Limit
+	svc.lootRadius = c.LootRadius
+	svc.consumeRadius = c.ConsumeRadius
+	if err := svc.SectorService.Up(c.MoveTolerance); err != nil {
 		return err
 	}
-	go a.Run()
+	go svc.Run()
 	return nil
 }
 
-func (a *app) Run() {
-	logger := log.With().Str("core", a.id.String()).Logger()
+func (svc *service) Run() {
+	logger := log.With().Str("core", svc.id.String()).Logger()
 
-	a.subs = make(map[ulid.ID]*infra.Subscription)
-	a.subs[a.id] = a.SubscribeSequencer(a.id)
+	svc.subs = make(map[ulid.ID]*infra.Subscription)
+	svc.subs[svc.id] = svc.SubscribeSequencer(svc.id)
 	go func(sub *infra.Subscription) {
 		for msg := range sub.Channel() {
-			go a.Sequencer(msg)
+			go svc.Sequencer(msg)
 		}
-	}(a.subs[a.id])
+	}(svc.subs[svc.id])
 
-	a.seqs = make(map[ulid.ID]*Sequencer)
+	svc.seqs = make(map[ulid.ID]*Sequencer)
 
-	if err := a.SetCore(infra.Core{ID: a.id}); err != nil {
+	if err := svc.SetCore(infra.Core{ID: svc.id}); err != nil {
 		logger.Error().Err(err).Msg("failed to set core")
 		return
 	}
 }
 
-func (a *app) Close() error {
+func (svc *service) Close() error {
 	var result *multierror.Error
 
-	for _, s := range a.subs {
+	for _, s := range svc.subs {
 		if err := s.Unsubscribe(); err != nil {
 			result = multierror.Append(result, err)
 		}
 	}
-	for _, s := range a.seqs {
+	for _, s := range svc.seqs {
 		if err := s.Close(); err != nil {
 			result = multierror.Append(result, err)
 		}
@@ -100,8 +100,8 @@ func (a *app) Close() error {
 	return result.ErrorOrNil()
 }
 
-func (a *app) Sequencer(msg *infra.Message) {
-	logger := log.With().Str("core", a.id.String()).Logger()
+func (svc *service) Sequencer(msg *infra.Message) {
+	logger := log.With().Str("core", svc.id.String()).Logger()
 
 	var sequencer infra.Sequencer
 	if err := sequencer.Unmarshal([]byte(msg.Payload)); err != nil {
@@ -113,23 +113,23 @@ func (a *app) Sequencer(msg *infra.Message) {
 	switch sequencer.Action {
 
 	case infra.Open:
-		a.seqs[sequencer.ID] = NewSequencer(sequencer.ID, a.limit, a.Apply)
-		a.seqs[sequencer.ID].EventStore = a.EventStore
-		a.seqs[sequencer.ID].EventTriggerService = a.EventTriggerService
-		a.seqs[sequencer.ID].EntityStore = a.EntityStore
-		a.seqs[sequencer.ID].Run()
+		svc.seqs[sequencer.ID] = NewSequencer(sequencer.ID, svc.limit, svc.Apply)
+		svc.seqs[sequencer.ID].EventStore = svc.EventStore
+		svc.seqs[sequencer.ID].EventTriggerService = svc.EventTriggerService
+		svc.seqs[sequencer.ID].EntityStore = svc.EntityStore
+		svc.seqs[sequencer.ID].Run()
 
-		a.subs[sequencer.ID] = a.EventQStore.SubscribeEvent(sequencer.ID)
+		svc.subs[sequencer.ID] = svc.EventQStore.SubscribeEvent(sequencer.ID)
 
 		go func(seq *Sequencer, sub *infra.Subscription) {
 			for msg := range sub.Channel() {
 				seq.Handler(msg)
 			}
-		}(a.seqs[sequencer.ID], a.subs[sequencer.ID])
+		}(svc.seqs[sequencer.ID], svc.subs[sequencer.ID])
 		logger.Info().Msg("sequencer up")
 
 	case infra.Close:
-		seq, ok := a.seqs[sequencer.ID]
+		seq, ok := svc.seqs[sequencer.ID]
 		if !ok {
 			logger.Error().Msg("sequencer not found")
 			return
@@ -138,7 +138,7 @@ func (a *app) Sequencer(msg *infra.Message) {
 			logger.Error().Err(err).Msg("failed to close sequencer")
 			return
 		}
-		sub, ok := a.subs[sequencer.ID]
+		sub, ok := svc.subs[sequencer.ID]
 		if !ok {
 			logger.Error().Str("subscription", sequencer.ID.String()).Msg("subscription not found")
 			return
@@ -147,15 +147,15 @@ func (a *app) Sequencer(msg *infra.Message) {
 			logger.Error().Err(err).Str("subscription", sequencer.ID.String()).Msg("failed to unsubscribe")
 			return
 		}
-		delete(a.seqs, sequencer.ID)
-		delete(a.subs, sequencer.ID)
+		delete(svc.seqs, sequencer.ID)
+		delete(svc.subs, sequencer.ID)
 		logger.Info().Msg("sequencer down")
 	}
 }
 
-func (a *app) Apply(id ulid.ID, e event.E) {
+func (svc *service) Apply(id ulid.ID, e event.E) {
 	logger := log.With().
-		Str("core", a.id.String()).
+		Str("core", svc.id.String()).
 		Str("sequencer", id.String()).
 		Str("event", e.ID.String()).
 		Uint64("ts", e.ID.Time()).
@@ -165,35 +165,35 @@ func (a *app) Apply(id ulid.ID, e event.E) {
 	var err error
 	switch e.Action.GetValue().(type) {
 	case *event.MoveTarget:
-		err = a.MoveTarget(id, e)
+		err = svc.MoveTarget(id, e)
 	case *event.CastSource:
-		err = a.CastSource(id, e)
+		err = svc.CastSource(id, e)
 	case *event.PerformSource:
-		err = a.PerformSource(id, e)
+		err = svc.PerformSource(id, e)
 	case *event.PerformTarget:
-		err = a.PerformTarget(id, e)
+		err = svc.PerformTarget(id, e)
 	case *event.PerformFeedback:
-		err = a.PerformFeedback(id, e)
+		err = svc.PerformFeedback(id, e)
 	case *event.LootSource:
-		err = a.LootSource(id, e)
+		err = svc.LootSource(id, e)
 	case *event.LootTarget:
-		err = a.LootTarget(id, e)
+		err = svc.LootTarget(id, e)
 	case *event.LootFeedback:
-		err = a.LootFeedback(id, e)
+		err = svc.LootFeedback(id, e)
 	case *event.ConsumeSource:
-		err = a.ConsumeSource(id, e)
+		err = svc.ConsumeSource(id, e)
 	case *event.ConsumeTarget:
-		err = a.ConsumeTarget(id, e)
+		err = svc.ConsumeTarget(id, e)
 	case *event.ConsumeFeedback:
-		err = a.ConsumeFeedback(id, e)
+		err = svc.ConsumeFeedback(id, e)
 	case *event.Spawn:
-		err = a.Spawn(id, e)
+		err = svc.Spawn(id, e)
 	default:
 		logger.Error().Msg("unrecognized action")
 	}
 	if err != nil {
 		if gerrors.IsGameLogicError(err) {
-			if err := a.EventTriggerService.Cancel(e); err != nil {
+			if err := svc.EventTriggerService.Cancel(e); err != nil {
 				logger.Error().Err(err).Msg("cancel event")
 			}
 		}

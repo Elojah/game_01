@@ -37,16 +37,16 @@ func (s *Store) ListPC(accountID ulid.ID) ([]entity.PC, error) {
 	return pcs, nil
 }
 
-// GetPC implemented with redis.
-func (s *Store) GetPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
+// FetchPC implemented with redis.
+func (s *Store) FetchPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
 	val, err := s.Get(pcKey + accountID.String() + ":" + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return entity.PC{}, errors.Wrapf(err, "get pc %s for account %s", id.String(), accountID.String())
+			return entity.PC{}, errors.Wrapf(err, "fetch pc %s for account %s", id.String(), accountID.String())
 		}
 		return entity.PC{}, errors.Wrapf(
 			gerrors.ErrNotFound{Store: pcKey, Index: accountID.String() + ":" + id.String()},
-			"get pc %s for account %s",
+			"fetch pc %s for account %s",
 			id.String(),
 			accountID.String(),
 		)
@@ -54,68 +54,68 @@ func (s *Store) GetPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
 
 	var e entity.E
 	if err := e.Unmarshal([]byte(val)); err != nil {
-		return entity.PC{}, errors.Wrapf(err, "get pc %s for account %s", id.String(), accountID.String())
+		return entity.PC{}, errors.Wrapf(err, "fetch pc %s for account %s", id.String(), accountID.String())
 	}
 	return e, nil
 }
 
-// SetPC implemented with redis.
-func (s *Store) SetPC(pc entity.PC, accountID ulid.ID) error {
+// InsertPC implemented with redis.
+func (s *Store) InsertPC(pc entity.PC, accountID ulid.ID) error {
 	raw, err := pc.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "set pc %s for account %s", pc.ID.String(), accountID.String())
+		return errors.Wrapf(err, "insert pc %s for account %s", pc.ID.String(), accountID.String())
 	}
 	return errors.Wrapf(
 		s.Set(pcKey+accountID.String()+":"+pc.ID.String(), raw, 0).Err(),
-		"set pc %s for account %s",
+		"insert pc %s for account %s",
 		pc.ID.String(),
 		accountID.String(),
 	)
 }
 
-// DelPC implemented with redis.
-func (s *Store) DelPC(accountID ulid.ID, id ulid.ID) error {
+// RemovePC implemented with redis.
+func (s *Store) RemovePC(accountID ulid.ID, id ulid.ID) error {
 	return errors.Wrapf(
 		s.Del(pcKey+accountID.String()+":"+id.String()).Err(),
-		"del pc %s for account %s",
+		"remove pc %s for account %s",
 		id.String(),
 		accountID.String(),
 	)
 }
 
-// SetPCLeft implemented with redis.
-func (s *Store) SetPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
+// InsertPCLeft implemented with redis.
+func (s *Store) InsertPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
 	return errors.Wrapf(
 		s.Set(pcLeftKey+accountID.String(), int(pc), 0).Err(),
-		"set pc left at %d for %s",
+		"insert pc left at %d for %s",
 		pc,
 		accountID.String(),
 	)
 }
 
-// GetPCLeft implemented with redis.
-func (s *Store) GetPCLeft(accountID ulid.ID) (entity.PCLeft, error) {
+// FetchPCLeft implemented with redis.
+func (s *Store) FetchPCLeft(accountID ulid.ID) (entity.PCLeft, error) {
 	val, err := s.Get(pcLeftKey + accountID.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
-			return entity.PCLeft(0), errors.Wrapf(err, "get pc left for account %s", accountID.String())
+			return entity.PCLeft(0), errors.Wrapf(err, "fetch pc left for account %s", accountID.String())
 		}
 		return entity.PCLeft(0), errors.Wrapf(
 			gerrors.ErrNotFound{Store: pcLeftKey, Index: accountID.String()},
-			"get pc left for account %s",
+			"fetch pc left for account %s",
 			accountID.String(),
 		)
 	}
 
 	pcLeft, err := strconv.Atoi(val)
-	return entity.PCLeft(pcLeft), errors.Wrapf(err, "get pc left for account %s", accountID.String())
+	return entity.PCLeft(pcLeft), errors.Wrapf(err, "fetch pc left for account %s", accountID.String())
 }
 
-// DelPCLeft implemented with redis.
-func (s *Store) DelPCLeft(accountID ulid.ID) error {
+// RemovePCLeft implemented with redis.
+func (s *Store) RemovePCLeft(accountID ulid.ID) error {
 	return errors.Wrapf(
 		s.Del(pcLeftKey+accountID.String()).Err(),
-		"del pc left for account %s",
+		"remove pc left for account %s",
 		accountID.String(),
 	)
 }
