@@ -37,13 +37,13 @@ func (s *Store) FetchToken(id ulid.ID) (account.Token, error) {
 	return t, nil
 }
 
-// InsertToken redis implementation.
-func (s *Store) InsertToken(t account.Token) error {
+// UpsertToken redis implementation.
+func (s *Store) UpsertToken(t account.Token) error {
 	raw, err := t.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert token %s", t.ID.String())
+		return errors.Wrapf(err, "upsert token %s", t.ID.String())
 	}
-	return errors.Wrapf(s.Set(tokenKey+t.ID.String(), raw, 0).Err(), "insert token %s", t.ID.String())
+	return errors.Wrapf(s.Set(tokenKey+t.ID.String(), raw, 0).Err(), "upsert token %s", t.ID.String())
 }
 
 // RemoveToken redis implementation.
@@ -51,15 +51,15 @@ func (s *Store) RemoveToken(id ulid.ID) error {
 	return errors.Wrapf(s.Del(tokenKey+id.String()).Err(), "remove token %s", id.String())
 }
 
-// InsertTokenHC redis implementation.
-func (s *Store) InsertTokenHC(id ulid.ID, hc uint64) error {
+// UpsertTokenHC redis implementation.
+func (s *Store) UpsertTokenHC(id ulid.ID, hc uint64) error {
 	return errors.Wrapf(s.ZAddNX(
 		tokenHCKey,
 		redis.Z{
 			Score:  float64(hc),
 			Member: id.String(),
 		},
-	).Err(), "insert token hc %s at %d", id.String(), hc)
+	).Err(), "upsert token hc %s at %d", id.String(), hc)
 }
 
 // ListTokenHC redis implementation.

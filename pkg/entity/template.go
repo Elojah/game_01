@@ -8,7 +8,7 @@ type Template = E
 
 // TemplateStore contains basic operations for entity Template object.
 type TemplateStore interface {
-	InsertTemplate(Template) error
+	UpsertTemplate(Template) error
 	FetchTemplate(ulid.ID) (Template, error)
 	ListTemplate() ([]Template, error)
 }

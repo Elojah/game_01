@@ -11,21 +11,21 @@ const (
 	qeventKey = "qevent:"
 )
 
-// PublishEvent implementation with redis pubsub.
-func (s *Store) PublishEvent(e event.E, id ulid.ID) error {
+// Publish implementation with redis pubsub.
+func (s *Store) Publish(e event.E, id ulid.ID) error {
 	raw, err := e.Marshal()
 	if err != nil {
 		return errors.Wrapf(err, "publish event %s to %s", e.ID.String(), id.String())
 	}
 	return errors.Wrapf(
-		s.Publish(qeventKey+id.String(), raw).Err(),
+		s.Service.Publish(qeventKey+id.String(), raw).Err(),
 		"publish event %s to %s",
 		e.ID.String(),
 		id.String(),
 	)
 }
 
-// SubscribeEvent implementation with redis pubsub.
-func (s *Store) SubscribeEvent(id ulid.ID) *infra.Subscription {
-	return s.Subscribe(qeventKey + id.String())
+// Subscribe implementation with redis pubsub.
+func (s *Store) Subscribe(id ulid.ID) *infra.Subscription {
+	return s.Service.Subscribe(qeventKey + id.String())
 }

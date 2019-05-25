@@ -10,7 +10,7 @@ type Template = A
 
 // TemplateStore is the communication interface for ability templates.
 type TemplateStore interface {
-	InsertTemplate(Template) error
+	UpsertTemplate(Template) error
 	FetchTemplate(ulid.ID) (Template, error)
 	ListTemplate() ([]Template, error)
 }

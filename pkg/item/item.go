@@ -2,11 +2,17 @@ package item
 
 import "github.com/elojah/game_01/pkg/ulid"
 
-// Store is an interface for I object.
+// Store contains basic operations for item I object.
 type Store interface {
-	SetItem(I) error
-	GetItem(ulid.ID) (I, error)
-	DelItem(ulid.ID) error
+	UpsertItem(I) error
+	FetchItem(ulid.ID) (I, error)
+	RemoveItem(ulid.ID) error
+}
+
+// App contains items stores and applications.
+type App interface {
+	Store
+	LootStore
 }
 
 // IsConsumable returns if an item is consumable for an entitty.

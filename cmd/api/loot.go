@@ -16,7 +16,7 @@ func (h *handler) loot(ctx context.Context, msg event.DTO) error {
 		Str("action", "loot").
 		Logger()
 
-	loot := msg.Query.GetLoot()
+	loot := msg.Query.Loot
 	e := event.E{
 		ID:    msg.ID,
 		Token: msg.Token,
@@ -30,7 +30,7 @@ func (h *handler) loot(ctx context.Context, msg event.DTO) error {
 
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 
-	if err := h.PublishEvent(e, loot.Source); err != nil {
+	if err := h.event.Publish(e, loot.Source); err != nil {
 		logger.Error().Err(err).Msg("event rejected")
 	}
 	logger.Info().Str("source", loot.Source.String()).Msg("send event")

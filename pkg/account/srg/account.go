@@ -33,13 +33,13 @@ func (s *Store) FetchAccount(username string) (account.A, error) {
 	return a, nil
 }
 
-// InsertAccount implemented with redis.
-func (s *Store) InsertAccount(a account.A) error {
+// UpsertAccount implemented with redis.
+func (s *Store) UpsertAccount(a account.A) error {
 	raw, err := a.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert account %s", a.Username)
+		return errors.Wrapf(err, "upsert account %s", a.Username)
 	}
-	return errors.Wrapf(s.Set(accountKey+a.Username, raw, 0).Err(), "insert account %s", a.Username)
+	return errors.Wrapf(s.Set(accountKey+a.Username, raw, 0).Err(), "upsert account %s", a.Username)
 }
 
 // RemoveAccount redis implementation.

@@ -29,12 +29,12 @@ func (s *Store) FetchRandomCore() (infra.Core, error) {
 	return infra.Core{ID: ulid.MustParse(val)}, nil
 }
 
-// InsertCore redis implementation.
-func (s *Store) InsertCore(core infra.Core) error {
+// UpsertCore redis implementation.
+func (s *Store) UpsertCore(core infra.Core) error {
 	return errors.Wrapf(s.SAdd(
 		coreKey,
 		core.ID.String(),
-	).Err(), "insert core %s", core.ID.String())
+	).Err(), "upsert core %s", core.ID.String())
 }
 
 // RemoveCore redis implementation.

@@ -9,32 +9,32 @@ import (
 
 // TriggerStore mocks an event trigger store.
 type TriggerStore struct {
-	SetTriggerFunc   func(t event.Trigger) error
-	GetTriggerFunc   func(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error)
-	ListTriggerFunc  func(triggerID gulid.ID) ([]event.Trigger, error)
-	DelTriggerFunc   func(triggerID gulid.ID, entityID gulid.ID) error
-	SetTriggerCount  int32
-	GetTriggerCount  int32
-	ListTriggerCount int32
-	DelTriggerCount  int32
+	UpsertTriggerFunc  func(t event.Trigger) error
+	FetchTriggerFunc   func(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error)
+	ListTriggerFunc    func(triggerID gulid.ID) ([]event.Trigger, error)
+	RemoveTriggerFunc  func(triggerID gulid.ID, entityID gulid.ID) error
+	UpsertTriggerCount int32
+	FetchTriggerCount  int32
+	ListTriggerCount   int32
+	RemoveTriggerCount int32
 }
 
-// SetTrigger mocks SetTrigger method in event trigger store.
-func (s *TriggerStore) SetTrigger(t event.Trigger) error {
-	atomic.AddInt32(&s.SetTriggerCount, 1)
-	if s.SetTriggerFunc == nil {
+// UpsertTrigger mocks UpsertTrigger method in event trigger store.
+func (s *TriggerStore) UpsertTrigger(t event.Trigger) error {
+	atomic.AddInt32(&s.UpsertTriggerCount, 1)
+	if s.UpsertTriggerFunc == nil {
 		return nil
 	}
-	return s.SetTriggerFunc(t)
+	return s.UpsertTriggerFunc(t)
 }
 
-// GetTrigger mocks GetTrigger method in event trigger store.
-func (s *TriggerStore) GetTrigger(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error) {
-	atomic.AddInt32(&s.GetTriggerCount, 1)
-	if s.GetTriggerFunc == nil {
+// FetchTrigger mocks FetchTrigger method in event trigger store.
+func (s *TriggerStore) FetchTrigger(triggerID gulid.ID, entityID gulid.ID) (gulid.ID, error) {
+	atomic.AddInt32(&s.FetchTriggerCount, 1)
+	if s.FetchTriggerFunc == nil {
 		return gulid.Zero(), nil
 	}
-	return s.GetTriggerFunc(triggerID, entityID)
+	return s.FetchTriggerFunc(triggerID, entityID)
 }
 
 // ListTrigger mocks ListTrigger method in event trigger store.
@@ -46,13 +46,13 @@ func (s *TriggerStore) ListTrigger(triggerID gulid.ID) ([]event.Trigger, error) 
 	return s.ListTriggerFunc(triggerID)
 }
 
-// DelTrigger mocks DelTrigger method in event trigger store.
-func (s *TriggerStore) DelTrigger(triggerID gulid.ID, entityID gulid.ID) error {
-	atomic.AddInt32(&s.DelTriggerCount, 1)
-	if s.DelTriggerFunc == nil {
+// RemoveTrigger mocks RemoveTrigger method in event trigger store.
+func (s *TriggerStore) RemoveTrigger(triggerID gulid.ID, entityID gulid.ID) error {
+	atomic.AddInt32(&s.RemoveTriggerCount, 1)
+	if s.RemoveTriggerFunc == nil {
 		return nil
 	}
-	return s.DelTriggerFunc(triggerID, entityID)
+	return s.RemoveTriggerFunc(triggerID, entityID)
 }
 
 // NewTriggerStore returns a TriggerStore mock.
@@ -62,19 +62,19 @@ func NewTriggerStore() *TriggerStore {
 
 // TriggerService is mock for event.TriggerService.
 type TriggerService struct {
-	SetFunc     func(event.E, gulid.ID) error
+	UpsertFunc  func(event.E, gulid.ID) error
 	CancelFunc  func(event.E) error
-	SetCount    int32
+	UpsertCount int32
 	CancelCount int32
 }
 
-// Set mocks Set method of TriggerService.
-func (s *TriggerService) Set(e event.E, id gulid.ID) error {
-	atomic.AddInt32(&s.SetCount, 1)
-	if s.SetFunc == nil {
+// Upsert mocks Upsert method of TriggerService.
+func (s *TriggerService) Upsert(e event.E, id gulid.ID) error {
+	atomic.AddInt32(&s.UpsertCount, 1)
+	if s.UpsertFunc == nil {
 		return nil
 	}
-	return s.SetFunc(e, id)
+	return s.UpsertFunc(e, id)
 }
 
 // Cancel mocks Cancel method of TriggerService.

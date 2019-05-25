@@ -12,7 +12,7 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-func TestTriggerService(t *testing.T) {
+func TestA(t *testing.T) {
 
 	t.Run("set event perform source success", func(t *testing.T) {
 
@@ -35,19 +35,19 @@ func TestTriggerService(t *testing.T) {
 
 		// Mocks
 		store := &eventmocks.Store{
-			SetEventFunc: func(newE event.E, id gulid.ID) error {
+			UpsertFunc: func(newE event.E, id gulid.ID) error {
 				assert.Equal(t, e.ID.String(), newE.ID.String())
 				assert.Equal(t, entityID.String(), id.String())
 				return nil
 			},
 		}
 		triggerStore := &eventmocks.TriggerStore{
-			GetTriggerFunc: func(triggerID gulid.ID, id gulid.ID) (gulid.ID, error) {
+			FetchTriggerFunc: func(triggerID gulid.ID, id gulid.ID) (gulid.ID, error) {
 				assert.Equal(t, e.Trigger.String(), triggerID.String())
 				assert.Equal(t, entityID.String(), id.String())
 				return gulid.ID{}, gerrors.ErrNotFound{Store: "test_trigger", Index: triggerID.String()}
 			},
-			SetTriggerFunc: func(trigger event.Trigger) error {
+			UpsertTriggerFunc: func(trigger event.Trigger) error {
 				assert.Equal(t, entityID.String(), trigger.EntityID.String())
 				assert.Equal(t, e.Trigger.String(), trigger.EventSourceID.String())
 				assert.Equal(t, e.ID.String(), trigger.EventTargetID.String())
@@ -57,23 +57,23 @@ func TestTriggerService(t *testing.T) {
 		qStore := &eventmocks.QStore{}
 
 		// Test
-		s := TriggerService{
+		app := A{
 			TriggerStore: triggerStore,
 			Store:        store,
 			QStore:       qStore,
 		}
-		assert.NoError(t, s.Set(e, entityID))
+		assert.NoError(t, app.Create(e, entityID))
 
 		// Assert
-		assert.Equal(t, int32(1), store.SetEventCount)
-		assert.Equal(t, int32(0), store.GetEventCount)
-		assert.Equal(t, int32(0), store.ListEventCount)
-		assert.Equal(t, int32(0), store.DelEventCount)
+		assert.Equal(t, int32(1), store.UpsertCount)
+		assert.Equal(t, int32(0), store.FetchCount)
+		assert.Equal(t, int32(0), store.ListCount)
+		assert.Equal(t, int32(0), store.RemoveCount)
 
-		assert.Equal(t, int32(1), triggerStore.SetTriggerCount)
-		assert.Equal(t, int32(1), triggerStore.GetTriggerCount)
+		assert.Equal(t, int32(1), triggerStore.UpsertTriggerCount)
+		assert.Equal(t, int32(1), triggerStore.FetchTriggerCount)
 		assert.Equal(t, int32(0), triggerStore.ListTriggerCount)
-		assert.Equal(t, int32(0), triggerStore.DelTriggerCount)
+		assert.Equal(t, int32(0), triggerStore.RemoveTriggerCount)
 
 		assert.Equal(t, int32(0), qStore.PublishEventCount)
 		assert.Equal(t, int32(0), qStore.SubscribeEventCount)
@@ -108,24 +108,24 @@ func TestTriggerService(t *testing.T) {
 
 		// Mocks
 		store := &eventmocks.Store{
-			GetEventFunc: func(prevID gulid.ID, id gulid.ID) (event.E, error) {
+			FetchFunc: func(prevID gulid.ID, id gulid.ID) (event.E, error) {
 				assert.Equal(t, prevE.ID.String(), prevID.String())
 				assert.Equal(t, entityID.String(), id.String())
 				return prevE, nil
 			},
-			DelEventFunc: func(prevID gulid.ID, id gulid.ID) error {
+			RemoveFunc: func(prevID gulid.ID, id gulid.ID) error {
 				assert.Equal(t, prevE.ID.String(), prevID.String())
 				assert.Equal(t, entityID.String(), id.String())
 				return nil
 			},
 		}
 		triggerStore := &eventmocks.TriggerStore{
-			GetTriggerFunc: func(triggerID gulid.ID, id gulid.ID) (gulid.ID, error) {
+			FetchTriggerFunc: func(triggerID gulid.ID, id gulid.ID) (gulid.ID, error) {
 				assert.Equal(t, e.Trigger.String(), triggerID.String())
 				assert.Equal(t, entityID.String(), id.String())
 				return prevE.ID, nil
 			},
-			DelTriggerFunc: func(triggerID gulid.ID, id gulid.ID) error {
+			RemoveTriggerFunc: func(triggerID gulid.ID, id gulid.ID) error {
 				assert.Equal(t, e.Trigger.String(), triggerID.String())
 				assert.Equal(t, entityID.String(), id.String())
 				return nil
@@ -139,23 +139,23 @@ func TestTriggerService(t *testing.T) {
 		}
 
 		// Test
-		s := TriggerService{
+		app := A{
 			TriggerStore: triggerStore,
 			Store:        store,
 			QStore:       qStore,
 		}
-		assert.NoError(t, s.Set(e, entityID))
+		assert.NoError(t, app.Create(e, entityID))
 
 		// Assert
-		assert.Equal(t, int32(0), store.SetEventCount)
-		assert.Equal(t, int32(1), store.GetEventCount)
-		assert.Equal(t, int32(0), store.ListEventCount)
-		assert.Equal(t, int32(1), store.DelEventCount)
+		assert.Equal(t, int32(0), store.UpsertCount)
+		assert.Equal(t, int32(1), store.FetchCount)
+		assert.Equal(t, int32(0), store.ListCount)
+		assert.Equal(t, int32(1), store.RemoveCount)
 
-		assert.Equal(t, int32(0), triggerStore.SetTriggerCount)
-		assert.Equal(t, int32(1), triggerStore.GetTriggerCount)
+		assert.Equal(t, int32(0), triggerStore.UpsertTriggerCount)
+		assert.Equal(t, int32(1), triggerStore.FetchTriggerCount)
 		assert.Equal(t, int32(0), triggerStore.ListTriggerCount)
-		assert.Equal(t, int32(1), triggerStore.DelTriggerCount)
+		assert.Equal(t, int32(1), triggerStore.RemoveTriggerCount)
 
 		assert.Equal(t, int32(2), qStore.PublishEventCount)
 		assert.Equal(t, int32(0), qStore.SubscribeEventCount)

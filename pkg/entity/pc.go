@@ -33,7 +33,7 @@ func (pc PC) Check() error {
 
 // PCStore contains basic operations for entity PC object.
 type PCStore interface {
-	InsertPC(PC, ulid.ID) error
+	UpsertPC(PC, ulid.ID) error
 	FetchPC(ulid.ID, ulid.ID) (PC, error)
 	ListPC(ulid.ID) ([]PC, error)
 	RemovePC(ulid.ID, ulid.ID) error
@@ -44,7 +44,7 @@ type PCLeft int
 
 // PCLeftStore contains basic operations for entity PCLeft object.
 type PCLeftStore interface {
-	InsertPCLeft(PCLeft, ulid.ID) error
+	UpsertPCLeft(PCLeft, ulid.ID) error
 	FetchPCLeft(ulid.ID) (PCLeft, error)
 	RemovePCLeft(ulid.ID) error
 }

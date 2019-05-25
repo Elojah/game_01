@@ -13,15 +13,15 @@ const (
 	starterKey = "abilityStarter:"
 )
 
-// InsertStarter implements starter abilities store with redis.
-func (s *Store) InsertStarter(st ability.Starter) error {
+// UpsertStarter implements starter abilities store with redis.
+func (s *Store) UpsertStarter(st ability.Starter) error {
 	raw, err := st.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert starter abilities for entity %s", st.EntityID.String())
+		return errors.Wrapf(err, "upsert starter abilities for entity %s", st.EntityID.String())
 	}
 	return errors.Wrapf(
 		s.Set(starterKey+st.EntityID.String(), raw, 0).Err(),
-		"insert starter abilities for entity %s",
+		"upsert starter abilities for entity %s",
 		st.EntityID.String(),
 	)
 }

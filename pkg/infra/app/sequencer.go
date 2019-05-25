@@ -7,11 +7,13 @@ import (
 	"github.com/pkg/errors"
 )
 
+var _ infra.SequencerApp = (*SequencerApp)(nil)
+
 // SequencerApp represents sequencer usecases.
 type SequencerApp struct {
-	QSequencerStore
-	SequencerStore
-	CoreStore
+	infra.QSequencerStore
+	infra.SequencerStore
+	infra.CoreStore
 }
 
 // Create creates a new sequencer on a random core for id id.
@@ -28,7 +30,7 @@ func (app *SequencerApp) Create(id ulid.ID) (infra.Sequencer, error) {
 	}
 
 	// #Set sequencer with saved core id
-	if err := app.SequencerStore.InsertSequencer(seq); err != nil {
+	if err := app.SequencerStore.UpsertSequencer(seq); err != nil {
 		return infra.Sequencer{}, errors.Wrap(err, "create sequencer")
 	}
 	return seq, nil

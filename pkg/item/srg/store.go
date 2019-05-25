@@ -6,6 +6,7 @@ import (
 )
 
 var _ item.Store = (*Store)(nil)
+var _ item.LootStore = (*Store)(nil)
 
 // Store implements token and item.
 type Store struct {

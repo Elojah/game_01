@@ -7,13 +7,13 @@ import (
 
 // QStore contains basic queue operations for event E object.
 type QStore interface {
-	PublishEvent(E, gulid.ID) error
-	SubscribeEvent(gulid.ID) *infra.Subscription
+	Publish(E, gulid.ID) error
+	Subscribe(gulid.ID) *infra.Subscription
 }
 
 // Store contains basic operations for event E object.
 type Store interface {
-	Insert(E, gulid.ID) error
+	Upsert(E, gulid.ID) error
 	Fetch(gulid.ID, gulid.ID) (E, error)
 	List(gulid.ID, gulid.ID) ([]E, error)
 	Remove(gulid.ID, gulid.ID) error

@@ -34,15 +34,15 @@ func (s *Store) FetchSpawn(id ulid.ID) (entity.Spawn, error) {
 	return sp, nil
 }
 
-// InsertSpawn implemented with redis.
-func (s *Store) InsertSpawn(spawn entity.Spawn) error {
+// UpsertSpawn implemented with redis.
+func (s *Store) UpsertSpawn(spawn entity.Spawn) error {
 	raw, err := spawn.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert spawn %s", spawn.ID.String())
+		return errors.Wrapf(err, "upsert spawn %s", spawn.ID.String())
 	}
 	return errors.Wrapf(
 		s.Set(spawnKey+spawn.ID.String(), raw, 0).Err(),
-		"insert spawn %s",
+		"upsert spawn %s",
 		spawn.ID.String(),
 	)
 }

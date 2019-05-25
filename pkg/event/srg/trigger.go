@@ -15,15 +15,15 @@ const (
 	triggerKey = "trigger:"
 )
 
-// InsertTrigger implemented with redis.
-func (s *Store) InsertTrigger(t event.Trigger) error {
+// UpsertTrigger implemented with redis.
+func (s *Store) UpsertTrigger(t event.Trigger) error {
 	return errors.Wrapf(
 		s.Set(
 			triggerKey+t.EventSourceID.String()+":"+t.EntityID.String(),
 			t.EventTargetID.String(),
 			0,
 		).Err(),
-		"insert trigger %s to %s for entity %s",
+		"upsert trigger %s to %s for entity %s",
 		t.EventSourceID.String(),
 		t.EventTargetID.String(),
 		t.EntityID.String(),

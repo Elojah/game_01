@@ -10,7 +10,7 @@ import (
 
 // Store contains basic operations for entity E object.
 type Store interface {
-	Insert(E, uint64) error
+	Upsert(E, uint64) error
 	Fetch(gulid.ID, uint64) (E, error)
 	Remove(gulid.ID) error
 	RemoveByTS(gulid.ID, uint64) error
@@ -30,7 +30,7 @@ type App interface {
 	Disconnect(id gulid.ID) error
 	ErasePC(gulid.ID, gulid.ID) error
 	FetchMRInventoryFromCache(gulid.ID, gulid.ID) (Inventory, error)
-	SetMRInventory(gulid.ID, Inventory) error
+	UpsertMRInventoryWithCache(gulid.ID, Inventory) error
 	CheckPermission(gulid.ID, gulid.ID) error
 }
 

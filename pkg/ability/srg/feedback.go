@@ -34,15 +34,15 @@ func (s *Store) FetchFeedback(id ulid.ID) (ability.Feedback, error) {
 	return fb, nil
 }
 
-// InsertFeedback implemented with redis.
-func (s *Store) InsertFeedback(fb ability.Feedback) error {
+// UpsertFeedback implemented with redis.
+func (s *Store) UpsertFeedback(fb ability.Feedback) error {
 	raw, err := fb.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert feedback %s", fb.ID.String())
+		return errors.Wrapf(err, "upsert feedback %s", fb.ID.String())
 	}
 	return errors.Wrapf(
 		s.Set(feedbackKey+fb.ID.String(), raw, 0).Err(),
-		"insert feedback %s",
+		"upsert feedback %s",
 		fb.ID.String(),
 	)
 }

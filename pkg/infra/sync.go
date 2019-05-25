@@ -11,7 +11,7 @@ type Sync struct {
 
 // SyncStore contains basic operations for infra sync object.
 type SyncStore interface {
-	InsertSync(Sync) error
+	UpsertSync(Sync) error
 	FetchRandomSync() (Sync, error)
 	RemoveSync(ulid.ID) error
 }

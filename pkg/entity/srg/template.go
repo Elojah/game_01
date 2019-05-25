@@ -34,15 +34,15 @@ func (s *Store) FetchTemplate(id ulid.ID) (entity.Template, error) {
 	return e, nil
 }
 
-// InsertTemplate implemented with redis.
-func (s *Store) InsertTemplate(t entity.Template) error {
+// UpsertTemplate implemented with redis.
+func (s *Store) UpsertTemplate(t entity.Template) error {
 	raw, err := t.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert template %s", t.ID.String())
+		return errors.Wrapf(err, "upsert template %s", t.ID.String())
 	}
 	return errors.Wrapf(
 		s.Set(templateKey+t.ID.String(), raw, 0).Err(),
-		"insert template %s",
+		"upsert template %s",
 		t.ID.String(),
 	)
 }

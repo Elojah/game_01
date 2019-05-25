@@ -15,11 +15,11 @@ const (
 	eventKey = "event:"
 )
 
-// Insert implemented with redis.
-func (s *Store) Insert(e event.E, id gulid.ID) error {
+// Upsert implemented with redis.
+func (s *Store) Upsert(e event.E, id gulid.ID) error {
 	raw, err := e.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert event %s for entity %s", e.ID.String(), id.String())
+		return errors.Wrapf(err, "upsert event %s for entity %s", e.ID.String(), id.String())
 	}
 	return errors.Wrapf(s.ZAddNX(
 		eventKey+id.String(),
@@ -27,11 +27,11 @@ func (s *Store) Insert(e event.E, id gulid.ID) error {
 			Score:  float64(e.ID.Time()),
 			Member: raw,
 		},
-	).Err(), "insert event %s for entity %s", e.ID.String(), id.String())
+	).Err(), "upsert event %s for entity %s", e.ID.String(), id.String())
 }
 
-// FetchEvent implemented with redis.
-func (s *Store) FetchEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
+// Fetch implemented with redis.
+func (s *Store) Fetch(id gulid.ID, entityID gulid.ID) (event.E, error) {
 	vals, err := s.ZRangeByScore(
 		eventKey+entityID.String(),
 		redis.ZRangeBy{
@@ -57,8 +57,8 @@ func (s *Store) FetchEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
 	return e, nil
 }
 
-// ListEvent list events in redis insert key from min (included).
-func (s *Store) ListEvent(id gulid.ID, min gulid.ID) ([]event.E, error) {
+// List list events in redis upsert key from min (included).
+func (s *Store) List(id gulid.ID, min gulid.ID) ([]event.E, error) {
 	vals, err := s.ZRangeByScore(
 		eventKey+id.String(),
 		redis.ZRangeBy{
@@ -78,8 +78,8 @@ func (s *Store) ListEvent(id gulid.ID, min gulid.ID) ([]event.E, error) {
 	return events, nil
 }
 
-// RemoveEvent implemented with redis.
-func (s *Store) RemoveEvent(eventID gulid.ID, id gulid.ID) error {
+// Remove implemented with redis.
+func (s *Store) Remove(eventID gulid.ID, id gulid.ID) error {
 	return errors.Wrapf(s.ZRem(
 		eventKey+id.String(),
 		eventID.String(),

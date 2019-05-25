@@ -59,15 +59,15 @@ func (s *Store) FetchPC(accountID ulid.ID, id ulid.ID) (entity.PC, error) {
 	return e, nil
 }
 
-// InsertPC implemented with redis.
-func (s *Store) InsertPC(pc entity.PC, accountID ulid.ID) error {
+// UpsertPC implemented with redis.
+func (s *Store) UpsertPC(pc entity.PC, accountID ulid.ID) error {
 	raw, err := pc.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert pc %s for account %s", pc.ID.String(), accountID.String())
+		return errors.Wrapf(err, "upsert pc %s for account %s", pc.ID.String(), accountID.String())
 	}
 	return errors.Wrapf(
 		s.Set(pcKey+accountID.String()+":"+pc.ID.String(), raw, 0).Err(),
-		"insert pc %s for account %s",
+		"upsert pc %s for account %s",
 		pc.ID.String(),
 		accountID.String(),
 	)
@@ -83,11 +83,11 @@ func (s *Store) RemovePC(accountID ulid.ID, id ulid.ID) error {
 	)
 }
 
-// InsertPCLeft implemented with redis.
-func (s *Store) InsertPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
+// UpsertPCLeft implemented with redis.
+func (s *Store) UpsertPCLeft(pc entity.PCLeft, accountID ulid.ID) error {
 	return errors.Wrapf(
 		s.Set(pcLeftKey+accountID.String(), int(pc), 0).Err(),
-		"insert pc left at %d for %s",
+		"upsert pc left at %d for %s",
 		pc,
 		accountID.String(),
 	)

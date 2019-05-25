@@ -4,7 +4,7 @@ import "github.com/elojah/game_01/pkg/ulid"
 
 // Store contains basic operations for account A.
 type Store interface {
-	InsertAccount(A) error
+	UpsertAccount(A) error
 	FetchAccount(string) (A, error)
 	RemoveAccount(string) error
 }

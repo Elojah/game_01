@@ -35,13 +35,13 @@ func (s *Store) FetchInventory(id ulid.ID) (entity.Inventory, error) {
 	return inv, nil
 }
 
-// InsertInventory implemented with redis.
-func (s *Store) InsertInventory(inv entity.Inventory) error {
+// UpsertInventory implemented with redis.
+func (s *Store) UpsertInventory(inv entity.Inventory) error {
 	raw, err := inv.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert inventory %s", inv.ID.String())
+		return errors.Wrapf(err, "upsert inventory %s", inv.ID.String())
 	}
-	return errors.Wrapf(s.Set(inventoryKey+inv.ID.String(), raw, 0).Err(), "insert inventory %s", inv.ID.String())
+	return errors.Wrapf(s.Set(inventoryKey+inv.ID.String(), raw, 0).Err(), "upsert inventory %s", inv.ID.String())
 }
 
 // RemoveInventory implemented with redis.
@@ -71,16 +71,16 @@ func (s *Store) FetchMRInventory(entityID ulid.ID) (entity.Inventory, error) {
 	return inv, nil
 }
 
-// InsertMRInventory insert mr inventory for entityID.
-func (s *Store) InsertMRInventory(entityID ulid.ID, inv entity.Inventory) error {
+// UpsertMRInventory upsert mr inventory for entityID.
+func (s *Store) UpsertMRInventory(entityID ulid.ID, inv entity.Inventory) error {
 
 	raw, err := inv.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert mr inventory for entity %s", entityID.String())
+		return errors.Wrapf(err, "upsert mr inventory for entity %s", entityID.String())
 	}
 	return errors.Wrapf(
 		s.Set(inventoryMRKey+entityID.String(), raw, 0).Err(),
-		"insert mr inventory for entity %s",
+		"upsert mr inventory for entity %s",
 		entityID.String(),
 	)
 }

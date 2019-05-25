@@ -10,12 +10,12 @@ const (
 	sectorEntitiesKey = "sector_entities:"
 )
 
-// GetEntities implemented with redis.
-func (s *Store) GetEntities(sectorID ulid.ID) (sector.Entities, error) {
+// FetchEntities implemented with redis.
+func (s *Store) FetchEntities(sectorID ulid.ID) (sector.Entities, error) {
 	sectorEntities := sector.Entities{SectorID: sectorID}
 	vals, err := s.SMembers(sectorEntitiesKey + sectorID.String()).Result()
 	if err != nil {
-		return sector.Entities{}, errors.Wrapf(err, "get entities for sector %s", sectorID.String())
+		return sector.Entities{}, errors.Wrapf(err, "fetch entities for sector %s", sectorID.String())
 	}
 	sectorEntities.EntityIDs = make([]ulid.ID, len(vals))
 	for i, val := range vals {

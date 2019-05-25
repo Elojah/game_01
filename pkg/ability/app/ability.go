@@ -6,6 +6,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+var _ ability.App = (*A)(nil)
+
 // A implements ability applications.
 type A struct {
 	ability.FeedbackStore
@@ -26,7 +28,7 @@ func (app A) SetStarters(entityID gulid.ID, typeID gulid.ID) error {
 		if err != nil {
 			return errors.Wrap(err, "set starter abilities")
 		}
-		if err := app.Store.Insert(ab, entityID); err != nil {
+		if err := app.Store.Upsert(ab, entityID); err != nil {
 			return errors.Wrap(err, "set starter abilities")
 		}
 	}
@@ -41,7 +43,7 @@ func (app A) Copy(sourceID gulid.ID, targetID gulid.ID) error {
 	}
 
 	for _, ab := range abilities {
-		if err := app.Store.Insert(ab, targetID); err != nil {
+		if err := app.Store.Upsert(ab, targetID); err != nil {
 			return errors.Wrap(err, "copy abilities")
 		}
 	}

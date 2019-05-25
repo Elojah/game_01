@@ -16,7 +16,7 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 		Str("action", "cast").
 		Logger()
 
-	cast := msg.Query.GetCast()
+	cast := msg.Query.Cast
 	e := event.E{
 		ID:    msg.ID,
 		Token: msg.Token,
@@ -30,7 +30,7 @@ func (h *handler) cast(ctx context.Context, msg event.DTO) error {
 
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 
-	if err := h.PublishEvent(e, cast.Source); err != nil {
+	if err := h.event.Publish(e, cast.Source); err != nil {
 		logger.Error().Err(err).Msg("event rejected")
 	}
 	logger.Info().Str("source", cast.Source.String()).Msg("send event")

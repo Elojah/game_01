@@ -11,7 +11,7 @@ type Core struct {
 
 // CoreStore contains basic operations for infra core object.
 type CoreStore interface {
-	InsertCore(Core) error
+	UpsertCore(Core) error
 	FetchRandomCore() (Core, error)
 	RemoveCore(ulid.ID) error
 }

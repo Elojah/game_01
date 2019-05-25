@@ -29,12 +29,12 @@ func (s *Store) FetchRandomSync() (infra.Sync, error) {
 	return infra.Sync{ID: ulid.MustParse(val)}, nil
 }
 
-// InsertSync redis implementation.
-func (s *Store) InsertSync(sync infra.Sync) error {
+// UpsertSync redis implementation.
+func (s *Store) UpsertSync(sync infra.Sync) error {
 	return errors.Wrapf(s.SAdd(
 		syncKey,
 		sync.ID.String(),
-	).Err(), "insert sync %s", sync.ID.String())
+	).Err(), "upsert sync %s", sync.ID.String())
 }
 
 // RemoveSync redis implementation.

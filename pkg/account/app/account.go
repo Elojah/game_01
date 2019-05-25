@@ -13,19 +13,15 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
+var _ account.App = (*A)(nil)
+
 // A implements account applications.
 type A struct {
 	account.Store
 	account.TokenStore
 	account.TokenHCStore
 
-	EntityStore            entity.Store
-	EntityPCStore          entity.PCStore
-	EntityPermissionStore  entity.PermissionStore
-	EntityMRInventoryStore entity.MRInventoryStore
-	EntityInventoryService entity.InventoryService
-
-	EntityService entity.Service
+	Entity entity.App
 }
 
 // CreateToken creates app new token from account payload A. Returns an error if the account is invalid.
@@ -34,33 +30,33 @@ func (app A) CreateToken(payload account.A, addr string) (account.Token, error) 
 	// #Search account in redis
 	acc, err := app.Store.FetchAccount(payload.Username)
 	if err != nil {
-		return account.Token{}, errors.Wrap(err, "new token")
+		return account.Token{}, errors.Wrap(err, "create token")
 	}
 	if acc.Password != payload.Password {
-		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials{Username: payload.Username}, "new token")
+		return account.Token{}, errors.Wrap(gerrors.ErrWrongCredentials{Username: payload.Username}, "create token")
 	}
 	if !acc.Token.IsZero() {
-		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: acc.ID.String()}, "new token")
+		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: acc.ID.String()}, "create token")
 	}
 
 	// #Identify origin IP
 	ip, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
-		return account.Token{}, errors.Wrap(errors.Wrapf(err, "resolve address %app", addr), "new token")
+		return account.Token{}, errors.Wrap(errors.Wrapf(err, "resolve address %s", addr), "create token")
 	}
 
-	// #Set new token
+	// #Upsert new token
 	t := account.Token{
 		ID:      gulid.NewID(),
 		Account: acc.ID,
 		IP:      ip.String(),
 	}
-	if err := app.TokenStore.InsertToken(t); err != nil {
-		return account.Token{}, errors.Wrap(err, "new token")
+	if err := app.TokenStore.UpsertToken(t); err != nil {
+		return account.Token{}, errors.Wrap(err, "create token")
 	}
 	acc.Token = t.ID
-	if err := app.Store.InsertAccount(acc); err != nil {
-		return account.Token{}, errors.Wrap(err, "new token")
+	if err := app.Store.UpsertAccount(acc); err != nil {
+		return account.Token{}, errors.Wrap(err, "create token")
 	}
 
 	return t, nil
@@ -107,12 +103,12 @@ func (app A) DisconnectToken(id gulid.ID) error {
 	// #Reset token entity.
 	te := t.Entity
 	t.Entity = gulid.Zero()
-	if err := app.TokenStore.InsertToken(t); err != nil {
+	if err := app.TokenStore.UpsertToken(t); err != nil {
 		result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 	}
 
 	// #Retrieve entity
-	e, err := app.EntityStore.GetEntity(te, ulid.Now())
+	e, err := app.Entity.Fetch(te, ulid.Now())
 	if err != nil {
 		// Token is valid but not connected to any entity.
 		switch errors.Cause(err).(type) {
@@ -125,35 +121,35 @@ func (app A) DisconnectToken(id gulid.ID) error {
 	// #Save last entity state into PC
 	pc := e
 	pc.ID = t.PC
-	if err := app.EntityPCStore.SetPC(pc, t.Account); err != nil {
+	if err := app.Entity.UpsertPC(pc, t.Account); err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
 
 	// #Save last inventory state into MR store as pc and remove entity inv in MR store
-	inv, err := app.EntityInventoryService.Get(e.InventoryID, e.ID)
+	inv, err := app.Entity.FetchMRInventoryFromCache(e.InventoryID, e.ID)
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
-	if err := app.EntityMRInventoryStore.SetMRInventory(pc.ID, inv); err != nil {
+	if err := app.Entity.UpsertMRInventoryWithCache(pc.ID, inv); err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
-	if err := app.EntityMRInventoryStore.DelMRInventory(e.ID); err != nil {
+	if err := app.Entity.RemoveMRInventory(e.ID); err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
 
 	// #Disconnect all entities associated with token.
-	ps, err := app.EntityPermissionStore.ListPermission(t.ID.String())
+	ps, err := app.Entity.ListPermission(t.ID.String())
 	if err != nil {
 		return errors.Wrap(err, "disconnect token")
 	}
 	for _, p := range ps {
 		targetID := gulid.MustParse(p.Target)
-		if err := app.EntityService.Disconnect(targetID); err != nil {
+		if err := app.Entity.Disconnect(targetID); err != nil {
 			result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 			continue // don't remove permission in error case, it could lead to data loss
 		}
 		// #Delete token permission on entity
-		if err := app.EntityPermissionStore.DelPermission(p.Source, p.Target); err != nil {
+		if err := app.Entity.RemovePermission(p.Source, p.Target); err != nil {
 			result = multierror.Append(result, errors.Wrap(err, "disconnect token"))
 		}
 	}

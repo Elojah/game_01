@@ -34,15 +34,15 @@ func (s *Store) FetchSequencer(id ulid.ID) (infra.Sequencer, error) {
 	return seq, nil
 }
 
-// InsertSequencer redis implementation.
-func (s *Store) InsertSequencer(seq infra.Sequencer) error {
+// UpsertSequencer redis implementation.
+func (s *Store) UpsertSequencer(seq infra.Sequencer) error {
 	raw, err := seq.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert sequencer %s", seq.ID.String())
+		return errors.Wrapf(err, "upsert sequencer %s", seq.ID.String())
 	}
 	return errors.Wrapf(
 		s.Set(sequencerKey+seq.ID.String(), raw, 0).Err(),
-		"insert sequencer %s",
+		"upsert sequencer %s",
 		seq.ID.String(),
 	)
 }

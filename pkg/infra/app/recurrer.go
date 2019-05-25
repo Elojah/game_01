@@ -7,6 +7,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+var _ infra.RecurrerApp = (*RecurrerApp)(nil)
+
 // RecurrerApp represents recurrer usecases.
 type RecurrerApp struct {
 	infra.QRecurrerStore
@@ -18,7 +20,7 @@ type RecurrerApp struct {
 func (app RecurrerApp) Create(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer, error) {
 
 	// #Open recurrer on a random sync
-	sy, err := app.SyncStore.GetRandomSync()
+	sy, err := app.SyncStore.FetchRandomSync()
 	if err != nil {
 		return infra.Recurrer{}, errors.Wrap(err, "create recurrer")
 	}
@@ -33,7 +35,7 @@ func (app RecurrerApp) Create(entityID ulid.ID, tokenID ulid.ID) (infra.Recurrer
 	}
 
 	// #Set recurrer with saved sync id
-	if err := app.RecurrerStore.InsertRecurrer(r); err != nil {
+	if err := app.RecurrerStore.UpsertRecurrer(r); err != nil {
 		return infra.Recurrer{}, errors.Wrap(err, "create recurrer")
 	}
 	return r, nil

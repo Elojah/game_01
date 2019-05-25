@@ -34,7 +34,7 @@ func (h *handler) move(ctx context.Context, msg event.DTO) error {
 	for _, target := range move.Targets {
 		target := target
 		g.Go(func() error {
-			return h.PublishEvent(e, target)
+			return h.event.Publish(e, target)
 		})
 	}
 	if err := g.Wait(); err != nil {

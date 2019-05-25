@@ -63,15 +63,15 @@ func (s *Store) Fetch(entityID gulid.ID, id gulid.ID) (ability.A, error) {
 	return a, nil
 }
 
-// Insert implemented with redis.
-func (s *Store) Insert(a ability.A, entityID gulid.ID) error {
+// Upsert implemented with redis.
+func (s *Store) Upsert(a ability.A, entityID gulid.ID) error {
 	raw, err := a.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert ability %s for entity %s", a.ID.String(), entityID.String())
+		return errors.Wrapf(err, "upsert ability %s for entity %s", a.ID.String(), entityID.String())
 	}
 	return errors.Wrapf(
 		s.Set(aKey+entityID.String()+":"+a.ID.String(), raw, 0).Err(),
-		"insert ability %s for entity %s",
+		"upsert ability %s for entity %s",
 		a.ID.String(),
 		entityID.String(),
 	)

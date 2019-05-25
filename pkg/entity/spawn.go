@@ -6,7 +6,7 @@ import (
 
 // SpawnStore contains basic operations for entity spawn object.
 type SpawnStore interface {
-	InsertSpawn(Spawn) error
+	UpsertSpawn(Spawn) error
 	FetchSpawn(ulid.ID) (Spawn, error)
 	RemoveSpawn(ulid.ID) error
 }

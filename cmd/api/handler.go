@@ -19,8 +19,8 @@ type handler struct {
 	*mux.M
 	*client.C
 
-	event.QStore
-	account.TokenService
+	event   event.App
+	account account.App
 
 	port      uint
 	tolerance uint64
@@ -53,7 +53,7 @@ func (h *handler) handle(ctx context.Context, raw []byte) error {
 	}
 
 	// #Get and check token.
-	tok, err := h.TokenService.Access(msg.Token, ctx.Value(mux.Key("addr")).(string))
+	tok, err := h.account.FetchTokenFromAddr(msg.Token, ctx.Value(mux.Key("addr")).(string))
 	if err != nil {
 		logger.Error().Err(err).Str("status", "unidentified").Str("token", msg.Token.String()).Msg("failed to identify")
 		return err

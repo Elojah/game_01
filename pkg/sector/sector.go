@@ -16,15 +16,16 @@ func (s S) Out(coord geometry.Vec3) bool {
 		coord.Z > s.Dim.Z
 }
 
-// Store is the service for S.
+// Store contains basic operations for sector s object.
 type Store interface {
-	SetSector(S) error
-	GetSector(ulid.ID) (S, error)
+	Upsert(S) error
+	Fetch(ulid.ID) (S, error)
 }
 
-// Service represents a sector service helper to move between sectors.
-type Service interface {
-	Up(float64) error
+// App contains sector stores and applications.
+type App interface {
+	Store
+	EntitiesStore
 	Move(entity.E, geometry.Position) (entity.E, error)
 	Segment(geometry.Position, geometry.Position) (float64, error)
 }

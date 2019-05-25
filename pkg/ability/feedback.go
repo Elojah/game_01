@@ -6,6 +6,6 @@ import (
 
 // FeedbackStore contains basic operations for ability feedback object.
 type FeedbackStore interface {
-	InsertFeedback(Feedback) error
+	UpsertFeedback(Feedback) error
 	FetchFeedback(ulid.ID) (Feedback, error)
 }

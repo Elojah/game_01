@@ -39,11 +39,11 @@ func (s *Store) FetchPermission(source string, target string) (entity.Permission
 	return permission, errors.Wrapf(err, "fetch permission %s to %s", source, target)
 }
 
-// InsertPermission implemented with redis.
-func (s *Store) InsertPermission(permission entity.Permission) error {
+// UpsertPermission implemented with redis.
+func (s *Store) UpsertPermission(permission entity.Permission) error {
 	return errors.Wrapf(
 		s.Set(permissionKey+permission.Source+":"+permission.Target, permission.Value, 0).Err(),
-		"insert permission %s to %s",
+		"upsert permission %s to %s",
 		permission.Source,
 		permission.Target,
 	)

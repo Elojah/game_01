@@ -13,6 +13,8 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
+var _ entity.App = (*A)(nil)
+
 // A implementation of entity applications.
 type A struct {
 	entity.InventoryStore
@@ -28,7 +30,7 @@ type A struct {
 
 	SectorEntitiesStore sector.EntitiesStore
 
-	SequencerService infra.SequencerService
+	Sequencer infra.SequencerApp
 }
 
 // Disconnect disconnects an entity.
@@ -40,7 +42,7 @@ func (app A) Disconnect(id gulid.ID) error {
 	}
 
 	// #Close entity sequencer
-	if err := app.SequencerService.Remove(id); err != nil {
+	if err := app.Sequencer.Erase(id); err != nil {
 		return errors.Wrap(err, "disconnect entity")
 	}
 
@@ -85,13 +87,13 @@ func (app A) FetchMRInventoryFromCache(id gulid.ID, entityID gulid.ID) (entity.I
 	return inv, nil
 }
 
-// SetMRInventory set an inventory as most recent and traditional store.
-func (app A) SetMRInventory(entityID gulid.ID, inv entity.Inventory) error {
-	if err := app.InventoryStore.InsertInventory(inv); err != nil {
-		return errors.Wrap(err, "set mr inventory")
+// UpsertMRInventoryWithCache set an inventory as most recent and traditional store.
+func (app A) UpsertMRInventoryWithCache(entityID gulid.ID, inv entity.Inventory) error {
+	if err := app.InventoryStore.UpsertInventory(inv); err != nil {
+		return errors.Wrap(err, "upsert mr inventory with cache")
 	}
-	if err := app.MRInventoryStore.InsertMRInventory(entityID, inv); err != nil {
-		return errors.Wrap(err, "set mr inventory")
+	if err := app.MRInventoryStore.UpsertMRInventory(entityID, inv); err != nil {
+		return errors.Wrap(err, "upsert mr inventory with cache")
 	}
 	return nil
 }
@@ -126,7 +128,7 @@ func (app A) ErasePC(accountID gulid.ID, id gulid.ID) error {
 		return errors.Wrap(err, "erase pc")
 	}
 	pcLeft = pcLeft - 1
-	if err := app.PCLeftStore.InsertPCLeft(pcLeft, accountID); err != nil {
+	if err := app.PCLeftStore.UpsertPCLeft(pcLeft, accountID); err != nil {
 		return errors.Wrap(err, "erase pc")
 	}
 

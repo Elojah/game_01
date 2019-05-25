@@ -15,12 +15,12 @@ const (
 	entityKey = "entity:"
 )
 
-// Insert implemented with redis.
-func (s *Store) Insert(e entity.E, ts uint64) error {
+// Upsert implemented with redis.
+func (s *Store) Upsert(e entity.E, ts uint64) error {
 	e.State = gulid.NewID()
 	raw, err := e.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert entity %s at %d", e.ID.String(), ts)
+		return errors.Wrapf(err, "upsert entity %s at %d", e.ID.String(), ts)
 	}
 	return errors.Wrapf(s.ZAddNX(
 		entityKey+e.ID.String(),
@@ -28,7 +28,7 @@ func (s *Store) Insert(e entity.E, ts uint64) error {
 			Score:  float64(ts),
 			Member: raw,
 		},
-	).Err(), "insert entity %s at %d", e.ID.String(), ts)
+	).Err(), "upsert entity %s at %d", e.ID.String(), ts)
 }
 
 // Fetch retrieves entity in Redis using ZRevRangeByScore.

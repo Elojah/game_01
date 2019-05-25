@@ -9,6 +9,8 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
+var _ event.App = (*A)(nil)
+
 // A implements events usecases.
 type A struct {
 	event.QStore
@@ -20,11 +22,11 @@ type A struct {
 func (app *A) Create(e event.E, entityID gulid.ID) error {
 
 	if e.Trigger.IsZero() {
-		// Set event
-		return errors.Wrapf(app.Store.Insert(e, entityID), "create event with trigger")
+		// Upsert event
+		return errors.Wrapf(app.Upsert(e, entityID), "create event with trigger")
 	}
 
-	prevID, err := app.TriggerStore.FetchTrigger(e.Trigger, entityID)
+	prevID, err := app.FetchTrigger(e.Trigger, entityID)
 	if err != nil {
 		switch errors.Cause(err).(type) {
 		// Trigger doesn't exist yet so write event+trigger
@@ -36,10 +38,10 @@ func (app *A) Create(e event.E, entityID gulid.ID) error {
 					TriggerID: e.Trigger.String(),
 				}, "create event with trigger")
 			}
-			if err := app.Store.Insert(e, entityID); err != nil {
+			if err := app.Upsert(e, entityID); err != nil {
 				return errors.Wrapf(err, "create event with trigger")
 			}
-			return errors.Wrapf(app.TriggerStore.InsertTrigger(event.Trigger{
+			return errors.Wrapf(app.UpsertTrigger(event.Trigger{
 				EntityID:      entityID,
 				EventSourceID: e.Trigger,
 				EventTargetID: e.ID,
@@ -53,15 +55,15 @@ func (app *A) Create(e event.E, entityID gulid.ID) error {
 	// In this case we clean previous event and previous trigger
 
 	// Retrieve and delete previous event.
-	prev, err := app.Store.Fetch(prevID, entityID)
+	prev, err := app.Fetch(prevID, entityID)
 	if err != nil {
 		return errors.Wrapf(err, "create event with trigger")
 	}
-	if err := app.Store.Remove(prevID, entityID); err != nil {
+	if err := app.Remove(prevID, entityID); err != nil {
 		return errors.Wrapf(err, "create event with trigger")
 	}
 	// Delete trigger
-	if err := app.TriggerStore.RemoveTrigger(e.Trigger, entityID); err != nil {
+	if err := app.RemoveTrigger(e.Trigger, entityID); err != nil {
 		return errors.Wrapf(err, "create event with trigger")
 	}
 	// Cancel previous event
@@ -73,11 +75,11 @@ func (app *A) Create(e event.E, entityID gulid.ID) error {
 		return nil
 	}
 
-	// Set event and trigger
-	if err := app.Store.Insert(e, entityID); err != nil {
+	// Upsert event and trigger
+	if err := app.Upsert(e, entityID); err != nil {
 		return errors.Wrapf(err, "create event with trigger")
 	}
-	if err := app.TriggerStore.InsertTrigger(event.Trigger{
+	if err := app.UpsertTrigger(event.Trigger{
 		EntityID:      entityID,
 		EventSourceID: e.Trigger,
 		EventTargetID: e.ID,
@@ -150,7 +152,7 @@ func (app *A) CancelPerformSource(e event.E) error {
 		for _, target := range targets.Entities {
 			target := target
 			g.Go(func() error {
-				return errors.Wrapf(app.QStore.PublishEvent(e, target), "cancel move target")
+				return errors.Wrapf(app.Publish(e, target), "cancel perform source")
 			})
 		}
 		if err := g.Wait(); err != nil {
@@ -171,7 +173,7 @@ func (app *A) CancelPerformTarget(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(app.QStore.PublishEvent(e, pt.Source.ID), "cancel perform target")
+	return errors.Wrapf(app.Publish(e, pt.Source.ID), "cancel perform target")
 }
 
 // CancelPerformFeedback cancels a PerformFeedback event.
@@ -190,7 +192,7 @@ func (app *A) CancelLootSource(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(app.QStore.PublishEvent(e, ls.TargetID), "cancel loot source")
+	return errors.Wrapf(app.Publish(e, ls.TargetID), "cancel loot source")
 }
 
 // CancelLootTarget cancels a LootTarget event.
@@ -204,7 +206,7 @@ func (app *A) CancelLootTarget(e event.E) error {
 		},
 		Trigger: e.ID,
 	}
-	return errors.Wrapf(app.QStore.PublishEvent(e, lt.Source.ID), "cancel loot target")
+	return errors.Wrapf(app.Publish(e, lt.Source.ID), "cancel loot target")
 }
 
 // CancelLootFeedback cancels a LootFeedback event.

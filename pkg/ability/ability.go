@@ -6,7 +6,7 @@ import (
 
 // Store contains basic operations for ability A object.
 type Store interface {
-	Insert(A, gulid.ID) error
+	Upsert(A, gulid.ID) error
 	Fetch(gulid.ID, gulid.ID) (A, error)
 	List(gulid.ID) ([]A, error)
 	Remove(gulid.ID, gulid.ID) error

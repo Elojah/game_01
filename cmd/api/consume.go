@@ -16,7 +16,7 @@ func (h *handler) consume(ctx context.Context, msg event.DTO) error {
 		Str("action", "consume").
 		Logger()
 
-	consume := msg.Query.GetConsume()
+	consume := msg.Query.Consume
 	e := event.E{
 		ID:    msg.ID,
 		Token: msg.Token,
@@ -30,7 +30,7 @@ func (h *handler) consume(ctx context.Context, msg event.DTO) error {
 
 	logger = logger.With().Str("event", e.ID.String()).Logger()
 
-	if err := h.PublishEvent(e, consume.Source); err != nil {
+	if err := h.event.Publish(e, consume.Source); err != nil {
 		logger.Error().Err(err).Msg("event rejected")
 	}
 	logger.Info().Str("source", consume.Source.String()).Msg("send event")

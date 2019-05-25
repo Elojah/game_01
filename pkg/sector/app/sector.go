@@ -9,25 +9,25 @@ import (
 	"github.com/elojah/game_01/pkg/sector"
 )
 
-// Service is a wrapping service around sector usecases.
-type Service struct {
-	SectorEntitiesStore sector.EntitiesStore
-	SectorStore         sector.Store
+// A is a wrapping service around sector usecases.
+type A struct {
+	sector.Store
+	sector.EntitiesStore
 
-	Tolerance float64
+	tolerance float64
 }
 
-// Up assigns allowed tolerance for entity move.
-func (s *Service) Up(tolerance float64) error {
-	s.Tolerance = tolerance
-	return nil
+func NewApplication(tolerance float64) *A {
+	return &A{
+		tolerance: tolerance,
+	}
 }
 
 // Move moves a target to a new position, considering tolerance service tolerance and sector neighbours.
-func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E, error) {
+func (app *A) Move(target entity.E, newPosition geometry.Position) (entity.E, error) {
 
 	// #Retrieve current sector
-	sec, err := s.SectorStore.GetSector(target.Position.SectorID)
+	sec, err := app.Store.Fetch(target.Position.SectorID)
 	if err != nil {
 		return target, errors.Wrapf(err, "get sector %s", target.Position.SectorID.String())
 	}
@@ -55,7 +55,7 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 		}
 
 		// #Check if target has moved at a tolerable distance in same sector.
-		if geometry.Segment(target.Position.Coord, newPosition.Coord) > s.Tolerance {
+		if geometry.Segment(target.Position.Coord, newPosition.Coord) > app.tolerance {
 			return target, errors.Wrap(
 				errors.Wrap(
 					gerrors.ErrInvalidMove{
@@ -99,7 +99,7 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 		}
 
 		// #Retrieve neighbour sector (for boundaries checking)
-		neighSec, err := s.SectorStore.GetSector(newPosition.SectorID)
+		neighSec, err := app.Store.Fetch(newPosition.SectorID)
 		if err != nil {
 			return target, errors.Wrap(err, "move")
 		}
@@ -124,7 +124,7 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 		}
 
 		// #Check if target has moved at a tolerable distance in different sectors.
-		if geometry.Segment(target.Position.Coord, newPosition.Coord.MoveReference(neigh)) > s.Tolerance {
+		if geometry.Segment(target.Position.Coord, newPosition.Coord.MoveReference(neigh)) > app.tolerance {
 			return target, errors.Wrap(
 				errors.Wrap(
 					gerrors.ErrInvalidMove{
@@ -143,10 +143,10 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 		}
 
 		// #Add entity to new sector and remove from previous.
-		if err := s.SectorEntitiesStore.AddEntityToSector(target.ID, newPosition.SectorID); err != nil {
+		if err := app.EntitiesStore.AddEntityToSector(target.ID, newPosition.SectorID); err != nil {
 			return target, errors.Wrap(err, "move")
 		}
-		if err := s.SectorEntitiesStore.RemoveEntityFromSector(target.ID, target.Position.SectorID); err != nil {
+		if err := app.EntitiesStore.RemoveEntityFromSector(target.ID, target.Position.SectorID); err != nil {
 			return target, errors.Wrap(err, "move")
 		}
 
@@ -160,7 +160,7 @@ func (s *Service) Move(target entity.E, newPosition geometry.Position) (entity.E
 
 // Segment returns the segment distance between two positions, even if different sectors.
 // WORKS FOR NEIGHBOUR SEGMENTS ONLY
-func (s *Service) Segment(lhs geometry.Position, rhs geometry.Position) (float64, error) {
+func (app *A) Segment(lhs geometry.Position, rhs geometry.Position) (float64, error) {
 
 	// #If both positions have same sector, return plain segment
 	if lhs.SectorID.Compare(rhs.SectorID) == 0 {
@@ -168,7 +168,7 @@ func (s *Service) Segment(lhs geometry.Position, rhs geometry.Position) (float64
 	}
 
 	// #Retrieve current sector
-	sec, err := s.SectorStore.GetSector(lhs.SectorID)
+	sec, err := app.Store.Fetch(lhs.SectorID)
 	if err != nil {
 		return 0, errors.Wrap(err, "calculate segment")
 	}

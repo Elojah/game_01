@@ -9,9 +9,11 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
-	accountsvc "github.com/elojah/game_01/pkg/account/svc"
+	entityapp "github.com/elojah/game_01/pkg/entity/app"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	eventapp "github.com/elojah/game_01/pkg/event/app"
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
@@ -54,21 +56,31 @@ func run(prog string, filename string) {
 
 	// Stores and applicatives
 	eventStore := eventsrg.NewStore(rdlru)
-	accountStore := accountsrg.NewStore(rd)
+	eventApp := eventapp.A{
+		QStore:       eventStore,
+		Store:        eventStore,
+		TriggerStore: eventStore,
+	}
+
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
+	accountStore := accountsrg.NewStore(rd)
+	accountApp := accountapp.A{
+		Store:        accountStore,
+		TokenStore:   accountStore,
+		TokenHCStore: accountStore,
+		Entity: &entityapp.A{
+			Store:           entityLRUStore,
+			PCStore:         entityStore,
+			PermissionStore: entityStore,
+		},
+	}
 
 	h := &handler{
-		M:      m,
-		C:      c,
-		QStore: eventStore,
-		TokenService: accountsvc.TokenService{
-			AccountStore:          accountStore,
-			AccountTokenStore:     accountStore,
-			EntityStore:           entityLRUStore,
-			EntityPCStore:         entityStore,
-			EntityPermissionStore: entityStore,
-		},
+		M:       m,
+		C:       c,
+		event:   &eventApp,
+		account: &accountApp,
 	}
 
 	hl := h.NewLauncher(Namespaces{

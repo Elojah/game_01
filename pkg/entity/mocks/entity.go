@@ -9,23 +9,23 @@ import (
 
 // Store mocks entity.Store.
 type Store struct {
-	InsertFunc      func(entity.E, uint64) error
+	UpsertFunc      func(entity.E, uint64) error
 	FetchFunc       func(ulid.ID, uint64) (entity.E, error)
 	RemoveFunc      func(ulid.ID) error
 	RemoveByTSFunc  func(ulid.ID, uint64) error
-	InsertCount     int32
+	UpsertCount     int32
 	FetchCount      int32
 	RemoveCount     int32
 	RemoveByTSCount int32
 }
 
-// Insert mocks entity.Store.
-func (s *Store) Insert(e entity.E, ts uint64) error {
-	atomic.AddInt32(&s.InsertCount, 1)
-	if s.InsertFunc == nil {
+// Upsert mocks entity.Store.
+func (s *Store) Upsert(e entity.E, ts uint64) error {
+	atomic.AddInt32(&s.UpsertCount, 1)
+	if s.UpsertFunc == nil {
 		return nil
 	}
-	return s.InsertFunc(e, ts)
+	return s.UpsertFunc(e, ts)
 }
 
 // Fetch mocks entity.Store.

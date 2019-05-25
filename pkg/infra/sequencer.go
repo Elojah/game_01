@@ -12,7 +12,7 @@ type QSequencerStore interface {
 
 // SequencerStore contains basic operations for infra sequencer object.
 type SequencerStore interface {
-	InsertSequencer(Sequencer) error
+	UpsertSequencer(Sequencer) error
 	FetchSequencer(ulid.ID) (Sequencer, error)
 	RemoveSequencer(ulid.ID) error
 }

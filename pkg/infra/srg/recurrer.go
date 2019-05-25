@@ -34,15 +34,15 @@ func (s *Store) FetchRecurrer(tokenID ulid.ID) (infra.Recurrer, error) {
 	return recurrer, nil
 }
 
-// InsertRecurrer redis implementation.
-func (s *Store) InsertRecurrer(recurrer infra.Recurrer) error {
+// UpsertRecurrer redis implementation.
+func (s *Store) UpsertRecurrer(recurrer infra.Recurrer) error {
 	raw, err := recurrer.Marshal()
 	if err != nil {
-		return errors.Wrapf(err, "insert recurrer for token %s", recurrer.TokenID.String())
+		return errors.Wrapf(err, "upsert recurrer for token %s", recurrer.TokenID.String())
 	}
 	return errors.Wrapf(
 		s.Set(recurrerKey+recurrer.TokenID.String(), raw, 0).Err(),
-		"insert recurrer for token %s",
+		"upsert recurrer for token %s",
 		recurrer.TokenID.String(),
 	)
 }

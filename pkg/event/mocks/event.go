@@ -10,50 +10,50 @@ import (
 
 // Store mocks event.Store.
 type Store struct {
-	SetEventFunc   func(event.E, gulid.ID) error
-	GetEventFunc   func(gulid.ID, gulid.ID) (event.E, error)
-	ListEventFunc  func(gulid.ID, gulid.ID) ([]event.E, error)
-	DelEventFunc   func(gulid.ID, gulid.ID) error
-	SetEventCount  int32
-	GetEventCount  int32
-	ListEventCount int32
-	DelEventCount  int32
+	UpsertFunc  func(event.E, gulid.ID) error
+	FetchFunc   func(gulid.ID, gulid.ID) (event.E, error)
+	ListFunc    func(gulid.ID, gulid.ID) ([]event.E, error)
+	RemoveFunc  func(gulid.ID, gulid.ID) error
+	UpsertCount int32
+	FetchCount  int32
+	ListCount   int32
+	RemoveCount int32
 }
 
-// SetEvent mocks event.Store.
-func (s *Store) SetEvent(e event.E, id gulid.ID) error {
-	atomic.AddInt32(&s.SetEventCount, 1)
-	if s.SetEventFunc == nil {
+// Upsert mocks event.Store.
+func (s *Store) Upsert(e event.E, id gulid.ID) error {
+	atomic.AddInt32(&s.UpsertCount, 1)
+	if s.UpsertFunc == nil {
 		return nil
 	}
-	return s.SetEventFunc(e, id)
+	return s.UpsertFunc(e, id)
 }
 
-// GetEvent mocks event.Store.
-func (s *Store) GetEvent(id gulid.ID, entityID gulid.ID) (event.E, error) {
-	atomic.AddInt32(&s.GetEventCount, 1)
-	if s.GetEventFunc == nil {
+// Fetch mocks event.Store.
+func (s *Store) Fetch(id gulid.ID, entityID gulid.ID) (event.E, error) {
+	atomic.AddInt32(&s.FetchCount, 1)
+	if s.FetchFunc == nil {
 		return event.E{}, nil
 	}
-	return s.GetEventFunc(id, entityID)
+	return s.FetchFunc(id, entityID)
 }
 
-// ListEvent mocks event.Store.
-func (s *Store) ListEvent(id gulid.ID, min gulid.ID) ([]event.E, error) {
-	atomic.AddInt32(&s.ListEventCount, 1)
-	if s.ListEventFunc == nil {
+// List mocks event.Store.
+func (s *Store) List(id gulid.ID, min gulid.ID) ([]event.E, error) {
+	atomic.AddInt32(&s.ListCount, 1)
+	if s.ListFunc == nil {
 		return nil, nil
 	}
-	return s.ListEventFunc(id, min)
+	return s.ListFunc(id, min)
 }
 
-// DelEvent mocks event.Store.
-func (s *Store) DelEvent(id gulid.ID, eID gulid.ID) error {
-	atomic.AddInt32(&s.DelEventCount, 1)
-	if s.DelEventFunc == nil {
+// Remove mocks event.Store.
+func (s *Store) Remove(id gulid.ID, eID gulid.ID) error {
+	atomic.AddInt32(&s.RemoveCount, 1)
+	if s.RemoveFunc == nil {
 		return nil
 	}
-	return s.DelEventFunc(id, eID)
+	return s.RemoveFunc(id, eID)
 }
 
 // NewStore returns a event service mock ready for usage.
