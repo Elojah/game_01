@@ -28,7 +28,7 @@ type A struct {
 func (app A) CreateToken(payload account.A, addr string) (account.Token, error) {
 
 	// #Search account in redis
-	acc, err := app.Store.FetchAccount(payload.Username)
+	acc, err := app.Store.Fetch(payload.Username)
 	if err != nil {
 		return account.Token{}, errors.Wrap(err, "create token")
 	}
@@ -55,7 +55,7 @@ func (app A) CreateToken(payload account.A, addr string) (account.Token, error) 
 		return account.Token{}, errors.Wrap(err, "create token")
 	}
 	acc.Token = t.ID
-	if err := app.Store.UpsertAccount(acc); err != nil {
+	if err := app.Store.Upsert(acc); err != nil {
 		return account.Token{}, errors.Wrap(err, "create token")
 	}
 

@@ -56,7 +56,7 @@ func run(prog string, filename string) {
 
 	// Stores and applicatives
 	eventStore := eventsrg.NewStore(rdlru)
-	eventApp := eventapp.A{
+	eventApp := &eventapp.A{
 		QStore:       eventStore,
 		Store:        eventStore,
 		TriggerStore: eventStore,
@@ -65,7 +65,7 @@ func run(prog string, filename string) {
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
 	accountStore := accountsrg.NewStore(rd)
-	accountApp := accountapp.A{
+	accountApp := &accountapp.A{
 		Store:        accountStore,
 		TokenStore:   accountStore,
 		TokenHCStore: accountStore,
@@ -79,8 +79,8 @@ func run(prog string, filename string) {
 	h := &handler{
 		M:       m,
 		C:       c,
-		event:   &eventApp,
-		account: &accountApp,
+		event:   eventApp,
+		account: accountApp,
 	}
 
 	hl := h.NewLauncher(Namespaces{

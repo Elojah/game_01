@@ -37,7 +37,7 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 	a := ac.Domain()
 
 	// #Create token from account
-	tok, err := h.AccountTokenService.New(a, r.RemoteAddr)
+	tok, err := h.account.CreateToken(a, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token from account")
 		http.Error(w, "failed to signin", http.StatusInternalServerError)
@@ -86,7 +86,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("username", ac.Username).Logger()
 
 	// #Retrieve account by username.
-	a, err := h.AccountStore.GetAccount(ac.Username)
+	a, err := h.account.Fetch(ac.Username)
 	if err != nil {
 		switch errors.Cause(err).(type) {
 		case gerrors.ErrNotFound:
@@ -108,14 +108,14 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	// #Reset account token
 	tokID := a.Token
 	a.Token = ulid.Zero()
-	if err := h.AccountStore.SetAccount(a); err != nil {
+	if err := h.account.Upsert(a); err != nil {
 		logger.Error().Err(err).Msg("failed to set account")
 		http.Error(w, "failed to reset account token", http.StatusInternalServerError)
 		return
 	}
 
 	// #Retrieve account token
-	tok, err := h.AccountTokenService.Access(tokID, r.RemoteAddr)
+	tok, err := h.account.FetchTokenFromAddr(tokID, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -123,14 +123,14 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Disconnect token
-	if err := h.AccountTokenService.Disconnect(tok.ID); err != nil {
+	if err := h.account.DisconnectToken(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to disconnect token")
 		http.Error(w, "failed to disconnect token", http.StatusInternalServerError)
 		return
 	}
 
 	// #Close token recurrer.
-	if err := h.InfraRecurrerService.Remove(tok.ID); err != nil {
+	if err := h.recurrer.Erase(tok.ID); err != nil {
 		switch errors.Cause(err).(type) {
 		case gerrors.ErrNotFound:
 		default:
@@ -141,7 +141,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete token
-	if err := h.AccountTokenStore.DelToken(tok.ID); err != nil {
+	if err := h.account.RemoveToken(tok.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to delete token")
 		http.Error(w, "failed to delete token", http.StatusInternalServerError)
 		return

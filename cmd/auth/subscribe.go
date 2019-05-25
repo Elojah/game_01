@@ -41,7 +41,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	logger = logger.With().Str("account", a.ID.String()).Logger()
 
 	// #Check username is unique
-	_, err := h.AccountStore.GetAccount(a.Username)
+	_, err := h.account.Fetch(a.Username)
 	if err == nil {
 		logger.Error().Err(err).Msg("account username found")
 		http.Error(w, "username already exists", http.StatusUnauthorized)
@@ -56,14 +56,14 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Set account in redis
-	if err = h.AccountStore.SetAccount(a); err != nil {
+	if err = h.account.Upsert(a); err != nil {
 		logger.Error().Err(err).Msg("failed to create account")
 		http.Error(w, "failed to create account", http.StatusInternalServerError)
 		return
 	}
 
 	// #Add Permission to create X new chars.
-	if err := h.EntityPCLeftStore.SetPCLeft(entity.MaxPC, a.ID); err != nil {
+	if err := h.entity.UpsertPCLeft(entity.MaxPC, a.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to set character permission")
 		http.Error(w, "failed to set permissions", http.StatusInternalServerError)
 		return
@@ -112,7 +112,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Search account in redis
-	a, err := h.AccountStore.GetAccount(ac.Username)
+	a, err := h.account.Fetch(ac.Username)
 	if err != nil {
 		switch errors.Cause(err).(type) {
 		case gerrors.ErrNotFound:
@@ -134,24 +134,24 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	// #If account still connect, disconnect it.
 	if !a.Token.IsZero() {
 		logger = logger.With().Str("token", a.Token.String()).Logger()
-		if _, err := h.AccountTokenService.Access(a.Token, r.RemoteAddr); err != nil {
+		if _, err := h.account.FetchTokenFromAddr(a.Token, r.RemoteAddr); err != nil {
 			logger.Error().Err(err).Msg("failed to retrieve token")
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
 		}
-		if err := h.AccountTokenService.Disconnect(a.Token); err != nil {
+		if err := h.account.DisconnectToken(a.Token); err != nil {
 			logger.Error().Err(err).Msg("failed to disconnect token")
 			http.Error(w, "failed to disconnect", http.StatusInternalServerError)
 			return
 		}
 		// #Close token recurrer.
-		if err := h.InfraRecurrerService.Remove(a.Token); err != nil {
+		if err := h.recurrer.Erase(a.Token); err != nil {
 			logger.Error().Err(err).Str("token", a.Token.String()).Msg("failed to remove recurrer")
 			http.Error(w, "failed to remove recurrer", http.StatusInternalServerError)
 			return
 		}
 		// #Delete token
-		if err := h.AccountTokenStore.DelToken(a.Token); err != nil {
+		if err := h.account.RemoveToken(a.Token); err != nil {
 			logger.Error().Err(err).Msg("failed to delete token")
 			http.Error(w, "failed to delete token", http.StatusInternalServerError)
 			return
@@ -159,14 +159,14 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete all associated PCs.
-	pcs, err := h.EntityPCStore.ListPC(a.ID)
+	pcs, err := h.entity.ListPC(a.ID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to list pcs")
 		http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 		return
 	}
 	for _, pc := range pcs {
-		if err := h.EntityPCService.RemovePC(a.ID, pc.ID); err != nil {
+		if err := h.entity.ErasePC(a.ID, pc.ID); err != nil {
 			logger.Error().Err(err).Str("pc", pc.ID.String()).Msg("failed to delete pc")
 			http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 			return
@@ -174,14 +174,14 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// #Delete PC left number.
-	if err := h.EntityPCLeftStore.DelPCLeft(a.ID); err != nil {
+	if err := h.entity.RemovePCLeft(a.ID); err != nil {
 		logger.Error().Err(err).Msg("failed to delete pc left")
 		http.Error(w, "failed to delete pcs", http.StatusInternalServerError)
 		return
 	}
 
 	// #Delete account.
-	if err := h.AccountStore.DelAccount(a.Username); err != nil {
+	if err := h.account.Remove(a.Username); err != nil {
 		logger.Error().Err(err).Msg("failed to delete account")
 		http.Error(w, "failed to delete account", http.StatusInternalServerError)
 		return

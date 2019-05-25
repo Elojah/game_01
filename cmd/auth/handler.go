@@ -15,29 +15,13 @@ import (
 )
 
 type handler struct {
-	AccountStore      account.Store
-	AccountTokenStore account.TokenStore
-
-	EntityStore            entity.Store
-	EntityInventoryStore   entity.InventoryStore
-	EntityMRInventoryStore entity.MRInventoryStore
-	EntityInventoryService entity.InventoryService
-	EntityPCStore          entity.PCStore
-	EntityPCLeftStore      entity.PCLeftStore
-	EntityPermissionStore  entity.PermissionStore
-	EntitySpawnStore       entity.SpawnStore
-	EntityTemplateStore    entity.TemplateStore
-
-	EventQStore         event.QStore
-	InfraSyncStore      infra.SyncStore
-	SectorEntitiesStore sector.EntitiesStore
-	SectorStore         sector.Store
-
-	Ability               ability.App
-	AccountTokenService   account.TokenService
-	EntityPCService       entity.PCService
-	InfraSequencerService infra.SequencerService
-	InfraRecurrerService  infra.RecurrerService
+	ability   ability.App
+	account   account.App
+	entity    entity.App
+	event     event.App
+	recurrer  infra.RecurrerApp
+	sector    sector.App
+	sequencer infra.SequencerApp
 
 	srv *http.Server
 }

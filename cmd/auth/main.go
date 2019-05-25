@@ -11,13 +11,15 @@ import (
 
 	abilityapp "github.com/elojah/game_01/pkg/ability/app"
 	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
-	accountsvc "github.com/elojah/game_01/pkg/account/svc"
+	entityapp "github.com/elojah/game_01/pkg/entity/app"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
-	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
+	eventapp "github.com/elojah/game_01/pkg/event/app"
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
-	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
+	sectorapp "github.com/elojah/game_01/pkg/sector/app"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -46,83 +48,73 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
-	accountStore := accountsrg.NewStore(rd)
+
 	abilityStore := abilitysrg.NewStore(rd)
+	abilityLRUStore := abilitysrg.NewStore(rdlru)
+	abilityApp := &abilityapp.A{
+		FeedbackStore: abilityLRUStore,
+		StarterStore:  abilityStore,
+		Store:         abilityStore,
+		TemplateStore: abilityStore,
+	}
+
+	infraStore := infrasrg.NewStore(rd)
+	sequencerApp := &infraapp.SequencerApp{
+		QSequencerStore: infraStore,
+		SequencerStore:  infraStore,
+		CoreStore:       infraStore,
+	}
+	recurrerApp := &infraapp.RecurrerApp{
+		QRecurrerStore: infraStore,
+		RecurrerStore:  infraStore,
+		SyncStore:      infraStore,
+	}
+
+	sectorStore := sectorsrg.NewStore(rd)
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
+	entityApp := &entityapp.A{
+		InventoryStore:      entityLRUStore,
+		MRInventoryStore:    entityStore,
+		PCLeftStore:         entityStore,
+		PCStore:             entityStore,
+		PermissionStore:     entityStore,
+		SpawnStore:          entityStore,
+		Store:               entityLRUStore,
+		TemplateStore:       entityStore,
+		AbilityStore:        abilityStore,
+		SectorEntitiesStore: sectorStore,
+		Sequencer:           sequencerApp,
+	}
+
+	accountStore := accountsrg.NewStore(rd)
+	accountApp := &accountapp.A{
+		Store:        accountStore,
+		TokenStore:   accountStore,
+		TokenHCStore: accountStore,
+		Entity:       entityApp,
+	}
+
 	eventStore := eventsrg.NewStore(rdlru)
-	infraStore := infrasrg.NewStore(rd)
-	sectorStore := sectorsrg.NewStore(rd)
+	eventApp := &eventapp.A{
+		QStore:       eventStore,
+		Store:        eventStore,
+		TriggerStore: eventStore,
+	}
+
+	sectorApp := sectorapp.NewApplication(0) // tolerance is not used in those cases
+	sectorApp.Store = sectorStore
+	sectorApp.EntitiesStore = sectorStore
 
 	// handler (https server)
 	h := &handler{
-		AccountStore:      accountStore,
-		AccountTokenStore: accountStore,
-
-		EntityStore:            entityLRUStore,
-		EntityInventoryStore:   entityLRUStore,
-		EntityMRInventoryStore: entityStore,
-		EntityPCStore:          entityStore,
-		EntityPCLeftStore:      entityStore,
-		EntityPermissionStore:  entityStore,
-		EntitySpawnStore:       entityStore,
-		EntityTemplateStore:    entityStore,
-		EntityInventoryService: &entitysvc.InventoryService{
-			EntityInventoryStore:   entityLRUStore,
-			EntityMRInventoryStore: entityStore,
-		},
-
-		EventQStore: eventStore,
-
-		InfraSyncStore: infraStore,
-
-		SectorStore:         sectorStore,
-		SectorEntitiesStore: sectorStore,
-
-		Ability: &abilityapp.App{
-			Store:                abilityStore,
-			AbilityStarterStore:  abilityStore,
-			AbilityTemplateStore: abilityStore,
-		},
-		AccountTokenService: &accountsvc.TokenService{
-			AccountStore:          accountStore,
-			AccountTokenStore:     accountStore,
-			EntityStore:           entityLRUStore,
-			EntityPCStore:         entityStore,
-			EntityPermissionStore: entityStore,
-			EntityService: &entitysvc.Service{
-				AbilityStore:          abilityStore,
-				EntityStore:           entityLRUStore,
-				EntityPermissionStore: entityStore,
-				SectorEntitiesStore:   sectorStore,
-				SequencerService: &infrasvc.SequencerService{
-					InfraQSequencer: infraStore,
-					InfraSequencer:  infraStore,
-					InfraCore:       infraStore,
-				},
-			},
-			EntityMRInventoryStore: entityStore,
-			EntityInventoryService: &entitysvc.InventoryService{
-				EntityInventoryStore:   entityLRUStore,
-				EntityMRInventoryStore: entityStore,
-			},
-		},
-		EntityPCService: &entitysvc.PCService{
-			AbilityStore:           abilityStore,
-			EntityPCStore:          entityStore,
-			EntityPCLeftStore:      entityStore,
-			EntityMRInventoryStore: entityStore,
-		},
-		InfraSequencerService: &infrasvc.SequencerService{
-			InfraQSequencer: infraStore,
-			InfraSequencer:  infraStore,
-			InfraCore:       infraStore,
-		},
-		InfraRecurrerService: &infrasvc.RecurrerService{
-			InfraQRecurrer: infraStore,
-			InfraRecurrer:  infraStore,
-			InfraSync:      infraStore,
-		},
+		ability:   abilityApp,
+		account:   accountApp,
+		entity:    entityApp,
+		event:     eventApp,
+		recurrer:  recurrerApp,
+		sector:    sectorApp,
+		sequencer: sequencerApp,
 	}
 
 	hl := h.NewLauncher(Namespaces{

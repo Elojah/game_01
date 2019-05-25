@@ -12,8 +12,8 @@ const (
 	accountKey = "account:"
 )
 
-// FetchAccount implemented with redis.
-func (s *Store) FetchAccount(username string) (account.A, error) {
+// Fetch implemented with redis.
+func (s *Store) Fetch(username string) (account.A, error) {
 	val, err := s.Get(accountKey + username).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -33,8 +33,8 @@ func (s *Store) FetchAccount(username string) (account.A, error) {
 	return a, nil
 }
 
-// UpsertAccount implemented with redis.
-func (s *Store) UpsertAccount(a account.A) error {
+// Upsert implemented with redis.
+func (s *Store) Upsert(a account.A) error {
 	raw, err := a.Marshal()
 	if err != nil {
 		return errors.Wrapf(err, "upsert account %s", a.Username)
@@ -42,7 +42,7 @@ func (s *Store) UpsertAccount(a account.A) error {
 	return errors.Wrapf(s.Set(accountKey+a.Username, raw, 0).Err(), "upsert account %s", a.Username)
 }
 
-// RemoveAccount redis implementation.
-func (s *Store) RemoveAccount(username string) error {
+// Remove redis implementation.
+func (s *Store) Remove(username string) error {
 	return errors.Wrapf(s.Del(accountKey+username).Err(), "remove account %s", username)
 }
