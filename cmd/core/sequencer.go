@@ -18,9 +18,8 @@ type tick chan ulid.ID
 type Sequencer struct {
 	id ulid.ID
 
-	EventStore          event.Store
-	EntityStore         entity.Store
-	EventTriggerService event.TriggerService
+	Event  event.App
+	Entity entity.App
 
 	logger zerolog.Logger
 
@@ -73,11 +72,11 @@ func (s *Sequencer) listenFetch() {
 			s.logger.Info().Str("event", id.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
 			continue
 		}
-		if err := s.EntityStore.DelEntityByTS(s.id, id.Time()); err != nil {
+		if err := s.Entity.RemoveByTS(s.id, id.Time()); err != nil {
 			s.logger.Error().Err(err).Msg("fetch")
 			continue
 		}
-		events, err := s.EventStore.ListEvent(s.id, id)
+		events, err := s.Event.List(s.id, id)
 		if err != nil {
 			s.logger.Error().Err(err).Msg("fetch")
 			continue
@@ -128,7 +127,7 @@ func (s *Sequencer) Handler(msg *infra.Message) {
 		s.logger.Error().Err(err).Msg("handler")
 		return
 	}
-	if err := s.EventTriggerService.Set(e, s.id); err != nil {
+	if err := s.Event.Create(e, s.id); err != nil {
 		switch errors.Cause(err).(type) {
 		case gerrors.ErrIneffectiveCancel:
 			s.logger.Info().Err(err).Msg("event not processed")

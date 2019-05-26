@@ -16,32 +16,13 @@ import (
 )
 
 type service struct {
-	AbilityStore         ability.Store
-	AbilityTemplateStore ability.TemplateStore
-	AbilityFeedbackStore ability.FeedbackStore
-
-	account.TokenStore
-
-	EntityPermissionService entity.PermissionService
-	EntityPermissionStore   entity.PermissionStore
-	EntitySpawnStore        entity.SpawnStore
-	EntityStore             entity.Store
-	EntityTemplateStore     entity.TemplateStore
-	EntityInventoryService  entity.InventoryService
-
-	EventQStore         event.QStore
-	EventStore          event.Store
-	EventTriggerService event.TriggerService
-
-	infra.CoreStore
-	infra.QSequencerStore
-
-	ItemStore     item.Store
-	ItemLootStore item.LootStore
-
-	sector.EntitiesStore
-	SectorStore   sector.Store
-	SectorService sector.Service
+	ability   ability.App
+	account   account.App
+	entity    entity.App
+	event     event.App
+	item      item.App
+	sector    sector.App
+	sequencer infra.SequencerApp
 
 	id ulid.ID
 
@@ -58,9 +39,7 @@ func (svc *service) Dial(c Config) error {
 	svc.limit = c.Limit
 	svc.lootRadius = c.LootRadius
 	svc.consumeRadius = c.ConsumeRadius
-	if err := svc.SectorService.Up(c.MoveTolerance); err != nil {
-		return err
-	}
+	svc.sector.Dial(c.MoveTolerance)
 	go svc.Run()
 	return nil
 }
@@ -69,7 +48,7 @@ func (svc *service) Run() {
 	logger := log.With().Str("core", svc.id.String()).Logger()
 
 	svc.subs = make(map[ulid.ID]*infra.Subscription)
-	svc.subs[svc.id] = svc.SubscribeSequencer(svc.id)
+	svc.subs[svc.id] = svc.sequencer.SubscribeSequencer(svc.id)
 	go func(sub *infra.Subscription) {
 		for msg := range sub.Channel() {
 			go svc.Sequencer(msg)
@@ -78,7 +57,7 @@ func (svc *service) Run() {
 
 	svc.seqs = make(map[ulid.ID]*Sequencer)
 
-	if err := svc.SetCore(infra.Core{ID: svc.id}); err != nil {
+	if err := svc.sequencer.UpsertCore(infra.Core{ID: svc.id}); err != nil {
 		logger.Error().Err(err).Msg("failed to set core")
 		return
 	}
@@ -114,12 +93,11 @@ func (svc *service) Sequencer(msg *infra.Message) {
 
 	case infra.Open:
 		svc.seqs[sequencer.ID] = NewSequencer(sequencer.ID, svc.limit, svc.Apply)
-		svc.seqs[sequencer.ID].EventStore = svc.EventStore
-		svc.seqs[sequencer.ID].EventTriggerService = svc.EventTriggerService
-		svc.seqs[sequencer.ID].EntityStore = svc.EntityStore
+		svc.seqs[sequencer.ID].Event = svc.event
+		svc.seqs[sequencer.ID].Entity = svc.entity
 		svc.seqs[sequencer.ID].Run()
 
-		svc.subs[sequencer.ID] = svc.EventQStore.SubscribeEvent(sequencer.ID)
+		svc.subs[sequencer.ID] = svc.event.Subscribe(sequencer.ID)
 
 		go func(seq *Sequencer, sub *infra.Subscription) {
 			for msg := range sub.Channel() {
@@ -193,7 +171,7 @@ func (svc *service) Apply(id ulid.ID, e event.E) {
 	}
 	if err != nil {
 		if gerrors.IsGameLogicError(err) {
-			if err := svc.EventTriggerService.Cancel(e); err != nil {
+			if err := svc.event.Cancel(e); err != nil {
 				logger.Error().Err(err).Msg("cancel event")
 			}
 		}

@@ -13,8 +13,8 @@ const (
 	itemKey = "item:"
 )
 
-// FetchItem implemented with redis.
-func (s *Store) FetchItem(id ulid.ID) (item.I, error) {
+// Fetch implemented with redis.
+func (s *Store) Fetch(id ulid.ID) (item.I, error) {
 	val, err := s.Get(itemKey + id.String()).Result()
 	if err != nil {
 		if err != redis.Nil {
@@ -34,8 +34,8 @@ func (s *Store) FetchItem(id ulid.ID) (item.I, error) {
 	return it, nil
 }
 
-// UpsertItem implemented with redis.
-func (s *Store) UpsertItem(it item.I) error {
+// Upsert implemented with redis.
+func (s *Store) Upsert(it item.I) error {
 	raw, err := it.Marshal()
 	if err != nil {
 		return errors.Wrapf(err, "upsert item %s", it.ID.String())
@@ -47,7 +47,7 @@ func (s *Store) UpsertItem(it item.I) error {
 	)
 }
 
-// RemoveItem implemented with redis.
-func (s *Store) RemoveItem(id ulid.ID) error {
+// Remove implemented with redis.
+func (s *Store) Remove(id ulid.ID) error {
 	return errors.Wrapf(s.Del(itemKey+id.String()).Err(), "remove item %s", id.String())
 }

@@ -16,7 +16,7 @@ type AbilityWithEntity struct {
 	EntityID ulid.ID `json:"entity_id"`
 }
 
-func (h *handler) ability(w http.ResponseWriter, r *http.Request) {
+func (h *handler) abilityHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postAbilities(w, r)
@@ -44,7 +44,7 @@ func (h *handler) postAbilities(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("abilities", len(abilities)).Msg("found")
 
 	for _, a := range abilities {
-		if err := h.AbilityStore.Upsert(a.A, a.EntityID); err != nil {
+		if err := h.ability.Upsert(a.A, a.EntityID); err != nil {
 			logger.Error().Err(err).Str("ability", a.A.ID.String()).Msg("failed to set ability")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

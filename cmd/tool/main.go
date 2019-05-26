@@ -9,12 +9,19 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	abilityapp "github.com/elojah/game_01/pkg/ability/app"
 	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	entityapp "github.com/elojah/game_01/pkg/entity/app"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	eventapp "github.com/elojah/game_01/pkg/event/app"
+	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
-	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
+	itemapp "github.com/elojah/game_01/pkg/item/app"
 	itemsrg "github.com/elojah/game_01/pkg/item/srg"
+	sectorapp "github.com/elojah/game_01/pkg/sector/app"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -43,33 +50,74 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
+
 	abilityStore := abilitysrg.NewStore(rd)
-	accountStore := accountsrg.NewStore(rd)
+	abilityLRUStore := abilitysrg.NewStore(rdlru)
+	abilityApp := &abilityapp.A{
+		FeedbackStore: abilityLRUStore,
+		StarterStore:  abilityStore,
+		Store:         abilityStore,
+		TemplateStore: abilityStore,
+	}
+
+	infraStore := infrasrg.NewStore(rd)
+	sequencerApp := &infraapp.SequencerApp{
+		QSequencerStore: infraStore,
+		SequencerStore:  infraStore,
+		CoreStore:       infraStore,
+	}
+
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
-	itemStore := itemsrg.NewStore(rd)
-	infraStore := infrasrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
+	entityApp := &entityapp.A{
+		InventoryStore:      entityLRUStore,
+		MRInventoryStore:    entityStore,
+		PCLeftStore:         entityStore,
+		PCStore:             entityStore,
+		PermissionStore:     entityStore,
+		SpawnStore:          entityStore,
+		Store:               entityLRUStore,
+		TemplateStore:       entityStore,
+		AbilityStore:        abilityStore,
+		SectorEntitiesStore: sectorStore,
+		Sequencer:           sequencerApp,
+	}
+
+	accountStore := accountsrg.NewStore(rd)
+	accountApp := &accountapp.A{
+		Store:        accountStore,
+		TokenStore:   accountStore,
+		TokenHCStore: accountStore,
+		Entity:       entityApp,
+	}
+
+	eventStore := eventsrg.NewStore(rdlru)
+	eventApp := &eventapp.A{
+		QStore:       eventStore,
+		Store:        eventStore,
+		TriggerStore: eventStore,
+	}
+
+	itemStore := itemsrg.NewStore(rd)
+	itemApp := &itemapp.A{
+		Store: itemStore,
+	}
+
+	sectorApp := &sectorapp.A{
+		Store:         sectorStore,
+		EntitiesStore: sectorStore,
+	}
 
 	// handler (https server)
 	h := &handler{
-		AbilityStore:         abilityStore,
-		AbilityTemplateStore: abilityStore,
-		AbilityStarterStore:  abilityStore,
-		AccountStore:         accountStore,
-		EntityStore:          entityLRUStore,
-		EntityTemplateStore:  entityStore,
-		EntityInventoryStore: entityLRUStore,
-		EntitySpawnStore:     entityStore,
-		ItemStore:            itemStore,
-		ItemLootStore:        itemStore,
-		InfraSequencerService: &infrasvc.SequencerService{
-			InfraQSequencer: infraStore,
-			InfraSequencer:  infraStore,
-			InfraCore:       infraStore,
-		},
-		SectorStore:         sectorStore,
-		SectorEntitiesStore: sectorStore,
+		ability:   abilityApp,
+		account:   accountApp,
+		entity:    entityApp,
+		event:     eventApp,
+		item:      itemApp,
+		sector:    sectorApp,
+		sequencer: sequencerApp,
 	}
 	hl := h.NewLauncher(Namespaces{
 		Tool: "tool",

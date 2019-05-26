@@ -75,8 +75,8 @@ func TestA(t *testing.T) {
 		assert.Equal(t, int32(0), triggerStore.ListTriggerCount)
 		assert.Equal(t, int32(0), triggerStore.RemoveTriggerCount)
 
-		assert.Equal(t, int32(0), qStore.PublishEventCount)
-		assert.Equal(t, int32(0), qStore.SubscribeEventCount)
+		assert.Equal(t, int32(0), qStore.PublishCount)
+		assert.Equal(t, int32(0), qStore.SubscribeCount)
 	})
 
 	t.Run("cancel event success", func(t *testing.T) {
@@ -132,7 +132,7 @@ func TestA(t *testing.T) {
 			},
 		}
 		qStore := &eventmocks.QStore{
-			PublishEventFunc: func(cancelE event.E, id gulid.ID) error {
+			PublishFunc: func(cancelE event.E, id gulid.ID) error {
 				assert.NotNil(t, e.Action.Cancel)
 				return nil
 			},
@@ -157,8 +157,8 @@ func TestA(t *testing.T) {
 		assert.Equal(t, int32(0), triggerStore.ListTriggerCount)
 		assert.Equal(t, int32(1), triggerStore.RemoveTriggerCount)
 
-		assert.Equal(t, int32(2), qStore.PublishEventCount)
-		assert.Equal(t, int32(0), qStore.SubscribeEventCount)
+		assert.Equal(t, int32(2), qStore.PublishCount)
+		assert.Equal(t, int32(0), qStore.SubscribeCount)
 	})
 
 }

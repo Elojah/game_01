@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) entityTemplate(w http.ResponseWriter, r *http.Request) {
+func (h *handler) entityTemplateHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postEntityTemplates(w, r)
@@ -34,7 +34,7 @@ func (h *handler) postEntityTemplates(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("entity_templates", len(templates)).Msg("found")
 
 	for _, t := range templates {
-		if err := h.EntityTemplateStore.SetTemplate(t); err != nil {
+		if err := h.entity.UpsertTemplate(t); err != nil {
 			logger.Error().Err(err).Str("entity_template", t.ID.String()).Msg("failed to set entity_template")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

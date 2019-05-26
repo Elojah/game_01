@@ -8,6 +8,10 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
+var _ event.Store = (*Store)(nil)
+var _ event.QStore = (*QStore)(nil)
+var _ event.App = (*App)(nil)
+
 // Store mocks event.Store.
 type Store struct {
 	UpsertFunc  func(event.E, gulid.ID) error
@@ -63,31 +67,66 @@ func NewStore() *Store {
 
 // QStore mocks event qstore.
 type QStore struct {
-	PublishEventFunc    func(event.E, gulid.ID) error
-	SubscribeEventFunc  func(gulid.ID) *infra.Subscription
-	PublishEventCount   int32
-	SubscribeEventCount int32
+	PublishFunc    func(event.E, gulid.ID) error
+	SubscribeFunc  func(gulid.ID) *infra.Subscription
+	PublishCount   int32
+	SubscribeCount int32
 }
 
-// PublishEvent mocks PublishEvent in event qstore.
-func (s *QStore) PublishEvent(e event.E, entityID gulid.ID) error {
-	atomic.AddInt32(&s.PublishEventCount, 1)
-	if s.PublishEventFunc == nil {
+// Publish mocks Publish in event qstore.
+func (s *QStore) Publish(e event.E, entityID gulid.ID) error {
+	atomic.AddInt32(&s.PublishCount, 1)
+	if s.PublishFunc == nil {
 		return nil
 	}
-	return s.PublishEventFunc(e, entityID)
+	return s.PublishFunc(e, entityID)
 }
 
-// SubscribeEvent mocks SubscribeEvent in event qstore.
-func (s *QStore) SubscribeEvent(entityID gulid.ID) *infra.Subscription {
-	atomic.AddInt32(&s.SubscribeEventCount, 1)
-	if s.SubscribeEventFunc == nil {
+// Subscribe mocks Subscribe in event qstore.
+func (s *QStore) Subscribe(entityID gulid.ID) *infra.Subscription {
+	atomic.AddInt32(&s.SubscribeCount, 1)
+	if s.SubscribeFunc == nil {
 		return nil
 	}
-	return s.SubscribeEventFunc(entityID)
+	return s.SubscribeFunc(entityID)
 }
 
 // NewQStore returns a event queue service mock ready for usage.
 func NewQStore() *QStore {
 	return &QStore{}
+}
+
+// App mocks event app.
+type App struct {
+	event.QStore
+	event.Store
+	event.TriggerStore
+
+	CreateFunc  func(event.E, gulid.ID) error
+	CancelFunc  func(event.E) error
+	CreateCount int32
+	CancelCount int32
+}
+
+// Create mocks Create in event app.
+func (a *App) Create(e event.E, entityID gulid.ID) error {
+	atomic.AddInt32(&a.CreateCount, 1)
+	if a.CreateFunc == nil {
+		return nil
+	}
+	return a.CreateFunc(e, entityID)
+}
+
+// Cancel mocks Cancel in event app.
+func (a *App) Cancel(e event.E) error {
+	atomic.AddInt32(&a.CancelCount, 1)
+	if a.CancelFunc == nil {
+		return nil
+	}
+	return a.CancelFunc(e)
+}
+
+// NewApp returns a app mock ready for usage.
+func NewApp() *App {
+	return &App{}
 }

@@ -9,36 +9,34 @@ import (
 )
 
 type service struct {
-	account.TokenHCStore
-
-	TokenService account.TokenService
+	account account.App
 
 	lifespan uint64
 }
 
 // Dial starts the auth server.
-func (service *service) Dial(c Config) error {
-	service.lifespan = c.Lifespan
-	go service.Run()
+func (svc *service) Dial(c Config) error {
+	svc.lifespan = c.Lifespan
+	go svc.Run()
 	return nil
 }
 
 // Close shutdowns the server listening.
-func (service *service) Close() error {
+func (svc *service) Close() error {
 	return nil
 }
 
 // Run start the revoker
-func (service *service) Run() {
+func (svc *service) Run() {
 	logger := log.With().Str("revoker", "").Logger()
 
-	tokenIDs, err := service.ListTokenHC(ulid.Now() - service.lifespan)
+	tokenIDs, err := svc.account.ListTokenHC(ulid.Now() - svc.lifespan)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve expired tokens")
 	}
 	for _, tokenID := range tokenIDs {
 		go func(tokenID gulid.ID) {
-			if err := service.TokenService.Disconnect(tokenID); err != nil {
+			if err := svc.account.DisconnectToken(tokenID); err != nil {
 				logger.Error().Err(err).Str("token", tokenID.String()).Msg("failed to disconnect expired token")
 			}
 		}(tokenID)

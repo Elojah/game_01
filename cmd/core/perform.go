@@ -16,7 +16,7 @@ func (svc *service) PerformSource(id gulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve source
-	source, err := svc.EntityStore.GetEntity(id, ts)
+	source, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "perform source")
 	}
@@ -27,7 +27,7 @@ func (svc *service) PerformSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve ability.
-	ab, err := svc.AbilityStore.GetAbility(source.ID, ps.AbilityID)
+	ab, err := svc.ability.Fetch(source.ID, ps.AbilityID)
 	if err != nil {
 		return errors.Wrap(err, "perform source")
 	}
@@ -44,7 +44,7 @@ func (svc *service) PerformSource(id gulid.ID, e event.E) error {
 	// LastUsed is set in PerformSource and not in feedback because there are potentially X multiple targets.
 	// If one or all target(s) fails (e.g: too far), we still apply to other targets.
 	ab.LastUsed = ts
-	if err := svc.AbilityStore.SetAbility(ab, source.ID); err != nil {
+	if err := svc.ability.Upsert(ab, source.ID); err != nil {
 		return errors.Wrap(err, "perform source")
 	}
 
@@ -85,7 +85,7 @@ func (svc *service) PerformSource(id gulid.ID, e event.E) error {
 		for _, id := range target.Entities {
 			id := id
 			g.Go(func() error {
-				if err := svc.EventQStore.PublishEvent(e, id); err != nil {
+				if err := svc.event.Publish(e, id); err != nil {
 					return errors.Wrap(err, "perform source")
 				}
 				return nil
@@ -99,7 +99,7 @@ func (svc *service) PerformSource(id gulid.ID, e event.E) error {
 
 	// #Remove cast state from source
 	source.Cast = nil
-	return errors.Wrap(svc.EntityStore.SetEntity(source, ts+1), "perform source")
+	return errors.Wrap(svc.entity.Upsert(source, ts+1), "perform source")
 }
 
 func (svc *service) PerformTarget(id gulid.ID, e event.E) error {
@@ -108,13 +108,13 @@ func (svc *service) PerformTarget(id gulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve previous target state.
-	target, err := svc.EntityStore.GetEntity(id, ts)
+	target, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrapf(err, "perform target")
 	}
 
 	// #Retrieve ability.
-	ab, err := svc.AbilityStore.GetAbility(pt.Source.ID, pt.AbilityID)
+	ab, err := svc.ability.Fetch(pt.Source.ID, pt.AbilityID)
 	if err != nil {
 		return errors.Wrapf(err, "perform target")
 	}
@@ -140,7 +140,7 @@ func (svc *service) PerformTarget(id gulid.ID, e event.E) error {
 	}
 
 	// #Check distance between source and target
-	dist, err := svc.SectorService.Segment(pt.Source.Position, target.Position)
+	dist, err := svc.sector.Segment(pt.Source.Position, target.Position)
 	if err != nil {
 		return errors.Wrap(err, "perform target")
 	}
@@ -164,11 +164,11 @@ func (svc *service) PerformTarget(id gulid.ID, e event.E) error {
 	// #Add svc spawn event to svc freshly dead entity.
 	// wasDead is svc guard against multiple spawn events.
 	if !wasDead && target.Dead {
-		sp, err := svc.EntitySpawnStore.GetSpawn(target.SpawnID)
+		sp, err := svc.entity.FetchSpawn(target.SpawnID)
 		if err != nil {
 			return errors.Wrap(err, "perform target")
 		}
-		if err := svc.EventQStore.PublishEvent(event.E{
+		if err := svc.event.Publish(event.E{
 			ID: gulid.NewTimeID(ts + sp.Duration + 1),
 			Action: event.Action{
 				Spawn: &event.Spawn{
@@ -182,17 +182,17 @@ func (svc *service) PerformTarget(id gulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state.
-	if err := svc.EntityStore.SetEntity(target, ts+1); err != nil {
+	if err := svc.entity.Upsert(target, ts+1); err != nil {
 		return errors.Wrapf(err, "perform target")
 	}
 
 	// #Set feedback.
-	if err := svc.AbilityFeedbackStore.SetFeedback(fb); err != nil {
+	if err := svc.ability.UpsertFeedback(fb); err != nil {
 		return errors.Wrapf(err, "perform target")
 	}
 
 	// #Publish feedback to source.
-	return errors.Wrap(svc.EventQStore.PublishEvent(event.E{
+	return errors.Wrap(svc.event.Publish(event.E{
 		ID: gulid.NewTimeID(ts + 1),
 		Action: event.Action{
 			PerformFeedback: &event.PerformFeedback{
@@ -212,13 +212,13 @@ func (svc *service) PerformFeedback(id gulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve previous source state.
-	source, err := svc.EntityStore.GetEntity(id, ts)
+	source, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "perform feedback")
 	}
 
 	// #Retrieve feedback.
-	fb, err := svc.AbilityFeedbackStore.GetFeedback(pf.ID)
+	fb, err := svc.ability.FetchFeedback(pf.ID)
 	switch errors.Cause(err).(type) {
 	case gerrors.ErrNotFound:
 		return errors.Wrap(err, "perform feedback")
@@ -230,5 +230,5 @@ func (svc *service) PerformFeedback(id gulid.ID, e event.E) error {
 	}
 
 	// #Set entity new state.
-	return errors.Wrap(svc.EntityStore.SetEntity(source, ts+1), "perform feedback")
+	return errors.Wrap(svc.entity.Upsert(source, ts+1), "perform feedback")
 }

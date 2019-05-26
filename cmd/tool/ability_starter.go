@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) abilityStarter(w http.ResponseWriter, r *http.Request) {
+func (h *handler) abilityStarterHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postAbilityStarters(w, r)
@@ -34,7 +34,7 @@ func (h *handler) postAbilityStarters(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("ability_starters", len(starters)).Msg("found")
 
 	for _, st := range starters {
-		if err := h.AbilityStarterStore.UpsertStarter(st); err != nil {
+		if err := h.ability.UpsertStarter(st); err != nil {
 			logger.Error().Err(err).Str("ability_starter", st.EntityID.String()).Msg("failed to set ability_starter")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

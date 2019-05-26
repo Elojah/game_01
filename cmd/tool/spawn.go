@@ -12,7 +12,7 @@ import (
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-func (h *handler) spawn(w http.ResponseWriter, r *http.Request) {
+func (h *handler) spawnHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postSpawns(w, r)
@@ -40,7 +40,7 @@ func (h *handler) postSpawns(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("spawns", len(spawns)).Msg("found")
 
 	for _, sp := range spawns {
-		if err := h.EntitySpawnStore.SetSpawn(sp); err != nil {
+		if err := h.entity.UpsertSpawn(sp); err != nil {
 			logger.Error().Err(err).Str("spawn", sp.ID.String()).Msg("failed to set spawn")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return
@@ -74,7 +74,7 @@ func (h *handler) getSpawn(w http.ResponseWriter, r *http.Request) {
 	spawns := make([]entity.Spawn, len(spawnIDs))
 	for i, id := range spawnIDs {
 		var err error
-		spawns[i], err = h.EntitySpawnStore.GetSpawn(id)
+		spawns[i], err = h.entity.FetchSpawn(id)
 		if err != nil {
 			logger.Error().Err(err).Str("spawn", id.String()).Msg("failed to get spawn")
 			http.Error(w, "store failure", http.StatusInternalServerError)

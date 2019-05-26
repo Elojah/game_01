@@ -9,7 +9,7 @@ import (
 	"github.com/elojah/game_01/pkg/item"
 )
 
-func (h *handler) item(w http.ResponseWriter, r *http.Request) {
+func (h *handler) itemHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postItems(w, r)
@@ -35,7 +35,7 @@ func (h *handler) postItems(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("items", len(items)).Msg("found")
 
 	for _, it := range items {
-		if err := h.ItemStore.SetItem(it); err != nil {
+		if err := h.item.Upsert(it); err != nil {
 			logger.Error().Err(err).Str("item", it.ID.String()).Msg("failed to set item")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

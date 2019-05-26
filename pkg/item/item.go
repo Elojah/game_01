@@ -4,9 +4,9 @@ import "github.com/elojah/game_01/pkg/ulid"
 
 // Store contains basic operations for item I object.
 type Store interface {
-	UpsertItem(I) error
-	FetchItem(ulid.ID) (I, error)
-	RemoveItem(ulid.ID) error
+	Upsert(I) error
+	Fetch(ulid.ID) (I, error)
+	Remove(ulid.ID) error
 }
 
 // App contains items stores and applications.

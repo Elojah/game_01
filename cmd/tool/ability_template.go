@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) abilityTemplate(w http.ResponseWriter, r *http.Request) {
+func (h *handler) abilityTemplateHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postAbilityTemplates(w, r)
@@ -34,7 +34,7 @@ func (h *handler) postAbilityTemplates(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("ability_templates", len(templates)).Msg("found")
 
 	for _, t := range templates {
-		if err := h.AbilityTemplateStore.UpsertTemplate(t); err != nil {
+		if err := h.ability.UpsertTemplate(t); err != nil {
 			logger.Error().Err(err).Str("ability_template", t.ID.String()).Msg("failed to set ability_template")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

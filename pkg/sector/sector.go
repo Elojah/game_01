@@ -26,6 +26,7 @@ type Store interface {
 type App interface {
 	Store
 	EntitiesStore
+	Dial(tolerance float64)
 	Move(entity.E, geometry.Position) (entity.E, error)
 	Segment(geometry.Position, geometry.Position) (float64, error)
 }

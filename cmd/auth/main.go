@@ -102,9 +102,10 @@ func run(prog string, filename string) {
 		TriggerStore: eventStore,
 	}
 
-	sectorApp := sectorapp.NewApplication(0) // tolerance is not used in those cases
-	sectorApp.Store = sectorStore
-	sectorApp.EntitiesStore = sectorStore
+	sectorApp := &sectorapp.A{
+		Store:         sectorStore,
+		EntitiesStore: sectorStore,
+	}
 
 	// handler (https server)
 	h := &handler{

@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) loot(w http.ResponseWriter, r *http.Request) {
+func (h *handler) lootHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postLoots(w, r)
@@ -34,7 +34,7 @@ func (h *handler) postLoots(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("loots", len(loots)).Msg("found")
 
 	for _, l := range loots {
-		if err := h.ItemLootStore.SetLoot(l); err != nil {
+		if err := h.item.UpsertLoot(l); err != nil {
 			logger.Error().Err(err).Str("loot", l.String()).Msg("failed to set loot")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

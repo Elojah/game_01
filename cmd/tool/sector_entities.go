@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) sectorEntities(w http.ResponseWriter, r *http.Request) {
+func (h *handler) sectorEntitiesHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postSectorEntities(w, r)
@@ -35,7 +35,7 @@ func (h *handler) postSectorEntities(w http.ResponseWriter, r *http.Request) {
 
 	for _, e := range entities {
 		for _, entityID := range e.EntityIDs {
-			if err := h.SectorEntitiesStore.AddEntityToSector(entityID, e.SectorID); err != nil {
+			if err := h.sector.AddEntityToSector(entityID, e.SectorID); err != nil {
 				logger.Error().Err(err).
 					Str("sector", e.SectorID.String()).
 					Str("entity", entityID.String()).

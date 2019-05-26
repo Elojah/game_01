@@ -59,34 +59,3 @@ func (s *TriggerStore) RemoveTrigger(triggerID gulid.ID, entityID gulid.ID) erro
 func NewTriggerStore() *TriggerStore {
 	return &TriggerStore{}
 }
-
-// TriggerService is mock for event.TriggerService.
-type TriggerService struct {
-	UpsertFunc  func(event.E, gulid.ID) error
-	CancelFunc  func(event.E) error
-	UpsertCount int32
-	CancelCount int32
-}
-
-// Upsert mocks Upsert method of TriggerService.
-func (s *TriggerService) Upsert(e event.E, id gulid.ID) error {
-	atomic.AddInt32(&s.UpsertCount, 1)
-	if s.UpsertFunc == nil {
-		return nil
-	}
-	return s.UpsertFunc(e, id)
-}
-
-// Cancel mocks Cancel method of TriggerService.
-func (s *TriggerService) Cancel(e event.E) error {
-	atomic.AddInt32(&s.CancelCount, 1)
-	if s.CancelFunc == nil {
-		return nil
-	}
-	return s.CancelFunc(e)
-}
-
-// NewTriggerService returns a TriggerService mock.
-func NewTriggerService() *TriggerService {
-	return &TriggerService{}
-}

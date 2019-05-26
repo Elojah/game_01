@@ -14,12 +14,12 @@ func (svc *service) LootSource(id gulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Check permission source/token
-	if err := svc.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
+	if err := svc.entity.CheckPermission(e.Token, id); err != nil {
 		return errors.Wrap(err, "loot source")
 	}
 
 	// #Retrieve entity
-	source, err := svc.EntityStore.GetEntity(id, ts)
+	source, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "loot source")
 	}
@@ -30,7 +30,7 @@ func (svc *service) LootSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Check if target is lootable
-	if ok, err := svc.ItemLootStore.GetLoot(ls.TargetID); !ok || err != nil {
+	if ok, err := svc.item.FetchLoot(ls.TargetID); !ok || err != nil {
 		if err != nil {
 			return errors.Wrap(err, "loot source")
 		}
@@ -38,7 +38,7 @@ func (svc *service) LootSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Retrieve source inventory to check if has svc free spot
-	sourceInventory, err := svc.EntityInventoryService.Get(source.InventoryID, source.ID)
+	sourceInventory, err := svc.entity.FetchMRInventoryFromCache(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot source")
 	}
@@ -52,7 +52,7 @@ func (svc *service) LootSource(id gulid.ID, e event.E) error {
 	}
 
 	// #Publish loot event to target.
-	return errors.Wrap(svc.EventQStore.PublishEvent(
+	return errors.Wrap(svc.event.Publish(
 		event.E{
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
@@ -73,13 +73,13 @@ func (svc *service) LootTarget(id gulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve entity
-	target, err := svc.EntityStore.GetEntity(id, ts)
+	target, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
 	// #Retrieve target inventory
-	targetInventory, err := svc.EntityInventoryService.Get(target.InventoryID, target.ID)
+	targetInventory, err := svc.entity.FetchMRInventoryFromCache(target.InventoryID, target.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot target")
 	}
@@ -94,7 +94,7 @@ func (svc *service) LootTarget(id gulid.ID, e event.E) error {
 	}
 
 	// #Check distance between source and target
-	dist, err := svc.SectorService.Segment(lt.Source.Position, target.Position)
+	dist, err := svc.sector.Segment(lt.Source.Position, target.Position)
 	if err != nil {
 		return errors.Wrap(err, "loot target")
 	}
@@ -117,18 +117,18 @@ func (svc *service) LootTarget(id gulid.ID, e event.E) error {
 
 	// Create new inventory
 	targetInventory.ID = gulid.NewID()
-	if err := svc.EntityInventoryService.SetMR(target.ID, targetInventory); err != nil {
+	if err := svc.entity.UpsertMRInventoryWithCache(target.ID, targetInventory); err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
 	target.InventoryID = targetInventory.ID
 	// Set new inventory to target
-	if err := svc.EntityStore.SetEntity(target, ts+1); err != nil {
+	if err := svc.entity.Upsert(target, ts+1); err != nil {
 		return errors.Wrap(err, "loot target")
 	}
 
 	// #Publish loot event to target.
-	return errors.Wrap(svc.EventQStore.PublishEvent(
+	return errors.Wrap(svc.event.Publish(
 		event.E{
 			ID: gulid.NewTimeID(ts + 1),
 			Action: event.Action{
@@ -149,13 +149,13 @@ func (svc *service) LootFeedback(id gulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve entity
-	source, err := svc.EntityStore.GetEntity(id, ts)
+	source, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
 
 	// #Retrieve source inventory
-	sourceInventory, err := svc.EntityInventoryService.Get(source.InventoryID, source.ID)
+	sourceInventory, err := svc.entity.FetchMRInventoryFromCache(source.InventoryID, source.ID)
 	if err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
@@ -173,11 +173,11 @@ func (svc *service) LootFeedback(id gulid.ID, e event.E) error {
 
 	// #Create new inventory
 	sourceInventory.ID = gulid.NewID()
-	if err := svc.EntityInventoryService.SetMR(source.ID, sourceInventory); err != nil {
+	if err := svc.entity.UpsertMRInventoryWithCache(source.ID, sourceInventory); err != nil {
 		return errors.Wrap(err, "loot feedback")
 	}
 
 	// Set new inventory
 	source.InventoryID = sourceInventory.ID
-	return errors.Wrap(svc.EntityStore.SetEntity(source, ts+1), "loot feedback")
+	return errors.Wrap(svc.entity.Upsert(source, ts+1), "loot feedback")
 }

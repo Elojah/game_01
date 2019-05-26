@@ -9,16 +9,20 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	abilityapp "github.com/elojah/game_01/pkg/ability/app"
 	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	entityapp "github.com/elojah/game_01/pkg/entity/app"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
-	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
+	eventapp "github.com/elojah/game_01/pkg/event/app"
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
-	eventsvc "github.com/elojah/game_01/pkg/event/svc"
+	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	itemapp "github.com/elojah/game_01/pkg/item/app"
 	itemsrg "github.com/elojah/game_01/pkg/item/srg"
+	sectorapp "github.com/elojah/game_01/pkg/sector/app"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
-	sectorsvc "github.com/elojah/game_01/pkg/sector/svc"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
 )
@@ -46,55 +50,74 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
-	eventStore := eventsrg.NewStore(rdlru)
+
 	abilityStore := abilitysrg.NewStore(rd)
 	abilityLRUStore := abilitysrg.NewStore(rdlru)
-	accountStore := accountsrg.NewStore(rd)
+	abilityApp := &abilityapp.A{
+		FeedbackStore: abilityLRUStore,
+		StarterStore:  abilityStore,
+		Store:         abilityStore,
+		TemplateStore: abilityStore,
+	}
+
+	infraStore := infrasrg.NewStore(rd)
+	sequencerApp := &infraapp.SequencerApp{
+		QSequencerStore: infraStore,
+		SequencerStore:  infraStore,
+		CoreStore:       infraStore,
+	}
+
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
-	infraStore := infrasrg.NewStore(rd)
-	itemStore := itemsrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
+	entityApp := &entityapp.A{
+		InventoryStore:      entityLRUStore,
+		MRInventoryStore:    entityStore,
+		PCLeftStore:         entityStore,
+		PCStore:             entityStore,
+		PermissionStore:     entityStore,
+		SpawnStore:          entityStore,
+		Store:               entityLRUStore,
+		TemplateStore:       entityStore,
+		AbilityStore:        abilityStore,
+		SectorEntitiesStore: sectorStore,
+		Sequencer:           sequencerApp,
+	}
+
+	accountStore := accountsrg.NewStore(rd)
+	accountApp := &accountapp.A{
+		Store:        accountStore,
+		TokenStore:   accountStore,
+		TokenHCStore: accountStore,
+		Entity:       entityApp,
+	}
+
+	eventStore := eventsrg.NewStore(rdlru)
+	eventApp := &eventapp.A{
+		QStore:       eventStore,
+		Store:        eventStore,
+		TriggerStore: eventStore,
+	}
+
+	itemStore := itemsrg.NewStore(rd)
+	itemApp := &itemapp.A{
+		Store: itemStore,
+	}
+
+	sectorApp := &sectorapp.A{
+		Store:         sectorStore,
+		EntitiesStore: sectorStore,
+	}
 
 	// main service
 	svc := &service{
-		AbilityStore:         abilityStore,
-		AbilityTemplateStore: abilityStore,
-		AbilityFeedbackStore: abilityLRUStore,
-
-		TokenStore: accountStore,
-
-		EntityStore:           entityLRUStore,
-		EntityTemplateStore:   entityStore,
-		EntityPermissionStore: entityStore,
-		EntityInventoryService: &entitysvc.InventoryService{
-			EntityInventoryStore:   entityLRUStore,
-			EntityMRInventoryStore: entityStore,
-		},
-		EntityPermissionService: entitysvc.PermissionService{
-			EntityPermissionStore: entityStore,
-		},
-		EntitySpawnStore: entityStore,
-
-		QSequencerStore: infraStore,
-		CoreStore:       infraStore,
-
-		EventQStore: eventStore,
-		EventStore:  eventStore,
-		EventTriggerService: &eventsvc.TriggerService{
-			TriggerStore: eventStore,
-			Store:        eventStore,
-			QStore:       eventStore,
-		},
-
-		EntitiesStore: sectorStore,
-		ItemStore:     itemStore,
-		ItemLootStore: itemStore,
-		SectorStore:   sectorStore,
-		SectorService: &sectorsvc.Service{
-			SectorEntitiesStore: sectorStore,
-			SectorStore:         sectorStore,
-		},
+		ability:   abilityApp,
+		account:   accountApp,
+		entity:    entityApp,
+		event:     eventApp,
+		item:      itemApp,
+		sector:    sectorApp,
+		sequencer: sequencerApp,
 	}
 	svcl := svc.NewLauncher(Namespaces{
 		Service: "service",

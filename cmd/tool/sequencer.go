@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) sequencer(w http.ResponseWriter, r *http.Request) {
+func (h *handler) sequencerHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postSequencer(w, r)
@@ -36,13 +36,13 @@ func (h *handler) postSequencer(w http.ResponseWriter, r *http.Request) {
 	for _, s := range sequencers {
 		switch s.Action {
 		case infra.Open:
-			if _, err := h.InfraSequencerService.New(s.ID); err != nil {
+			if _, err := h.sequencer.Create(s.ID); err != nil {
 				logger.Error().Err(err).Str("sequencer", s.ID.String()).Msg("failed to set sequencer")
 				http.Error(w, "store failure", http.StatusInternalServerError)
 				return
 			}
 		case infra.Close:
-			if err := h.InfraSequencerService.Remove(s.ID); err != nil {
+			if err := h.sequencer.Erase(s.ID); err != nil {
 				logger.Error().Err(err).Str("sequencer", s.ID.String()).Msg("failed to set sequencer")
 				http.Error(w, "store failure", http.StatusInternalServerError)
 				return

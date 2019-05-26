@@ -16,17 +16,12 @@ import (
 )
 
 type service struct {
-	account.TokenStore
-
-	EntityStore entity.Store
-
-	event.QStore
-	infra.QRecurrerStore
-
-	infra.SyncStore
-
-	sector.EntitiesStore
-	SectorStore sector.Store
+	account   account.App
+	entity    entity.App
+	event     event.App
+	recurrer  infra.RecurrerApp
+	sector    sector.App
+	sequencer infra.SequencerApp
 
 	*client.C
 
@@ -52,7 +47,7 @@ func (svc *service) Dial(c Config) error {
 func (svc *service) Run() {
 	logger := log.With().Str("sync", svc.id.String()).Logger()
 
-	svc.sub = svc.SubscribeRecurrer(svc.id)
+	svc.sub = svc.recurrer.SubscribeRecurrer(svc.id)
 	go func() {
 		for msg := range svc.sub.Channel() {
 			go svc.Recurrer(msg)
@@ -61,7 +56,7 @@ func (svc *service) Run() {
 
 	svc.recurrers = make(map[ulid.ID]*Recurrer)
 
-	if err := svc.SetSync(infra.Sync{ID: svc.id}); err != nil {
+	if err := svc.recurrer.UpsertSync(infra.Sync{ID: svc.id}); err != nil {
 		logger.Error().Err(err).Msg("failed to set sync")
 		return
 	}
@@ -106,7 +101,7 @@ func (svc *service) Recurrer(msg *infra.Message) {
 		return
 	}
 
-	tok, err := svc.GetToken(r.TokenID)
+	tok, err := svc.account.FetchToken(r.TokenID)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to retrieve token")
 		return
@@ -127,9 +122,8 @@ func (svc *service) Recurrer(msg *infra.Message) {
 		}
 		svc.Send(raw, addr)
 	})
-	rec.EntityStore = svc.EntityStore
-	rec.SectorEntitiesStore = svc.EntitiesStore
-	rec.SectorStore = svc.SectorStore
+	rec.Entity = svc.entity
+	rec.Sector = svc.sector
 
 	go rec.Run()
 	svc.recurrers[r.TokenID] = rec

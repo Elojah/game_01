@@ -10,12 +10,12 @@ import (
 	"github.com/rs/zerolog/log"
 
 	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
-	accountsvc "github.com/elojah/game_01/pkg/account/svc"
+	entityapp "github.com/elojah/game_01/pkg/entity/app"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
-	entitysvc "github.com/elojah/game_01/pkg/entity/svc"
+	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
-	infrasvc "github.com/elojah/game_01/pkg/infra/svc"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/redis"
 	"github.com/elojah/services"
@@ -44,34 +44,43 @@ func run(prog string, filename string) {
 	launchers.Add(rdlrul)
 
 	// Stores and applicatives
-	abilityStore := abilitysrg.NewStore(rd)
-	accountStore := accountsrg.NewStore(rd)
+
+	infraStore := infrasrg.NewStore(rd)
+	sequencerApp := &infraapp.SequencerApp{
+		QSequencerStore: infraStore,
+		SequencerStore:  infraStore,
+		CoreStore:       infraStore,
+	}
+
 	entityStore := entitysrg.NewStore(rd)
 	entityLRUStore := entitysrg.NewStore(rdlru)
-	infraStore := infrasrg.NewStore(rd)
 	sectorStore := sectorsrg.NewStore(rd)
+	abilityStore := abilitysrg.NewStore(rd)
+	entityApp := &entityapp.A{
+		InventoryStore:      entityLRUStore,
+		MRInventoryStore:    entityStore,
+		PCLeftStore:         entityStore,
+		PCStore:             entityStore,
+		PermissionStore:     entityStore,
+		SpawnStore:          entityStore,
+		Store:               entityLRUStore,
+		TemplateStore:       entityStore,
+		AbilityStore:        abilityStore,
+		SectorEntitiesStore: sectorStore,
+		Sequencer:           sequencerApp,
+	}
+
+	accountStore := accountsrg.NewStore(rd)
+	accountApp := &accountapp.A{
+		Store:        accountStore,
+		TokenStore:   accountStore,
+		TokenHCStore: accountStore,
+		Entity:       entityApp,
+	}
 
 	// main service
 	svc := &service{
-		TokenHCStore: accountStore,
-		TokenService: &accountsvc.TokenService{
-			AccountStore:          accountStore,
-			AccountTokenStore:     accountStore,
-			EntityStore:           entityLRUStore,
-			EntityPCStore:         entityStore,
-			EntityPermissionStore: entityStore,
-			EntityService: &entitysvc.Service{
-				AbilityStore:          abilityStore,
-				EntityStore:           entityLRUStore,
-				EntityPermissionStore: entityStore,
-				SectorEntitiesStore:   sectorStore,
-				SequencerService: &infrasvc.SequencerService{
-					InfraQSequencer: infraStore,
-					InfraSequencer:  infraStore,
-					InfraCore:       infraStore,
-				},
-			},
-		},
+		account: accountApp,
 	}
 	svcl := svc.NewLauncher(Namespaces{
 		Service: "service",

@@ -17,10 +17,9 @@ type A struct {
 	tolerance float64
 }
 
-func NewApplication(tolerance float64) *A {
-	return &A{
-		tolerance: tolerance,
-	}
+// Dial updates service config.
+func (app *A) Dial(tolerance float64) {
+	app.tolerance = tolerance
 }
 
 // Move moves a target to a new position, considering tolerance service tolerance and sector neighbours.

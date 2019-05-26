@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) entityMove(w http.ResponseWriter, r *http.Request) {
+func (h *handler) entityMoveHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postEntityMoves(w, r)
@@ -39,7 +39,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 	for _, targetID := range move.Targets {
 
 		// #Get current entity state.
-		e, err := h.EntityStore.GetEntity(targetID, ts)
+		e, err := h.entity.Fetch(targetID, ts)
 		if err != nil {
 			logger.Error().Err(errors.Wrapf(err, "get entity %s at ts %d", targetID.String(), ts)).Msg("failed to get entity")
 			http.Error(w, "failed to retrieve entity", http.StatusInternalServerError)
@@ -49,7 +49,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 		if e.Position.SectorID.Compare(move.Position.SectorID) != 0 {
 
 			// #Add entity to new sector and remove from previous if necessary.
-			if err := h.SectorEntitiesStore.AddEntityToSector(targetID, move.Position.SectorID); err != nil {
+			if err := h.sector.AddEntityToSector(targetID, move.Position.SectorID); err != nil {
 				logger.Error().Err(errors.Wrapf(
 					err,
 					"add entity %s to sector %s",
@@ -59,7 +59,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, "failed to add entity to new sector", http.StatusInternalServerError)
 				return
 			}
-			if err := h.SectorEntitiesStore.RemoveEntityFromSector(targetID, e.Position.SectorID); err != nil {
+			if err := h.sector.RemoveEntityFromSector(targetID, e.Position.SectorID); err != nil {
 				logger.Error().Err(errors.Wrapf(
 					err,
 					"remove entity %s from sector %s",
@@ -75,7 +75,7 @@ func (h *handler) postEntityMoves(w http.ResponseWriter, r *http.Request) {
 		e.Position = move.Position
 
 		// #Write new target state.
-		if err := h.EntityStore.SetEntity(e, ts); err != nil {
+		if err := h.entity.Upsert(e, ts); err != nil {
 			logger.Error().Err(errors.Wrapf(err, "set entity %s for ts %d", targetID.String(), ts))
 			http.Error(w, "failed to set entity", http.StatusInternalServerError)
 			return

@@ -9,10 +9,16 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	abilitysrg "github.com/elojah/game_01/pkg/ability/srg"
+	accountapp "github.com/elojah/game_01/pkg/account/app"
 	accountsrg "github.com/elojah/game_01/pkg/account/srg"
+	entityapp "github.com/elojah/game_01/pkg/entity/app"
 	entitysrg "github.com/elojah/game_01/pkg/entity/srg"
+	eventapp "github.com/elojah/game_01/pkg/event/app"
 	eventsrg "github.com/elojah/game_01/pkg/event/srg"
+	infraapp "github.com/elojah/game_01/pkg/infra/app"
 	infrasrg "github.com/elojah/game_01/pkg/infra/srg"
+	sectorapp "github.com/elojah/game_01/pkg/sector/app"
 	sectorsrg "github.com/elojah/game_01/pkg/sector/srg"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/redis"
@@ -49,22 +55,65 @@ func run(prog string, filename string) {
 	launchers.Add(cl)
 
 	// Stores and applicatives
-	eventStore := eventsrg.NewStore(rdlru)
-	accountStore := accountsrg.NewStore(rd)
-	entityLRUStore := entitysrg.NewStore(rdlru)
 	infraStore := infrasrg.NewStore(rd)
+	sequencerApp := &infraapp.SequencerApp{
+		QSequencerStore: infraStore,
+		SequencerStore:  infraStore,
+		CoreStore:       infraStore,
+	}
+	recurrerApp := &infraapp.RecurrerApp{
+		QRecurrerStore: infraStore,
+		RecurrerStore:  infraStore,
+		SyncStore:      infraStore,
+	}
+
+	entityStore := entitysrg.NewStore(rd)
+	entityLRUStore := entitysrg.NewStore(rdlru)
 	sectorStore := sectorsrg.NewStore(rd)
+	abilityStore := abilitysrg.NewStore(rd)
+	entityApp := &entityapp.A{
+		InventoryStore:      entityLRUStore,
+		MRInventoryStore:    entityStore,
+		PCLeftStore:         entityStore,
+		PCStore:             entityStore,
+		PermissionStore:     entityStore,
+		SpawnStore:          entityStore,
+		Store:               entityLRUStore,
+		TemplateStore:       entityStore,
+		AbilityStore:        abilityStore,
+		SectorEntitiesStore: sectorStore,
+		Sequencer:           sequencerApp,
+	}
+
+	accountStore := accountsrg.NewStore(rd)
+	accountApp := &accountapp.A{
+		Store:        accountStore,
+		TokenStore:   accountStore,
+		TokenHCStore: accountStore,
+		Entity:       entityApp,
+	}
+
+	eventStore := eventsrg.NewStore(rdlru)
+	eventApp := &eventapp.A{
+		QStore:       eventStore,
+		Store:        eventStore,
+		TriggerStore: eventStore,
+	}
+
+	sectorApp := &sectorapp.A{
+		Store:         sectorStore,
+		EntitiesStore: sectorStore,
+	}
 
 	// main service
 	svc := service{
-		C:              c,
-		TokenStore:     accountStore,
-		EntityStore:    entityLRUStore,
-		QStore:         eventStore,
-		QRecurrerStore: infraStore,
-		SyncStore:      infraStore,
-		EntitiesStore:  sectorStore,
-		SectorStore:    sectorStore,
+		C:         c,
+		account:   accountApp,
+		entity:    entityApp,
+		event:     eventApp,
+		recurrer:  recurrerApp,
+		sector:    sectorApp,
+		sequencer: sequencerApp,
 	}
 	svcl := svc.NewLauncher(Namespaces{
 		Service: "service",

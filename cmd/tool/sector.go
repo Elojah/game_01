@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) sector(w http.ResponseWriter, r *http.Request) {
+func (h *handler) sectorHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postSectors(w, r)
@@ -34,7 +34,7 @@ func (h *handler) postSectors(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("sectors", len(sectors)).Msg("found")
 
 	for _, s := range sectors {
-		if err := h.SectorStore.SetSector(s); err != nil {
+		if err := h.sector.Upsert(s); err != nil {
 			logger.Error().Err(err).Str("sector", s.ID.String()).Msg("failed to set sector")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

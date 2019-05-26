@@ -14,12 +14,12 @@ func (svc *service) MoveTarget(id ulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Check permission source/token
-	if err := svc.EntityPermissionService.CheckPermission(e.Token, id); err != nil {
+	if err := svc.entity.CheckPermission(e.Token, id); err != nil {
 		return errors.Wrap(err, "move target")
 	}
 
 	// #Retrieve previous state target.
-	target, err := svc.EntityStore.GetEntity(id, ts)
+	target, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "move target")
 	}
@@ -29,9 +29,9 @@ func (svc *service) MoveTarget(id ulid.ID, e event.E) error {
 		return errors.Wrap(gerrors.ErrIsDead{EntityID: id.String()}, "move target")
 	}
 
-	if target, err = svc.SectorService.Move(target, mt.Position); err != nil {
+	if target, err = svc.sector.Move(target, mt.Position); err != nil {
 		return errors.Wrap(err, "move target")
 	}
 
-	return errors.Wrap(svc.EntityStore.SetEntity(target, ts+1), "move target")
+	return errors.Wrap(svc.entity.Upsert(target, ts+1), "move target")
 }

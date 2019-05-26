@@ -15,7 +15,7 @@ func (svc *service) Spawn(id gulid.ID, e event.E) error {
 	ts := e.ID.Time()
 
 	// #Retrieve previous target state.
-	target, err := svc.EntityStore.GetEntity(id, ts)
+	target, err := svc.entity.Fetch(id, ts)
 	if err != nil {
 		return errors.Wrap(err, "spawn")
 	}
@@ -25,7 +25,7 @@ func (svc *service) Spawn(id gulid.ID, e event.E) error {
 		return errors.Wrap(gerrors.ErrIsNotDead{EntityID: id.String()}, "spawn")
 	}
 
-	s, err := svc.EntitySpawnStore.GetSpawn(sp.ID)
+	s, err := svc.entity.FetchSpawn(sp.ID)
 	if err != nil {
 		return errors.Wrap(err, "spawn")
 	}
@@ -39,5 +39,5 @@ func (svc *service) Spawn(id gulid.ID, e event.E) error {
 	target.Dead = false
 
 	// #Set entity new state.
-	return errors.Wrap(svc.EntityStore.SetEntity(target, ts+1), "spawn")
+	return errors.Wrap(svc.entity.Upsert(target, ts+1), "spawn")
 }

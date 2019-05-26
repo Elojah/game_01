@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (h *handler) inventory(w http.ResponseWriter, r *http.Request) {
+func (h *handler) inventoryHandle(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "POST":
 		h.postInventories(w, r)
@@ -34,7 +34,7 @@ func (h *handler) postInventories(w http.ResponseWriter, r *http.Request) {
 	logger.Info().Int("inventories", len(inventories)).Msg("found")
 
 	for _, in := range inventories {
-		if err := h.EntityInventoryStore.SetInventory(in); err != nil {
+		if err := h.entity.UpsertInventory(in); err != nil {
 			logger.Error().Err(err).Str("inventory", in.ID.String()).Msg("failed to set inventory")
 			http.Error(w, "store failure", http.StatusInternalServerError)
 			return

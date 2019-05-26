@@ -15,9 +15,8 @@ import (
 
 // Recurrer retrieves entity data associated to pc id and send it at regular ticks.
 type Recurrer struct {
-	EntityStore         entity.Store
-	SectorStore         sector.Store
-	SectorEntitiesStore sector.EntitiesStore
+	Entity entity.App
+	Sector sector.App
 
 	logger   zerolog.Logger
 	id       gulid.ID
@@ -51,12 +50,12 @@ func (r *Recurrer) Close() error {
 // Run starts to read the ticker and send entities.
 func (r *Recurrer) Run() {
 	for t := range r.ticker.C {
-		e, err := r.EntityStore.FetchEntity(r.entityID, ulid.Timestamp(t))
+		e, err := r.Entity.Fetch(r.entityID, ulid.Timestamp(t))
 		if err != nil {
 			r.logger.Error().Err(err).Msg("run")
 			continue
 		}
-		sector, err := r.SectorStore.FetchSector(e.Position.SectorID)
+		sector, err := r.Sector.Fetch(e.Position.SectorID)
 		if err != nil {
 			r.logger.Error().Err(err).Msg("run")
 			continue
@@ -69,7 +68,7 @@ func (r *Recurrer) Run() {
 }
 
 func (r *Recurrer) sendSector(sectorID gulid.ID, t time.Time) {
-	se, err := r.SectorEntitiesStore.FetchEntities(sectorID)
+	se, err := r.Sector.FetchEntities(sectorID)
 	if err != nil {
 		r.logger.Error().Err(err).Str("sector", sectorID.String()).Msg("send sector")
 		return
@@ -79,7 +78,7 @@ func (r *Recurrer) sendSector(sectorID gulid.ID, t time.Time) {
 	var i uint32
 	for _, entityID := range se.EntityIDs {
 		var err error
-		dto.Entities[i], err = r.EntityStore.FetchEntity(entityID, ulid.Timestamp(t))
+		dto.Entities[i], err = r.Entity.Fetch(entityID, ulid.Timestamp(t))
 		if err != nil {
 			// Soft error
 			r.logger.Error().Err(err).Str("entity", entityID.String()).Msg("send entity")
