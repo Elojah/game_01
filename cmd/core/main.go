@@ -101,7 +101,8 @@ func run(prog string, filename string) {
 
 	itemStore := itemsrg.NewStore(rd)
 	itemApp := &itemapp.A{
-		Store: itemStore,
+		Store:     itemStore,
+		LootStore: itemStore,
 	}
 
 	sectorApp := &sectorapp.A{
