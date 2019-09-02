@@ -158,6 +158,13 @@ test: ## Run unit tests only
 	$(info $(M) running go test…) @
 	$Q $(GO) test -cover -race -v ./...
 
+# Integration test
+.PHONY: testintegration
+testintegration: ## Run integration test
+	$(info $(M) running integration tests…) @
+	$Q make
+	$Q docker-compose up -d redis redis-lru
+	$Q make $(INTEGRATION) && ./bin/game_$(INTEGRATION)
 
 # Helpers
 go-version: ## Print go version used in this makefile
