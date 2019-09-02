@@ -20,13 +20,14 @@ GODOC       = godoc
 GOFMT       = gofmt
 
 API         = api
-CLIENT      = client
 AUTH        = auth
+CLIENT      = client
 CORE        = core
+INTEGRATION = integration
+REVOKER     = revoker
+SANDBOX     = sandbox
 SYNC        = sync
 TOOL        = tool
-REVOKER     = revoker
-INTEGRATION = integration
 
 V         = 0
 Q         = $(if $(filter 1,$V),,@)
@@ -68,6 +69,15 @@ core:  ## Build core binary
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(CORE)_$(VERSION)
 	$Q cp bin/$(PACKAGE)_$(CORE)_$(VERSION) bin/$(PACKAGE)_$(CORE)
+
+
+sandbox:  ## Build sandbox binary
+	$(info $(M) building executable sandbox…) @
+	$Q cd cmd/$(SANDBOX) &&  $(GO) build \
+		-tags release \
+		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
+		-o ../../bin/$(PACKAGE)_$(SANDBOX)_$(VERSION)
+	$Q cp bin/$(PACKAGE)_$(SANDBOX)_$(VERSION) bin/$(PACKAGE)_$(SANDBOX)
 
 sync:  ## Build sync binary
 	$(info $(M) building executable sync…) @

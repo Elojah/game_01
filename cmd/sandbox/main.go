@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/cmd/sandbox/ui"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
@@ -68,6 +69,21 @@ func run(prog string, filename string) {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
+
+	/*
+		UI
+	*/
+
+	w := ui.Window{
+		Width:     800,
+		Height:    600,
+		AssetsDir: "cmd/sandbox/assets",
+	}
+	if err := w.LoadAssets(); err != nil {
+		log.Error().Err(err).Msg("failed to load assets")
+		return
+	}
+	_ = w.Up()
 
 	log.Info().Msg("client up")
 	cs := make(chan os.Signal, 1)
