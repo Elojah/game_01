@@ -33,6 +33,8 @@ V         = 0
 Q         = $(if $(filter 1,$V),,@)
 M         = $(shell printf "\033[0;35m▶\033[0m")
 
+CXXFLAGS=-w
+
 .PHONY: all
 
 all: client auth api core sync revoker tool

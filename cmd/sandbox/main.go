@@ -3,9 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/signal"
-	"syscall"
 
+	"github.com/EngoEngine/engo"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -59,11 +58,11 @@ func run(prog string, filename string) {
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)
-	rd := newReader(&c, ha.ACK)
-	rdl := rd.NewLauncher(NamespacesReader{
-		Reader: "reader",
-	}, "reader")
-	launchers.Add(rdl)
+	// rd := newReader(&c, ha.ACK)
+	// rdl := rd.NewLauncher(NamespacesReader{
+	// 	Reader: "reader",
+	// }, "reader")
+	// launchers.Add(rdl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
@@ -74,43 +73,43 @@ func run(prog string, filename string) {
 		UI
 	*/
 
-	w := ui.Window{
-		Width:     800,
-		Height:    600,
-		AssetsDir: "cmd/sandbox/assets",
+	sc := &ui.Scene{
+		Assets: "cmd/sandbox/assets",
 	}
-	if err := w.LoadAssets(); err != nil {
-		log.Error().Err(err).Msg("failed to load assets")
-		return
+	opts := engo.RunOptions{
+		Title:  "GAME_01",
+		Width:  400,
+		Height: 400,
 	}
-	_ = w.Up()
+	engo.Run(opts, sc)
 
-	log.Info().Msg("client up")
-	cs := make(chan os.Signal, 1)
-	signal.Notify(cs, syscall.SIGHUP)
-	for sig := range cs {
-		switch sig {
-		case syscall.SIGHUP:
-			if err := launchers.Down(); err != nil {
-				log.Error().Err(err).Msg("failed to stop services")
-				continue
-			}
-			if err := launchers.Up(filename); err != nil {
-				log.Error().Err(err).Str("filename", filename).Msg("failed to start services")
-			}
-		case syscall.SIGINT:
-			if err := launchers.Down(); err != nil {
-				log.Error().Err(err).Msg("failed to stop services")
-				continue
-			}
-		case syscall.SIGKILL:
-			if err := launchers.Down(); err != nil {
-				log.Error().Err(err).Msg("failed to stop services")
-				continue
-			}
-			return
-		}
-	}
+	log.Info().Msg("sandbox up")
+
+	// cs := make(chan os.Signal, 1)
+	// signal.Notify(cs, syscall.SIGHUP)
+	// for sig := range cs {
+	// 	switch sig {
+	// 	case syscall.SIGHUP:
+	// 		if err := launchers.Down(); err != nil {
+	// 			log.Error().Err(err).Msg("failed to stop services")
+	// 			continue
+	// 		}
+	// 		if err := launchers.Up(filename); err != nil {
+	// 			log.Error().Err(err).Str("filename", filename).Msg("failed to start services")
+	// 		}
+	// 	case syscall.SIGINT:
+	// 		if err := launchers.Down(); err != nil {
+	// 			log.Error().Err(err).Msg("failed to stop services")
+	// 			continue
+	// 		}
+	// 	case syscall.SIGKILL:
+	// 		if err := launchers.Down(); err != nil {
+	// 			log.Error().Err(err).Msg("failed to stop services")
+	// 			continue
+	// 		}
+	// 		return
+	// 	}
+	// }
 }
 
 func main() {
