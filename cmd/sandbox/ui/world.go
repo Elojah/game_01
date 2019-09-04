@@ -33,7 +33,6 @@ func (sc *Scene) Preload() {
 		return
 	}
 
-	sc.animations = make(map[string]*engoc.Animation)
 	engo.Files.SetRoot(path.Join(sc.Assets, "fx"))
 	for _, f := range files {
 		name := f.Name()
@@ -53,28 +52,7 @@ func (sc *Scene) Setup(u engo.Updater) {
 
 	engoc.SetBackground(color.Black)
 
-	ent := ecs.NewBasic()
-	scomp := engoc.SpaceComponent{
-		Position: engo.Point{},
-		Width:    150,
-		Height:   150,
-	}
-
-	spsh := engoc.NewSpritesheetFromFile("phantom.png", 100, 100)
-	rcomp := engoc.RenderComponent{
-		Drawable: spsh.Cell(0),
-		Scale:    engo.Point{3, 3},
-	}
-	acomp := engoc.NewAnimationComponent(spsh.Drawables(), 0.1)
-
-	for _, system := range w.Systems() {
-		switch sys := system.(type) {
-		case *engoc.RenderSystem:
-			sys.Add(&ent, &rcomp, &scomp)
-		case *engoc.AnimationSystem:
-			sys.Add(&ent, &acomp, &rcomp)
-			// case *ControlSystem:
-			// 	sys.Add(&ent.BasicEntity, &ent.AnimationComponent)
-		}
-	}
+	e := NewEntity(entities[0])
+	e.LoadAnimations()
+	e.AddToWorld(w)
 }
