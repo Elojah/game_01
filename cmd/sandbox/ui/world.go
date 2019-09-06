@@ -57,7 +57,7 @@ func (sc *Scene) Setup(u engo.Updater) {
 	for _, mapname := range maps {
 		ts, err := NewTiles(mapname)
 		if err != nil {
-			logger.Error().Err(err).Msg("failed to load map")
+			logger.Error().Err(err).Str("name", mapname).Msg("failed to load map")
 			return
 		}
 		ts.AddToWorld(w)
