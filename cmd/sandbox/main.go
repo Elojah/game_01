@@ -78,7 +78,7 @@ func run(prog string, filename string) {
 	}
 	opts := engo.RunOptions{
 		Title:  "GAME_01",
-		Width:  400,
+		Width:  800,
 		Height: 400,
 	}
 	engo.Run(opts, sc)
