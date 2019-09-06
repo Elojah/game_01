@@ -49,12 +49,12 @@ func NewTiles(filename string) (Tiles, error) {
 }
 
 // AddToWorld adds tiles map to world.
-func (ts Tiles) AddToWorld(w *ecs.World) {
+func (ts *Tiles) AddToWorld(w *ecs.World) {
 	// add the ts to the RenderSystem
 	for _, system := range w.Systems() {
 		switch sys := system.(type) {
 		case *engoc.RenderSystem:
-			for _, v := range ts {
+			for _, v := range *ts {
 				sys.Add(&v.BasicEntity, &v.RenderComponent, &v.SpaceComponent)
 			}
 		}
