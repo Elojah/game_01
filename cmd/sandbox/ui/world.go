@@ -3,7 +3,6 @@ package ui
 import (
 	"image/color"
 	"io/ioutil"
-	"path"
 
 	"github.com/EngoEngine/ecs"
 	"github.com/EngoEngine/engo"
@@ -26,40 +25,27 @@ func (sc *Scene) Preload() {
 	logger := log.With().Str("scene", "preload").Logger()
 
 	// Load FX assets
-	var fxs []string // nolint: prealloc
-	fxdir := path.Join(sc.Assets, "fx")
-	files, err := ioutil.ReadDir(fxdir)
+	var assets []string // nolint: prealloc
+	files, err := ioutil.ReadDir(sc.Assets)
 	if err != nil {
-		logger.Error().Err(err).Str("dir", fxdir).Msg("failed to read directory")
+		logger.Error().Err(err).Str("dir", sc.Assets).Msg("failed to read directory")
 		return
 	}
-	engo.Files.SetRoot(path.Join(sc.Assets, "fx"))
+	engo.Files.SetRoot(sc.Assets)
 	for _, f := range files {
-		fxs = append(fxs, f.Name())
+		assets = append(assets, f.Name())
 	}
-	engo.Files.Load(fxs...)
-	logger.Info().Int("fxs", len(fxs)).Msg("fxs loaded")
-
-	// Load tilemap
-	var maps []string // nolint: prealloc
-	mapdir := path.Join(sc.Assets, "map")
-	files, err = ioutil.ReadDir(mapdir)
-	if err != nil {
-		logger.Error().Err(err).Str("dir", fxdir).Msg("failed to read directory")
+	if err := engo.Files.Load(assets...); err != nil {
+		logger.Error().Err(err).Msg("failed to load assets")
 		return
 	}
-	engo.Files.SetRoot(path.Join(sc.Assets, "map"))
-	for _, f := range files {
-		maps = append(maps, f.Name())
-	}
-	engo.Files.Load(maps...)
-	logger.Info().Int("maps", len(maps)).Msg("maps loaded")
+	logger.Info().Int("assets", len(assets)).Msg("assets loaded")
 }
 
 // Setup is called before the main loop starts. It allows you
 // to add entities and systems to your Scene.
 func (sc *Scene) Setup(u engo.Updater) {
-	logger := log.With().Str("step", "setup").Logger()
+	logger := log.With().Str("scene", "setup").Logger()
 
 	w, _ := u.(*ecs.World)
 

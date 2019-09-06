@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" backgroundcolor="#000000" nextobjectid="1">
- <tileset firstgid="1" name="roguelikeSheet_transparent" tilewidth="16" tileheight="16" spacing="1">
-  <image source="../Spritesheet/roguelikeSheet_transparent.png" width="968" height="526"/>
+ <tileset firstgid="1" name="spritesheet" tilewidth="16" tileheight="16" spacing="1">
+  <image source="spritesheet.png" width="968" height="526"/>
  </tileset>
  <layer name="Floor" width="100" height="100">
   <data encoding="base64" compression="zlib">
