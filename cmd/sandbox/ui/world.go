@@ -51,6 +51,9 @@ func (sc *Scene) Setup(u engo.Updater) {
 
 	w.AddSystem(&engoc.RenderSystem{})
 	w.AddSystem(&engoc.AnimationSystem{})
+	w.AddSystem(&ControlSystem{})
+
+	SetupControls()
 
 	engoc.SetBackground(color.Black)
 
@@ -60,7 +63,8 @@ func (sc *Scene) Setup(u engo.Updater) {
 			logger.Error().Err(err).Str("name", mapname).Msg("failed to load map")
 			return
 		}
-		ts.AddToWorld(w)
+		_ = ts
+		// ts.AddToWorld(w)
 	}
 
 	// Show all fxs on screen

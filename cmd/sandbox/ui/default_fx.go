@@ -14,7 +14,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "burn",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -31,7 +31,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "burn",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -48,7 +48,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "cast",
-					Frames: continuous(72),
+					Frames: continuous(0, 72),
 					Loop:   true,
 				},
 			},
@@ -65,7 +65,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "spell",
-					Frames: continuous(91),
+					Frames: continuous(0, 91),
 					Loop:   true,
 				},
 			},
@@ -82,7 +82,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "burn",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -99,7 +99,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "spin",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -116,7 +116,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "lash",
-					Frames: continuous(46),
+					Frames: continuous(0, 46),
 					Loop:   true,
 				},
 			},
@@ -133,7 +133,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "freeze",
-					Frames: continuous(86),
+					Frames: continuous(0, 86),
 					Loop:   true,
 				},
 			},
@@ -150,7 +150,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "load",
-					Frames: continuous(100),
+					Frames: continuous(0, 100),
 					Loop:   true,
 				},
 			},
@@ -167,7 +167,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "shine",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -184,7 +184,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "pop",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -201,7 +201,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "pop",
-					Frames: continuous(40),
+					Frames: continuous(0, 40),
 					Loop:   true,
 				},
 			},
@@ -218,7 +218,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "spell",
-					Frames: continuous(76),
+					Frames: continuous(0, 76),
 					Loop:   true,
 				},
 			},
@@ -235,7 +235,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "shine",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -252,7 +252,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "explode",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -269,7 +269,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "stand",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -286,7 +286,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "protect",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -303,7 +303,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "burn",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -320,7 +320,7 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "burn",
-					Frames: continuous(61),
+					Frames: continuous(0, 61),
 					Loop:   true,
 				},
 			},
@@ -337,13 +337,46 @@ var (
 			animations: []*engoc.Animation{
 				{
 					Name:   "hit",
-					Frames: continuous(31),
+					Frames: continuous(0, 31),
 					Loop:   true,
 				},
 			},
 			spritesheet: "weaponhit.png",
 			width:       100,
 			height:      100,
+			rate:        0.1,
+		},
+		{
+			Player: true,
+			SpaceComponent: engoc.SpaceComponent{
+				Width:  32,
+				Height: 48,
+			},
+			animations: []*engoc.Animation{
+				{
+					Name:   "walk_down",
+					Frames: continuous(0, 4),
+					Loop:   true,
+				},
+				{
+					Name:   "walk_left",
+					Frames: continuous(4, 8),
+					Loop:   true,
+				},
+				{
+					Name:   "walk_right",
+					Frames: continuous(8, 12),
+					Loop:   true,
+				},
+				{
+					Name:   "walk_up",
+					Frames: continuous(12, 16),
+					Loop:   true,
+				},
+			},
+			spritesheet: "whitemage_f.png",
+			width:       32,
+			height:      48,
 			rate:        0.1,
 		},
 	}

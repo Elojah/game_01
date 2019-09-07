@@ -8,7 +8,9 @@ import (
 
 // Entity is a dynamic entity of world.
 type Entity struct {
-	ID ulid.ID
+	GID ulid.ID
+
+	Player bool // player indicates if this entity is player controlled
 
 	ecs.BasicEntity
 
@@ -27,17 +29,20 @@ type Entity struct {
 	rate        float32 // Display rate of frames
 }
 
-func continuous(n int) []int {
-	res := make([]int, n)
-	for i := 0; i < n; i++ {
-		res[i] = i
+func continuous(start int, end int) []int {
+	if end < start {
+		return nil
+	}
+	res := make([]int, end-start)
+	for i := 0; i < end-start; i++ {
+		res[i] = i + start
 	}
 	return res
 }
 
 // NewEntity returns a new valid entity.
 func NewEntity(e Entity) *Entity {
-	e.ID = ulid.NewID()
+	e.GID = ulid.NewID()
 	e.BasicEntity = ecs.NewBasic()
 	return &e
 }
@@ -62,8 +67,10 @@ func (e *Entity) AddToWorld(w *ecs.World) {
 			sys.Add(&e.BasicEntity, &e.RenderComponent, &e.SpaceComponent)
 		case *engoc.AnimationSystem:
 			sys.Add(&e.BasicEntity, &e.AnimationComponent, &e.RenderComponent)
-			// case *ControlSystem:
-			// 	sys.Add(&ent.BasicEntity, &ent.AnimationComponent)
+		case *ControlSystem:
+			if e.Player {
+				sys.Add(e)
+			}
 		}
 	}
 }
@@ -75,8 +82,10 @@ func (e *Entity) RemoveFromWorld(w *ecs.World) {
 			sys.Remove(e.BasicEntity)
 		case *engoc.AnimationSystem:
 			sys.Remove(e.BasicEntity)
-			// case *ControlSystem:
-			// 	sys.Add(&ent.BasicEntity, &ent.AnimationComponent)
+		case *ControlSystem:
+			if e.Player {
+				sys.Remove(e.BasicEntity)
+			}
 		}
 	}
 }
