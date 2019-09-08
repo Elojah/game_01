@@ -13,6 +13,8 @@ import (
 // Scene alias a engo scene.
 type Scene struct {
 	Assets string
+
+	ClientSystem *ClientSystem
 }
 
 // Type uniquely defines your game type
@@ -52,6 +54,7 @@ func (sc *Scene) Setup(u engo.Updater) {
 	w.AddSystem(&engoc.RenderSystem{})
 	w.AddSystem(&engoc.AnimationSystem{})
 	w.AddSystem(&ControlSystem{})
+	w.AddSystem(sc.ClientSystem)
 
 	SetupControls()
 
@@ -63,18 +66,12 @@ func (sc *Scene) Setup(u engo.Updater) {
 			logger.Error().Err(err).Str("name", mapname).Msg("failed to load map")
 			return
 		}
-		_ = ts
-		// ts.AddToWorld(w)
+		ts.AddToWorld(w)
 	}
 
-	// Show all fxs on screen
-	for i, fx := range fxs {
-		e := NewEntity(fx)
-		e.LoadAnimations()
-		j := i / 8
-		i = i % 8
-		e.SpaceComponent.Position.X = float32(i * 100)
-		e.SpaceComponent.Position.Y = float32((j * 100) + 20)
-		e.AddToWorld(w)
-	}
+	e := NewEntity(chars[0])
+	e.LoadAnimations()
+	e.SpaceComponent.Position.X = float32(400)
+	e.SpaceComponent.Position.Y = float32(400)
+	e.AddToWorld(w)
 }

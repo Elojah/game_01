@@ -49,7 +49,6 @@ func NewEntity(e Entity) *Entity {
 
 // LoadAnimations load all entity animations.
 func (e *Entity) LoadAnimations() {
-
 	spriteSheet := engoc.NewSpritesheetFromFile(e.spritesheet, e.width, e.height)
 
 	e.RenderComponent.Drawable = spriteSheet.Cell(0)

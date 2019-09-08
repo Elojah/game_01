@@ -8,7 +8,9 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/cmd/sandbox/reader"
 	"github.com/elojah/game_01/cmd/sandbox/ui"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
@@ -58,11 +60,13 @@ func run(prog string, filename string) {
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)
-	// rd := newReader(&c, ha.ACK)
-	// rdl := rd.NewLauncher(NamespacesReader{
-	// 	Reader: "reader",
-	// }, "reader")
-	// launchers.Add(rdl)
+
+	ack := make(chan gulid.ID)
+	rd := reader.New(&c, ha.ACK)
+	rdl := rd.NewLauncher(reader.Namespaces{
+		Reader: "reader",
+	}, "reader")
+	launchers.Add(rdl)
 
 	if err := launchers.Up(filename); err != nil {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
@@ -74,16 +78,18 @@ func run(prog string, filename string) {
 	*/
 
 	sc := &ui.Scene{
-		Assets: "cmd/sandbox/assets",
+		Assets:       "cmd/sandbox/assets",
+		ClientSystem: &ui.ClientSystem{Reader: rd},
 	}
 	opts := engo.RunOptions{
 		Title:  "GAME_01",
 		Width:  1200,
 		Height: 800,
 	}
+	log.Info().Msg("sandbox up")
 	engo.Run(opts, sc)
 
-	log.Info().Msg("sandbox up")
+	close(ack)
 
 	// cs := make(chan os.Signal, 1)
 	// signal.Notify(cs, syscall.SIGHUP)

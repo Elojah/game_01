@@ -4,6 +4,19 @@ import (
 	engoc "github.com/EngoEngine/engo/common"
 )
 
+/*
+	// Show all fxs on screen
+	for i, fx := range fxs {
+		e := NewEntity(fx)
+		e.LoadAnimations()
+		j := i / 8
+		i = i % 8
+		e.SpaceComponent.Position.X = float32(i * 100)
+		e.SpaceComponent.Position.Y = float32((j * 100) + 20)
+		e.AddToWorld(w)
+	}
+*/
+
 var (
 	fxs = []Entity{
 		{

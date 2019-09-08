@@ -33,22 +33,7 @@ func NewTiles(filename string) (Tiles, error) {
 	level := tmxResource.Level
 
 	var ts Tiles
-	for i, tlayer := range level.TileLayers {
-
-		var zindex float32
-		switch tlayer.Name {
-		case "Floor":
-			zindex = 1
-		case "Carpet":
-			zindex = 2
-		case "Objects":
-			zindex = 3
-		case "Details":
-			zindex = 4
-		default:
-			zindex = float32(i)
-		}
-
+	for _, tlayer := range level.TileLayers {
 		for _, elem := range tlayer.Tiles {
 			if elem.Image != nil {
 				tile := NewTile()
@@ -61,7 +46,7 @@ func NewTiles(filename string) (Tiles, error) {
 					Width:    0,
 					Height:   0,
 				}
-				tile.RenderComponent.SetZIndex(zindex)
+				// tile.RenderComponent.SetZIndex(zindex)
 				ts = append(ts, tile)
 			}
 		}

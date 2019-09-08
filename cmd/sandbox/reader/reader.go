@@ -1,8 +1,7 @@
-package main
+package reader
 
 import (
 	"bufio"
-	"encoding/json"
 	"net"
 	"os"
 	"time"
@@ -16,7 +15,7 @@ import (
 	"github.com/elojah/mux/client"
 )
 
-type reader struct {
+type R struct {
 	*client.C
 
 	logger zerolog.Logger
@@ -32,10 +31,10 @@ type reader struct {
 	event  chan event.DTO
 }
 
-func newReader(c *client.C, ack <-chan gulid.ID) *reader {
-	return &reader{
+func New(c *client.C, ack <-chan gulid.ID) *R {
+	return &R{
 		C:       c,
-		logger:  log.With().Str("app", "reader").Logger(),
+		logger:  log.With().Str("app", "R").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 		event:   make(chan event.DTO),
 		events:  make(map[gulid.ID]event.DTO),
@@ -43,7 +42,7 @@ func newReader(c *client.C, ack <-chan gulid.ID) *reader {
 	}
 }
 
-func (r *reader) Close() error {
+func (r *R) Close() error {
 	if err := r.C.Close(); err != nil {
 		return err
 	}
@@ -52,8 +51,8 @@ func (r *reader) Close() error {
 	return nil
 }
 
-// Dial initialize a reader.
-func (r *reader) Dial(cfg Config) error {
+// Dial initialize a R.
+func (r *R) Dial(cfg Config) error {
 	r.tolerance = cfg.Tolerance
 	var err error
 	if r.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
@@ -62,31 +61,23 @@ func (r *reader) Dial(cfg Config) error {
 
 	d := time.Second / time.Duration(r.tolerance)
 	r.ticker = time.NewTicker(d)
-	go r.Run()
 	go r.HandleACK()
 	return nil
 }
 
-// Run starts to read JSON data from stdin and sends it to API.
-func (r reader) Run() {
-	for r.Scan() {
-		var input event.DTO
-		if err := json.Unmarshal(r.Scanner.Bytes(), &input); err != nil {
-			r.logger.Error().Err(err).Msg("failed to decode input")
-			continue
-		}
-		raw, err := input.Marshal()
-		if err != nil {
-			r.logger.Error().Err(err).Msg("failed to marshal action")
-			continue
-		}
-		r.event <- input
-		go r.Send(raw, r.addr)
+// Send sends message on appropriate config.
+func (r R) Send(input event.DTO) {
+	raw, err := input.Marshal()
+	if err != nil {
+		r.logger.Error().Err(err).Msg("failed to marshal action")
+		return
 	}
+	r.event <- input
+	go r.C.Send(raw, r.addr)
 }
 
 // HandleACK handles events sending and received acks.
-func (r reader) HandleACK() {
+func (r R) HandleACK() {
 	d := uint64(time.Second / time.Duration(r.tolerance))
 	for {
 		select {
@@ -103,7 +94,7 @@ func (r reader) HandleACK() {
 						r.logger.Error().Err(err).Msg("failed to marshal action")
 						return
 					}
-					r.Send(raw, r.addr)
+					r.C.Send(raw, r.addr)
 				}(e)
 			}
 		case e := <-r.event:

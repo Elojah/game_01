@@ -3,6 +3,9 @@ package ui
 import (
 	"github.com/EngoEngine/ecs"
 	"github.com/EngoEngine/engo"
+	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/geometry"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 var _ ecs.System = (*ControlSystem)(nil)
@@ -12,46 +15,71 @@ type ControlSystem struct {
 	entity *Entity
 }
 
-func (c *ControlSystem) Add(e *Entity) {
-	c.entity = e
+func (s *ControlSystem) Add(e *Entity) {
+	s.entity = e
 }
 
-func (c *ControlSystem) Remove(e ecs.BasicEntity) {
-	if c.entity != nil && e.ID() == c.entity.ID() {
-		c.entity = nil
+func (s *ControlSystem) Remove(e ecs.BasicEntity) {
+	if s.entity != nil && e.ID() == s.entity.ID() {
+		s.entity = nil
 	}
 }
 
-func (c *ControlSystem) Update(dt float32) {
-	for _, input := range []struct {
-		name string
-		f    func()
+func QueryMove(e *Entity) event.DTO {
+	return event.DTO{
+		ID:    gulid.NewID(),
+		Token: gulid.NewID(), // @TODO token system ?
+		Query: event.Query{
+			Move: &event.Move{
+				Targets: []gulid.ID{e.GID},
+				Position: geometry.Position{
+					SectorID: gulid.NewID(), //@TODO sectoe system ?
+					Coord: geometry.Vec3{
+						X: float64(e.SpaceComponent.Position.X),
+						Y: float64(e.SpaceComponent.Position.Y),
+					},
+				},
+			},
+		},
+	}
+}
+
+func (s *ControlSystem) Update(dt float32) {
+	for _, in := range []struct {
+		name    string
+		f       func(*Entity)
+		fclient func(*Entity) event.DTO
 	}{
 		{
-			name: "walk_up",
-			f:    func() { c.entity.SpaceComponent.Position.Y -= 5 },
+			name:    "walk_up",
+			f:       func(e *Entity) { e.SpaceComponent.Position.Y -= 5 },
+			fclient: QueryMove,
 		},
-
 		{
-			name: "walk_down",
-			f:    func() { c.entity.SpaceComponent.Position.Y += 5 },
+			name:    "walk_down",
+			f:       func(e *Entity) { e.SpaceComponent.Position.Y += 5 },
+			fclient: QueryMove,
 		},
-
 		{
-			name: "walk_left",
-			f:    func() { c.entity.SpaceComponent.Position.X -= 5 },
+			name:    "walk_left",
+			f:       func(e *Entity) { e.SpaceComponent.Position.X -= 5 },
+			fclient: QueryMove,
 		},
-
 		{
-			name: "walk_right",
-			f:    func() { c.entity.SpaceComponent.Position.X += 5 },
+			name:    "walk_right",
+			f:       func(e *Entity) { e.SpaceComponent.Position.X += 5 },
+			fclient: QueryMove,
 		},
 	} {
-		if engo.Input.Button(input.name).Down() {
-			if c.entity.AnimationComponent.CurrentAnimation.Name != input.name {
-				c.entity.AnimationComponent.SelectAnimationByName(input.name)
+		if engo.Input.Button(in.name).JustPressed() {
+			if s.entity.AnimationComponent.CurrentAnimation.Name != in.name {
+				s.entity.AnimationComponent.SelectAnimationByName(in.name)
 			}
-			input.f()
+		}
+		if engo.Input.Button(in.name).Down() {
+			in.f(s.entity)
+			// Dispatch event to client
+			engo.Mailbox.Dispatch(input{DTO: in.fclient(s.entity)})
 		}
 	}
 }
