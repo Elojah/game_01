@@ -3,9 +3,6 @@ package ui
 import (
 	"github.com/EngoEngine/ecs"
 	"github.com/EngoEngine/engo"
-	"github.com/elojah/game_01/pkg/event"
-	"github.com/elojah/game_01/pkg/geometry"
-	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 var _ ecs.System = (*ControlSystem)(nil)
@@ -25,50 +22,26 @@ func (s *ControlSystem) Remove(e ecs.BasicEntity) {
 	}
 }
 
-func QueryMove(e *Entity) event.DTO {
-	return event.DTO{
-		ID:    gulid.NewID(),
-		Token: gulid.NewID(), // @TODO token system ?
-		Query: event.Query{
-			Move: &event.Move{
-				Targets: []gulid.ID{e.GID},
-				Position: geometry.Position{
-					SectorID: gulid.NewID(), //@TODO sectoe system ?
-					Coord: geometry.Vec3{
-						X: float64(e.SpaceComponent.Position.X),
-						Y: float64(e.SpaceComponent.Position.Y),
-					},
-				},
-			},
-		},
-	}
-}
-
 func (s *ControlSystem) Update(dt float32) {
 	for _, in := range []struct {
-		name    string
-		f       func(*Entity)
-		fclient func(*Entity) event.DTO
+		name string
+		f    func(*Entity)
 	}{
 		{
-			name:    "walk_up",
-			f:       func(e *Entity) { e.SpaceComponent.Position.Y -= 5 },
-			fclient: QueryMove,
+			name: "walk_up",
+			f:    func(e *Entity) { e.SpaceComponent.Position.Y -= 5 },
 		},
 		{
-			name:    "walk_down",
-			f:       func(e *Entity) { e.SpaceComponent.Position.Y += 5 },
-			fclient: QueryMove,
+			name: "walk_down",
+			f:    func(e *Entity) { e.SpaceComponent.Position.Y += 5 },
 		},
 		{
-			name:    "walk_left",
-			f:       func(e *Entity) { e.SpaceComponent.Position.X -= 5 },
-			fclient: QueryMove,
+			name: "walk_left",
+			f:    func(e *Entity) { e.SpaceComponent.Position.X -= 5 },
 		},
 		{
-			name:    "walk_right",
-			f:       func(e *Entity) { e.SpaceComponent.Position.X += 5 },
-			fclient: QueryMove,
+			name: "walk_right",
+			f:    func(e *Entity) { e.SpaceComponent.Position.X += 5 },
 		},
 	} {
 		if engo.Input.Button(in.name).JustPressed() {
@@ -79,7 +52,10 @@ func (s *ControlSystem) Update(dt float32) {
 		if engo.Input.Button(in.name).Down() {
 			in.f(s.entity)
 			// Dispatch event to client
-			engo.Mailbox.Dispatch(input{DTO: in.fclient(s.entity)})
+			engo.Mailbox.Dispatch(move{
+				EntityID: s.entity.GID,
+				Position: s.entity.SpaceComponent.Position,
+			})
 		}
 	}
 }

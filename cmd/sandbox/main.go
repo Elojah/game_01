@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/EngoEngine/engo"
 	"github.com/rs/zerolog"
@@ -78,8 +79,11 @@ func run(prog string, filename string) {
 	*/
 
 	sc := &ui.Scene{
-		Assets:       "cmd/sandbox/assets",
-		ClientSystem: &ui.ClientSystem{Reader: rd},
+		Assets: "cmd/sandbox/assets",
+		ClientSystem: &ui.ClientSystem{
+			Reader:   rd,
+			Interval: 30 * time.Millisecond,
+		},
 	}
 	opts := engo.RunOptions{
 		Title:  "GAME_01",

@@ -34,7 +34,7 @@ type R struct {
 func New(c *client.C, ack <-chan gulid.ID) *R {
 	return &R{
 		C:       c,
-		logger:  log.With().Str("app", "R").Logger(),
+		logger:  log.With().Str("app", "reader").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 		event:   make(chan event.DTO),
 		events:  make(map[gulid.ID]event.DTO),
