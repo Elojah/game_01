@@ -5,6 +5,15 @@ import (
 	"github.com/EngoEngine/engo"
 )
 
+type Input string
+
+const (
+	WalkUp    Input = "walk_up"
+	WalkDown  Input = "walk_down"
+	WalkLeft  Input = "walk_left"
+	WalkRight Input = "walk_right"
+)
+
 var _ ecs.System = (*ControlSystem)(nil)
 
 // ControlSystem is an ecs system to handle input controls with player.
@@ -28,19 +37,19 @@ func (s *ControlSystem) Update(dt float32) {
 		f    func(*Entity)
 	}{
 		{
-			name: "walk_up",
+			name: string(WalkUp),
 			f:    func(e *Entity) { e.SpaceComponent.Position.Y -= 5 },
 		},
 		{
-			name: "walk_down",
+			name: string(WalkDown),
 			f:    func(e *Entity) { e.SpaceComponent.Position.Y += 5 },
 		},
 		{
-			name: "walk_left",
+			name: string(WalkLeft),
 			f:    func(e *Entity) { e.SpaceComponent.Position.X -= 5 },
 		},
 		{
-			name: "walk_right",
+			name: string(WalkRight),
 			f:    func(e *Entity) { e.SpaceComponent.Position.X += 5 },
 		},
 	} {
@@ -62,8 +71,8 @@ func (s *ControlSystem) Update(dt float32) {
 
 // SetupControls setup default controls.
 func SetupControls() {
-	engo.Input.RegisterButton("walk_up", engo.KeyW)
-	engo.Input.RegisterButton("walk_left", engo.KeyA)
-	engo.Input.RegisterButton("walk_down", engo.KeyS)
-	engo.Input.RegisterButton("walk_right", engo.KeyD)
+	engo.Input.RegisterButton(string(WalkUp), engo.KeyW)
+	engo.Input.RegisterButton(string(WalkLeft), engo.KeyA)
+	engo.Input.RegisterButton(string(WalkDown), engo.KeyS)
+	engo.Input.RegisterButton(string(WalkRight), engo.KeyD)
 }

@@ -162,7 +162,7 @@ check: vendor lint test
 .PHONY: lint
 lint: ## Check code respect linter rules
 	$(info $(M) running $(GOLINT)…)
-	$Q $(GOLINT) run
+	$Q $(GOLINT) run --deadline=5m
 
 # Test
 .PHONY: test
