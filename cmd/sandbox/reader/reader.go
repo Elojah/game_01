@@ -2,6 +2,7 @@ package reader
 
 import (
 	"bufio"
+	"fmt"
 	"net"
 	"os"
 	"time"
@@ -73,6 +74,7 @@ func (r R) Send(input event.DTO) {
 		return
 	}
 	r.event <- input
+	r.logger.Info().Str("data", fmt.Sprintf("%v", input)).Msg("send")
 	go r.C.Send(raw, r.addr)
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	sclient "github.com/elojah/game_01/cmd/sandbox/client"
 	"github.com/elojah/game_01/cmd/sandbox/reader"
 	"github.com/elojah/game_01/cmd/sandbox/ui"
 	gulid "github.com/elojah/game_01/pkg/ulid"
@@ -72,6 +73,12 @@ func run(prog string, filename string) {
 	/*
 		UI
 	*/
+
+	sc := sclient.Client{}
+	scl := sc.NewLauncher(sclient.Namespaces{
+		Client: "local_client",
+	}, "local_client")
+	launchers.Add(scl)
 
 	t := ui.Term{}
 	tl := t.NewLauncher(ui.Namespaces{

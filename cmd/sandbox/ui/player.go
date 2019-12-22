@@ -2,10 +2,42 @@ package ui
 
 import (
 	tl "github.com/JoelOtter/termloop"
+	"github.com/elojah/game_01/pkg/event"
+	"github.com/elojah/game_01/pkg/geometry"
+	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
 type Player struct {
+	id gulid.ID
 	*tl.Entity
+}
+
+func NewPlayer() *Player {
+	return &Player{
+		id:     gulid.NewID(),
+		Entity: tl.NewEntity(1, 1, 1, 1),
+	}
+}
+
+func (p *Player) ID() gulid.ID {
+	return p.id
+}
+
+func (p *Player) Query() event.Query {
+	x, y := p.Position()
+	return event.Query{
+		Move: &event.Move{
+			Targets: []gulid.ID{p.id},
+			Position: geometry.Position{
+				SectorID: gulid.NewID(), //TODO
+				Coord: geometry.Vec3{
+					X: float64(x),
+					Y: float64(y),
+					Z: 0,
+				},
+			},
+		},
+	}
 }
 
 func (p *Player) Tick(ev tl.Event) {
@@ -24,17 +56,4 @@ func (p *Player) Tick(ev tl.Event) {
 		}
 		p.SetPosition(x, y)
 	}
-}
-
-func UnmarshalPlayer(data map[string]interface{}) tl.Drawable {
-	e := tl.NewEntity(
-		int(data["x"].(float64)),
-		int(data["y"].(float64)),
-		1, 1,
-	)
-	e.SetCell(0, 0, &tl.Cell{
-		Ch: 'o',
-		Fg: tl.Attr(42),
-	})
-	return &Player{e}
 }

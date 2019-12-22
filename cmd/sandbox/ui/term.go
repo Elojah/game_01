@@ -26,11 +26,13 @@ func (t *Term) Dial(cfg Config) error {
 		return err
 	}
 
-	parsers := make(map[string]tl.EntityParser)
-	parsers["player"] = UnmarshalPlayer
-	if err := tl.LoadLevelFromMap(string(lmap), parsers, l); err != nil {
+	if err := tl.LoadLevelFromMap(string(lmap), nil, l); err != nil {
 		return err
 	}
+
+	player := NewPlayer()
+	player.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed, Ch: '옷'})
+	l.AddEntity(player)
 
 	t.g.Screen().SetLevel(l)
 	t.g.Start()
