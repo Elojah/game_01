@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -67,11 +69,6 @@ func run(prog string, filename string) {
 	}, "reader")
 	launchers.Add(rdl)
 
-	if err := launchers.Up(filename); err != nil {
-		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
-		return
-	}
-
 	/*
 		UI
 	*/
@@ -83,33 +80,42 @@ func run(prog string, filename string) {
 	launchers.Add(tl)
 	log.Info().Msg("sandbox up")
 
-	close(ack)
+	/*
+		Run services
+	*/
 
-	// cs := make(chan os.Signal, 1)
-	// signal.Notify(cs, syscall.SIGHUP)
-	// for sig := range cs {
-	// 	switch sig {
-	// 	case syscall.SIGHUP:
-	// 		if err := launchers.Down(); err != nil {
-	// 			log.Error().Err(err).Msg("failed to stop services")
-	// 			continue
-	// 		}
-	// 		if err := launchers.Up(filename); err != nil {
-	// 			log.Error().Err(err).Str("filename", filename).Msg("failed to start services")
-	// 		}
-	// 	case syscall.SIGINT:
-	// 		if err := launchers.Down(); err != nil {
-	// 			log.Error().Err(err).Msg("failed to stop services")
-	// 			continue
-	// 		}
-	// 	case syscall.SIGKILL:
-	// 		if err := launchers.Down(); err != nil {
-	// 			log.Error().Err(err).Msg("failed to stop services")
-	// 			continue
-	// 		}
-	// 		return
-	// 	}
-	// }
+	if err := launchers.Up(filename); err != nil {
+		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
+		return
+	}
+
+	cs := make(chan os.Signal, 1)
+	signal.Notify(cs, syscall.SIGHUP)
+	for sig := range cs {
+		switch sig {
+		case syscall.SIGHUP:
+			if err := launchers.Down(); err != nil {
+				log.Error().Err(err).Msg("failed to stop services")
+				continue
+			}
+			if err := launchers.Up(filename); err != nil {
+				log.Error().Err(err).Str("filename", filename).Msg("failed to start services")
+			}
+		case syscall.SIGINT:
+			close(ack)
+			if err := launchers.Down(); err != nil {
+				log.Error().Err(err).Msg("failed to stop services")
+				continue
+			}
+		case syscall.SIGKILL:
+			close(ack)
+			if err := launchers.Down(); err != nil {
+				log.Error().Err(err).Msg("failed to stop services")
+				continue
+			}
+			return
+		}
+	}
 }
 
 func main() {

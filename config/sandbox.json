@@ -19,5 +19,9 @@
 		"address": "api:3400",
 		"tolerance": 12
 	},
-	"handler": {}
+	"handler": {},
+	"ui": {
+		"fps": 60,
+		"level_file": "TODO"
+	}
 }

@@ -1,7 +1,8 @@
 module github.com/elojah/game_01
 
 require (
-	github.com/EngoEngine/engo v1.0.4 // indirect
+	github.com/JoelOtter/termloop v0.0.0-20191114154723-6c3a95a92fdd
+	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/elojah/mux v0.0.0-20190508144824-9acfa5c76ff3
 	github.com/elojah/redis v0.0.0-20190313141158-8ee7ee230476
 	github.com/elojah/services v0.0.0-20190313141140-599efb6ce8c5
@@ -9,6 +10,8 @@ require (
 	github.com/gogo/protobuf v1.2.0
 	github.com/hashicorp/go-multierror v1.0.0
 	github.com/kr/pretty v0.1.0 // indirect
+	github.com/mattn/go-runewidth v0.0.7 // indirect
+	github.com/nsf/termbox-go v0.0.0-20190817171036-93860e161317 // indirect
 	github.com/oklog/ulid v1.3.1
 	github.com/pkg/errors v0.8.1
 	github.com/rs/zerolog v1.14.3
