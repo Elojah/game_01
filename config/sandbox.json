@@ -22,6 +22,6 @@
 	"handler": {},
 	"ui": {
 		"fps": 60,
-		"level_file": "TODO"
+		"level_file": "cmd/sandbox/assets/map.json"
 	}
 }
