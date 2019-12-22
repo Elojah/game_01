@@ -23,6 +23,7 @@ func (s *Service) AddSpawn(filename string) error {
 	if err != nil {
 		return errors.Wrap(err, "add spawns")
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "add spawns")
 	}
@@ -45,6 +46,7 @@ func (s *Service) GetSpawn(ids []string) ([]entity.Spawn, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "get spawn")
 	}
+	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "get spawn")
 	}

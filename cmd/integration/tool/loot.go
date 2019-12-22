@@ -20,6 +20,7 @@ func (s *Service) Loot(ids []gulid.ID) error {
 	if err != nil {
 		return err
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}

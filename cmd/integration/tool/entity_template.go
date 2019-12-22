@@ -19,6 +19,7 @@ func (s *Service) AddEntityTemplates(filename string) error {
 	if err != nil {
 		return errors.Wrap(err, "add entity templates")
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "add entity templates")
 	}

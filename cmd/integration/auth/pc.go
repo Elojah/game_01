@@ -27,6 +27,7 @@ func (s *Service) CreatePC(tokenID gulid.ID, pcName string, pcType string, spawn
 	if err != nil {
 		return errors.Wrap(err, "create pc")
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "create pc")
 	}
@@ -70,6 +71,7 @@ func (s *Service) DelPC(tokenID gulid.ID, pcID gulid.ID) error {
 	if err != nil {
 		return errors.Wrap(err, "del pc")
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "create pc")
 	}
@@ -113,6 +115,7 @@ func (s *Service) DisconnectPC(tokenID gulid.ID) error {
 	if err != nil {
 		return err
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}

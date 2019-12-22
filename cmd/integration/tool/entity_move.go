@@ -25,6 +25,7 @@ func (s *Service) EntityMove(id gulid.ID, pos geometry.Position) error {
 	if err != nil {
 		return err
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("invalid status code %d", resp.StatusCode)
 	}

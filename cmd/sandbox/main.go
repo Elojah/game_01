@@ -3,9 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"time"
 
-	"github.com/EngoEngine/engo"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
@@ -78,20 +76,12 @@ func run(prog string, filename string) {
 		UI
 	*/
 
-	sc := &ui.Scene{
-		Assets: "cmd/sandbox/assets",
-		ClientSystem: &ui.ClientSystem{
-			Reader:   rd,
-			Interval: 30 * time.Millisecond,
-		},
-	}
-	opts := engo.RunOptions{
-		Title:  "GAME_01",
-		Width:  1200,
-		Height: 800,
-	}
+	t := ui.Term{}
+	tl := t.NewLauncher(ui.Namespaces{
+		UI: "ui",
+	}, "ui")
+	launchers.Add(tl)
 	log.Info().Msg("sandbox up")
-	engo.Run(opts, sc)
 
 	close(ack)
 

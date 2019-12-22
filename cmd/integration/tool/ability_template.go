@@ -22,5 +22,6 @@ func (s *Service) AddAbilityTemplates(filename string) error {
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "add ability templates")
 	}
+	_ = resp.Body.Close()
 	return nil
 }

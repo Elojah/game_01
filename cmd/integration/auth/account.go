@@ -25,10 +25,10 @@ func (s *Service) Subscribe(username string, password string) error {
 	if err != nil {
 		return errors.Wrap(err, "create account")
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "create account")
 	}
-
 	return nil
 }
 
@@ -70,6 +70,7 @@ func (s *Service) SignOut(tokenID gulid.ID, username string) error {
 	if err != nil {
 		return errors.Wrap(err, "sign out")
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "sign out")
 	}
@@ -89,6 +90,7 @@ func (s *Service) Unsubscribe(username string, password string) error {
 	if err != nil {
 		return errors.Wrap(err, "unsubscribe")
 	}
+	_ = resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
 		return errors.Wrap(fmt.Errorf("invalid status code %d", resp.StatusCode), "unsubscribe")
 	}

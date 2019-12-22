@@ -53,5 +53,6 @@ linters:
     - interfacer # Want to impose standard interface instead of logic domain
     - goconst # For "classic" strings like POST, prefer to keep them hardcode
     - gochecknoglobals # May be ok to have const
+    - funlen # Makes no sense in an actual project
   disable-all: false
   fast: false

@@ -1,8 +1,7 @@
 module github.com/elojah/game_01
 
 require (
-	github.com/EngoEngine/ecs v1.0.3
-	github.com/EngoEngine/engo v1.0.4
+	github.com/EngoEngine/engo v1.0.4 // indirect
 	github.com/elojah/mux v0.0.0-20190508144824-9acfa5c76ff3
 	github.com/elojah/redis v0.0.0-20190313141158-8ee7ee230476
 	github.com/elojah/services v0.0.0-20190313141140-599efb6ce8c5
