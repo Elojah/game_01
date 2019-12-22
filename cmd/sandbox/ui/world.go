@@ -53,10 +53,11 @@ func (sc *Scene) Setup(u engo.Updater) {
 
 	w.AddSystem(&engoc.RenderSystem{})
 	w.AddSystem(&engoc.AnimationSystem{})
-	w.AddSystem(&ControlSystem{})
-	w.AddSystem(sc.ClientSystem)
 
-	SetupControls()
+	cs := ControlSystem{}
+	cs.Setup()
+	w.AddSystem(&cs)
+	w.AddSystem(sc.ClientSystem)
 
 	engoc.SetBackground(color.Black)
 

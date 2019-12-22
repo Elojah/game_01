@@ -27,8 +27,6 @@ type Entity struct {
 	width       int     // width of one sprite
 	height      int     // height of one sprite
 	rate        float32 // Display rate of frames
-
-	moveInput InputChan
 }
 
 func continuous(start int, end int) []int {

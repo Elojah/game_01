@@ -5,20 +5,23 @@ import (
 	"github.com/EngoEngine/engo"
 )
 
-type Input string
-
-const (
-	WalkUp    Input = "walk_up"
-	WalkDown  Input = "walk_down"
-	WalkLeft  Input = "walk_left"
-	WalkRight Input = "walk_right"
-)
-
 var _ ecs.System = (*ControlSystem)(nil)
 
 // ControlSystem is an ecs system to handle input controls with player.
 type ControlSystem struct {
 	entity *Entity
+	move   InputChan
+}
+
+// SetupControls setup default controls.
+func (s *ControlSystem) Setup() {
+	engo.Input.RegisterButton(string(WalkUp), engo.KeyW)
+	engo.Input.RegisterButton(string(WalkLeft), engo.KeyA)
+	engo.Input.RegisterButton(string(WalkDown), engo.KeyS)
+	engo.Input.RegisterButton(string(WalkRight), engo.KeyD)
+
+	s.move = NewInputChan()
+	go s.move.Run(s.HandleInput)
 }
 
 func (s *ControlSystem) Add(e *Entity) {
@@ -31,35 +34,12 @@ func (s *ControlSystem) Remove(e ecs.BasicEntity) {
 	}
 }
 
-func (s *ControlSystem) Update(dt float32) {
-	for _, in := range []struct {
-		name string
-		f    func(*Entity)
-	}{
-		{
-			name: string(WalkUp),
-			f:    func(e *Entity) { e.SpaceComponent.Position.Y -= 5 },
-		},
-		{
-			name: string(WalkDown),
-			f:    func(e *Entity) { e.SpaceComponent.Position.Y += 5 },
-		},
-		{
-			name: string(WalkLeft),
-			f:    func(e *Entity) { e.SpaceComponent.Position.X -= 5 },
-		},
-		{
-			name: string(WalkRight),
-			f:    func(e *Entity) { e.SpaceComponent.Position.X += 5 },
-		},
-	} {
-		if engo.Input.Button(in.name).JustPressed() {
-			if s.entity.AnimationComponent.CurrentAnimation.Name != in.name {
-				s.entity.AnimationComponent.SelectAnimationByName(in.name)
-			}
-		}
-		if engo.Input.Button(in.name).Down() {
-			in.f(s.entity)
+func (s *ControlSystem) Update(dt float32) {}
+
+func (s *ControlSystem) HandleInput() {
+	for _, ai := range actions {
+		if engo.Input.Button(string(ai.Input)).Down() {
+			ai.Action(s.entity)
 			// Dispatch event to client
 			engo.Mailbox.Dispatch(move{
 				EntityID: s.entity.GID,
@@ -67,12 +47,4 @@ func (s *ControlSystem) Update(dt float32) {
 			})
 		}
 	}
-}
-
-// SetupControls setup default controls.
-func SetupControls() {
-	engo.Input.RegisterButton(string(WalkUp), engo.KeyW)
-	engo.Input.RegisterButton(string(WalkLeft), engo.KeyA)
-	engo.Input.RegisterButton(string(WalkDown), engo.KeyS)
-	engo.Input.RegisterButton(string(WalkRight), engo.KeyD)
 }
