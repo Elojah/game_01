@@ -8,6 +8,8 @@ import (
 
 type Term struct {
 	g *tl.Game
+
+	Player *Player
 }
 
 func (t *Term) Close() error {
@@ -30,12 +32,12 @@ func (t *Term) Dial(cfg Config) error {
 		return err
 	}
 
-	player := NewPlayer()
-	player.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed, Ch: '옷'})
-	l.AddEntity(player)
+	t.Player = NewPlayer()
+	t.Player.SetCell(0, 0, &tl.Cell{Fg: tl.ColorRed, Ch: '옷'})
+	l.AddEntity(t.Player)
 
 	t.g.Screen().SetLevel(l)
-	t.g.Start()
+	go t.g.Start()
 
 	return nil
 }

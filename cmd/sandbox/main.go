@@ -10,7 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	sclient "github.com/elojah/game_01/cmd/sandbox/client"
-	"github.com/elojah/game_01/cmd/sandbox/reader"
+	"github.com/elojah/game_01/cmd/sandbox/network"
 	"github.com/elojah/game_01/cmd/sandbox/ui"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
@@ -64,20 +64,20 @@ func run(prog string, filename string) {
 	launchers.Add(cl)
 
 	ack := make(chan gulid.ID)
-	rd := reader.New(&c, ha.ACK)
-	rdl := rd.NewLauncher(reader.Namespaces{
-		Reader: "reader",
-	}, "reader")
-	launchers.Add(rdl)
+	nc := network.New(&c, ha.ACK)
+	ncl := nc.NewLauncher(network.Namespaces{
+		Client: "network",
+	}, "network")
+	launchers.Add(ncl)
 
 	/*
 		UI
 	*/
 
-	sc := sclient.Client{}
+	sc := sclient.C{}
 	scl := sc.NewLauncher(sclient.Namespaces{
-		Client: "local_client",
-	}, "local_client")
+		Client: "ui",
+	}, "ui")
 	launchers.Add(scl)
 
 	t := ui.Term{}
@@ -95,6 +95,10 @@ func run(prog string, filename string) {
 		log.Error().Err(err).Str("filename", filename).Msg("failed to start")
 		return
 	}
+
+	fmt.Println("add player")
+	sc.Add <- t.Player
+	fmt.Println("added player")
 
 	cs := make(chan os.Signal, 1)
 	signal.Notify(cs, syscall.SIGHUP)

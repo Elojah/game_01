@@ -16,12 +16,12 @@ type Launcher struct {
 	*services.Configs
 	ns Namespaces
 
-	client *Client
+	client *C
 	m      sync.Mutex
 }
 
 // NewLauncher returns a new auth server Launcher.
-func (client *Client) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
+func (client *C) NewLauncher(ns Namespaces, nsRead ...services.Namespace) *Launcher {
 	return &Launcher{
 		Configs: services.NewConfigs(nsRead...),
 		client:  client,

@@ -1,46 +1,47 @@
 package client
 
 import (
+	"fmt"
 	"time"
 
-	"github.com/elojah/game_01/cmd/sandbox/reader"
+	"github.com/elojah/game_01/cmd/sandbox/network"
 	"github.com/elojah/game_01/pkg/event"
 	gulid "github.com/elojah/game_01/pkg/ulid"
 )
 
-type Queryable interface {
+type Sendable interface {
 	ID() gulid.ID
 	Query() event.Query
 }
 
-type Client struct {
-	Add    chan Queryable
+type C struct {
+	Add    chan Sendable
 	Remove chan gulid.ID
 	ticker *time.Ticker
 	close  chan struct{}
 
-	Reader *reader.R
+	Network *network.Client
 
-	queries map[gulid.ID]Queryable
+	sendables map[gulid.ID]Sendable
 }
 
-func NewClient() *Client {
-	return &Client{
-		Add:    make(chan Queryable),
+func NewClient() *C {
+	return &C{
+		Add:    make(chan Sendable),
 		Remove: make(chan gulid.ID),
 
-		queries: make(map[gulid.ID]Queryable),
+		sendables: make(map[gulid.ID]Sendable),
 	}
 }
 
 // Dial initialize a client.
-func (c *Client) Dial(cfg Config) error {
+func (c *C) Dial(cfg Config) error {
 	c.ticker = time.NewTicker(time.Duration(cfg.Interval) * time.Millisecond)
 	go c.Run()
 	return nil
 }
 
-func (c *Client) Close() error {
+func (c *C) Close() error {
 	close(c.Add)
 	close(c.Remove)
 	c.close <- struct{}{}
@@ -48,23 +49,26 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) Run() {
+func (c *C) Run() {
 	for {
 		select {
 		case <-c.close:
 			return
+		case se := <-c.Add:
+			fmt.Println("add")
+			fmt.Println(se.ID().String())
+			c.sendables[se.ID()] = se
+		case id := <-c.Remove:
+			delete(c.sendables, id)
 		case <-c.ticker.C:
-			for _, q := range c.queries {
-				c.Reader.Send(event.DTO{
+			fmt.Println("tick")
+			for _, se := range c.sendables {
+				c.Network.Send(event.DTO{
 					ID:    gulid.NewID(),
 					Token: gulid.NewID(),
-					Query: q.Query(),
+					Query: se.Query(),
 				})
 			}
-		case q := <-c.Add:
-			c.queries[q.ID()] = q
-		case id := <-c.Remove:
-			delete(c.queries, id)
 		}
 	}
 }

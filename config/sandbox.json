@@ -15,13 +15,14 @@
 		"middlewares": ["snappy"],
 		"packet_size": 1024
 	},
-	"reader": {
+	"network": {
 		"address": "api:3400",
 		"tolerance": 12
 	},
 	"handler": {},
 	"ui": {
 		"fps": 60,
+		"interval": 100,
 		"level_file": "cmd/sandbox/assets/map.json"
 	}
 }
