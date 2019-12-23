@@ -1,6 +1,6 @@
 {
 	"api": {
-		"tolerance": 500,
+		"tolerance": 2000,
 		"ack_port": 42001
 	},
 	"server": {

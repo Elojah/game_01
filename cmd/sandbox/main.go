@@ -9,10 +9,10 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/cmd/sandbox/auth"
 	sclient "github.com/elojah/game_01/cmd/sandbox/client"
 	"github.com/elojah/game_01/cmd/sandbox/network"
 	"github.com/elojah/game_01/cmd/sandbox/ui"
-	gulid "github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
@@ -32,6 +32,7 @@ func run(prog string, filename string) {
 		M: "entity",
 	}, "entity")
 	launchers.Add(muxl)
+
 	h := handler{
 		M: &m,
 	}
@@ -57,28 +58,39 @@ func run(prog string, filename string) {
 	launchers.Add(hal)
 	ha.M.Handler = ha.handleACK
 
+	/*
+		Local clients
+	*/
+
 	c := client.C{}
 	cl := c.NewLauncher(client.Namespaces{
 		Client: "client",
 	}, "client")
 	launchers.Add(cl)
 
-	ack := make(chan gulid.ID)
+	sc := sclient.NewClient()
+	scl := sc.NewLauncher(sclient.Namespaces{
+		Client: "ui",
+	}, "ui")
+	launchers.Add(scl)
+
 	nc := network.New(&c, ha.ACK)
 	ncl := nc.NewLauncher(network.Namespaces{
 		Client: "network",
 	}, "network")
 	launchers.Add(ncl)
 
+	sc.Network = nc
+
+	ac := auth.Client{}
+	acl := ac.NewLauncher(auth.Namespaces{
+		Client: "auth",
+	}, "auth")
+	launchers.Add(acl)
+
 	/*
 		UI
 	*/
-
-	sc := sclient.NewClient(nc)
-	scl := sc.NewLauncher(sclient.Namespaces{
-		Client: "ui",
-	}, "ui")
-	launchers.Add(scl)
 
 	t := ui.Term{}
 	tl := t.NewLauncher(ui.Namespaces{
@@ -96,10 +108,12 @@ func run(prog string, filename string) {
 		return
 	}
 
+	/* TEST FLOW, TO AUTOMATIZE */
 	sc.Add <- t.Player
+	sc.Token = ac.Token
 
 	cs := make(chan os.Signal, 1)
-	signal.Notify(cs, syscall.SIGHUP)
+	signal.Notify(cs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL)
 	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
@@ -111,13 +125,12 @@ func run(prog string, filename string) {
 				log.Error().Err(err).Str("filename", filename).Msg("failed to start services")
 			}
 		case syscall.SIGINT:
-			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue
 			}
+			return
 		case syscall.SIGKILL:
-			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue

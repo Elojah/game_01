@@ -130,7 +130,7 @@ func run(prog string, filename string) {
 
 	log.Info().Msg("auth up")
 	c := make(chan os.Signal, 1)
-	signal.Notify(c, syscall.SIGHUP)
+	signal.Notify(c, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL)
 	for sig := range c {
 		switch sig {
 		case syscall.SIGHUP:
@@ -146,6 +146,7 @@ func run(prog string, filename string) {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue
 			}
+			return
 		case syscall.SIGKILL:
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")

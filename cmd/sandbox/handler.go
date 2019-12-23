@@ -25,9 +25,6 @@ func (h *handler) Dial() error {
 }
 
 func (h *handler) Close() error {
-	if err := h.M.Close(); err != nil {
-		return err
-	}
 	close(h.ACK)
 	return nil
 }

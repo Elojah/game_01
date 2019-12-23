@@ -30,6 +30,7 @@ type Client struct {
 	events map[gulid.ID]event.DTO
 	ack    <-chan gulid.ID
 	event  chan event.DTO
+	done   chan struct{}
 }
 
 func New(c *client.C, ack <-chan gulid.ID) *Client {
@@ -39,15 +40,15 @@ func New(c *client.C, ack <-chan gulid.ID) *Client {
 		Scanner: bufio.NewScanner(os.Stdin),
 		event:   make(chan event.DTO),
 		events:  make(map[gulid.ID]event.DTO),
+		done:    make(chan struct{}),
 		ack:     ack,
 	}
 }
 
 func (c *Client) Close() error {
-	if err := c.C.Close(); err != nil {
-		return err
-	}
+	c.done <- struct{}{}
 	close(c.event)
+	close(c.done)
 	c.ticker.Stop()
 	return nil
 }
@@ -81,6 +82,8 @@ func (c Client) Send(input event.DTO) {
 func (c Client) HandleACK() {
 	for {
 		select {
+		case <-c.done:
+			return
 		case id := <-c.ack:
 			c.logger.Info().Str("id", id.String()).Msg("event acked")
 			delete(c.events, id)

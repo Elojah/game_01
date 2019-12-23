@@ -14,23 +14,23 @@ type Sendable interface {
 }
 
 type C struct {
+	Network *network.Client
+	Token   gulid.ID
+
 	Add    chan Sendable
 	Remove chan gulid.ID
 	ticker *time.Ticker
-	close  chan struct{}
-
-	network *network.Client
+	done   chan struct{}
 
 	sendables map[gulid.ID]Sendable
 }
 
-func NewClient(nc *network.Client) *C {
+func NewClient() *C {
 	return &C{
 		Add:       make(chan Sendable),
 		Remove:    make(chan gulid.ID),
 		sendables: make(map[gulid.ID]Sendable),
-
-		network: nc,
+		done:      make(chan struct{}),
 	}
 }
 
@@ -42,9 +42,10 @@ func (c *C) Dial(cfg Config) error {
 }
 
 func (c *C) Close() error {
+	c.done <- struct{}{}
 	close(c.Add)
 	close(c.Remove)
-	c.close <- struct{}{}
+	close(c.done)
 	c.ticker.Stop()
 	return nil
 }
@@ -52,7 +53,7 @@ func (c *C) Close() error {
 func (c *C) Run() {
 	for {
 		select {
-		case <-c.close:
+		case <-c.done:
 			return
 		case se := <-c.Add:
 			c.sendables[se.ID()] = se
@@ -60,9 +61,9 @@ func (c *C) Run() {
 			delete(c.sendables, id)
 		case <-c.ticker.C:
 			for _, se := range c.sendables {
-				c.network.Send(event.DTO{
+				c.Network.Send(event.DTO{
 					ID:    gulid.NewID(),
-					Token: gulid.NewID(),
+					Token: c.Token,
 					Query: se.Query(),
 				})
 			}

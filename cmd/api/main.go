@@ -96,7 +96,7 @@ func run(prog string, filename string) {
 	log.Info().Msg("api up")
 
 	cs := make(chan os.Signal, 1)
-	signal.Notify(cs, syscall.SIGHUP)
+	signal.Notify(cs, syscall.SIGHUP, syscall.SIGINT, syscall.SIGKILL)
 	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
@@ -111,6 +111,7 @@ func run(prog string, filename string) {
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 			}
+			return
 		case syscall.SIGKILL:
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")

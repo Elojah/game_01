@@ -1,12 +1,12 @@
 {
 	"ack": {
-		"addresses": ["api:42001"],
+		"addresses": ["localhost:42001"],
 		"middlewares": [],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
 	"entity": {
-		"addresses": ["sync:42000"],
+		"addresses": ["localhost:42000"],
 		"middlewares": ["snappy"],
 		"packet_size": 1024,
 		"server_protocol": "udp"
@@ -16,7 +16,7 @@
 		"packet_size": 1024
 	},
 	"network": {
-		"address": "api:3400",
+		"address": "0.0.0.0:3400",
 		"ack_tolerance": 100,
 		"omit_tolerance": 1000
 	},
@@ -25,5 +25,10 @@
 		"fps": 60,
 		"level_file": "cmd/sandbox/assets/map.json",
 		"interval": 100
+	},
+	"auth": {
+		"address": "https://0.0.0.0:8080",
+		"username": "testsandbox",
+		"password": "testsandbox"
 	}
 }
