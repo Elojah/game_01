@@ -5,16 +5,17 @@ import (
 )
 
 // Config is client config.
-// Tolerance in milliseconds.
+// ACKTolerance in milliseconds.
 type Config struct {
-	Address   string `json:"address"`
-	Tolerance uint64 `json:"tolerance"`
+	Address       string `json:"address"`
+	ACKTolerance  uint64 `json:"ack_tolerance"`
+	OmitTolerance uint64 `json:"omit_tolerance"`
 }
 
 // Equal returns is both configs are equal.
 func (c Config) Equal(rhs Config) bool {
 	return (c.Address != rhs.Address &&
-		c.Tolerance == rhs.Tolerance)
+		c.ACKTolerance == rhs.ACKTolerance)
 }
 
 // Dial set the config from a config namespace.
@@ -32,15 +33,25 @@ func (c *Config) Dial(fileconf interface{}) error {
 		return errors.New("key address invalid. must be string")
 	}
 
-	cTolerance, ok := fconf["tolerance"]
+	cACKTolerance, ok := fconf["ack_tolerance"]
 	if !ok {
-		return errors.New("missing key tolerance")
+		return errors.New("missing key ack_tolerance")
 	}
-	cToleranceFloat, ok := cTolerance.(float64)
+	cACKToleranceFloat, ok := cACKTolerance.(float64)
 	if !ok {
-		return errors.New("key tolerance invalid. must be numeric")
+		return errors.New("key ack_tolerance invalid. must be numeric")
 	}
-	c.Tolerance = uint64(cToleranceFloat)
+	c.ACKTolerance = uint64(cACKToleranceFloat)
+
+	cOmitTolerance, ok := fconf["omit_tolerance"]
+	if !ok {
+		return errors.New("missing key omit_tolerance")
+	}
+	cOmitToleranceFloat, ok := cOmitTolerance.(float64)
+	if !ok {
+		return errors.New("key omit_tolerance invalid. must be numeric")
+	}
+	c.OmitTolerance = uint64(cOmitToleranceFloat)
 
 	return nil
 }

@@ -17,12 +17,13 @@
 	},
 	"network": {
 		"address": "api:3400",
-		"tolerance": 12
+		"ack_tolerance": 100,
+		"omit_tolerance": 1000
 	},
 	"handler": {},
 	"ui": {
 		"fps": 60,
-		"interval": 100,
-		"level_file": "cmd/sandbox/assets/map.json"
+		"level_file": "cmd/sandbox/assets/map.json",
+		"interval": 100
 	}
 }

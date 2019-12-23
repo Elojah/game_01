@@ -74,7 +74,7 @@ func run(prog string, filename string) {
 		UI
 	*/
 
-	sc := sclient.C{}
+	sc := sclient.NewClient(nc)
 	scl := sc.NewLauncher(sclient.Namespaces{
 		Client: "ui",
 	}, "ui")
@@ -96,9 +96,7 @@ func run(prog string, filename string) {
 		return
 	}
 
-	fmt.Println("add player")
 	sc.Add <- t.Player
-	fmt.Println("added player")
 
 	cs := make(chan os.Signal, 1)
 	signal.Notify(cs, syscall.SIGHUP)

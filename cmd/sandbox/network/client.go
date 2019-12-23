@@ -2,7 +2,6 @@ package network
 
 import (
 	"bufio"
-	"fmt"
 	"net"
 	"os"
 	"time"
@@ -24,8 +23,9 @@ type Client struct {
 
 	addr net.Addr
 
-	ticker    *time.Ticker
-	tolerance uint64
+	ticker        *time.Ticker
+	ackTolerance  uint64
+	omitTolerance uint64
 
 	events map[gulid.ID]event.DTO
 	ack    <-chan gulid.ID
@@ -35,7 +35,7 @@ type Client struct {
 func New(c *client.C, ack <-chan gulid.ID) *Client {
 	return &Client{
 		C:       c,
-		logger:  log.With().Str("app", "reader").Logger(),
+		logger:  log.With().Str("app", "network").Logger(),
 		Scanner: bufio.NewScanner(os.Stdin),
 		event:   make(chan event.DTO),
 		events:  make(map[gulid.ID]event.DTO),
@@ -54,14 +54,14 @@ func (c *Client) Close() error {
 
 // Dial initialize a Client.
 func (c *Client) Dial(cfg Config) error {
-	c.tolerance = cfg.Tolerance
+	c.ackTolerance = cfg.ACKTolerance
+	c.omitTolerance = cfg.OmitTolerance
 	var err error
 	if c.addr, err = net.ResolveUDPAddr("udp", cfg.Address); err != nil {
 		return err
 	}
 
-	d := time.Second / time.Duration(c.tolerance)
-	c.ticker = time.NewTicker(d)
+	c.ticker = time.NewTicker(time.Duration(int(c.ackTolerance)) * time.Millisecond)
 	go c.HandleACK()
 	return nil
 }
@@ -74,37 +74,44 @@ func (c Client) Send(input event.DTO) {
 		return
 	}
 	c.event <- input
-	c.logger.Info().Str("data", fmt.Sprintf("%v", input)).Msg("send")
 	go c.C.Send(raw, c.addr)
 }
 
 // HandleACK handles events sending and received acks.
 func (c Client) HandleACK() {
-	d := uint64(time.Second / time.Duration(c.tolerance))
 	for {
 		select {
+		case id := <-c.ack:
+			c.logger.Info().Str("id", id.String()).Msg("event acked")
+			delete(c.events, id)
+		case e := <-c.event:
+			c.logger.Info().Str("id", e.ID.String()).Msg("event registered")
+			c.events[e.ID] = e
 		case <-c.ticker.C:
 			now := ulid.Now()
 			for _, e := range c.events {
 				t := e.ID.Time()
-				if t > now || now-t < d {
+
+				if t > now {
+					// if event time is in the future, wait for ack
+					continue
+				} else if now-t < c.ackTolerance {
+					// if event time is within ack tolerance, wait for ack
+					continue
+				} else if now-t > c.omitTolerance {
+					// if event time is after omit tolerance, discard it
+					c.logger.Info().Str("id", e.ID.String()).Msg("event omitted")
+					delete(c.events, e.ID)
 					continue
 				}
-				go func(e event.DTO) {
-					raw, err := e.Marshal()
-					if err != nil {
-						c.logger.Error().Err(err).Msg("failed to marshal action")
-						return
-					}
-					c.C.Send(raw, c.addr)
-				}(e)
+
+				raw, err := e.Marshal()
+				if err != nil {
+					c.logger.Error().Err(err).Msg("failed to marshal action")
+					continue
+				}
+				c.C.Send(raw, c.addr)
 			}
-		case e := <-c.event:
-			c.logger.Info().Str("id", e.ID.String()).Msg("event received")
-			c.events[e.ID] = e
-		case id := <-c.ack:
-			c.logger.Info().Str("id", id.String()).Msg("ack received")
-			delete(c.events, id)
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/elojah/game_01/cmd/sandbox/network"
@@ -20,17 +19,18 @@ type C struct {
 	ticker *time.Ticker
 	close  chan struct{}
 
-	Network *network.Client
+	network *network.Client
 
 	sendables map[gulid.ID]Sendable
 }
 
-func NewClient() *C {
+func NewClient(nc *network.Client) *C {
 	return &C{
-		Add:    make(chan Sendable),
-		Remove: make(chan gulid.ID),
-
+		Add:       make(chan Sendable),
+		Remove:    make(chan gulid.ID),
 		sendables: make(map[gulid.ID]Sendable),
+
+		network: nc,
 	}
 }
 
@@ -55,15 +55,12 @@ func (c *C) Run() {
 		case <-c.close:
 			return
 		case se := <-c.Add:
-			fmt.Println("add")
-			fmt.Println(se.ID().String())
 			c.sendables[se.ID()] = se
 		case id := <-c.Remove:
 			delete(c.sendables, id)
 		case <-c.ticker.C:
-			fmt.Println("tick")
 			for _, se := range c.sendables {
-				c.Network.Send(event.DTO{
+				c.network.Send(event.DTO{
 					ID:    gulid.NewID(),
 					Token: gulid.NewID(),
 					Query: se.Query(),
