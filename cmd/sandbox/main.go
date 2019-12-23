@@ -41,6 +41,7 @@ func run(prog string, filename string) {
 	}, "handler")
 	launchers.Add(hl)
 	h.M.Handler = h.handleDTO
+	h.M.Listen()
 
 	// Handle ACK from api
 	ma := mux.M{}
@@ -57,6 +58,7 @@ func run(prog string, filename string) {
 	}, "handler")
 	launchers.Add(hal)
 	ha.M.Handler = ha.handleACK
+	ha.M.Listen()
 
 	/*
 		Local clients

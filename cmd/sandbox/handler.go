@@ -19,7 +19,6 @@ type handler struct {
 }
 
 func (h *handler) Dial() error {
-	h.M.Listen()
 	h.ACK = make(chan ulid.ID)
 	return nil
 }
