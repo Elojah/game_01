@@ -27,7 +27,7 @@
 		"interval": 100
 	},
 	"auth": {
-		"address": "auth:8080",
+		"address": "https://auth:8080",
 		"username": "testsandbox",
 		"password": "testsandbox"
 	}

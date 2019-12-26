@@ -35,6 +35,7 @@ services:
     links:
       - redis
       - redis-lru
+    network_mode: "host"
 
   # Auth
   auth:
@@ -92,6 +93,24 @@ services:
       - redis
       - redis-lru
 
+  # # Sandbox
+  # sandbox:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/sandbox/Dockerfile
+  #   volumes:
+  #     - ./config/sandbox.json:/app/sandbox.json
+  #     - ./cmd/sandbox/assets:/app/assets
+  #   expose:
+  #     - 42000
+  #     - 42001
+  #   ports:
+  #     - 42000:42000/udp
+  #     - 42001:42001/udp
+  #   links:
+  #     - api
+  #     - sync
+
   # Sync
   sync:
     build:
@@ -102,23 +121,6 @@ services:
     links:
       - redis
       - redis-lru
-
-  # Sandbox
-  sandbox:
-    build:
-      context: .
-      dockerfile: docker/sandbox/Dockerfile
-    volumes:
-      - ./config/sandbox.json:/app/sandbox.json
-    expose:
-      - 42000
-      - 42001
-    ports:
-      - 42000:42000/udp
-      - 42001:42001/udp
-    links:
-      - api
-      - sync
 
   # Tool
   tool:

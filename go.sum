@@ -4,8 +4,8 @@ github.com/coreos/go-systemd v0.0.0-20190321100706-95778dfbb74e/go.mod h1:F5haX7
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/elojah/mux v0.0.0-20190508144824-9acfa5c76ff3 h1:FUHgIOCGrSS6PtQpG21Vmh/LxboNIRxUv8zCQf2Xykc=
-github.com/elojah/mux v0.0.0-20190508144824-9acfa5c76ff3/go.mod h1:1i04Q/CWPWTF8MNSjvOnziFp5RUM5fYzReQg/dOw+IY=
+github.com/elojah/mux v0.0.0-20191226165522-98a8d3683f27 h1:eexsUp/eIC8C4saQ9ZMrmnFlmm0BZZTTZuIMSwGx2dw=
+github.com/elojah/mux v0.0.0-20191226165522-98a8d3683f27/go.mod h1:1i04Q/CWPWTF8MNSjvOnziFp5RUM5fYzReQg/dOw+IY=
 github.com/elojah/redis v0.0.0-20190313141158-8ee7ee230476 h1:YCxK+th4XbS+TjlRs1T3Y5mCtsYUrXB3A+Ica9/g3jQ=
 github.com/elojah/redis v0.0.0-20190313141158-8ee7ee230476/go.mod h1:e/M5adweDC2lcrbMDd8nJhVatF9KdREamc19q9jUon8=
 github.com/elojah/services v0.0.0-20180629094217-29c33644ab1f/go.mod h1:8fqqW2L34+kQ7mR6Xzczw170jITRbPTrIw2itp9xFFM=

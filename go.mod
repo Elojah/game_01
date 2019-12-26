@@ -3,7 +3,7 @@ module github.com/elojah/game_01
 require (
 	github.com/JoelOtter/termloop v0.0.0-20191114154723-6c3a95a92fdd
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/elojah/mux v0.0.0-20190508144824-9acfa5c76ff3
+	github.com/elojah/mux v0.0.0-20191226165522-98a8d3683f27
 	github.com/elojah/redis v0.0.0-20190313141158-8ee7ee230476
 	github.com/elojah/services v0.0.0-20190313141140-599efb6ce8c5
 	github.com/go-redis/redis v6.15.0+incompatible
