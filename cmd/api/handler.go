@@ -35,9 +35,6 @@ func (h *handler) Dial(c Config) error {
 }
 
 func (h *handler) Close() error {
-	if err := h.M.Close(); err != nil {
-		return err
-	}
 	return h.C.Close()
 }
 

@@ -76,6 +76,7 @@ core:  ## Build core binary
 sandbox:  ## Build sandbox binary
 	$(info $(M) building executable sandbox…) @
 	$Q cd cmd/$(SANDBOX) &&  $(GO) build \
+		-mod vendor \
 		-tags release \
 		-ldflags '-X $(PACKAGE)/cmd.Version=$(VERSION) -X $(PACKAGE)/cmd.BuildDate=$(DATE)' \
 		-o ../../bin/$(PACKAGE)_$(SANDBOX)_$(VERSION)
