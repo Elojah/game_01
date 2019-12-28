@@ -53,22 +53,22 @@ services:
       - redis
       - redis-lru
 
-  # Client
-  client:
-    build:
-      context: .
-      dockerfile: docker/client/Dockerfile
-    volumes:
-      - ./config/client.json:/app/client.json
-    expose:
-      - 42000
-      - 42001
-    ports:
-      - 42000:42000/udp
-      - 42001:42001/udp
-    links:
-      - api
-      - sync
+  # # Client
+  # client:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/client/Dockerfile
+  #   volumes:
+  #     - ./config/client.json:/app/client.json
+  #   expose:
+  #     - 42000
+  #     - 42001
+  #   ports:
+  #     - 42000:42000/udp
+  #     - 42001:42001/udp
+  #   links:
+  #     - api
+  #     - sync
 
   # Core
   core:

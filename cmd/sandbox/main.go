@@ -13,6 +13,7 @@ import (
 	sclient "github.com/elojah/game_01/cmd/sandbox/client"
 	"github.com/elojah/game_01/cmd/sandbox/network"
 	"github.com/elojah/game_01/cmd/sandbox/ui"
+	"github.com/elojah/game_01/pkg/ulid"
 	"github.com/elojah/mux"
 	"github.com/elojah/mux/client"
 	"github.com/elojah/services"
@@ -49,8 +50,10 @@ func run(prog string, filename string) {
 	}, "ack")
 	launchers.Add(mauxl)
 
+	ack := make(chan ulid.ID)
 	ha := handler{
-		M: &ma,
+		M:   &ma,
+		ACK: ack,
 	}
 	hal := ha.NewLauncher(NamespacesHandler{
 		Handler: "handler",
@@ -74,7 +77,7 @@ func run(prog string, filename string) {
 	}, "ui")
 	launchers.Add(scl)
 
-	nc := network.New(&c, ha.ACK)
+	nc := network.New(&c, ack)
 	ncl := nc.NewLauncher(network.Namespaces{
 		Client: "network",
 	}, "network")
@@ -117,6 +120,7 @@ func run(prog string, filename string) {
 	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
+			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue
@@ -125,12 +129,14 @@ func run(prog string, filename string) {
 				log.Error().Err(err).Str("filename", filename).Msg("failed to start services")
 			}
 		case syscall.SIGINT:
+			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue
 			}
 			return
 		case syscall.SIGKILL:
+			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue

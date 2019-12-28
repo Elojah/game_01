@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -38,7 +37,6 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 	a := ac.Domain()
 
 	// #Create token from account
-	fmt.Println(r.Header.Get("x-forwarded-for"))
 	tok, err := h.account.CreateToken(a, r.RemoteAddr)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token from account")

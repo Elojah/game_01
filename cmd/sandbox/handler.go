@@ -19,14 +19,12 @@ type handler struct {
 }
 
 func (h *handler) Dial() error {
-	h.ACK = make(chan ulid.ID)
 	h.M.Handler = func(context.Context, []byte) error { return nil }
 	h.M.Listen()
 	return nil
 }
 
 func (h *handler) Close() error {
-	close(h.ACK)
 	return nil
 }
 
