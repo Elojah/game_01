@@ -120,7 +120,6 @@ func run(prog string, filename string) {
 	for sig := range cs {
 		switch sig {
 		case syscall.SIGHUP:
-			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue
@@ -129,14 +128,12 @@ func run(prog string, filename string) {
 				log.Error().Err(err).Str("filename", filename).Msg("failed to start services")
 			}
 		case syscall.SIGINT:
-			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue
 			}
 			return
 		case syscall.SIGKILL:
-			close(ack)
 			if err := launchers.Down(); err != nil {
 				log.Error().Err(err).Msg("failed to stop services")
 				continue

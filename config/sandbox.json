@@ -1,12 +1,12 @@
 {
 	"ack": {
-		"addresses": ["172.21.0.1:42001"],
+		"addresses": ["172.18.0.1:42001"],
 		"middlewares": [],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
 	"entity": {
-		"addresses": ["172.21.0.1:42000"],
+		"addresses": ["172.18.0.1:42000"],
 		"middlewares": ["snappy"],
 		"packet_size": 1024,
 		"server_protocol": "udp"

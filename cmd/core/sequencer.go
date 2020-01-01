@@ -81,7 +81,7 @@ func (s *Sequencer) listenFetch() {
 			s.logger.Error().Err(err).Msg("fetch")
 			continue
 		}
-	Event:
+	outer:
 		for _, event := range events {
 			select {
 			case m := <-s.min:
@@ -98,7 +98,8 @@ func (s *Sequencer) listenFetch() {
 			case -1:
 				if !min.IsZero() {
 					s.logger.Info().Str("event", event.ID.String()).Str("min", min.String()).Msg("skip for earlier value in queue")
-					break Event
+					events = nil // nolint: ineffassign
+					break outer
 				}
 			}
 			s.process <- event
