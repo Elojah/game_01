@@ -7,6 +7,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/account/dto"
 	"github.com/elojah/game_01/pkg/entity"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
@@ -24,7 +26,7 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/subscribe").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
-	var ac Account
+	var ac dto.Account
 	if err := json.NewDecoder(r.Body).Decode(&ac); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -35,7 +37,10 @@ func (h *handler) subscribe(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	a := ac.Domain()
+	a := account.A{
+		Username: ac.Username,
+		Password: ac.Password,
+	}
 	a.ID = ulid.NewID()
 
 	logger = logger.With().Str("account", a.ID.String()).Logger()
@@ -99,7 +104,7 @@ func (h *handler) unsubscribe(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/unsubscribe").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
-	var ac Account
+	var ac dto.Account
 	if err := json.NewDecoder(r.Body).Decode(&ac); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)

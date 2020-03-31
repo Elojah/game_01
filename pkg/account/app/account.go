@@ -25,7 +25,7 @@ type A struct {
 }
 
 // CreateToken creates app new token from account payload A. Returns an error if the account is invalid.
-func (app A) CreateToken(payload account.A, addr string) (account.Token, error) {
+func (app A) CreateToken(payload account.A, addr account.Address) (account.Token, error) {
 
 	// #Search account in redis
 	acc, err := app.Store.Fetch(payload.Username)
@@ -39,17 +39,12 @@ func (app A) CreateToken(payload account.A, addr string) (account.Token, error) 
 		return account.Token{}, errors.Wrap(gerrors.ErrMultipleLogin{AccountID: acc.ID.String()}, "create token")
 	}
 
-	// #Identify origin IP
-	ip, err := net.ResolveUDPAddr("udp", addr)
-	if err != nil {
-		return account.Token{}, errors.Wrap(errors.Wrapf(err, "resolve address %s", addr), "create token")
-	}
-
 	// #Upsert new token
 	t := account.Token{
 		ID:      gulid.NewID(),
 		Account: acc.ID,
-		IP:      ip.String(),
+		IP:      addr.IP,
+		Port:    addr.Port,
 	}
 	if err := app.TokenStore.UpsertToken(t); err != nil {
 		return account.Token{}, errors.Wrap(err, "create token")
@@ -72,11 +67,10 @@ func (app A) FetchTokenFromAddr(id gulid.ID, addr string) (account.Token, error)
 	}
 
 	// #Match message UUID with source IP.
-	expected, _, ee := net.SplitHostPort(t.IP)
-	actual, _, ea := net.SplitHostPort(addr)
-	if expected != actual || ee != nil || ea != nil {
+	actual, _, err := net.SplitHostPort(addr)
+	if err != nil || actual != t.IP {
 		return account.Token{}, errors.Wrap(
-			gerrors.ErrWrongIP{TokenID: id.String(), Expected: expected, Actual: actual},
+			gerrors.ErrWrongIP{TokenID: id.String(), Expected: t.IP, Actual: actual},
 			"access token",
 		)
 	}

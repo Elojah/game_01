@@ -34,9 +34,11 @@ func (s *Service) Subscribe(username string, password string) error {
 
 // SignIn sign to an already created account through HTTPS and returns corresponding token.
 func (s *Service) SignIn(username string, password string) (account.Token, error) {
-	raw, err := json.Marshal(map[string]string{
+	raw, err := json.Marshal(map[string]interface{}{
 		"username": username,
 		"password": password,
+		"ip":       "127.0.0.1",
+		"port":     42000,
 	})
 	if err != nil {
 		return account.Token{}, errors.Wrap(err, "sign in")

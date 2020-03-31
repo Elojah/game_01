@@ -30,6 +30,24 @@ func (err ErrNotFound) Error() string {
 
 // #Token/login errors
 
+// ErrInvalidIP is raised when a sent ip is not valid.
+type ErrInvalidIP struct {
+	IP string
+}
+
+func (err ErrInvalidIP) Error() string {
+	return fmt.Sprintf("ip %s is not valid", err.IP)
+}
+
+// ErrInvalidPort is raised when a sent port is not valid.
+type ErrInvalidPort struct {
+	Port uint64
+}
+
+func (err ErrInvalidPort) Error() string {
+	return fmt.Sprintf("port %s is not valid", err.Port)
+}
+
 // ErrWrongIP is raised when a source IP doesn't match with token-associated IP.
 type ErrWrongIP struct {
 	TokenID  string

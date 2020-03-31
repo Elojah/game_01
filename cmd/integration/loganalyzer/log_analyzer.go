@@ -50,6 +50,7 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 			}
 			r := bufio.NewReader(stderr)
 			s, err := r.ReadString('\n')
+			fmt.Println(s)
 			if err == io.EOF {
 				continue
 			}
@@ -74,6 +75,7 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 			default:
 			}
 			s, err := r.ReadString('\n')
+			fmt.Println(s)
 			if err == io.EOF {
 				continue
 			}
@@ -161,4 +163,11 @@ func (a *LA) Expect(f func(string) (bool, error)) error {
 		}
 	}
 	return nil
+}
+
+// Flush flushes all logs and print them.
+func (a *LA) Flush() {
+	for s := range a.c {
+		fmt.Println(s)
+	}
 }

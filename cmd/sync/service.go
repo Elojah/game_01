@@ -112,7 +112,7 @@ func (svc *service) Recurrer(msg *infra.Message) {
 		logger.Error().Err(err).Msg("failed to parse ip")
 		return
 	}
-	addr.Port = int(svc.port)
+	addr.Port = int(tok.Port)
 	logger = logger.With().Str("address", addr.String()).Logger()
 	rec := NewRecurrer(r, svc.tickRate, svc.batchSize, func(dto entity.DTO) {
 		raw, err := dto.Marshal()

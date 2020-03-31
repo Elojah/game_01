@@ -7,6 +7,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 
+	"github.com/elojah/game_01/pkg/account"
+	"github.com/elojah/game_01/pkg/account/dto"
 	gerrors "github.com/elojah/game_01/pkg/errors"
 	"github.com/elojah/game_01/pkg/ulid"
 )
@@ -23,7 +25,7 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/signin").Str("method", "POST").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
-	var ac Account
+	var ac dto.SignInAccount
 	if err := json.NewDecoder(r.Body).Decode(&ac); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)
@@ -34,10 +36,12 @@ func (h *handler) signin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "payload invalid", http.StatusBadRequest)
 		return
 	}
-	a := ac.Domain()
 
 	// #Create token from account
-	tok, err := h.account.CreateToken(a, r.RemoteAddr)
+	tok, err := h.account.CreateToken(account.A{
+		Username: ac.Username,
+		Password: ac.Password,
+	}, ac.Address)
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to create token from account")
 		http.Error(w, "failed to signin", http.StatusInternalServerError)
@@ -76,7 +80,7 @@ func (h *handler) signout(w http.ResponseWriter, r *http.Request) {
 	logger := log.With().Str("route", "/signout").Str("address", r.RemoteAddr).Logger()
 
 	// #Read body
-	var ac SignoutAccount
+	var ac dto.SignoutAccount
 	if err := json.NewDecoder(r.Body).Decode(&ac); err != nil {
 		logger.Error().Err(err).Msg("payload invalid")
 		http.Error(w, "payload invalid", http.StatusBadRequest)

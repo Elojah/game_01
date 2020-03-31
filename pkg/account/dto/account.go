@@ -1,4 +1,4 @@
-package main
+package dto
 
 import (
 	"errors"
@@ -14,14 +14,6 @@ type Account struct {
 	Password string
 }
 
-// Domain transforms a dto account into a domain account.
-func (a Account) Domain() account.A {
-	return account.A{
-		Username: a.Username,
-		Password: a.Password,
-	}
-}
-
 // Check check if username and passwords are valid.
 func (a Account) Check() error {
 	lu := len(a.Username)
@@ -35,6 +27,23 @@ func (a Account) Check() error {
 			return (r < 'A' || r > 'z') && (r < '0' || r > '9') && (r != '_')
 		}) != -1 {
 		return errors.New("invalid account")
+	}
+	return nil
+}
+
+// SignInAccount represents the payload to connect an account via /signin.
+type SignInAccount struct {
+	Account
+	account.Address
+}
+
+// Check check if account and address are valid.
+func (a SignInAccount) Check() error {
+	if err := a.Account.Check(); err != nil {
+		return err
+	}
+	if err := a.Address.Check(); err != nil {
+		return err
 	}
 	return nil
 }
