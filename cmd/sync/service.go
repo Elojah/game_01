@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 
 	multierror "github.com/hashicorp/go-multierror"
@@ -107,12 +108,11 @@ func (svc *service) Recurrer(msg *infra.Message) {
 		return
 	}
 
-	addr, err := net.ResolveUDPAddr("udp", tok.IP)
+	addr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", tok.IP, tok.Port))
 	if err != nil {
 		logger.Error().Err(err).Msg("failed to parse ip")
 		return
 	}
-	addr.Port = int(tok.Port)
 	logger = logger.With().Str("address", addr.String()).Logger()
 	rec := NewRecurrer(r, svc.tickRate, svc.batchSize, func(dto entity.DTO) {
 		raw, err := dto.Marshal()

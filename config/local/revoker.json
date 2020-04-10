@@ -1,0 +1,15 @@
+{
+	"service": {
+		"lifespan": 72000
+	},
+	"redis": {
+		"addr": "redis:6379",
+		"password": "secret",
+		"db": 0
+	},
+	"redis-lru": {
+		"addr": "redis-lru:6379",
+		"password": "secret",
+		"db": 0
+	}
+}

@@ -1,12 +1,12 @@
 {
 	"ack": {
-		"addresses": ["api:42001"],
+		"addresses": ["0.0.0.0:42001"],
 		"middlewares": [],
 		"packet_size": 1024,
 		"server_protocol": "udp"
 	},
 	"entity": {
-		"addresses": ["sync:42000"],
+		"addresses": ["0.0.0.0:3400"],
 		"middlewares": ["snappy"],
 		"packet_size": 1024,
 		"server_protocol": "udp"

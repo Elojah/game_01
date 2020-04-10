@@ -42,6 +42,7 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 
 	p.closerErr = make(chan struct{}, 1)
 	go func() {
+		defer stderr.Close()
 		for {
 			select {
 			case <-p.closerErr:
@@ -50,7 +51,6 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 			}
 			r := bufio.NewReader(stderr)
 			s, err := r.ReadString('\n')
-			fmt.Println(s)
 			if err == io.EOF {
 				continue
 			}
@@ -66,7 +66,6 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 	go func() {
 		defer stdout.Close()
 		defer stdin.Close()
-		defer stderr.Close()
 		r := bufio.NewReader(stdout)
 		for {
 			select {
@@ -75,14 +74,14 @@ func newProcess(out chan<- string, args ...string) (*process, error) {
 			default:
 			}
 			s, err := r.ReadString('\n')
-			fmt.Println(s)
-			if err == io.EOF {
+			if err == io.EOF || s == "" {
 				continue
 			}
 			if err != nil {
 				log.Error().Err(err).Msgf("failed to read out %s", args[0])
 				return
 			}
+			// fmt.Println(s)
 			out <- s
 		}
 	}()
@@ -154,6 +153,7 @@ func (a *LA) Retrieve(f func(string) (bool, error), max int) error {
 // Expect sends log into f and return error if f fail. Returns nil when f returns ok.
 func (a *LA) Expect(f func(string) (bool, error)) error {
 	for s := range a.c {
+		fmt.Println(s)
 		ok, err := f(s)
 		if err != nil {
 			return err

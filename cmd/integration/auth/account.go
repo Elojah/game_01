@@ -37,8 +37,8 @@ func (s *Service) SignIn(username string, password string) (account.Token, error
 	raw, err := json.Marshal(map[string]interface{}{
 		"username": username,
 		"password": password,
-		"ip":       "127.0.0.1",
-		"port":     42000,
+		"ip":       "127.0.0.1", // localhost only
+		"port":     9889,        // must be same than config/client.json
 	})
 	if err != nil {
 		return account.Token{}, errors.Wrap(err, "sign in")

@@ -1,0 +1,12 @@
+{
+	"renderer": {
+		"title": "game_01",
+		"width": 620,
+		"height": 480,
+		"full_screen": false,
+		"resizable": false,
+		"undecorated": true,
+		"vsync": true,
+		"tick_rate": 30
+	}
+}

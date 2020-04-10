@@ -1,0 +1,19 @@
+{
+	"service": {
+		"id": "01CCS1SZ4B20G98XYMFGVC9VS4",
+		"limit": 65535,
+		"move_tolerance": 100,
+		"loot_radius": 5,
+		"consume_radius": 50
+	},
+	"redis": {
+		"addr": "redis:6379",
+		"password": "secret",
+		"db": 0
+	},
+	"redis-lru": {
+		"addr": "redis-lru:6379",
+		"password": "secret",
+		"db": 0
+	}
+}

@@ -1,0 +1,23 @@
+{
+	"ack": {
+		"addresses": ["0.0.0.0:42001"],
+		"middlewares": [],
+		"packet_size": 1024,
+		"server_protocol": "udp"
+	},
+	"entity": {
+		"addresses": ["0.0.0.0:9889"],
+		"middlewares": ["snappy"],
+		"packet_size": 1024,
+		"server_protocol": "udp"
+	},
+	"client": {
+		"middlewares": [],
+		"packet_size": 1024
+	},
+	"reader": {
+		"address": "api:3400",
+		"tolerance": 12
+	},
+	"handler": {}
+}

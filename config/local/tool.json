@@ -1,0 +1,17 @@
+{
+	"tool": {
+		"address": "0.0.0.0:8081",
+		"cert": "server.crt",
+		"key": "server.key"
+	},
+	"redis": {
+		"addr": "redis:6379",
+		"password": "secret",
+		"db": 0
+	},
+	"redis-lru": {
+		"addr": "redis-lru:6379",
+		"password": "secret",
+		"db": 0
+	}
+}

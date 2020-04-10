@@ -1,0 +1,22 @@
+{
+	"service": {
+		"id": "01CGBKPGMC4TG961QMQ71TEV2P",
+		"tick_rate": 10,
+		"batch_size": 200,
+		"entity_port": 42000
+	},
+	"client": {
+		"middlewares": ["snappy"],
+		"packet_size": 1024
+	},
+	"redis": {
+		"addr": "redis:6379",
+		"password": "secret",
+		"db": 0
+	},
+	"redis-lru": {
+		"addr": "redis-lru:6379",
+		"password": "secret",
+		"db": 0
+	}
+}
